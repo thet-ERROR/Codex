@@ -28,7 +28,7 @@
         .loader-fill { height: 100%; width: 0%; background: var(--neon-green); transition: width 0.1s linear; }
 
         /* ENV & MATRIX */
-        .bg-layer { position: fixed; inset: 0; z-index: -2; background: url('bg.gif') no-repeat center center fixed; background-size: cover; filter: brightness(0.5) contrast(1.1); transition: opacity 0.5s; }
+        .bg-layer { position: fixed; inset: 0; z-index: -2; background: url('assets/images/bg.gif') no-repeat center center fixed; background-size: cover; filter: brightness(0.5) contrast(1.1); transition: opacity 0.5s; }
         canvas#matrix-canvas { position: fixed; top: 0; left: 0; z-index: -1; opacity: 0; transition: opacity 1s; pointer-events: none; }
         .vignette { position: fixed; inset: 0; pointer-events: none; z-index: 0; background: radial-gradient(circle at center, transparent 40%, #000 120%); }
         .grid-overlay { position: fixed; inset: 0; z-index: 0; background-image: linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px); background-size: 40px 40px; pointer-events: none; }
@@ -651,10 +651,11 @@ Type 'help' for a list of commands.
         let matrixEnabled = false;
         let isHacked = false;
 
-        const audioClick = new Audio('click.mp3');
-        const audioHover = new Audio('hover.mp3');
-        const audioStart = new Audio('startup.mp3');
-        const bgMusic = new Audio('bg.mp3'); 
+        // 🔴 ΑΛΛΑΓΕΣ: ΕΝΗΜΕΡΩΣΗ ΤΩΝ ΔΙΑΔΡΟΜΩΝ ΓΙΑ ΤΟΥΣ ΗΧΟΥΣ
+        const audioClick = new Audio('assets/audio/click.mp3');
+        const audioHover = new Audio('assets/audio/hover.mp3');
+        const audioStart = new Audio('assets/audio/startup.mp3');
+        const bgMusic = new Audio('assets/audio/bg.mp3'); 
         bgMusic.loop = true;
         
         let savedVol = localStorage.getItem('codex_volume');
@@ -792,7 +793,6 @@ Type 'help' for a list of commands.
             const draw = () => { if(!matrixEnabled) { ctx.clearRect(0,0,canvas.width,canvas.height); return; } ctx.fillStyle = 'rgba(0, 0, 0, 0.05)'; ctx.fillRect(0, 0, canvas.width, canvas.height); ctx.fillStyle = '#00ff00'; ctx.font = fontSize + 'px monospace'; for(let i = 0; i < rainDrops.length; i++) { const text = alphabet.charAt(Math.floor(Math.random() * alphabet.length)); ctx.fillText(text, i*fontSize, rainDrops[i]*fontSize); if(rainDrops[i]*fontSize > canvas.height && Math.random() > 0.975){ rainDrops[i] = 0; } rainDrops[i]++; } }; setInterval(draw, 30);
         }
 
-        // 🔴 ΕΔΩ ΕΙΝΑΙ ΤΟ ΝΕΟ ΤΕΡΜΑΤΙΚΟ ΜΕ ΤΑ EASTER EGGS
         document.addEventListener('keydown', (e) => { if (e.key === '`') { e.preventDefault(); toggleCLI(); } });
         function toggleCLI() { const cli = document.getElementById('cli-overlay'); const input = document.getElementById('cli-input'); cli.classList.toggle('active'); if (cli.classList.contains('active')) input.focus(); }
         
@@ -915,7 +915,8 @@ Type 'help' for a list of commands.
         function nextPC() { if(filtered.length) { index=(index+1)%filtered.length; renderCard(); } }
         function prevPC() { if(filtered.length) { index=(index-1+filtered.length)%filtered.length; renderCard(); } }
         
-        function renderCard() { const c = document.getElementById('main-card'); if(!filtered.length) { c.innerHTML = "<h3>NO SIGNAL</h3>"; return; } const pc = filtered[index]; const inCompare = compareList.find(p => p._id === pc._id); const priceVal = parseInt(pc.price.replace(/[^0-9]/g, '')); const fakeOldPrice = Math.floor(priceVal * 1.2); const stock = pc.stock || 0; let stockHTML = ''; if(stock === 0) stockHTML = '<div class="stock-badge out">SOLD OUT</div>'; else if(stock < 5) stockHTML = `<div class="stock-badge low">LOW STOCK: ${stock} UNITS</div>`; else stockHTML = '<div class="stock-badge in">IN STOCK</div>'; let fpsHTML = ''; if(pc.multitasking) fpsHTML += `<div class="fps-row"><span class="fps-name">MULTI</span><div class="bar-track"><div class="bar-fill" data-width="${pc.multitasking}%" style="width:0%"></div></div><span class="fps-num">${pc.multitasking}</span></div>`; if(pc.fps) pc.fps.forEach(f => { let max=200; if(f.game==='Fortnite')max=300; fpsHTML += `<div class="fps-row"><span class="fps-name">${f.game}</span><div class="bar-track"><div class="bar-fill" data-width="${Math.min((f.score/max)*100,100)}%" style="width:0%"></div></div><span class="fps-num">${f.score}</span></div>`; }); c.innerHTML = `<img src="${pc.images[0]||'bg.jpg'}" class="hero-img" onmouseenter="playHover()">${stockHTML}<div class="pc-title">${pc.name}</div><div class="card-price-row"><div class="pc-price">${pc.price}</div><div class="pc-price-old">€${fakeOldPrice}</div></div><div class="perf-container">${fpsHTML}</div><button class="btn-inspect" onclick="playClick(); openGallery()">INSPECT SYSTEM</button><button class="btn-compare-add ${inCompare?'selected':''}" onclick="playClick(); toggleCompare('${pc._id}')">${inCompare?'ADDED':'COMPARE'}</button>`; setTimeout(()=>document.querySelectorAll('.bar-fill').forEach(b=>b.style.width=b.getAttribute('data-width')), 50); }
+        // 🔴 ΑΛΛΑΓΕΣ: ΕΝΗΜΕΡΩΣΗ ΤΗΣ DEFAULT ΕΙΚΟΝΑΣ
+        function renderCard() { const c = document.getElementById('main-card'); if(!filtered.length) { c.innerHTML = "<h3>NO SIGNAL</h3>"; return; } const pc = filtered[index]; const inCompare = compareList.find(p => p._id === pc._id); const priceVal = parseInt(pc.price.replace(/[^0-9]/g, '')); const fakeOldPrice = Math.floor(priceVal * 1.2); const stock = pc.stock || 0; let stockHTML = ''; if(stock === 0) stockHTML = '<div class="stock-badge out">SOLD OUT</div>'; else if(stock < 5) stockHTML = `<div class="stock-badge low">LOW STOCK: ${stock} UNITS</div>`; else stockHTML = '<div class="stock-badge in">IN STOCK</div>'; let fpsHTML = ''; if(pc.multitasking) fpsHTML += `<div class="fps-row"><span class="fps-name">MULTI</span><div class="bar-track"><div class="bar-fill" data-width="${pc.multitasking}%" style="width:0%"></div></div><span class="fps-num">${pc.multitasking}</span></div>`; if(pc.fps) pc.fps.forEach(f => { let max=200; if(f.game==='Fortnite')max=300; fpsHTML += `<div class="fps-row"><span class="fps-name">${f.game}</span><div class="bar-track"><div class="bar-fill" data-width="${Math.min((f.score/max)*100,100)}%" style="width:0%"></div></div><span class="fps-num">${f.score}</span></div>`; }); c.innerHTML = `<img src="${pc.images[0]||'assets/images/bg.jpg'}" class="hero-img" onmouseenter="playHover()">${stockHTML}<div class="pc-title">${pc.name}</div><div class="card-price-row"><div class="pc-price">${pc.price}</div><div class="pc-price-old">€${fakeOldPrice}</div></div><div class="perf-container">${fpsHTML}</div><button class="btn-inspect" onclick="playClick(); openGallery()">INSPECT SYSTEM</button><button class="btn-compare-add ${inCompare?'selected':''}" onclick="playClick(); toggleCompare('${pc._id}')">${inCompare?'ADDED':'COMPARE'}</button>`; setTimeout(()=>document.querySelectorAll('.bar-fill').forEach(b=>b.style.width=b.getAttribute('data-width')), 50); }
         
         function updatePrice() { const extra = parseInt(document.getElementById('storage-select').value); const base = parseInt(currentGalleryPC.price.replace(/[^0-9]/g, '')); document.getElementById('g-price-live').innerText = "€" + (base + extra); }
         function removeFromCart(i) { cart.splice(i, 1); localStorage.setItem('codex_cart', JSON.stringify(cart)); updateCartUI(); }
@@ -943,8 +944,7 @@ Type 'help' for a list of commands.
         function logout() { isLoggedIn = false; document.getElementById('guest-options').classList.remove('hidden'); document.getElementById('user-options').classList.add('hidden'); }
         function toggleChat() { document.getElementById('chat-widget').classList.toggle('open'); }
         
-        // 🔴 ΕΔΩ ΕΙΝΑΙ Ο ΝΕΟΣ, ΕΞΥΠΝΟΣ ΕΓΚΕΦΑΛΟΣ ΤΟΥ CODEX AI ΜΕ ΜΝΗΜΗ
-        let aiState = 'idle'; // Αποθηκεύει τη μνήμη του Bot (τι περιμένει να του απαντήσεις)
+        let aiState = 'idle'; 
 
         function sendChat(inputElement) { 
             const text = inputElement.value.trim();
@@ -960,46 +960,41 @@ Type 'help' for a list of commands.
                 const lowerText = text.toLowerCase();
                 let botResponse = "";
 
-                // --- 1. ΕΛΕΓΧΟΣ ΜΝΗΜΗΣ (Αν περιμένει απάντηση για Ναι/Όχι) ---
                 if (aiState === 'waiting_admin_redirect') {
                     if (lowerText === 'ναι' || lowerText === 'nai' || lowerText.includes('ναι') || lowerText.includes('θελω') || lowerText.includes('αμε')) {
                         botResponse = "🚀 <b>Εκκίνηση σύνδεσης...</b><br>Σε μεταφέρω στο ασφαλές κανάλι του Admin (WhatsApp).";
-                        setTimeout(() => window.open("https://wa.me/306912345678", "_blank"), 1500); // Αλλάζεις το νούμερο εδώ
+                        setTimeout(() => window.open("https://wa.me/306912345678", "_blank"), 1500); 
                     } else {
                         botResponse = "Λήψη ελήφθη. 🤖 Τι άλλο θα ήθελες να μάθεις;";
                     }
-                    aiState = 'idle'; // Μηδενισμός μνήμης
+                    aiState = 'idle'; 
                 } 
-                
-                // --- 2. ΕΛΕΓΧΟΣ ΜΝΗΜΗΣ (Αν περιμένει απάντηση για Budget) ---
                 else if (aiState === 'waiting_budget') {
-                    const budget = parseInt(lowerText.replace(/[^0-9]/g, '')); // Βρίσκει τους αριθμούς μέσα στο κείμενο
+                    const budget = parseInt(lowerText.replace(/[^0-9]/g, '')); 
                     if (budget > 0) {
                         botResponse = `💰 Με budget <b>€${budget}</b>, η καλύτερη επιλογή είναι να τσεκάρεις τα <b>STARTER PACKS</b> ή να ρωτήσεις τον Admin για Custom Build!<br><br><button class='btn-inspect' style='padding:5px; font-size:0.8rem;' onclick='window.open(\"https://wa.me/306912345678\", \"_blank\")'>CUSTOM BUILD</button>`;
                     } else {
                         botResponse = "Δεν κατάλαβα το ποσό. Πες μου απλά νούμερα, π.χ. '800'.";
                     }
-                    aiState = 'idle'; // Μηδενισμός μνήμης
+                    aiState = 'idle'; 
                 }
-                
-                // --- 3. ΚΑΝΟΝΙΚΗ ΣΥΖΗΤΗΣΗ (Αν το Bot είναι Idle) ---
                 else {
                     botResponse = "Δεν το έπιασα αυτό, Agent. 🤖<br>Ρώτα με για <b>Αγορά</b>, <b>Μεταφορικά</b>, <b>Εγγύηση</b>, ή πες μου τι <b>Παιχνίδια</b> παίζεις!";
                     
                     if (lowerText.includes('μεταφορικα') || lowerText.includes('αποστολη') || lowerText.includes('που ειστε') || lowerText.includes('πολη') || lowerText.includes('ελλαδα')) {
                         botResponse = "📦 <b>Αποστολές πανελλαδικά!</b><br>Στέλνουμε τα συστήματά μας σε όλη την Ελλάδα. Τα μεταφορικά συνήθως καθορίζονται κατά την παραγγελία.<br><br><b>Θέλεις να μιλήσεις με τον Admin για λεπτομέρειες; (Ναι/Όχι)</b>";
-                        aiState = 'waiting_admin_redirect'; // Το Bot πλέον "περιμένει"
+                        aiState = 'waiting_admin_redirect'; 
                     }
                     else if (lowerText.includes('budget') || lowerText.includes('χρηματα') || lowerText.includes('ευρω') || lowerText.includes('διαθετω') || lowerText.includes('λεφτα')) {
                         botResponse = "💶 Πες μου, πόσα χρήματα (budget) περίπου διαθέτεις για το νέο σου PC;";
-                        aiState = 'waiting_budget'; // Το Bot περιμένει νούμερο
+                        aiState = 'waiting_budget'; 
                     }
                     else if (lowerText.includes('εγγυηση') || lowerText.includes('χαλασε') || lowerText.includes('προβλημα') || lowerText.includes('support')) {
                         botResponse = "🛡️ <b>MISSION PROTOCOL:</b><br>Όλα τα συστήματα ελέγχονται εξονυχιστικά πριν την αποστολή (FPS Tests, Stress Tests). Κάθε PC έρχεται με Validation Code. Αν υπάρξει θέμα DOA, κάνεις Initiate Return Protocol από το site!";
                     }
                     else if (lowerText.includes('αγορα') || lowerText.includes('τιμη') || lowerText.includes('παραγγελια') || lowerText.includes('πως') || lowerText.includes('εκπτωση')) {
                         botResponse = "🛒 <b>ΔΙΑΔΙΚΑΣΙΑ ΑΓΟΡΑΣ:</b><br>Βάζεις το σύστημα που θες στο Cart και πατάς 'Secure Checkout'. Εναλλακτικά κλείνουμε το deal στο WhatsApp!<br><br><b>Να σε συνδέσω με τον Admin; (Ναι/Όχι)</b>";
-                        aiState = 'waiting_admin_redirect'; // Το Bot πλέον "περιμένει"
+                        aiState = 'waiting_admin_redirect'; 
                     }
                     else if (lowerText.includes('fortnite') || lowerText.includes('valorant') || lowerText.includes('csgo') || lowerText.includes('lol') || lowerText.includes('παιχνιδια')) {
                         botResponse = "🎮 <b>ESPORTS READY:</b><br>Για αυτά τα games χρειάζεσαι υψηλά FPS. Πήγαινε στα <b>STARTER PACKS</b> και δες τη σειρά 'Gaming', ή τσέκαρε τα 'Live Drops' για κάτι πιο δυνατό!";
