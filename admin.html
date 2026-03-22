@@ -20,7 +20,7 @@
             height: 100vh;
             padding: 15px;
             box-sizing: border-box;
-            grid-template-columns: 450px 1fr 400px; /* ΣΤΑΘΕΡΟ ΠΛΑΤΟΣ ΓΙΑ ΝΑ ΜΗΝ ΧΑΛΑΕΙ */
+            grid-template-columns: 450px 1fr 400px;
             gap: 20px;
         }
         
@@ -84,8 +84,23 @@
             <h3 style="color:#ccff00;">SYSTEM CONFIGURATOR</h3>
             
             <div style="display:flex; gap:10px;">
-                <div style="flex:1;"><label>STATUS</label><select id="status"><option value="available">Available</option><option value="sold">Sold Out</option><option value="coming">Coming Soon</option></select></div>
-                <div style="flex:1;"><label>CATEGORY</label><select id="category"><option value="drop">Live Drop</option><option value="gaming">Gaming</option><option value="streaming">Streaming</option><option value="coding">Coding</option></select></div>
+                <div style="flex:1;">
+                    <label>STATUS (LOCATION)</label>
+                    <select id="status">
+                        <option value="available">🟢 LIVE (Άμεσα Διαθέσιμο)</option>
+                        <option value="coming">🟠 THE VAULT (Προσεχώς)</option>
+                        <option value="sold">🔴 SOLD OUT</option>
+                    </select>
+                </div>
+                <div style="flex:1;">
+                    <label>CATEGORY</label>
+                    <select id="category">
+                        <option value="drop">🔥 Live Drop (Main)</option>
+                        <option value="gaming">🎮 Starter: Gaming</option>
+                        <option value="streaming">🎥 Starter: Streaming</option>
+                        <option value="coding">💻 Starter: Coding</option>
+                    </select>
+                </div>
             </div>
 
             <label>System Name</label><input type="text" id="name" placeholder="PROJECT X">
@@ -146,6 +161,7 @@
             <div class="tool-box">
                 <h3 style="color:#b026ff;">VOTE EVENT</h3>
                 <label>Event Title</label><input type="text" id="v-title" placeholder="Project Ronin">
+                <label>Estimated Price (€)</label><input type="text" id="v-price" placeholder="1200">
                 <label>Hero Image</label><input type="file" id="v-image">
                 <div style="display:flex; gap:10px;">
                     <div><label>Votes Needed</label><input type="number" id="v-target" placeholder="50"></div>
@@ -175,8 +191,8 @@
     </div>
 
 <script>
-    // ⚠️ ΒΑΛΕ ΤΗΝ IP ΣΟΥ ΕΔΩ (π.χ. 'http://192.168.1.15:5000/api') ΓΙΑ ΚΙΝΗΤΟ
-    const API = 'http://localhost:5000/api';
+    // ⚠️ ΒΑΛΕ ΤΗΝ IP ΣΟΥ ΕΔΩ (π.χ. 'http://192.168.1.15:5000/api') ΓΙΑ ΚΙΝΗΤΟ Ή ΑΦΗΣΕ LOCALHOST
+  const API = 'https://codex-backend-9kij.onrender.com/api';
     
     let TOKEN = null, inventory = [], editId = null;
     let currentImgs = [], currentFPS = [], currentReviews = [], currentVoteImg = "";
@@ -198,18 +214,27 @@
         const res = await fetch(`${API}/drops`); inventory = await res.json();
         
         // 1. Fill Inventory List
-        document.getElementById('inventory-list').innerHTML = inventory.map(pc => `
+        document.getElementById('inventory-list').innerHTML = inventory.map(pc => {
+            let statusColor = pc.status === 'available' ? '#ccff00' : pc.status === 'coming' ? '#ffaa00' : '#ff3333';
+            let statusText = pc.status === 'coming' ? 'THE VAULT' : pc.status === 'available' ? 'LIVE' : 'SOLD OUT';
+            
+            return `
             <div class="item">
                 <img src="${pc.images[0]||''}">
                 <div class="item-info">
                     <div style="font-weight:bold; color:#fff;">${pc.name}</div>
-                    <div style="font-size:0.8rem; color:#888;">${pc.category.toUpperCase()} | Stock: ${pc.stock}</div>
+                    <div style="font-size:0.8rem; color:#888;">
+                        ${pc.category.toUpperCase()} | 
+                        <span style="color:${statusColor}; font-weight:bold;">${statusText}</span> | 
+                        Stock: ${pc.stock}
+                    </div>
                 </div>
                 <div class="item-actions">
                     <button class="btn-sm edit-btn" onclick="edit('${pc._id}')">EDIT</button>
                     <button class="btn-sm del-btn" onclick="del('${pc._id}')">DEL</button>
                 </div>
-            </div>`).join('');
+            </div>`;
+        }).join('');
 
         // 2. Fill Dropdown for Codes
         document.getElementById('sold-pc-select').innerHTML = inventory.map(pc => `<option value="${pc._id}">${pc.name}</option>`).join('');
@@ -285,13 +310,27 @@
     async function loadVote() { 
         try { 
             const res=await fetch(`${API}/vote-event`); const v=await res.json(); 
-            if(v.title) { document.getElementById('v-title').value=v.title; document.getElementById('v-target').value=v.targetVotes; document.getElementById('v-days').value=v.durationDays; currentVoteImg=v.image; } 
+            if(v.title) { 
+                document.getElementById('v-title').value=v.title; 
+                document.getElementById('v-price').value=v.price || ''; 
+                document.getElementById('v-target').value=v.targetVotes; 
+                document.getElementById('v-days').value=v.durationDays; 
+                currentVoteImg=v.image; 
+            } 
         } catch(e) {} 
     }
+    
     async function uploadVote() {
         const file = document.getElementById('v-image').files[0]; let imgUrl = currentVoteImg;
         if(file) { const fd = new FormData(); fd.append('photos', file); const r = await fetch(`${API}/upload`, {method:'POST', headers:{'x-admin-auth':TOKEN}, body:fd}); imgUrl = (await r.json()).imageUrls[0]; }
-        const data = { title: document.getElementById('v-title').value, image: imgUrl, targetVotes: document.getElementById('v-target').value, startDate: document.getElementById('v-start').value, durationDays: document.getElementById('v-days').value };
+        const data = { 
+            title: document.getElementById('v-title').value, 
+            price: document.getElementById('v-price').value, 
+            image: imgUrl, 
+            targetVotes: document.getElementById('v-target').value, 
+            startDate: document.getElementById('v-start').value, 
+            durationDays: document.getElementById('v-days').value 
+        };
         await fetch(`${API}/vote-event`, { method: 'POST', headers:{'Content-Type':'application/json', 'x-admin-auth':TOKEN}, body:JSON.stringify(data) }); alert('VOTE LIVE');
     }
 

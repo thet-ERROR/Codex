@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CODEX | TERMINAL v52.0</title>
+    <title>PHOENIX CODEX | TERMINAL v52.0</title>
     <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700;800&family=Space+Grotesk:wght@300;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
 
@@ -41,9 +41,49 @@
         .toast.error { border-color: var(--retro-red); color: var(--retro-red); }
         @keyframes slideUpFade { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
-        /* HEADER */
+        /* HEADER & BREATHING WAVE LOGO */
         header { position: fixed; top: 0; left: 0; width: 100%; height: 100px; display: flex; align-items: center; justify-content: space-between; padding: 0 40px; z-index: 5000; border-bottom: 1px solid rgba(255,255,255,0.05); background: linear-gradient(to bottom, rgba(0,0,0,0.9), transparent); pointer-events: auto; }
-        .logo { font-family: var(--font-ui); font-size: 3rem; font-weight: 900; letter-spacing: 5px; color: #fff; text-shadow: 0 0 20px rgba(255,255,255,0.3); background: -webkit-linear-gradient(#fff, #aaa); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+        
+        .logo { 
+            font-family: var(--font-ui); font-size: 3rem; font-weight: 900; letter-spacing: 5px; 
+            /* Wave Effect: Άσπρο, Βαθύ Πορτοκαλί, Νέον Μωβ */
+            background: linear-gradient(90deg, #ffffff, #ff4500, var(--neon-purple), #ff4500, #ffffff);
+            background-size: 300% 300%;
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: slowWaveBreath 12s ease-in-out infinite;
+            position: relative;
+            z-index: 5001;
+        }
+
+        /* Αργό Breathing και Wave Effect */
+        @keyframes slowWaveBreath {
+            0% { 
+                background-position: 0% 50%; 
+                opacity: 0; 
+                filter: drop-shadow(0 0 10px rgba(255,255,255,0.2));
+            }
+            20% { 
+                opacity: 1; 
+                filter: drop-shadow(0 0 20px rgba(255,255,255,0.8));
+            }
+            50% { 
+                background-position: 100% 50%; 
+                opacity: 1; 
+                filter: drop-shadow(0 0 25px var(--neon-purple));
+            }
+            80% { 
+                opacity: 1; 
+                filter: drop-shadow(0 0 20px #ff4500);
+            }
+            100% { 
+                background-position: 0% 50%; 
+                opacity: 0; 
+                filter: drop-shadow(0 0 10px rgba(255,255,255,0.2));
+            }
+        }
+
         .nav-bar { display: flex; gap: 10px; background: rgba(255,255,255,0.05); padding: 8px; border-radius: 40px; border: 1px solid var(--glass-border); backdrop-filter: blur(10px); position: absolute; left: 50%; transform: translateX(-50%); }
         .nav-btn { background: transparent; border: none; color: #aaa; padding: 8px 20px; border-radius: 30px; font-family: var(--font-ui); font-size: 0.9rem; font-weight: 700; cursor: pointer; transition: 0.3s; letter-spacing: 1px; display: flex; align-items: center; gap: 6px; white-space: nowrap; }
         .nav-btn:hover { color: #fff; background: rgba(255,255,255,0.1); }
@@ -340,7 +380,7 @@ Type 'help' for a list of commands.
 
     <canvas id="matrix-canvas"></canvas>
 
-    <div id="startup-overlay"><div id="startup-text">CODEX</div><div class="loader-bar"><div class="loader-fill" id="loader-fill"></div></div></div>
+    <div id="startup-overlay"><div id="startup-text">PHOENIX CODEX</div><div class="loader-bar"><div class="loader-fill" id="loader-fill"></div></div></div>
     <div id="toast-container"></div>
 
     <div class="bg-layer"></div>
@@ -371,13 +411,14 @@ Type 'help' for a list of commands.
     </div>
 
     <div class="footer">
-        <div class="footer-left"><span>© 2024 CODEX SYSTEMS</span></div>
+        <div class="footer-left"><span>© 2024 PHOENIX CODEX SYSTEMS</span></div>
         <div class="footer-center"></div>
         <div class="footer-right"><span style="color:#666;">DATABASE:</span> <span style="color:#fff;">SYNCED</span><div class="status-dot"></div></div>
     </div>
 
     <header>
-        <div class="logo">CODEX</div>
+        <div class="logo">PHOENIX CODEX</div>
+        
         <div class="nav-bar">
             <button class="nav-btn active-live" id="tab-live" onclick="playClick(); switchTab('live')">LIVE DROPS</button>
             <button class="nav-btn" id="tab-vault" onclick="playClick(); switchTab('vault')">THE VAULT</button>
@@ -428,11 +469,13 @@ Type 'help' for a list of commands.
         <div id="vote-view" class="hidden">
             <div class="vote-container">
                 <div class="vote-header-row"><span style="font-family:var(--font-ui); font-weight:800; color:var(--neon-purple); font-size:1.2rem;">COMMUNITY DROP</span><div class="info-icon" onclick="document.getElementById('vote-info-modal').style.display='flex'">?</div></div>
-                <h2 id="v-title" style="color:#fff; margin-bottom:20px; font-size:2rem; text-transform:uppercase;">LOADING...</h2>
+                <h2 id="v-title" style="color:#fff; margin-bottom:5px; font-size:2rem; text-transform:uppercase;">LOADING...</h2>
+                <div id="v-price-display" style="color:var(--neon-green); font-family:var(--font-ui); font-weight:bold; font-size:1.5rem; margin-bottom:20px;"></div>
                 <div class="mystery-img-wrap"><img id="v-img" src="" class="mystery-img"><i class="ph-fill ph-lock-key lock-icon" id="v-lock"></i></div>
                 <div style="display:flex; justify-content:space-between; font-size:0.8rem; color:#ccc;"><span>PROGRESS</span><span id="v-count">0 / 0 VOTES</span></div>
                 <div class="vote-progress-wrap"><div class="vote-progress-fill" id="v-fill"></div></div>
                 <button class="vote-btn" id="v-btn" onclick="castVote()">AUTHORIZE DROP</button>
+                <button class="vote-btn hidden" id="v-buy-btn" onclick="buyVotePC()" style="background:#ccff00; color:#000; margin-top:10px;">SECURE NOW</button>
                 <div class="timer-text" id="v-timer">CALCULATING TIME...</div>
             </div>
         </div>
@@ -631,7 +674,7 @@ Type 'help' for a list of commands.
     <div class="modal-overlay" id="compare-modal"><div class="modal-content" style="width:1200px;"><span class="close-modal" onclick="playClick(); closeModal('compare-modal')">X</span><h2 style="text-align:center;">VS MODE</h2><div class="compare-grid" id="compare-grid"></div></div></div>
 
     <script>
-        const API = 'http://localhost:5000/api'; 
+        const API = 'https://codex-backend-9kij.onrender.com/api';
         let inventory = [], filtered = [], currentTab = 'live', index = 0, compareList = [];
         let currentGalleryPC = null, galleryIndex = 0;
         let cart = JSON.parse(localStorage.getItem('codex_cart')) || [];
@@ -651,7 +694,6 @@ Type 'help' for a list of commands.
         let matrixEnabled = false;
         let isHacked = false;
 
-        // 🔴 ΑΛΛΑΓΕΣ: ΕΝΗΜΕΡΩΣΗ ΤΩΝ ΔΙΑΔΡΟΜΩΝ ΓΙΑ ΤΟΥΣ ΗΧΟΥΣ
         const audioClick = new Audio('assets/audio/click.mp3');
         const audioHover = new Audio('assets/audio/hover.mp3');
         const audioStart = new Audio('assets/audio/startup.mp3');
@@ -900,22 +942,80 @@ Type 'help' for a list of commands.
 
         function checkAchievement(id) { if(!achievements[id]) { achievements[id] = true; localStorage.setItem('codex_achievements', JSON.stringify(achievements)); showToast(`ACHIEVEMENT UNLOCKED: ${id.toUpperCase()}`, "achievement"); } }
         function openAchievements() { if(!isLoggedIn) { showToast("ACCESS DENIED. LOGIN REQUIRED.", "normal"); openModal('login'); return; } const list = document.getElementById('ach-list'); list.innerHTML = achList.map(a => { const unlocked = achievements[a.id]; return `<div class="ach-card ${unlocked ? 'unlocked' : ''}"><i class="ph-fill ${a.icon} ach-icon"></i><div class="ach-info"><h4>${a.title}</h4><p>${a.desc}</p></div><div class="ach-status">${unlocked ? 'UNLOCKED' : 'LOCKED'}</div></div>`; }).join(''); openModal('achievements'); }
-        function switchTab(mode) { currentTab = mode; document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active-live','active-vault','active-starter','active-vote','active-gear')); document.getElementById(`tab-${mode}`).classList.add(`active-${mode}`); ['carousel-wrapper','starter-menu','gear-view','vote-view'].forEach(id => document.getElementById(id).classList.add('hidden')); if(mode === 'vote') { document.getElementById('vote-view').classList.remove('hidden'); document.getElementById('stage-label').innerText = "// COMMUNITY VOTE //"; } else if(mode === 'starter') { document.getElementById('starter-menu').classList.remove('hidden'); document.getElementById('stage-label').innerText = "// STARTER PACKS //"; } else if(mode === 'gear') { document.getElementById('gear-view').classList.remove('hidden'); document.getElementById('stage-label').innerText = "// ARMORY //"; } else { document.getElementById('carousel-wrapper').classList.remove('hidden'); document.getElementById('stage-label').innerText = "// SYSTEM SELECT //"; filterInv(); } }
+        
+        function switchTab(mode) { 
+            currentTab = mode; 
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active-live','active-vault','active-starter','active-vote','active-gear')); 
+            document.getElementById(`tab-${mode}`).classList.add(`active-${mode}`); 
+            ['carousel-wrapper','starter-menu','gear-view','vote-view'].forEach(id => document.getElementById(id).classList.add('hidden')); 
+            if(mode === 'vote') { 
+                document.getElementById('vote-view').classList.remove('hidden'); 
+                document.getElementById('stage-label').innerText = "// COMMUNITY VOTE //"; 
+            } else if(mode === 'starter') { 
+                document.getElementById('starter-menu').classList.remove('hidden'); 
+                document.getElementById('stage-label').innerText = "// STARTER PACKS //"; 
+            } else if(mode === 'gear') { 
+                document.getElementById('gear-view').classList.remove('hidden'); 
+                document.getElementById('stage-label').innerText = "// ARMORY //"; 
+            } else { 
+                document.getElementById('carousel-wrapper').classList.remove('hidden'); 
+                document.getElementById('stage-label').innerText = "// SYSTEM SELECT //"; 
+                filterInv(); 
+            } 
+        }
+
         function toggleCartDropdown() { const d = document.getElementById('cart-dropdown'); const btn = document.querySelector('.nav-btn.cart-btn'); d.classList.toggle('show'); btn.classList.toggle('active'); }
         window.onclick = function(event) { if (!event.target.closest('.cart-btn') && !event.target.closest('.cart-dropdown') && !event.target.closest('.add-review-btn')) { document.getElementById('cart-dropdown').classList.remove('show'); } }
         function updateCartUI() { document.getElementById('cart-count').innerText = cart.length; const items = document.getElementById('mini-cart-items'); let total = 0; if (cart.length === 0) { items.innerHTML = '<div style="color:#666; text-align:center; padding:20px; font-size:0.9rem;">CART IS EMPTY</div>'; } else { items.innerHTML = cart.map((item, i) => { total += item.price; return `<div class="mini-cart-item"><img src="${item.img}" class="mc-img"><div class="mc-details"><div class="mc-name">${item.name}</div><div class="mc-opt">${item.option}</div><div class="mc-price">€${item.price}</div></div><i class="ph-bold ph-x mc-remove" onclick="removeFromCart(${i})"></i></div>`; }).join(''); } document.getElementById('mc-total').innerText = "€" + total; }
         function addToCart() { if(currentGalleryPC.stock === 0) return alert("SOLD OUT!"); const extra = parseInt(document.getElementById('storage-select').value); const base = parseInt(currentGalleryPC.price.replace(/[^0-9]/g, '')); cart.push({ name: currentGalleryPC.name, price: base + extra, option: extra === 50 ? "+1TB HDD" : extra === 80 ? "+1TB SSD" : "Standard", img: currentGalleryPC.images[0] }); localStorage.setItem('codex_cart', JSON.stringify(cart)); updateCartUI(); const dropdown = document.getElementById('cart-dropdown'); dropdown.classList.add('show'); setTimeout(() => dropdown.classList.remove('show'), 2000); closeModal('gallery-overlay'); showToast("ITEM ADDED TO CART", "normal"); checkAchievement('cart'); }
-        function renderVoteState() { document.getElementById('v-title').innerText = activeEvent.title; document.getElementById('v-img').src = activeEvent.image || ''; const pct = (activeEvent.currentVotes / activeEvent.targetVotes) * 100; document.getElementById('v-fill').style.width = Math.min(pct, 100) + '%'; document.getElementById('v-count').innerText = `${activeEvent.currentVotes} / ${activeEvent.targetVotes} VOTES`; if(activeEvent.currentVotes >= activeEvent.targetVotes) unlockVisuals(); }
+        
+        function renderVoteState() { 
+            document.getElementById('v-title').innerText = activeEvent.title; 
+            document.getElementById('v-price-display').innerText = activeEvent.price ? "ESTIMATED PRICE: €" + activeEvent.price : "";
+            document.getElementById('v-img').src = activeEvent.image || ''; 
+            const pct = (activeEvent.currentVotes / activeEvent.targetVotes) * 100; 
+            document.getElementById('v-fill').style.width = Math.min(pct, 100) + '%'; 
+            document.getElementById('v-count').innerText = `${activeEvent.currentVotes} / ${activeEvent.targetVotes} VOTES`; 
+            if(activeEvent.currentVotes >= activeEvent.targetVotes) unlockVisuals(); 
+        }
+
         function updateTimer() { if(!activeEvent) return; const now = new Date(); const start = new Date(activeEvent.startDate); const end = new Date(start.getTime() + (activeEvent.durationDays * 24 * 60 * 60 * 1000)); const btn = document.getElementById('v-btn'); const timer = document.getElementById('v-timer'); if (now < start) { timer.innerText = `VOTING OPENS IN: ${formatTime(start - now)}`; btn.innerText = "LOCKED"; btn.disabled = true; } else if (now > end) { timer.innerText = "EXPIRED"; timer.style.color = "red"; btn.innerText = "FAILED"; btn.disabled = true; } else { timer.innerText = `TIME REMAINING: ${formatTime(end - now)}`; if(activeEvent.currentVotes < activeEvent.targetVotes) { btn.disabled = false; btn.innerText = "AUTHORIZE DROP"; } } }
         function formatTime(ms) { const d = Math.floor(ms / (1000*60*60*24)); const h = Math.floor((ms / (1000*60*60)) % 24); const m = Math.floor((ms / 1000 / 60) % 60); return `${d}d ${h}h ${m}m`; }
         async function castVote() { const res = await fetch(`${API}/cast-vote`, { method: 'POST' }); const data = await res.json(); if(data.votes) { activeEvent.currentVotes = data.votes; renderVoteState(); showToast("VOTE REGISTERED", "normal"); checkAchievement('vote'); } }
-        function unlockVisuals() { document.getElementById('v-img').classList.add('unlocked'); document.getElementById('v-lock').style.opacity = '0'; const btn = document.getElementById('v-btn'); btn.innerText = "DROP SECURED"; btn.style.background = "#ccff00"; btn.style.color = "#000"; btn.disabled = true; }
+        
+        function unlockVisuals() { 
+            document.getElementById('v-img').classList.add('unlocked'); 
+            document.getElementById('v-lock').style.opacity = '0'; 
+            
+            const btn = document.getElementById('v-btn'); 
+            btn.innerText = "DROP SECURED"; 
+            btn.style.background = "#333"; 
+            btn.style.color = "#888"; 
+            btn.disabled = true; 
+            
+            // Εμφάνιση του κουμπιού Αγοράς
+            document.getElementById('v-buy-btn').classList.remove('hidden');
+        }
+
+        function buyVotePC() {
+            if(!activeEvent) return;
+            const msg = `Hello! I want to secure the community drop:%0A%0A- *${activeEvent.title}*%0A- Estimated Price: €${activeEvent.price || 'TBD'}%0A%0AIs it available?`;
+            window.open(`https://wa.me/306912345678?text=${msg}`, '_blank');
+        }
+
         function selectPack(cat) { document.getElementById('starter-menu').classList.add('hidden'); document.getElementById('carousel-wrapper').classList.remove('hidden'); filtered = inventory.filter(p => p.category === cat); index = 0; renderCard(); }
-        function filterInv() { filtered = inventory.filter(p => { if(currentTab==='live') return p.category==='drop' || !p.category; if(currentTab==='vault') return p.status==='coming'; }); index = 0; renderCard(); }
+        
+        function filterInv() { 
+            filtered = inventory.filter(p => { 
+                if(currentTab === 'live') return (p.category === 'drop' || !p.category) && p.status !== 'coming'; 
+                if(currentTab === 'vault') return p.status === 'coming'; 
+            }); 
+            index = 0; renderCard(); 
+        }
+
         function nextPC() { if(filtered.length) { index=(index+1)%filtered.length; renderCard(); } }
         function prevPC() { if(filtered.length) { index=(index-1+filtered.length)%filtered.length; renderCard(); } }
         
-        // 🔴 ΑΛΛΑΓΕΣ: ΕΝΗΜΕΡΩΣΗ ΤΗΣ DEFAULT ΕΙΚΟΝΑΣ
         function renderCard() { const c = document.getElementById('main-card'); if(!filtered.length) { c.innerHTML = "<h3>NO SIGNAL</h3>"; return; } const pc = filtered[index]; const inCompare = compareList.find(p => p._id === pc._id); const priceVal = parseInt(pc.price.replace(/[^0-9]/g, '')); const fakeOldPrice = Math.floor(priceVal * 1.2); const stock = pc.stock || 0; let stockHTML = ''; if(stock === 0) stockHTML = '<div class="stock-badge out">SOLD OUT</div>'; else if(stock < 5) stockHTML = `<div class="stock-badge low">LOW STOCK: ${stock} UNITS</div>`; else stockHTML = '<div class="stock-badge in">IN STOCK</div>'; let fpsHTML = ''; if(pc.multitasking) fpsHTML += `<div class="fps-row"><span class="fps-name">MULTI</span><div class="bar-track"><div class="bar-fill" data-width="${pc.multitasking}%" style="width:0%"></div></div><span class="fps-num">${pc.multitasking}</span></div>`; if(pc.fps) pc.fps.forEach(f => { let max=200; if(f.game==='Fortnite')max=300; fpsHTML += `<div class="fps-row"><span class="fps-name">${f.game}</span><div class="bar-track"><div class="bar-fill" data-width="${Math.min((f.score/max)*100,100)}%" style="width:0%"></div></div><span class="fps-num">${f.score}</span></div>`; }); c.innerHTML = `<img src="${pc.images[0]||'assets/images/bg.jpg'}" class="hero-img" onmouseenter="playHover()">${stockHTML}<div class="pc-title">${pc.name}</div><div class="card-price-row"><div class="pc-price">${pc.price}</div><div class="pc-price-old">€${fakeOldPrice}</div></div><div class="perf-container">${fpsHTML}</div><button class="btn-inspect" onclick="playClick(); openGallery()">INSPECT SYSTEM</button><button class="btn-compare-add ${inCompare?'selected':''}" onclick="playClick(); toggleCompare('${pc._id}')">${inCompare?'ADDED':'COMPARE'}</button>`; setTimeout(()=>document.querySelectorAll('.bar-fill').forEach(b=>b.style.width=b.getAttribute('data-width')), 50); }
         
         function updatePrice() { const extra = parseInt(document.getElementById('storage-select').value); const base = parseInt(currentGalleryPC.price.replace(/[^0-9]/g, '')); document.getElementById('g-price-live').innerText = "€" + (base + extra); }
@@ -944,66 +1044,76 @@ Type 'help' for a list of commands.
         function logout() { isLoggedIn = false; document.getElementById('guest-options').classList.remove('hidden'); document.getElementById('user-options').classList.add('hidden'); }
         function toggleChat() { document.getElementById('chat-widget').classList.toggle('open'); }
         
-        let aiState = 'idle'; 
+        // 🔴 CODEX AI - ΕΞΥΠΝΟΣ ΕΓΚΕΦΑΛΟΣ (ANTI-AMNESIA)
+        let codexAiState = 'idle'; // Παγκόσμια, μόνιμη μνήμη
+
+        // Αφαιρεί τόνους από τα Ελληνικά για να μην μπερδεύεται
+        function removeAccents(str) {
+            return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+        }
 
         function sendChat(inputElement) { 
             const text = inputElement.value.trim();
             if(!text) return;
 
             const chatMsgs = document.getElementById('chat-msgs');
-            
             chatMsgs.innerHTML += `<div class="msg user">${text}</div>`; 
             inputElement.value = '';
             chatMsgs.scrollTop = chatMsgs.scrollHeight;
 
             setTimeout(() => {
-                const lowerText = text.toLowerCase();
+                const lowerText = removeAccents(text.toLowerCase());
                 let botResponse = "";
 
-                if (aiState === 'waiting_admin_redirect') {
-                    if (lowerText === 'ναι' || lowerText === 'nai' || lowerText.includes('ναι') || lowerText.includes('θελω') || lowerText.includes('αμε')) {
-                        botResponse = "🚀 <b>Εκκίνηση σύνδεσης...</b><br>Σε μεταφέρω στο ασφαλές κανάλι του Admin (WhatsApp).";
-                        setTimeout(() => window.open("https://wa.me/306912345678", "_blank"), 1500); 
+                // --- 1. ΕΛΕΓΧΟΣ ΜΝΗΜΗΣ (Ναι/Όχι) ---
+                if (codexAiState === 'waiting_admin_redirect') {
+                    if (lowerText === 'ναι' || lowerText.includes('ναι') || lowerText.includes('nai') || lowerText.includes('θελω')) {
+                        botResponse = "🚀 <b>Εκκίνηση σύνδεσης...</b><br>Σε μεταφέρω στο ασφαλές κανάλι του Admin.";
+                        setTimeout(() => window.open("https://wa.me/306912345678", "_blank"), 1500); // ⚠️ Βάλε το WhatsApp σου
                     } else {
                         botResponse = "Λήψη ελήφθη. 🤖 Τι άλλο θα ήθελες να μάθεις;";
                     }
-                    aiState = 'idle'; 
+                    codexAiState = 'idle'; // Μηδενισμός
                 } 
-                else if (aiState === 'waiting_budget') {
+                
+                // --- 2. ΕΛΕΓΧΟΣ ΜΝΗΜΗΣ (Budget) ---
+                else if (codexAiState === 'waiting_budget') {
                     const budget = parseInt(lowerText.replace(/[^0-9]/g, '')); 
                     if (budget > 0) {
-                        botResponse = `💰 Με budget <b>€${budget}</b>, η καλύτερη επιλογή είναι να τσεκάρεις τα <b>STARTER PACKS</b> ή να ρωτήσεις τον Admin για Custom Build!<br><br><button class='btn-inspect' style='padding:5px; font-size:0.8rem;' onclick='window.open(\"https://wa.me/306912345678\", \"_blank\")'>CUSTOM BUILD</button>`;
+                        botResponse = `💰 Με budget <b>€${budget}</b>, τσέκαρε τα <b>STARTER PACKS</b> ή ρώτα τον Admin για Custom Build!<br><br><button class='btn-inspect' style='padding:5px; font-size:0.8rem;' onclick='window.open("https://wa.me/306912345678", "_blank")'>CUSTOM BUILD</button>`;
                     } else {
                         botResponse = "Δεν κατάλαβα το ποσό. Πες μου απλά νούμερα, π.χ. '800'.";
                     }
-                    aiState = 'idle'; 
+                    codexAiState = 'idle'; // Μηδενισμός
                 }
+                
+                // --- 3. ΚΑΝΟΝΙΚΗ ΣΥΖΗΤΗΣΗ (Idle) ---
                 else {
-                    botResponse = "Δεν το έπιασα αυτό, Agent. 🤖<br>Ρώτα με για <b>Αγορά</b>, <b>Μεταφορικά</b>, <b>Εγγύηση</b>, ή πες μου τι <b>Παιχνίδια</b> παίζεις!";
+                    botResponse = "Δεν το έπιασα αυτό, Agent. 🤖<br>Ρώτα με για <b>Αγορά</b>, <b>Μεταφορικά</b>, <b>Εγγύηση</b>, ή <b>Παιχνίδια</b>!";
                     
-                    if (lowerText.includes('μεταφορικα') || lowerText.includes('αποστολη') || lowerText.includes('που ειστε') || lowerText.includes('πολη') || lowerText.includes('ελλαδα')) {
-                        botResponse = "📦 <b>Αποστολές πανελλαδικά!</b><br>Στέλνουμε τα συστήματά μας σε όλη την Ελλάδα. Τα μεταφορικά συνήθως καθορίζονται κατά την παραγγελία.<br><br><b>Θέλεις να μιλήσεις με τον Admin για λεπτομέρειες; (Ναι/Όχι)</b>";
-                        aiState = 'waiting_admin_redirect'; 
+                    if (lowerText.includes('μεταφορικα') || lowerText.includes('αποστολη') || lowerText.includes('πολη') || lowerText.includes('ελλαδα')) {
+                        botResponse = "📦 <b>Αποστολές πανελλαδικά!</b><br>Τα μεταφορικά καθορίζονται κατά την παραγγελία.<br><br><b>Θέλεις να μιλήσεις με τον Admin για λεπτομέρειες; (Ναι/Όχι)</b>";
+                        codexAiState = 'waiting_admin_redirect'; 
                     }
-                    else if (lowerText.includes('budget') || lowerText.includes('χρηματα') || lowerText.includes('ευρω') || lowerText.includes('διαθετω') || lowerText.includes('λεφτα')) {
-                        botResponse = "💶 Πες μου, πόσα χρήματα (budget) περίπου διαθέτεις για το νέο σου PC;";
-                        aiState = 'waiting_budget'; 
+                    else if (lowerText.includes('budget') || lowerText.includes('χρηματα') || lowerText.includes('ευρω') || lowerText.includes('λεφτα')) {
+                        botResponse = "💶 Πόσα χρήματα (budget) περίπου διαθέτεις για το νέο σου PC;";
+                        codexAiState = 'waiting_budget'; 
                     }
                     else if (lowerText.includes('εγγυηση') || lowerText.includes('χαλασε') || lowerText.includes('προβλημα') || lowerText.includes('support')) {
-                        botResponse = "🛡️ <b>MISSION PROTOCOL:</b><br>Όλα τα συστήματα ελέγχονται εξονυχιστικά πριν την αποστολή (FPS Tests, Stress Tests). Κάθε PC έρχεται με Validation Code. Αν υπάρξει θέμα DOA, κάνεις Initiate Return Protocol από το site!";
+                        botResponse = "🛡️ <b>MISSION PROTOCOL:</b><br>Όλα ελέγχονται εξονυχιστικά. Αν υπάρξει θέμα, κάνεις Initiate Return Protocol από το site!";
                     }
-                    else if (lowerText.includes('αγορα') || lowerText.includes('τιμη') || lowerText.includes('παραγγελια') || lowerText.includes('πως') || lowerText.includes('εκπτωση')) {
-                        botResponse = "🛒 <b>ΔΙΑΔΙΚΑΣΙΑ ΑΓΟΡΑΣ:</b><br>Βάζεις το σύστημα που θες στο Cart και πατάς 'Secure Checkout'. Εναλλακτικά κλείνουμε το deal στο WhatsApp!<br><br><b>Να σε συνδέσω με τον Admin; (Ναι/Όχι)</b>";
-                        aiState = 'waiting_admin_redirect'; 
+                    else if (lowerText.includes('αγορα') || lowerText.includes('τιμη') || lowerText.includes('παραγγελια') || lowerText.includes('εκπτωση')) {
+                        botResponse = "🛒 <b>ΔΙΑΔΙΚΑΣΙΑ ΑΓΟΡΑΣ:</b><br>Βάζεις το σύστημα στο Cart. Εναλλακτικά κλείνουμε το deal στο WhatsApp!<br><br><b>Να σε συνδέσω με τον Admin; (Ναι/Όχι)</b>";
+                        codexAiState = 'waiting_admin_redirect'; 
                     }
                     else if (lowerText.includes('fortnite') || lowerText.includes('valorant') || lowerText.includes('csgo') || lowerText.includes('lol') || lowerText.includes('παιχνιδια')) {
-                        botResponse = "🎮 <b>ESPORTS READY:</b><br>Για αυτά τα games χρειάζεσαι υψηλά FPS. Πήγαινε στα <b>STARTER PACKS</b> και δες τη σειρά 'Gaming', ή τσέκαρε τα 'Live Drops' για κάτι πιο δυνατό!";
+                        botResponse = "🎮 <b>ESPORTS READY:</b><br>Πήγαινε στα <b>STARTER PACKS</b> και δες τη σειρά 'Gaming'!";
                     }
                     else if (lowerText.includes('gta') || lowerText.includes('warzone') || lowerText.includes('fivem') || lowerText.includes('cyberpunk') || lowerText.includes('βαρια')) {
-                        botResponse = "🔥 <b>HEAVY DUTY:</b><br>Αυτά είναι βαριά games! Χρειάζεσαι δυνατό GPU και αρκετή RAM (16GB+). Ψάξε στα Drops για συστήματα με υψηλό Multitasking Score.";
+                        botResponse = "🔥 <b>HEAVY DUTY:</b><br>Χρειάζεσαι δυνατό GPU (16GB+ RAM). Ψάξε στα Drops για υψηλό Multitasking Score.";
                     }
                     else if (lowerText.includes('stream') || lowerText.includes('video') || lowerText.includes('edit') || lowerText.includes('coding')) {
-                        botResponse = "🎥 <b>CREATOR MODE:</b><br>Για Streaming και Editing θες δυνατό CPU και Multitasking. Δες τις κατηγορίες 'Streaming' & 'Coding' στα Starter Packs!";
+                        botResponse = "🎥 <b>CREATOR MODE:</b><br>Δες τις κατηγορίες 'Streaming' & 'Coding' στα Starter Packs!";
                     }
                 }
 
