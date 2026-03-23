@@ -2,7 +2,7 @@
 <html lang="el">
 <head>
     <meta charset="UTF-8">
-    <title>CODEX PANEL | V47</title>
+    <title>CODEX PANEL | V47 (CLOUD EDITION)</title>
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700&display=swap" rel="stylesheet">
     <style>
         body { background: #050505; color: #fff; font-family: 'Space Grotesk', sans-serif; margin: 0; overflow: hidden; }
@@ -110,7 +110,9 @@
                 <div style="flex:1;"><label>Stock</label><input type="number" id="stock" value="1"></div>
             </div>
 
-            <label>Images (Select Multiple)</label><input type="file" id="imageFiles" multiple>
+            <label>Image URL (Discord / Imgur Link)</label>
+            <input type="text" id="imageUrl" placeholder="https://cdn.discordapp.com/...">
+            
             <label>Description</label><textarea id="description" placeholder="System details..."></textarea>
 
             <label style="color:#00f0ff; margin-top:20px;">HARDWARE SPECS</label>
@@ -162,7 +164,7 @@
                 <h3 style="color:#b026ff;">VOTE EVENT</h3>
                 <label>Event Title</label><input type="text" id="v-title" placeholder="Project Ronin">
                 <label>Estimated Price (€)</label><input type="text" id="v-price" placeholder="1200">
-                <label>Hero Image</label><input type="file" id="v-image">
+                <label>Hero Image URL (Discord / Imgur Link)</label><input type="text" id="v-imageUrl" placeholder="https://cdn.discordapp.com/...">
                 <div style="display:flex; gap:10px;">
                     <div><label>Votes Needed</label><input type="number" id="v-target" placeholder="50"></div>
                     <div><label>Duration (Days)</label><input type="number" id="v-days" placeholder="3"></div>
@@ -266,14 +268,18 @@
         const pc = inventory.find(i=>i._id===id); if(!pc) return;
         ['name','price','stock','description','multitasking','status','category'].forEach(k => document.getElementById(k).value = pc[k]||'');
         ['cpu','gpu','ram','ssd','mobo','psu','case'].forEach(k => document.getElementById(k).value = pc.specs[k]||'');
+        
+        // Load the image URL into the text box
+        document.getElementById('imageUrl').value = pc.images[0] || '';
+        
         currentFPS = pc.fps || []; currentReviews = pc.reviews || []; renderTags();
-        editId = id; currentImgs = pc.images;
+        editId = id;
         document.getElementById('submit-btn').innerText = "UPDATE SYSTEM";
         document.getElementById('cancel-btn').style.display = 'block';
     }
 
     function resetForm() {
-        editId=null; currentImgs=[]; currentFPS=[]; currentReviews=[]; renderTags();
+        editId=null; currentFPS=[]; currentReviews=[]; renderTags();
         document.querySelectorAll('input, textarea').forEach(i=>i.value='');
         document.getElementById('stock').value='1';
         document.getElementById('submit-btn').innerText = "UPLOAD SYSTEM";
@@ -281,13 +287,9 @@
     }
 
     async function handleFormSubmit() {
-        const files = document.getElementById('imageFiles').files;
-        let imgs = currentImgs;
-        if(files.length>0) { 
-            const fd = new FormData(); for(let f of files) fd.append('photos', f); 
-            const r = await fetch(`${API}/upload`, {method:'POST', headers:{'x-admin-auth':TOKEN}, body:fd}); 
-            imgs = (await r.json()).imageUrls; 
-        }
+        // Παίρνουμε το Link απευθείας από το Text Box!
+        const imgInput = document.getElementById('imageUrl').value.trim();
+        const imgs = imgInput ? [imgInput] : [];
         
         const data = {
             name: document.getElementById('name').value, price: document.getElementById('price').value,
@@ -300,8 +302,19 @@
 
         const url = editId ? `${API}/drops/${editId}` : `${API}/drops`;
         const method = editId ? 'PUT' : 'POST';
-        await fetch(url, { method: method, headers:{'Content-Type':'application/json', 'x-admin-auth':TOKEN}, body:JSON.stringify(data) });
-        resetForm(); loadInv();
+        
+        try {
+            const res = await fetch(url, { method: method, headers:{'Content-Type':'application/json', 'x-admin-auth':TOKEN}, body:JSON.stringify(data) });
+            if(res.ok) {
+                alert("SYSTEM SAVED!");
+                resetForm(); loadInv();
+            } else {
+                alert("ERROR SAVING SYSTEM");
+            }
+        } catch(e) {
+            console.error(e);
+            alert("NETWORK ERROR");
+        }
     }
 
     async function del(id) { if(confirm('Delete?')) { await fetch(`${API}/drops/${id}`, {method:'DELETE', headers:{'x-admin-auth':TOKEN}}); loadInv(); } }
@@ -315,18 +328,19 @@
                 document.getElementById('v-price').value=v.price || ''; 
                 document.getElementById('v-target').value=v.targetVotes; 
                 document.getElementById('v-days').value=v.durationDays; 
-                currentVoteImg=v.image; 
+                document.getElementById('v-imageUrl').value = v.image || ''; 
             } 
         } catch(e) {} 
     }
     
     async function uploadVote() {
-        const file = document.getElementById('v-image').files[0]; let imgUrl = currentVoteImg;
-        if(file) { const fd = new FormData(); fd.append('photos', file); const r = await fetch(`${API}/upload`, {method:'POST', headers:{'x-admin-auth':TOKEN}, body:fd}); imgUrl = (await r.json()).imageUrls[0]; }
+        // Παίρνουμε το Link απευθείας από το Text Box για το Vote Event!
+        const imgInput = document.getElementById('v-imageUrl').value.trim();
+        
         const data = { 
             title: document.getElementById('v-title').value, 
             price: document.getElementById('v-price').value, 
-            image: imgUrl, 
+            image: imgInput, 
             targetVotes: document.getElementById('v-target').value, 
             startDate: document.getElementById('v-start').value, 
             durationDays: document.getElementById('v-days').value 
