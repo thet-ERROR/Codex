@@ -309,53 +309,62 @@
         .cli-prompt { color: var(--neon-green); font-weight: bold; }
         #cli-input { background: transparent; border: none; color: #fff; flex: 1; outline: none; font-family: monospace; font-size: 1.1rem; }
 
-        /* RESPONSIVE CSS (MOBILE & TABLET) - THE PRO WAY */
+        /* RESPONSIVE CSS (MOBILE & TABLET) - COMPACT PRO WAY */
         @media (max-width: 1024px) {
-            /* 1. Απελευθερώνουμε το scroll για να χωρέσουν όλα */
             body { overflow-y: auto; overflow-x: hidden; padding-bottom: 80px; }
             
-            /* 2. Αναδιάταξη του Header */
-            header { position: relative; height: auto; flex-direction: column; padding: 15px; gap: 15px; }
+            /* Διόρθωση Background για να φαίνεται η Γη */
+            .bg-layer {
+                background-size: contain; 
+                background-position: center center;
+            }
+
+            header { position: relative; height: auto; flex-direction: column; padding: 10px; gap: 10px; }
             .right-header-group { width: 100%; justify-content: center; }
             .nav-bar { position: relative; left: 0; transform: none; width: 100%; overflow-x: auto; justify-content: flex-start; padding-bottom: 5px; }
             
-            /* 3. Η Κεντρική Σκηνή (Stage) μπαίνει στη ροή της σελίδας */
-            .stage { position: relative; inset: auto; display: flex; flex-direction: column; padding: 20px 0; margin-top: 10px; }
-            .carousel-wrapper { width: 100%; position: relative; padding: 0 40px; }
-            .holo-card { width: 100%; max-width: 400px; padding: 20px; margin: 0 auto; }
+            .stage { position: relative; inset: auto; display: flex; flex-direction: column; padding: 10px 0 90px 0; margin-top: 0; }
+            .carousel-wrapper { width: 100%; position: relative; padding: 0 10px; justify-content: center; gap: 5px; }
             
-            /* Βελάκια πλοήγησης δίπλα από το PC */
-            .nav-arrow { position: absolute; z-index: 10; height: 60px; top: 50%; transform: translateY(-50%); width: 35px; }
-            .nav-arrow:first-child { left: 0; }
-            .nav-arrow:last-child { right: 0; }
+            /* Συμπίεση της Κάρτας για να χωράει στην οθόνη χωρίς πολύ scroll */
+            .holo-card { width: 95%; max-width: 400px; padding: 15px; margin: 0 auto; }
+            .system-select-label { font-size: 1rem; margin-bottom: 10px; }
+            .hero-img { height: 140px; margin-bottom: 5px; } /* Μικρότερη εικόνα PC */
+            .pc-title { font-size: 2rem; } /* Μικρότερος τίτλος */
+            .pc-price { font-size: 1.6rem; }
+            .card-price-row { margin-bottom: 10px; }
+            .stock-badge { margin-bottom: 5px; padding: 3px 8px; }
+            .perf-container { margin-bottom: 10px; padding: 5px; }
+            .btn-inspect { padding: 10px; font-size: 0.9rem; } /* Πιο λεπτό κουμπί */
+            
+            .nav-arrow { position: absolute; z-index: 10; height: 50px; top: 50%; transform: translateY(-50%); width: 30px; font-size: 1.2rem; }
+            .nav-arrow:first-child { left: 0px; }
+            .nav-arrow:last-child { right: 0px; }
 
-            /* 4. Left Sidebar -> Γίνεται Bottom App Bar (όπως το Instagram) */
             .left-sidebar { 
-                position: fixed; top: auto; bottom: 0; left: 0; width: 100%; height: 70px; 
+                position: fixed; top: auto; bottom: 0; left: 0; width: 100%; height: 60px; 
                 flex-direction: row; justify-content: space-around; align-items: center; 
                 border-right: none; border-top: 1px solid var(--neon-green); 
-                background: #000; z-index: 9000; padding: 0 10px;
+                background: #000; z-index: 9000; padding: 0 5px;
             }
-            .left-sidebar .side-group { flex-direction: row; width: auto; gap: 10px; }
+            .left-sidebar .side-group { flex-direction: row; width: auto; gap: 5px; }
             .left-sidebar .side-divider { display: none; }
-            .left-sidebar .side-btn { margin: 0; width: 45px; height: 45px; font-size: 1.2rem; }
-            .chat-toggle { margin-top: 0 !important; }
+            .left-sidebar .side-btn { margin: 0; width: 40px; height: 40px; font-size: 1.2rem; }
+            .chat-toggle { margin-top: 0 !important; width: 40px; height: 40px; }
 
-            /* 5. Right Sidebar (Reviews) -> Μπαίνει κάτω από τα PC */
             .right-sidebar { 
-                position: relative; top: auto; right: auto; width: 90%; max-width: 500px; 
-                height: 400px; margin: 30px auto; border-left: none; 
+                position: relative; top: auto; right: auto; width: 95%; max-width: 500px; 
+                height: auto; max-height: 400px; margin: 20px auto; border-left: none; 
                 border: 1px solid rgba(176,38,255,0.3); border-radius: 12px; 
-                background: rgba(0,0,0,0.8);
+                background: rgba(0,0,0,0.8); padding: 15px;
             }
 
-            /* Υπόλοιπες ρυθμίσεις για να μην σπάει το layout */
             .listing-card, .compare-grid { width: 95%; height: auto; grid-template-columns: 1fr; overflow-y: visible; margin-top: 20px; }
             .listing-visual { border-right: none; border-bottom: 1px solid #333; height: auto; padding-bottom: 20px; }
             .visual-main-row { height: auto; }
-            .footer { display: none; } /* Κρύβουμε το desktop footer για να μη χτυπάει με το νέο bottom menu */
-            .compare-float { bottom: 90px; } /* Το σηκώνουμε λίγο πιο πάνω από το bottom menu */
-            .vote-container { width: 95%; padding: 20px; }
+            .footer { display: none; } 
+            .compare-float { bottom: 80px; padding: 10px 20px; font-size: 0.9rem; } 
+            .vote-container { width: 95%; padding: 15px; }
         }
 
         /* 🔴 DRIVER.JS CYBERPUNK THEME */
