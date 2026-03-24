@@ -15,7 +15,7 @@
         .loader-fill { height: 100%; width: 0%; background: var(--neon-green); transition: width 0.1s linear; }
 
         /* ENV & MATRIX */
-        .bg-layer { position: fixed; inset: 0; z-index: -2; background: url('../assets/images/bg.gif') no-repeat center center fixed; background-size: cover; filter: brightness(0.5) contrast(1.1); transition: opacity 0.5s; }
+        .bg-layer { position: fixed; inset: 0; z-index: -2; background: url('../assets/images/bg.GIF') no-repeat center center fixed; background-size: cover; filter: brightness(0.5) contrast(1.1); transition: opacity 0.5s; }
         canvas#matrix-canvas { position: fixed; top: 0; left: 0; z-index: -1; opacity: 0; transition: opacity 1s; pointer-events: none; }
         .vignette { position: fixed; inset: 0; pointer-events: none; z-index: 0; background: radial-gradient(circle at center, transparent 40%, #000 120%); }
         .grid-overlay { position: fixed; inset: 0; z-index: 0; background-image: linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px); background-size: 40px 40px; pointer-events: none; }
