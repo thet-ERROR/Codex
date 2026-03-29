@@ -1,12 +1,13 @@
 # 🦅 Phoenix Codex - Cyberpunk PC Store
-🔗 Live Demo: https://codex-iota-nine.vercel.app.
+🔗 Live Demo: https://codex-iota-nine.vercel.app
 
 A high-end custom PC retail platform featuring a cyberpunk aesthetic and AI integration.
 
 ## 🚀 Features
 - **Cyberpunk UI:** Built with CSS Grid and Flexbox for a full "Matrix" experience.
+- Secure API Communication
 - **AI Chatbot:** Integrated assistant (Codex AI) for real-time customer support.
-- **Holographic Cards:** Dynamic product showcase with hover effects.
+- **Holographic Effects** Dynamic product showcase with hover effects.
 - **Mobile Optimized:** Fully responsive layout for smartphones and tablets.
 
 ## 🛠️ Tech Stack
