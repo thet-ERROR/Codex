@@ -1,4 +1,4 @@
-        const API = 'https://codex-backend-9kij.onrender.com/api';
+const API = 'https://codex-backend-9kij.onrender.com/api';
         let inventory = [], filtered = [], currentTab = 'live', index = 0, compareList = [];
         let currentGalleryPC = null, galleryIndex = 0;
         let cart = JSON.parse(localStorage.getItem('codex_cart')) || [];
@@ -340,7 +340,62 @@
         function nextPC() { if(filtered.length) { index=(index+1)%filtered.length; renderCard(); } }
         function prevPC() { if(filtered.length) { index=(index-1+filtered.length)%filtered.length; renderCard(); } }
         
-        function renderCard() { const c = document.getElementById('main-card'); if(!filtered.length) { c.innerHTML = "<h3>NO SIGNAL</h3>"; return; } const pc = filtered[index]; const inCompare = compareList.find(p => p._id === pc._id); const priceVal = parseInt(pc.price.replace(/[^0-9]/g, '')); const fakeOldPrice = Math.floor(priceVal * 1.2); const stock = pc.stock || 0; let stockHTML = ''; if(stock === 0) stockHTML = '<div class="stock-badge out">SOLD OUT</div>'; else if(stock < 5) stockHTML = `<div class="stock-badge low">LOW STOCK: ${stock} UNITS</div>`; else stockHTML = '<div class="stock-badge in">IN STOCK</div>'; let fpsHTML = ''; if(pc.multitasking) fpsHTML += `<div class="fps-row"><span class="fps-name">MULTI</span><div class="bar-track"><div class="bar-fill" data-width="${pc.multitasking}%" style="width:0%"></div></div><span class="fps-num">${pc.multitasking}</span></div>`; if(pc.fps) pc.fps.forEach(f => { let max=200; if(f.game==='Fortnite')max=300; fpsHTML += `<div class="fps-row"><span class="fps-name">${f.game}</span><div class="bar-track"><div class="bar-fill" data-width="${Math.min((f.score/max)*100,100)}%" style="width:0%"></div></div><span class="fps-num">${f.score}</span></div>`; }); c.innerHTML = `<img src="${pc.images[0]||'assets/images/bg.jpg'}" class="hero-img" onmouseenter="playHover()">${stockHTML}<div class="pc-title">${pc.name}</div><div class="card-price-row"><div class="pc-price">${pc.price}</div><div class="pc-price-old">€${fakeOldPrice}</div></div><div class="perf-container">${fpsHTML}</div><button class="btn-inspect" onclick="playClick(); openGallery()">INSPECT SYSTEM</button><button class="btn-compare-add ${inCompare?'selected':''}" onclick="playClick(); toggleCompare('${pc._id}')">${inCompare?'ADDED':'COMPARE'}</button>`; setTimeout(()=>document.querySelectorAll('.bar-fill').forEach(b=>b.style.width=b.getAttribute('data-width')), 50); }
+        /* -------------------------------------------------------------------------
+           ✨ ΑΝΑΝΕΩΜΕΝΟ RENDERCARD ΓΙΑ ΤΑ HOVER SPECS ΜΕ ΤΟ HOLO-CARD-INNER
+        ------------------------------------------------------------------------- */
+        function renderCard() { 
+            const c = document.getElementById('main-card'); 
+            if(!filtered.length) { c.innerHTML = "<h3>NO SIGNAL</h3>"; return; } 
+            
+            const pc = filtered[index]; 
+            const inCompare = compareList.find(p => p._id === pc._id); 
+            const priceVal = parseInt(pc.price.replace(/[^0-9]/g, '')); 
+            const fakeOldPrice = Math.floor(priceVal * 1.2); 
+            const stock = pc.stock || 0; 
+            
+            let stockHTML = ''; 
+            if(stock === 0) stockHTML = '<div class="stock-badge out">SOLD OUT</div>'; 
+            else if(stock < 5) stockHTML = `<div class="stock-badge low">LOW STOCK: ${stock} UNITS</div>`; 
+            else stockHTML = '<div class="stock-badge in">IN STOCK</div>'; 
+            
+            // ΝΕΑ ΠΡΟΣΘΗΚΗ: Το HTML για το αναδυόμενο πλαίσιο των Specs
+            let specsTooltipHTML = `
+                <div class="specs-box">
+                    <div style="color:var(--neon-green); font-weight:bold; margin-bottom:5px; border-bottom:1px solid #333;">SYSTEM SPECS</div>
+                    <div class="s-line"><b>CPU:</b> ${pc.specs && pc.specs.cpu ? pc.specs.cpu : 'N/A'}</div>
+                    <div class="s-line"><b>GPU:</b> ${pc.specs && pc.specs.gpu ? pc.specs.gpu : 'N/A'}</div>
+                    <div class="s-line"><b>RAM:</b> ${pc.specs && pc.specs.ram ? pc.specs.ram : 'N/A'}</div>
+                    <div class="s-line"><b>SSD:</b> ${pc.specs && pc.specs.ssd ? pc.specs.ssd : 'N/A'}</div>
+                </div>
+            `;
+
+            let fpsHTML = ''; 
+            if(pc.multitasking) fpsHTML += `<div class="fps-row"><span class="fps-name">MULTI</span><div class="bar-track"><div class="bar-fill" data-width="${pc.multitasking}%" style="width:0%"></div></div><span class="fps-num">${pc.multitasking}</span></div>`; 
+            if(pc.fps) pc.fps.forEach(f => { 
+                let max=200; 
+                if(f.game==='Fortnite') max=300; 
+                fpsHTML += `<div class="fps-row"><span class="fps-name">${f.game}</span><div class="bar-track"><div class="bar-fill" data-width="${Math.min((f.score/max)*100,100)}%" style="width:0%"></div></div><span class="fps-num">${f.score}</span></div>`; 
+            }); 
+            
+            // ΕΝΣΩΜΑΤΩΣΗ: Το specsTooltipHTML προστέθηκε μέσα στο holo-card-inner
+            c.innerHTML = `
+                <div class="holo-card-inner">
+                    <img src="${pc.images[0]||'assets/images/bg.jpg'}" class="hero-img" onmouseenter="playHover()">
+                    ${specsTooltipHTML}
+                    ${stockHTML}
+                    <div class="pc-title">${pc.name}</div>
+                    <div class="card-price-row">
+                        <div class="pc-price">${pc.price}</div>
+                        <div class="pc-price-old">€${fakeOldPrice}</div>
+                    </div>
+                    <div class="perf-container">${fpsHTML}</div>
+                    <button class="btn-inspect" onclick="playClick(); openGallery()">INSPECT SYSTEM</button>
+                    <button class="btn-compare-add ${inCompare?'selected':''}" onclick="playClick(); toggleCompare('${pc._id}')">${inCompare?'ADDED':'COMPARE'}</button>
+                </div>
+            `; 
+            
+            setTimeout(()=>document.querySelectorAll('.bar-fill').forEach(b=>b.style.width=b.getAttribute('data-width')), 50); 
+        }
         
         function updatePrice() { const extra = parseInt(document.getElementById('storage-select').value); const base = parseInt(currentGalleryPC.price.replace(/[^0-9]/g, '')); document.getElementById('g-price-live').innerText = "€" + (base + extra); }
         function removeFromCart(i) { cart.splice(i, 1); localStorage.setItem('codex_cart', JSON.stringify(cart)); updateCartUI(); }
