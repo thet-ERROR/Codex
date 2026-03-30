@@ -94,15 +94,6 @@
         
         .s-line b { color: var(--neon-green); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; }
 
-        /* -----------------------------------------------------------
-           🆕 ΠΡΟΣΘΗΚΗ: TRUST SECTION (ABOUT ME / SHIPPING)
-        ----------------------------------------------------------- */
-        .trust-section { padding: 60px 20px; background: rgba(0,0,0,0.8); border-top: 1px solid var(--neon-purple); margin-top: 50px; pointer-events: auto; }
-        .trust-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px; max-width: 1200px; margin: 0 auto; }
-        .trust-item { text-align: center; }
-        .trust-item i { font-size: 2.5rem; color: var(--neon-green); margin-bottom: 10px; }
-        .trust-item h4 { font-family: var(--font-ui); color: #fff; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; }
-        .trust-item p { font-size: 0.85rem; color: #888; line-height: 1.4; }
 
         /* LOADER */
         #startup-overlay { position: fixed; inset: 0; background: #000; z-index: 10000; display: flex; flex-direction: column; align-items: center; justify-content: center; pointer-events: auto; }
