@@ -341,7 +341,7 @@ const API = 'https://codex-backend-9kij.onrender.com/api';
         function prevPC() { if(filtered.length) { index=(index-1+filtered.length)%filtered.length; renderCard(); } }
         
         /* -------------------------------------------------------------------------
-           ✨ ΑΝΑΝΕΩΜΕΝΟ RENDERCARD ΓΙΑ ΤΑ HOVER SPECS ΜΕ ΤΟ HOLO-CARD-INNER
+           ✨ ΑΝΑΝΕΩΜΕΝΟ RENDERCARD ΓΙΑ ΤΑ HOVER SPECS (ΓΥΑΛΙΝΟ OVERLAY SCANNER)
         ------------------------------------------------------------------------- */
         function renderCard() { 
             const c = document.getElementById('main-card'); 
@@ -358,14 +358,14 @@ const API = 'https://codex-backend-9kij.onrender.com/api';
             else if(stock < 5) stockHTML = `<div class="stock-badge low">LOW STOCK: ${stock} UNITS</div>`; 
             else stockHTML = '<div class="stock-badge in">IN STOCK</div>'; 
             
-            // ΝΕΑ ΠΡΟΣΘΗΚΗ: Το HTML για το αναδυόμενο πλαίσιο των Specs
+            // ΝΕΑ ΠΡΟΣΘΗΚΗ: Το HTML για το "Γυάλινο Scanner" που θα καλύπτει την εικόνα
             let specsTooltipHTML = `
                 <div class="specs-box">
-                    <div style="color:var(--neon-green); font-weight:bold; margin-bottom:5px; border-bottom:1px solid #333;">SYSTEM SPECS</div>
-                    <div class="s-line"><b>CPU:</b> ${pc.specs && pc.specs.cpu ? pc.specs.cpu : 'N/A'}</div>
-                    <div class="s-line"><b>GPU:</b> ${pc.specs && pc.specs.gpu ? pc.specs.gpu : 'N/A'}</div>
-                    <div class="s-line"><b>RAM:</b> ${pc.specs && pc.specs.ram ? pc.specs.ram : 'N/A'}</div>
-                    <div class="s-line"><b>SSD:</b> ${pc.specs && pc.specs.ssd ? pc.specs.ssd : 'N/A'}</div>
+                    <div class="specs-title"><i class="ph-bold ph-scan"></i> SYSTEM SCAN</div>
+                    <div class="s-line"><b>CPU</b> <span>${pc.specs && pc.specs.cpu ? pc.specs.cpu : 'N/A'}</span></div>
+                    <div class="s-line"><b>GPU</b> <span>${pc.specs && pc.specs.gpu ? pc.specs.gpu : 'N/A'}</span></div>
+                    <div class="s-line"><b>RAM</b> <span>${pc.specs && pc.specs.ram ? pc.specs.ram : 'N/A'}</span></div>
+                    <div class="s-line"><b>SSD</b> <span>${pc.specs && pc.specs.ssd ? pc.specs.ssd : 'N/A'}</span></div>
                 </div>
             `;
 
@@ -377,11 +377,13 @@ const API = 'https://codex-backend-9kij.onrender.com/api';
                 fpsHTML += `<div class="fps-row"><span class="fps-name">${f.game}</span><div class="bar-track"><div class="bar-fill" data-width="${Math.min((f.score/max)*100,100)}%" style="width:0%"></div></div><span class="fps-num">${f.score}</span></div>`; 
             }); 
             
-            // ΕΝΣΩΜΑΤΩΣΗ: Το specsTooltipHTML προστέθηκε μέσα στο holo-card-inner
+            // ΕΝΣΩΜΑΤΩΣΗ: Προστέθηκε το 'img-wrapper' για να δουλέψει σωστά το Overlay
             c.innerHTML = `
                 <div class="holo-card-inner">
-                    <img src="${pc.images[0]||'assets/images/bg.jpg'}" class="hero-img" onmouseenter="playHover()">
-                    ${specsTooltipHTML}
+                    <div class="img-wrapper" onmouseenter="playHover()">
+                        <img src="${pc.images[0]||'assets/images/bg.jpg'}" class="hero-img">
+                        ${specsTooltipHTML}
+                    </div>
                     ${stockHTML}
                     <div class="pc-title">${pc.name}</div>
                     <div class="card-price-row">

@@ -8,32 +8,91 @@
         .hidden { display: none !important; }
 
         /* -----------------------------------------------------------
-           🆕 ΠΡΟΣΘΗΚΗ: HOVER SPECS OVERLAY (ΓΙΑ ΤΗΝ ΚΑΡΤΑ)
+           🆕 ΠΡΟΣΘΗΚΗ: ΓΥΑΛΙΝΟ "SCANNER" OVERLAY ΓΙΑ ΤΑ SPECS
         ----------------------------------------------------------- */
         .holo-card-inner { position: relative; width: 100%; height: 100%; pointer-events: auto; }
         
-        .specs-box {
-            position: absolute;
-            top: 60px;
-            left: 20px;
-            right: 20px;
-            background: rgba(0, 0, 0, 0.95);
-            border: 1px solid var(--neon-green);
-            padding: 15px;
+        .img-wrapper {
+            position: relative;
+            width: 100%;
+            height: 200px;
+            margin-bottom: 10px;
             border-radius: 8px;
-            font-size: 0.75rem;
-            text-align: left;
-            opacity: 0;
-            transform: translateY(10px);
-            transition: 0.3s ease;
-            pointer-events: none;
-            z-index: 100;
-            box-shadow: 0 0 15px rgba(204, 255, 0, 0.3);
+            overflow: hidden;
+            cursor: crosshair;
+        }
+
+        .hero-img { 
+            width: 100%; 
+            height: 100%; 
+            object-fit: contain; 
+            filter: drop-shadow(0 20px 40px rgba(0,0,0,0.5)); 
+            transition: 0.4s ease; 
         }
         
-        .holo-card-inner:hover .specs-box { opacity: 1; transform: translateY(0); }
-        .s-line { margin-bottom: 4px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 2px; }
-        .s-line b { color: var(--neon-green); font-size: 0.65rem; text-transform: uppercase; }
+        .img-wrapper:hover .hero-img {
+            opacity: 0.15;
+            transform: scale(0.9);
+            filter: blur(4px);
+        }
+
+        .specs-box {
+            position: absolute;
+            inset: 0;
+            background: rgba(5, 5, 8, 0.7);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(204, 255, 0, 0.4);
+            border-radius: 8px;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            opacity: 0;
+            transform: translateY(15px) scale(0.95);
+            transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            pointer-events: none;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.8);
+        }
+        
+        .img-wrapper:hover .specs-box { 
+            opacity: 1; 
+            transform: translateY(0) scale(1);
+        }
+
+        .specs-title {
+            color: var(--neon-green);
+            font-weight: bold;
+            font-family: var(--font-ui);
+            font-size: 1.1rem;
+            letter-spacing: 2px;
+            margin-bottom: 12px;
+            border-bottom: 1px solid rgba(204, 255, 0, 0.3);
+            padding-bottom: 5px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .s-line { 
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 6px; 
+            border-bottom: 1px dashed rgba(255,255,255,0.1); 
+            padding-bottom: 4px; 
+            color: #ddd;
+            font-size: 0.8rem;
+        }
+        
+        .s-line span {
+            font-weight: bold;
+            text-align: right;
+            max-width: 65%;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .s-line b { color: var(--neon-green); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; }
 
         /* -----------------------------------------------------------
            🆕 ΠΡΟΣΘΗΚΗ: TRUST SECTION (ABOUT ME / SHIPPING)
@@ -84,29 +143,11 @@
 
         /* Αργό Breathing και Wave Effect */
         @keyframes slowWaveBreath {
-            0% { 
-                background-position: 0% 50%; 
-                opacity: 0; 
-                filter: drop-shadow(0 0 10px rgba(255,255,255,0.2));
-            }
-            20% { 
-                opacity: 1; 
-                filter: drop-shadow(0 0 20px rgba(255,255,255,0.8));
-            }
-            50% { 
-                background-position: 100% 50%; 
-                opacity: 1; 
-                filter: drop-shadow(0 0 25px var(--neon-purple));
-            }
-            80% { 
-                opacity: 1; 
-                filter: drop-shadow(0 0 20px #ff4500);
-            }
-            100% { 
-                background-position: 0% 50%; 
-                opacity: 0; 
-                filter: drop-shadow(0 0 10px rgba(255,255,255,0.2));
-            }
+            0% { background-position: 0% 50%; opacity: 0; filter: drop-shadow(0 0 10px rgba(255,255,255,0.2)); }
+            20% { opacity: 1; filter: drop-shadow(0 0 20px rgba(255,255,255,0.8)); }
+            50% { background-position: 100% 50%; opacity: 1; filter: drop-shadow(0 0 25px var(--neon-purple)); }
+            80% { opacity: 1; filter: drop-shadow(0 0 20px #ff4500); }
+            100% { background-position: 0% 50%; opacity: 0; filter: drop-shadow(0 0 10px rgba(255,255,255,0.2)); }
         }
 
         .nav-bar { display: flex; gap: 10px; background: rgba(255,255,255,0.05); padding: 8px; border-radius: 40px; border: 1px solid var(--glass-border); backdrop-filter: blur(10px); position: absolute; left: 50%; transform: translateX(-50%); }
@@ -178,7 +219,6 @@
         .carousel-wrapper, .starter-menu, .holo-card, .vote-container { pointer-events: auto; }
         .system-select-label { font-family: var(--font-ui); font-size: 1.2rem; color: #fff; letter-spacing: 6px; font-weight: 800; margin-bottom: 20px; text-transform: uppercase; opacity: 0.8; }
         .holo-card { width: 420px; background: var(--glass-dark); backdrop-filter: blur(40px); border: 1px solid var(--glass-border); border-radius: 16px; padding: 35px; text-align: center; position: relative; transition: 0.4s; box-shadow: 0 40px 100px rgba(0,0,0,0.8); display: flex; flex-direction: column; align-items: center; }
-        .hero-img { height: 200px; object-fit: contain; filter: drop-shadow(0 20px 40px rgba(0,0,0,0.5)); margin-bottom: 10px; transition: 0.3s; }
         .pc-title { font-family: var(--font-ui); font-size: 2.5rem; font-weight: 800; line-height: 1; text-transform: uppercase; margin-bottom: 5px; color: #fff; }
         .card-price-row { display: flex; justify-content: center; align-items: baseline; gap: 10px; margin-bottom: 15px; }
         .pc-price { font-family: var(--font-ui); font-size: 2rem; color: var(--neon-green); font-weight: bold; }
@@ -354,7 +394,11 @@
             /* Συμπίεση της Κάρτας για να χωράει στην οθόνη χωρίς πολύ scroll */
             .holo-card { width: 95%; max-width: 400px; padding: 15px; margin: 0 auto; }
             .system-select-label { font-size: 1rem; margin-bottom: 10px; }
-            .hero-img { height: 140px; margin-bottom: 5px; } /* Μικρότερη εικόνα PC */
+            
+            /* 🆕 Αλλαγή για το Scanner σε Mobile */
+            .img-wrapper { height: 140px; margin-bottom: 5px; }
+            .hero-img { height: 140px; margin-bottom: 5px; } /* Αν χρειαστεί fallback */
+
             .pc-title { font-size: 2rem; } /* Μικρότερος τίτλος */
             .pc-price { font-size: 1.6rem; }
             .card-price-row { margin-bottom: 10px; }
