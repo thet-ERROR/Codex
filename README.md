@@ -1,5 +1,4 @@
 # 🦅 Phoenix Codex - Cyberpunk PC Store
-[projectImage](ProjectImage/image1212.png)
 A high-end custom PC retail platform featuring a cyberpunk aesthetic and AI integration.
 
 ## 🚀 Features
