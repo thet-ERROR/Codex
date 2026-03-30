@@ -136,17 +136,60 @@ Type 'help' for a list of commands.
     <div class="gallery-overlay" id="gallery-overlay">
         <div class="listing-card">
             <div class="close-modal" onclick="playClick(); closeModal('gallery-overlay')" style="top:20px; right:20px; z-index:10;"><i class="ph-bold ph-x"></i></div>
+            
             <div class="listing-visual">
-                <div class="visual-main-row"><button class="g-arrow" onclick="playClick(); changeGalleryImage(-1)"><i class="ph-bold ph-caret-left"></i></button><div class="gallery-img-container"><img src="" id="g-main-img" class="big-img"></div><button class="g-arrow" onclick="playClick(); changeGalleryImage(1)"><i class="ph-bold ph-caret-right"></i></button></div>
-                <div class="thumb-strip" id="g-thumbs"></div>
-            </div>
-            <div class="listing-info">
-                <h1 class="g-title" id="g-title">PROJECT X</h1>
-                <div class="card-price-row"><div class="g-price-live" id="g-price-live">€000</div><div class="g-price-old" id="g-price-old">€000</div></div>
-                <div style="display:flex; align-items:center; gap:10px; margin-bottom:15px;"><div class="stock-badge" id="g-stock-badge">STOCK</div><div style="color:#aaa; font-size:0.8rem;"><i class="ph-fill ph-eye"></i> 14 Agents viewing</div></div>
-                <div class="config-row"><label style="color:#888; font-size:0.8rem; display:block; margin-bottom:5px;">STORAGE EXPANSION</label><select class="config-select" id="storage-select" onchange="updatePrice()"><option value="0">Standard (No Extra)</option><option value="50">+ 1TB HDD (€50)</option><option value="80">+ 1TB SSD (€80)</option></select></div>
+                <div class="img-wrapper">
+                    <img src="" id="g-main-img" class="hero-img" alt="System Image">
+                    <div class="specs-box" id="g-specs-hover"></div>
+                </div>
                 <div class="spec-grid" id="g-specs"></div>
-                <div style="display:flex; gap:10px;"><button class="btn-inspect" id="g-add-cart" onclick="addToCart()" style="flex:1; background:#222; border:1px solid #fff;">ADD TO CART</button><button class="btn-inspect" id="g-buy-btn" onclick="handleBuy()" style="flex:1;">BUY NOW</button></div>
+            </div>
+
+            <div class="listing-info">
+                <div class="lc-top-badge">
+                    <div class="lc-status-dot"></div>
+                    <div class="lc-badge-text">BUILD_ID: PX-001 // AUTHORIZED</div>
+                </div>
+
+                <div class="g-title" id="g-title">PROJECT X</div>
+
+                <div class="lc-price-row">
+                    <div class="g-price-live" id="g-price-live">€000</div>
+                    <div class="g-price-old" id="g-price-old">€000</div>
+                    <div class="lc-price-suffix">INCL. VAT<br>FREE SHIP</div>
+                </div>
+
+                <div>
+                    <span class="stock-badge in" id="g-stock-badge">IN STOCK</span>
+                    <div class="lc-viewers"><i class="ph-fill ph-eye"></i> 14 Agents viewing</div>
+                </div>
+
+                <div>
+                    <div class="lc-config-label">Storage Expansion</div>
+                    <div class="lc-storage-row">
+                        <div class="lc-storage-opt active" onclick="selectStorageUI(this, 0)">
+                            Standard<span class="lc-opt-extra">Included</span>
+                        </div>
+                        <div class="lc-storage-opt" onclick="selectStorageUI(this, 50)">
+                            +1TB HDD<span class="lc-opt-extra">+€50</span>
+                        </div>
+                        <div class="lc-storage-opt" onclick="selectStorageUI(this, 80)">
+                            +1TB SSD<span class="lc-opt-extra">+€80</span>
+                        </div>
+                    </div>
+                    <select id="storage-select" class="hidden" onchange="updatePrice()"><option value="0">0</option><option value="50">50</option><option value="80">80</option></select>
+                </div>
+
+                <div class="lc-btn-row">
+                    <button class="btn-inspect" id="g-add-cart" onclick="addToCart()">ADD TO CART</button>
+                    <button class="lc-btn-buy" id="g-buy-btn" onclick="handleBuy()">BUY NOW</button>
+                </div>
+
+                <div class="lc-trust-row">
+                    <div class="lc-trust-item">2Y Warranty</div>
+                    <div class="lc-trust-item">Stress Tested</div>
+                    <div class="lc-trust-item">GR Shipping</div>
+                </div>
             </div>
         </div>
     </div>
