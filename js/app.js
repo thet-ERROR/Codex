@@ -317,7 +317,6 @@ const API = 'https://codex-backend-9kij.onrender.com/api';
             btn.style.color = "#888"; 
             btn.disabled = true; 
             
-            // Εμφάνιση του κουμπιού Αγοράς
             document.getElementById('v-buy-btn').classList.remove('hidden');
         }
 
@@ -340,9 +339,6 @@ const API = 'https://codex-backend-9kij.onrender.com/api';
         function nextPC() { if(filtered.length) { index=(index+1)%filtered.length; renderCard(); } }
         function prevPC() { if(filtered.length) { index=(index-1+filtered.length)%filtered.length; renderCard(); } }
         
-        /* -------------------------------------------------------------------------
-           ✨ ΑΝΑΝΕΩΜΕΝΟ RENDERCARD ΓΙΑ ΤΑ HOVER SPECS (ΓΥΑΛΙΝΟ OVERLAY SCANNER)
-        ------------------------------------------------------------------------- */
         function renderCard() { 
             const c = document.getElementById('main-card'); 
             if(!filtered.length) { c.innerHTML = "<h3>NO SIGNAL</h3>"; return; } 
@@ -358,14 +354,13 @@ const API = 'https://codex-backend-9kij.onrender.com/api';
             else if(stock < 5) stockHTML = `<div class="stock-badge low">LOW STOCK: ${stock} UNITS</div>`; 
             else stockHTML = '<div class="stock-badge in">IN STOCK</div>'; 
             
-            // ΝΕΑ ΠΡΟΣΘΗΚΗ: Το HTML για το "Γυάλινο Scanner" που θα καλύπτει την εικόνα
             let specsTooltipHTML = `
-                <div class="specs-box">
-                    <div class="specs-title"><i class="ph-bold ph-scan"></i> SYSTEM SCAN</div>
-                    <div class="s-line"><b>CPU</b> <span>${pc.specs && pc.specs.cpu ? pc.specs.cpu : 'N/A'}</span></div>
-                    <div class="s-line"><b>GPU</b> <span>${pc.specs && pc.specs.gpu ? pc.specs.gpu : 'N/A'}</span></div>
-                    <div class="s-line"><b>RAM</b> <span>${pc.specs && pc.specs.ram ? pc.specs.ram : 'N/A'}</span></div>
-                    <div class="s-line"><b>SSD</b> <span>${pc.specs && pc.specs.ssd ? pc.specs.ssd : 'N/A'}</span></div>
+                <div class="specs-box-main">
+                    <div style="color:var(--neon-green); font-weight:bold; margin-bottom:5px; border-bottom:1px solid #333;">SYSTEM SPECS</div>
+                    <div class="s-line-main"><b>CPU:</b> ${pc.specs && pc.specs.cpu ? pc.specs.cpu : 'N/A'}</div>
+                    <div class="s-line-main"><b>GPU:</b> ${pc.specs && pc.specs.gpu ? pc.specs.gpu : 'N/A'}</div>
+                    <div class="s-line-main"><b>RAM:</b> ${pc.specs && pc.specs.ram ? pc.specs.ram : 'N/A'}</div>
+                    <div class="s-line-main"><b>SSD:</b> ${pc.specs && pc.specs.ssd ? pc.specs.ssd : 'N/A'}</div>
                 </div>
             `;
 
@@ -377,13 +372,10 @@ const API = 'https://codex-backend-9kij.onrender.com/api';
                 fpsHTML += `<div class="fps-row"><span class="fps-name">${f.game}</span><div class="bar-track"><div class="bar-fill" data-width="${Math.min((f.score/max)*100,100)}%" style="width:0%"></div></div><span class="fps-num">${f.score}</span></div>`; 
             }); 
             
-            // ΕΝΣΩΜΑΤΩΣΗ: Προστέθηκε το 'img-wrapper' για να δουλέψει σωστά το Overlay
             c.innerHTML = `
                 <div class="holo-card-inner">
-                    <div class="img-wrapper" onmouseenter="playHover()">
-                        <img src="${pc.images[0]||'assets/images/bg.jpg'}" class="hero-img">
-                        ${specsTooltipHTML}
-                    </div>
+                    <img src="${pc.images[0]||'assets/images/bg.jpg'}" class="hero-img" onmouseenter="playHover()">
+                    ${specsTooltipHTML}
                     ${stockHTML}
                     <div class="pc-title">${pc.name}</div>
                     <div class="card-price-row">
@@ -398,13 +390,55 @@ const API = 'https://codex-backend-9kij.onrender.com/api';
             
             setTimeout(()=>document.querySelectorAll('.bar-fill').forEach(b=>b.style.width=b.getAttribute('data-width')), 50); 
         }
+
+        // 🌟 ΝΕΑ ΣΥΝΑΡΤΗΣΗ ΓΙΑ ΤΑ KOYΜΠΙΑ STORAGE ΤΟΥ CLAUDE 🌟
+        function selectStorageUI(el, extra) {
+            document.querySelectorAll('.lc-storage-opt').forEach(o => o.classList.remove('active'));
+            el.classList.add('active');
+            document.getElementById('storage-select').value = extra;
+            updatePrice();
+        }
         
         function updatePrice() { const extra = parseInt(document.getElementById('storage-select').value); const base = parseInt(currentGalleryPC.price.replace(/[^0-9]/g, '')); document.getElementById('g-price-live').innerText = "€" + (base + extra); }
         function removeFromCart(i) { cart.splice(i, 1); localStorage.setItem('codex_cart', JSON.stringify(cart)); updateCartUI(); }
         function handleCheckout() { if(cart.length === 0) return alert("Cart is empty!"); let msg = "Hello! I want to order:%0A%0A"; let total = 0; cart.forEach(item => { msg += `- ${item.name} (${item.option}): €${item.price}%0A`; total += item.price; }); msg += `%0A*TOTAL: €${total}*`; window.open(`https://wa.me/306912345678?text=${msg}`, '_blank'); }
         async function submitReviewCode() { const code = document.getElementById('rc-code').value; const user = document.getElementById('rc-user').value; const rating = document.getElementById('rc-rating').value; const text = document.getElementById('rc-text').value; if(!code || !user || !text) return alert("Please fill all fields"); const res = await fetch(`${API}/submit-review`, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ code, user, rating, text }) }); const data = await res.json(); if(data.success) { showToast("REVIEW VERIFIED & POSTED", "achievement"); closeModal('review-code-modal'); const currentPCID = filtered[index] ? filtered[index]._id : null; const resDrops = await fetch(`${API}/drops`); inventory = await resDrops.json(); renderGlobalReviews(); renderCard(); } else { alert(data.error); } }
         function showToast(msg, type) { const t = document.createElement('div'); t.className = `toast ${type}`; t.innerHTML = type === 'achievement' ? `<i class="ph-fill ph-trophy"></i> ${msg}` : `<i class="ph-bold ph-check-circle"></i> ${msg}`; document.getElementById('toast-container').appendChild(t); setTimeout(() => t.remove(), 3000); }
-        function openGallery() { currentGalleryPC = filtered[index]; galleryIndex = 0; document.getElementById('g-title').innerText = currentGalleryPC.name; const basePrice = parseInt(currentGalleryPC.price.replace(/[^0-9]/g, '')); document.getElementById('g-price-live').innerText = "€" + basePrice; document.getElementById('g-price-old').innerText = "€" + Math.floor(basePrice * 1.2); document.getElementById('storage-select').value = "0"; const stock = currentGalleryPC.stock || 0; const badge = document.getElementById('g-stock-badge'); const addBtn = document.getElementById('g-add-cart'); const buyBtn = document.getElementById('g-buy-btn'); if(stock === 0) { badge.innerText = "SOLD OUT"; badge.className = "stock-badge out"; addBtn.disabled = true; buyBtn.disabled = true; } else if(stock < 5) { badge.innerText = `LOW STOCK: ${stock}`; badge.className = "stock-badge low"; addBtn.disabled = false; buyBtn.disabled = false; } else { badge.innerText = "IN STOCK"; badge.className = "stock-badge in"; addBtn.disabled = false; buyBtn.disabled = false; } let h=""; for(const [k,v] of Object.entries(currentGalleryPC.specs)) { h+=`<div class="spec-row"><div class="spec-label">${k.toUpperCase()}</div><div class="spec-val">${v}</div></div>`; } document.getElementById('g-specs').innerHTML = h; updateGalleryImage(); document.getElementById('gallery-overlay').classList.add('active'); }
+        
+        // 🌟 ΑΝΑΝΕΩΜΕΝΟ OPENGALLERY ΓΙΑ ΝΑ ΓΕΜΙΖΕΙ ΤΑ STAGGERED SPECS ΤΟΥ CLAUDE 🌟
+        function openGallery() { 
+            currentGalleryPC = filtered[index]; 
+            galleryIndex = 0; 
+            document.getElementById('g-title').innerText = currentGalleryPC.name; 
+            const basePrice = parseInt(currentGalleryPC.price.replace(/[^0-9]/g, '')); 
+            document.getElementById('g-price-live').innerText = "€" + basePrice; 
+            document.getElementById('g-price-old').innerText = "€" + Math.floor(basePrice * 1.2); 
+            
+            document.getElementById('storage-select').value = "0"; 
+            document.querySelectorAll('.lc-storage-opt').forEach(o => o.classList.remove('active'));
+            if(document.querySelectorAll('.lc-storage-opt')[0]) {
+                document.querySelectorAll('.lc-storage-opt')[0].classList.add('active');
+            }
+
+            const stock = currentGalleryPC.stock || 0; 
+            const badge = document.getElementById('g-stock-badge'); 
+            const addBtn = document.getElementById('g-add-cart'); 
+            const buyBtn = document.getElementById('g-buy-btn'); 
+            if(stock === 0) { badge.innerText = "SOLD OUT"; badge.className = "stock-badge out"; addBtn.disabled = true; buyBtn.disabled = true; } else if(stock < 5) { badge.innerText = `LOW STOCK: ${stock}`; badge.className = "stock-badge low"; addBtn.disabled = false; buyBtn.disabled = false; } else { badge.innerText = "IN STOCK"; badge.className = "stock-badge in"; addBtn.disabled = false; buyBtn.disabled = false; } 
+            
+            let h=""; 
+            let hoverH = `<div class="specs-title">◈ SYSTEM SPECS</div>`;
+            for(const [k,v] of Object.entries(currentGalleryPC.specs)) { 
+                h+=`<div class="spec-row"><div class="spec-label">${k.toUpperCase()}</div><div class="spec-val">${v}</div></div>`; 
+                hoverH += `<div class="s-line"><b>${k.toUpperCase()}</b><span>${v}</span></div>`;
+            } 
+            document.getElementById('g-specs').innerHTML = h; 
+            document.getElementById('g-specs-hover').innerHTML = hoverH;
+            
+            document.getElementById('g-main-img').src = currentGalleryPC.images[0]; 
+            document.getElementById('gallery-overlay').classList.add('active'); 
+        }
+
         function updateGalleryImage() { document.getElementById('g-main-img').src = currentGalleryPC.images[galleryIndex]; }
         function changeGalleryImage(d) { galleryIndex = (galleryIndex+d+currentGalleryPC.images.length)%currentGalleryPC.images.length; updateGalleryImage(); }
         function toggleCompare(id) { const pc = filtered[index]; if(compareList.find(p=>p._id===id)) compareList = compareList.filter(p=>p._id!==id); else { if(compareList.length<2) compareList.push(pc); else alert("MAX 2"); } renderCard(); const b = document.getElementById('compare-float'); if(compareList.length===2) b.classList.add('active'); else b.classList.remove('active'); }
@@ -425,10 +459,8 @@ const API = 'https://codex-backend-9kij.onrender.com/api';
         function logout() { isLoggedIn = false; document.getElementById('guest-options').classList.remove('hidden'); document.getElementById('user-options').classList.add('hidden'); }
         function toggleChat() { document.getElementById('chat-widget').classList.toggle('open'); }
         
-        // 🔴 CODEX AI - ΕΞΥΠΝΟΣ ΕΓΚΕΦΑΛΟΣ (ANTI-AMNESIA)
         let codexAiState = 'idle'; // Παγκόσμια, μόνιμη μνήμη
 
-        // Αφαιρεί τόνους από τα Ελληνικά για να μην μπερδεύεται
         function removeAccents(str) {
             return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
         }
@@ -446,18 +478,15 @@ const API = 'https://codex-backend-9kij.onrender.com/api';
                 const lowerText = removeAccents(text.toLowerCase());
                 let botResponse = "";
 
-                // --- 1. ΕΛΕΓΧΟΣ ΜΝΗΜΗΣ (Ναι/Όχι) ---
                 if (codexAiState === 'waiting_admin_redirect') {
                     if (lowerText === 'ναι' || lowerText.includes('ναι') || lowerText.includes('nai') || lowerText.includes('θελω')) {
                         botResponse = "🚀 <b>Εκκίνηση σύνδεσης...</b><br>Σε μεταφέρω στο ασφαλές κανάλι του Admin.";
-                        setTimeout(() => window.open("https://wa.me/306912345678", "_blank"), 1500); // ⚠️ Βάλε το WhatsApp σου
+                        setTimeout(() => window.open("https://wa.me/306912345678", "_blank"), 1500); 
                     } else {
                         botResponse = "Λήψη ελήφθη. 🤖 Τι άλλο θα ήθελες να μάθεις;";
                     }
-                    codexAiState = 'idle'; // Μηδενισμός
+                    codexAiState = 'idle'; 
                 } 
-                
-                // --- 2. ΕΛΕΓΧΟΣ ΜΝΗΜΗΣ (Budget) ---
                 else if (codexAiState === 'waiting_budget') {
                     const budget = parseInt(lowerText.replace(/[^0-9]/g, '')); 
                     if (budget > 0) {
@@ -465,10 +494,8 @@ const API = 'https://codex-backend-9kij.onrender.com/api';
                     } else {
                         botResponse = "Δεν κατάλαβα το ποσό. Πες μου απλά νούμερα, π.χ. '800'.";
                     }
-                    codexAiState = 'idle'; // Μηδενισμός
+                    codexAiState = 'idle'; 
                 }
-                
-                // --- 3. ΚΑΝΟΝΙΚΗ ΣΥΖΗΤΗΣΗ (Idle) ---
                 else {
                     botResponse = "Δεν το έπιασα αυτό, Agent. 🤖<br>Ρώτα με για <b>Αγορά</b>, <b>Μεταφορικά</b>, <b>Εγγύηση</b>, ή <b>Παιχνίδια</b>!";
                     
