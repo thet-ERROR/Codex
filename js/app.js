@@ -339,7 +339,7 @@ const API = 'https://codex-backend-9kij.onrender.com/api';
         function nextPC() { if(filtered.length) { index=(index+1)%filtered.length; renderCard(); } }
         function prevPC() { if(filtered.length) { index=(index-1+filtered.length)%filtered.length; renderCard(); } }
         
-        // 🌟 ΑΦΑΙΡΕΘΗΚΕ ΤΟ "SCANNER HOVER" - ΚΑΘΑΡΗ ΕΙΚΟΝΑ
+        /* 🌟 ΚΑΘΑΡΗ ΕΙΚΟΝΑ ΧΩΡΙΣ HOVER + ΝΕΑ ΧΡΩΜΑΤΑ ΚΟΥΜΠΙΩΝ 🌟 */
         function renderCard() { 
             const c = document.getElementById('main-card'); 
             if(!filtered.length) { c.innerHTML = "<h3>NO SIGNAL</h3>"; return; } 
@@ -365,7 +365,7 @@ const API = 'https://codex-backend-9kij.onrender.com/api';
             
             c.innerHTML = `
                 <div class="holo-card-inner">
-                    <img src="${pc.images[0]||'assets/images/bg.jpg'}" class="hero-img" onmouseenter="playHover()">
+                    <img src="${pc.images[0]||'assets/images/bg.jpg'}" class="hero-img">
                     ${stockHTML}
                     <div class="pc-title">${pc.name}</div>
                     <div class="card-price-row">
@@ -373,8 +373,8 @@ const API = 'https://codex-backend-9kij.onrender.com/api';
                         <div class="pc-price-old">€${fakeOldPrice}</div>
                     </div>
                     <div class="perf-container">${fpsHTML}</div>
-                    <button class="btn-inspect" onclick="playClick(); openGallery()">INSPECT SYSTEM</button>
-                    <button class="btn-compare-add ${inCompare?'selected':''}" onclick="playClick(); toggleCompare('${pc._id}')">${inCompare?'ADDED':'COMPARE'}</button>
+                    <button class="btn-card-inspect" onclick="playClick(); openGallery()">INSPECT SYSTEM</button>
+                    <button class="btn-card-compare ${inCompare?'selected':''}" onclick="playClick(); toggleCompare('${pc._id}')">${inCompare?'ADDED':'COMPARE'}</button>
                 </div>
             `; 
             
@@ -394,7 +394,6 @@ const API = 'https://codex-backend-9kij.onrender.com/api';
         async function submitReviewCode() { const code = document.getElementById('rc-code').value; const user = document.getElementById('rc-user').value; const rating = document.getElementById('rc-rating').value; const text = document.getElementById('rc-text').value; if(!code || !user || !text) return alert("Please fill all fields"); const res = await fetch(`${API}/submit-review`, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ code, user, rating, text }) }); const data = await res.json(); if(data.success) { showToast("REVIEW VERIFIED & POSTED", "achievement"); closeModal('review-code-modal'); const currentPCID = filtered[index] ? filtered[index]._id : null; const resDrops = await fetch(`${API}/drops`); inventory = await resDrops.json(); renderGlobalReviews(); renderCard(); } else { alert(data.error); } }
         function showToast(msg, type) { const t = document.createElement('div'); t.className = `toast ${type}`; t.innerHTML = type === 'achievement' ? `<i class="ph-fill ph-trophy"></i> ${msg}` : `<i class="ph-bold ph-check-circle"></i> ${msg}`; document.getElementById('toast-container').appendChild(t); setTimeout(() => t.remove(), 3000); }
         
-        // 🌟 ΑΝΑΝΕΩΜΕΝΟ OPENGALLERY ΜΕ ΤΑ INFO ΕΙΚΟΝΙΔΙΑ 🌟
         function openGallery() { 
             currentGalleryPC = filtered[index]; 
             galleryIndex = 0; 
@@ -416,6 +415,7 @@ const API = 'https://codex-backend-9kij.onrender.com/api';
             if(stock === 0) { badge.innerText = "SOLD OUT"; badge.className = "stock-badge out"; addBtn.disabled = true; buyBtn.disabled = true; } else if(stock < 5) { badge.innerText = `LOW STOCK: ${stock}`; badge.className = "stock-badge low"; addBtn.disabled = false; buyBtn.disabled = false; } else { badge.innerText = "IN STOCK"; badge.className = "stock-badge in"; addBtn.disabled = false; buyBtn.disabled = false; } 
             
             let h=""; 
+            let hoverH = `<div class="specs-title">◈ SYSTEM SPECS</div>`;
             for(const [k,v] of Object.entries(currentGalleryPC.specs)) { 
                 const safeKey = k.replace(/'/g, "\\'"); // Ασφάλεια για τα quotes
                 h+=`<div class="spec-row">
@@ -425,21 +425,25 @@ const API = 'https://codex-backend-9kij.onrender.com/api';
                         </div>
                         <div class="spec-val">${v}</div>
                     </div>`; 
+                hoverH += `<div class="s-line"><b>${k.toUpperCase()}</b><span>${v}</span></div>`;
             } 
             document.getElementById('g-specs').innerHTML = h; 
+            
+            // Το κρατάμε σε περίπτωση που έχεις αφήσει το .specs-box-main του Claude στο HTML του index
+            if (document.getElementById('g-specs-hover')) {
+                document.getElementById('g-specs-hover').innerHTML = hoverH;
+            }
             
             document.getElementById('g-main-img').src = currentGalleryPC.images[0]; 
             document.getElementById('gallery-overlay').classList.add('active'); 
         }
 
-        // 🌟 ΝΕΑ ΣΥΝΑΡΤΗΣΗ ΠΟΥ ΑΝΟΙΓΕΙ ΤΟ INFO MODAL 🌟
         function openSpecInfo(key) {
             const pc = currentGalleryPC;
             if(!pc) return;
             
             document.getElementById('spec-info-title').innerText = key.toUpperCase() + " INFO";
             
-            // Ψάχνει αν έχεις γράψει κάτι γι' αυτό το spec στο Admin Panel
             if(pc.specDetails && pc.specDetails[key]) {
                 document.getElementById('spec-info-desc').innerText = pc.specDetails[key];
             } else {
