@@ -352,3 +352,17 @@
         .driver-popover-footer button:hover { background-color: var(--neon-green) !important; color: #000 !important; border-color: var(--neon-green) !important; }
         .driver-popover-progress-text { color: #888 !important; }
         .driver-popover-arrow { border-color: var(--neon-green) !important; }
+        /* Κουμπί Πληροφοριών για τα Specs */
+.spec-info-btn {
+    color: var(--neon-purple);
+    cursor: pointer;
+    margin-left: 8px;
+    font-size: 1rem;
+    transition: 0.2s ease;
+    vertical-align: middle;
+}
+.spec-info-btn:hover {
+    color: #fff;
+    text-shadow: 0 0 10px var(--neon-purple);
+    transform: scale(1.2);
+}
