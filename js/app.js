@@ -339,6 +339,7 @@ const API = 'https://codex-backend-9kij.onrender.com/api';
         function nextPC() { if(filtered.length) { index=(index+1)%filtered.length; renderCard(); } }
         function prevPC() { if(filtered.length) { index=(index-1+filtered.length)%filtered.length; renderCard(); } }
         
+        // 🌟 ΑΦΑΙΡΕΘΗΚΕ ΤΟ "SCANNER HOVER" - ΚΑΘΑΡΗ ΕΙΚΟΝΑ
         function renderCard() { 
             const c = document.getElementById('main-card'); 
             if(!filtered.length) { c.innerHTML = "<h3>NO SIGNAL</h3>"; return; } 
@@ -353,16 +354,6 @@ const API = 'https://codex-backend-9kij.onrender.com/api';
             if(stock === 0) stockHTML = '<div class="stock-badge out">SOLD OUT</div>'; 
             else if(stock < 5) stockHTML = `<div class="stock-badge low">LOW STOCK: ${stock} UNITS</div>`; 
             else stockHTML = '<div class="stock-badge in">IN STOCK</div>'; 
-            
-            let specsTooltipHTML = `
-                <div class="specs-box-main">
-                    <div style="color:var(--neon-green); font-weight:bold; margin-bottom:5px; border-bottom:1px solid #333;">SYSTEM SPECS</div>
-                    <div class="s-line-main"><b>CPU:</b> ${pc.specs && pc.specs.cpu ? pc.specs.cpu : 'N/A'}</div>
-                    <div class="s-line-main"><b>GPU:</b> ${pc.specs && pc.specs.gpu ? pc.specs.gpu : 'N/A'}</div>
-                    <div class="s-line-main"><b>RAM:</b> ${pc.specs && pc.specs.ram ? pc.specs.ram : 'N/A'}</div>
-                    <div class="s-line-main"><b>SSD:</b> ${pc.specs && pc.specs.ssd ? pc.specs.ssd : 'N/A'}</div>
-                </div>
-            `;
 
             let fpsHTML = ''; 
             if(pc.multitasking) fpsHTML += `<div class="fps-row"><span class="fps-name">MULTI</span><div class="bar-track"><div class="bar-fill" data-width="${pc.multitasking}%" style="width:0%"></div></div><span class="fps-num">${pc.multitasking}</span></div>`; 
@@ -375,7 +366,6 @@ const API = 'https://codex-backend-9kij.onrender.com/api';
             c.innerHTML = `
                 <div class="holo-card-inner">
                     <img src="${pc.images[0]||'assets/images/bg.jpg'}" class="hero-img" onmouseenter="playHover()">
-                    ${specsTooltipHTML}
                     ${stockHTML}
                     <div class="pc-title">${pc.name}</div>
                     <div class="card-price-row">
@@ -391,7 +381,6 @@ const API = 'https://codex-backend-9kij.onrender.com/api';
             setTimeout(()=>document.querySelectorAll('.bar-fill').forEach(b=>b.style.width=b.getAttribute('data-width')), 50); 
         }
 
-        // 🌟 ΝΕΑ ΣΥΝΑΡΤΗΣΗ ΓΙΑ ΤΑ KOYΜΠΙΑ STORAGE ΤΟΥ CLAUDE 🌟
         function selectStorageUI(el, extra) {
             document.querySelectorAll('.lc-storage-opt').forEach(o => o.classList.remove('active'));
             el.classList.add('active');
@@ -405,7 +394,7 @@ const API = 'https://codex-backend-9kij.onrender.com/api';
         async function submitReviewCode() { const code = document.getElementById('rc-code').value; const user = document.getElementById('rc-user').value; const rating = document.getElementById('rc-rating').value; const text = document.getElementById('rc-text').value; if(!code || !user || !text) return alert("Please fill all fields"); const res = await fetch(`${API}/submit-review`, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ code, user, rating, text }) }); const data = await res.json(); if(data.success) { showToast("REVIEW VERIFIED & POSTED", "achievement"); closeModal('review-code-modal'); const currentPCID = filtered[index] ? filtered[index]._id : null; const resDrops = await fetch(`${API}/drops`); inventory = await resDrops.json(); renderGlobalReviews(); renderCard(); } else { alert(data.error); } }
         function showToast(msg, type) { const t = document.createElement('div'); t.className = `toast ${type}`; t.innerHTML = type === 'achievement' ? `<i class="ph-fill ph-trophy"></i> ${msg}` : `<i class="ph-bold ph-check-circle"></i> ${msg}`; document.getElementById('toast-container').appendChild(t); setTimeout(() => t.remove(), 3000); }
         
-        // 🌟 ΑΝΑΝΕΩΜΕΝΟ OPENGALLERY ΓΙΑ ΝΑ ΓΕΜΙΖΕΙ ΤΑ STAGGERED SPECS ΤΟΥ CLAUDE 🌟
+        // 🌟 ΑΝΑΝΕΩΜΕΝΟ OPENGALLERY ΜΕ ΤΑ INFO ΕΙΚΟΝΙΔΙΑ 🌟
         function openGallery() { 
             currentGalleryPC = filtered[index]; 
             galleryIndex = 0; 
@@ -427,16 +416,37 @@ const API = 'https://codex-backend-9kij.onrender.com/api';
             if(stock === 0) { badge.innerText = "SOLD OUT"; badge.className = "stock-badge out"; addBtn.disabled = true; buyBtn.disabled = true; } else if(stock < 5) { badge.innerText = `LOW STOCK: ${stock}`; badge.className = "stock-badge low"; addBtn.disabled = false; buyBtn.disabled = false; } else { badge.innerText = "IN STOCK"; badge.className = "stock-badge in"; addBtn.disabled = false; buyBtn.disabled = false; } 
             
             let h=""; 
-            let hoverH = `<div class="specs-title">◈ SYSTEM SPECS</div>`;
             for(const [k,v] of Object.entries(currentGalleryPC.specs)) { 
-                h+=`<div class="spec-row"><div class="spec-label">${k.toUpperCase()}</div><div class="spec-val">${v}</div></div>`; 
-                hoverH += `<div class="s-line"><b>${k.toUpperCase()}</b><span>${v}</span></div>`;
+                const safeKey = k.replace(/'/g, "\\'"); // Ασφάλεια για τα quotes
+                h+=`<div class="spec-row">
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <div class="spec-label">${k.toUpperCase()}</div>
+                            <i class="ph-bold ph-info spec-info-btn" onclick="playClick(); openSpecInfo('${safeKey}')"></i>
+                        </div>
+                        <div class="spec-val">${v}</div>
+                    </div>`; 
             } 
             document.getElementById('g-specs').innerHTML = h; 
-            document.getElementById('g-specs-hover').innerHTML = hoverH;
             
             document.getElementById('g-main-img').src = currentGalleryPC.images[0]; 
             document.getElementById('gallery-overlay').classList.add('active'); 
+        }
+
+        // 🌟 ΝΕΑ ΣΥΝΑΡΤΗΣΗ ΠΟΥ ΑΝΟΙΓΕΙ ΤΟ INFO MODAL 🌟
+        function openSpecInfo(key) {
+            const pc = currentGalleryPC;
+            if(!pc) return;
+            
+            document.getElementById('spec-info-title').innerText = key.toUpperCase() + " INFO";
+            
+            // Ψάχνει αν έχεις γράψει κάτι γι' αυτό το spec στο Admin Panel
+            if(pc.specDetails && pc.specDetails[key]) {
+                document.getElementById('spec-info-desc').innerText = pc.specDetails[key];
+            } else {
+                document.getElementById('spec-info-desc').innerText = "Detailed specifications for this component will be provided by the admin soon.";
+            }
+            
+            openModal('spec-info-modal');
         }
 
         function updateGalleryImage() { document.getElementById('g-main-img').src = currentGalleryPC.images[galleryIndex]; }
