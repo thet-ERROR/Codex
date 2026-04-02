@@ -133,63 +133,68 @@ Type 'help' for a list of commands.
         </div>
     </div>
 
+    <!-- 🌟 ΝΕΟ GALLERY OVERLAY ΜΕ ΤΗ YU-GI-OH ΚΑΡΤΑ 🌟 -->
     <div class="gallery-overlay" id="gallery-overlay">
-        <div class="listing-card">
-            <div class="close-modal" onclick="playClick(); closeModal('gallery-overlay')" style="top:20px; right:20px; z-index:10;"><i class="ph-bold ph-x"></i></div>
-            
-            <div class="listing-visual">
-                <div class="img-wrapper">
-                    <img src="" id="g-main-img" class="hero-img" alt="System Image">
-                    <div class="specs-box" id="g-specs-hover"></div>
-                </div>
-                <div class="spec-grid" id="g-specs"></div>
-            </div>
+        <div class="flip-card-container">
+            <div class="card-inner" id="lc-inner">
+                
+                <!-- FRONT SIDE (ΕΙΚΟΝΑ & ΑΓΟΡΑ) -->
+                <div class="card-front">
+                    <div class="close-modal" onclick="playClick(); closeModal('gallery-overlay')" style="position:absolute; top:20px; right:20px; z-index:10;"><i class="ph-bold ph-x"></i></div>
+                    
+                    <div class="listing-visual">
+                        <img src="" id="g-main-img" class="hero-img" alt="PC System">
+                        <div class="spec-grid" id="g-specs-front" style="margin-top: 20px;"></div>
+                    </div>
 
-            <div class="listing-info">
-                <div class="lc-top-badge">
-                    <div class="lc-status-dot"></div>
-                    <div class="lc-badge-text">BUILD_ID: PX-001 // AUTHORIZED</div>
-                </div>
-
-                <div class="g-title" id="g-title">PROJECT X</div>
-
-                <div class="lc-price-row">
-                    <div class="g-price-live" id="g-price-live">€000</div>
-                    <div class="g-price-old" id="g-price-old">€000</div>
-                    <div class="lc-price-suffix">INCL. VAT<br>FREE SHIP</div>
-                </div>
-
-                <div>
-                    <span class="stock-badge in" id="g-stock-badge">IN STOCK</span>
-                    <div class="lc-viewers"><i class="ph-fill ph-eye"></i> 14 Agents viewing</div>
-                </div>
-
-                <div>
-                    <div class="lc-config-label">Storage Expansion</div>
-                    <div class="lc-storage-row">
-                        <div class="lc-storage-opt active" onclick="selectStorageUI(this, 0)">
-                            Standard<span class="lc-opt-extra">Included</span>
+                    <div class="listing-info">
+                        <div class="lc-top-badge" style="margin-bottom:10px;">
+                            <div class="status-dot"></div>
+                            <div style="font-family:var(--font-ui); font-size:0.7rem; color:#666; letter-spacing:2px;">BUILD AUTHORIZED</div>
                         </div>
-                        <div class="lc-storage-opt" onclick="selectStorageUI(this, 50)">
-                            +1TB HDD<span class="lc-opt-extra">+€50</span>
+
+                        <h1 class="g-title" id="g-title">PROJECT X</h1>
+                        <div class="card-price-row" style="margin-bottom:20px;">
+                            <div class="g-price-live" id="g-price-live">€0</div>
+                            <div class="g-price-old" id="g-price-old">€0</div>
                         </div>
-                        <div class="lc-storage-opt" onclick="selectStorageUI(this, 80)">
-                            +1TB SSD<span class="lc-opt-extra">+€80</span>
+
+                        <div class="stock-badge in" id="g-stock-badge" style="margin-bottom:20px;">IN STOCK</div>
+
+                        <div class="config-row">
+                            <label style="color:#888; font-size:0.8rem; display:block; margin-bottom:5px;">STORAGE EXPANSION</label>
+                            <select class="config-select" id="storage-select" onchange="updatePrice()">
+                                <option value="0">Standard (No Extra)</option>
+                                <option value="50">+ 1TB HDD (€50)</option>
+                                <option value="80">+ 1TB SSD (€80)</option>
+                            </select>
+                        </div>
+
+                        <div style="display:flex; gap:10px; margin-top:20px;">
+                            <button class="btn-card-inspect" onclick="playClick(); toggleCardFlip()" style="flex:1;">
+                                <i class="ph-bold ph-arrows-left-right"></i> FLIP TO SPECS
+                            </button>
+                            <button class="lc-btn-buy" id="g-add-cart" onclick="addToCart()" style="flex:1;">ADD TO CART</button>
                         </div>
                     </div>
-                    <select id="storage-select" class="hidden" onchange="updatePrice()"><option value="0">0</option><option value="50">50</option><option value="80">80</option></select>
                 </div>
 
-                <div class="lc-btn-row">
-                    <button class="btn-inspect" id="g-add-cart" onclick="addToCart()">ADD TO CART</button>
-                    <button class="lc-btn-buy" id="g-buy-btn" onclick="handleBuy()">BUY NOW</button>
+                <!-- BACK SIDE (SPECS & INFO) -->
+                <div class="card-back">
+                    <div class="close-back" onclick="playClick(); toggleCardFlip()"><i class="ph-bold ph-arrow-u-up-left"></i></div>
+                    
+                    <div class="back-title-row">
+                        <i class="ph-bold ph-magnifying-glass specs-icon"></i>
+                        <h2 class="back-title">CHARACTERISTICS</h2>
+                    </div>
+
+                    <div class="gallery-desc-box" id="g-desc">
+                        System description loading...
+                    </div>
+
+                    <div class="spec-grid-back" id="g-specs-back"></div>
                 </div>
 
-                <div class="lc-trust-row">
-                    <div class="lc-trust-item">2Y Warranty</div>
-                    <div class="lc-trust-item">Stress Tested</div>
-                    <div class="lc-trust-item">GR Shipping</div>
-                </div>
             </div>
         </div>
     </div>
@@ -387,6 +392,7 @@ Type 'help' for a list of commands.
         <div class="footer-center"></div>
         <div class="footer-right"><span style="color:#666;">DATABASE:</span> <span style="color:#fff;">SYNCED</span><div class="status-dot"></div></div>
     </div>
+    
     <div class="modal-overlay" id="spec-info-modal">
         <div class="modal-content" style="width:400px; text-align:center; border-color: var(--neon-purple);">
             <span class="close-modal" onclick="closeModal('spec-info-modal')">X</span>

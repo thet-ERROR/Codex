@@ -8,17 +8,6 @@
         .hidden { display: none !important; }
 
         .holo-card-inner { position: relative; width: 100%; height: 100%; pointer-events: auto; }
-        
-        .specs-box {
-            position: absolute; top: 60px; left: 20px; right: 20px;
-            background: rgba(0, 0, 0, 0.95); border: 1px solid var(--neon-green);
-            padding: 15px; border-radius: 8px; font-size: 0.75rem; text-align: left;
-            opacity: 0; transform: translateY(10px); transition: 0.3s ease;
-            pointer-events: none; z-index: 100; box-shadow: 0 0 15px rgba(204, 255, 0, 0.3);
-        }
-        .holo-card-inner:hover .specs-box { opacity: 1; transform: translateY(0); }
-        .s-line { margin-bottom: 4px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 2px; }
-        .s-line b { color: var(--neon-green); font-size: 0.65rem; text-transform: uppercase; }
 
         /* LOADER */
         #startup-overlay { position: fixed; inset: 0; background: #000; z-index: 10000; display: flex; flex-direction: column; align-items: center; justify-content: center; pointer-events: auto; }
@@ -149,12 +138,11 @@
         .bar-fill { height: 100%; background: var(--neon-green); width: 0%; transition: 1s ease-out; }
         .fps-num { font-family: var(--font-ui); font-weight: bold; font-size: 0.8rem; color: #fff; width: 30px; text-align: right; }
         
-        /* ΚΟΥΜΠΙΑ ΚΑΡΤΑΣ (ΓΕΝΙΚΑ) */
+        /* 🌟 ΚΟΥΜΠΙΑ ΚΑΡΤΑΣ (ΓΕΝΙΚΑ & NEON) 🌟 */
         .btn-inspect { width: 100%; padding: 14px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2); color: #fff; font-family: var(--font-ui); font-weight: 700; font-size: 1rem; text-transform: uppercase; cursor: pointer; transition: 0.3s; margin-top: 5px; border-radius: 6px; }
         .btn-inspect:hover { background: var(--neon-green); color: #000; border-color: var(--neon-green); box-shadow: 0 0 20px var(--neon-green); }
         .btn-inspect:disabled { opacity: 0.5; cursor: not-allowed; background: #333; border-color: #555; color: #888; box-shadow: none; }
         
-        /* 🌟 ΝΕΑ ΚΟΥΜΠΙΑ ΓΙΑ ΤΗΝ ΚΕΝΤΡΙΚΗ ΚΑΡΤΑ 🌟 */
         .btn-card-inspect { width: 100%; padding: 14px; background: rgba(176, 38, 255, 0.1); border: 1px solid var(--neon-purple); color: #fff; font-family: var(--font-ui); font-weight: 700; font-size: 1rem; text-transform: uppercase; cursor: pointer; transition: 0.3s; margin-top: 5px; border-radius: 6px; }
         .btn-card-inspect:hover { background: var(--neon-purple); color: #fff; box-shadow: 0 0 20px var(--neon-purple); }
         
@@ -162,9 +150,9 @@
         .btn-card-compare:hover { background: rgba(204, 255, 0, 0.1); color: #fff; border-style: solid; box-shadow: 0 0 10px var(--neon-green); }
         .btn-card-compare.selected { background: var(--neon-green); color: #000; border: 1px solid var(--neon-green); font-weight: bold; box-shadow: 0 0 15px var(--neon-green); }
         
-        /* 🌟 ΕΙΚΟΝΙΔΙΟ INFO ΓΙΑ ΤΑ SPECS 🌟 */
-        .spec-info-btn { color: var(--neon-purple); cursor: pointer; margin-left: 8px; font-size: 1.1rem; transition: 0.2s ease; vertical-align: middle; }
-        .spec-info-btn:hover { color: #fff; text-shadow: 0 0 10px var(--neon-purple); transform: scale(1.2); }
+        .lc-btn-buy { padding: 12px; border: 1px solid var(--neon-green); background: rgba(204,255,0,0.08); color: var(--neon-green); font-family: var(--font-ui); font-size: 0.9rem; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; border-radius: 6px; cursor: pointer; transition: all 0.2s; animation: lc-pulse 2.5s ease-in-out infinite; }
+        @keyframes lc-pulse { 0%,100%{box-shadow:0 0 0 0 rgba(204,255,0,0)} 50%{box-shadow:0 0 15px rgba(204,255,0,0.25)} }
+        .lc-btn-buy:hover { background: rgba(204,255,0,0.15); }
 
         .carousel-wrapper { display: flex; align-items: center; gap: 40px; transition: 0.3s; }
         .nav-arrow { background: rgba(255,255,255,0.05); color: #fff; width: 40px; height: 80px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; cursor: pointer; clip-path: polygon(0 20%, 100% 0, 100% 100%, 0 80%); transition: 0.3s; }
@@ -201,36 +189,35 @@
         .vote-btn { width: 100%; padding: 15px; background: var(--neon-purple); color: #fff; border: none; font-family: var(--font-ui); font-weight: 800; font-size: 1.2rem; cursor: pointer; border-radius: 8px; letter-spacing: 2px; }
         .vote-btn:disabled { background: #333; cursor: not-allowed; color: #666; }
         .timer-text { font-family: monospace; color: #aaa; margin-top: 10px; font-size: 0.9rem; }
+        
         .modal-overlay, .gallery-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 6000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(15px); }
         .modal-overlay.active, .gallery-overlay.active { display: flex; animation: fadeInUp 0.3s forwards; }
         @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         .modal-content { width: 600px; background: #0a0a0c; border: 1px solid #333; padding: 40px; border-radius: 20px; position: relative; max-height: 80vh; overflow-y: auto; box-shadow: 0 0 50px rgba(0,0,0,0.8); }
-        .close-modal, .close-btn { position: absolute; top: 20px; right: 20px; font-size: 1.5rem; cursor: pointer; color: #666; }
+        .close-modal, .close-btn { position: absolute; top: 20px; right: 20px; font-size: 1.5rem; cursor: pointer; color: #666; z-index: 100; }
         .modal-title { font-family: var(--font-ui); font-size: 2rem; color: #fff; margin-bottom: 20px; border-bottom: 1px solid #333; padding-bottom: 10px; }
         .modal-text { color: #aaa; line-height: 1.6; font-size: 0.95rem; }
         .auth-form { display: flex; flex-direction: column; gap: 15px; margin-top: 20px; }
         .auth-input { background: #111; border: 1px solid #333; padding: 12px; color: #fff; border-radius: 6px; outline: none; }
         .auth-input:focus { border-color: var(--neon-green); }
-        .listing-card { width: 1100px; height: 650px; background: #08080a; border: 1px solid #222; display: grid; grid-template-columns: 1.2fr 0.8fr; border-radius: 20px; overflow: hidden; }
-        .listing-visual { background: radial-gradient(circle at center, #111 0%, #000 100%); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; border-right: 1px solid #222; }
-        .listing-info { padding: 50px; display: flex; flex-direction: column; justify-content: center; background: #0b0b0e; }
-        .g-title { font-family: var(--font-ui); font-size: 3rem; font-weight: 800; line-height: 1; margin-bottom: 10px; text-transform: uppercase; color: #fff; }
-        .g-price-live { font-family: var(--font-ui); font-size: 2.5rem; color: var(--neon-green); font-weight: bold; }
-        .g-price-old { font-family: var(--font-ui); font-size: 1.5rem; color: #666; text-decoration: line-through; }
-        .gallery-desc-box { margin-bottom: 30px; color: #ccc; font-size: 0.95rem; line-height: 1.5; font-style: italic; border-left: 3px solid var(--neon-green); padding-left: 15px; }
-        .spec-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 30px; }
-        .spec-row { border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 8px; }
-        .spec-label { font-size: 0.65rem; color: #666; text-transform: uppercase; letter-spacing: 1px; }
-        .spec-val { font-size: 1rem; font-weight: bold; color: #ddd; }
-        .visual-main-row { display: flex; align-items: center; justify-content: space-between; width: 100%; height: 400px; gap: 20px; }
-        .gallery-img-container { flex: 1; height: 100%; display: flex; align-items: center; justify-content: center; }
-        .big-img { max-width: 100%; max-height: 100%; object-fit: contain; }
-        .thumb-strip { display: flex; gap: 10px; margin-top: 30px; }
-        .g-thumb { width: 50px; height: 50px; border: 2px solid transparent; border-radius: 6px; cursor: pointer; object-fit: cover; opacity: 0.6; }
-        .g-thumb.active { opacity: 1; border-color: var(--neon-green); }
-        .g-arrow { background: transparent; border: 1px solid rgba(255,255,255,0.1); color: #fff; width: 40px; height: 60px; font-size: 1.5rem; cursor: pointer; display: flex; align-items: center; justify-content: center; border-radius: 6px; }
+
+        /* 🌟 YU-GI-OH FLIP ANIMATION STYLES 🌟 */
+        .flip-card-container { width: 900px; max-width: 100%; height: 500px; perspective: 1500px; }
+        .card-inner { width: 100%; height: 100%; position: relative; transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275); transform-style: preserve-3d; }
+        .is-flipped { transform: rotateY(180deg); }
+        .card-front, .card-back { position: absolute; inset: 0; backface-visibility: hidden; border-radius: 20px; background: #08080a; border: 1px solid #222; overflow: hidden; box-shadow: 0 40px 100px rgba(0,0,0,0.9); }
+        .card-front { display: grid; grid-template-columns: 1.1fr 0.9fr; z-index: 2; }
+        .card-back { transform: rotateY(180deg); padding: 40px; display: flex; flex-direction: column; background: radial-gradient(circle at center, #0a0a0c 0%, #000 100%); }
+        .listing-visual { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 30px; border-right: 1px solid #1a1a1a; background: radial-gradient(circle at 40% 50%, #0d0d10 0%, #000 100%); }
+        .listing-info { padding: 40px 30px; display: flex; flex-direction: column; justify-content: center; background: #0b0b0e; gap: 10px; }
+        .lc-top-badge { display: flex; align-items: center; gap: 8px; }
         .config-row { margin-bottom: 20px; }
         .config-select { width: 100%; background: #111; color: #fff; padding: 10px; border: 1px solid #333; border-radius: 6px; font-family: var(--font-ui); }
+        
+        /* 🌟 ΕΙΚΟΝΙΔΙΟ INFO ΓΙΑ ΤΑ SPECS 🌟 */
+        .spec-info-btn { color: var(--neon-purple); cursor: pointer; font-size: 1.1rem; transition: 0.2s ease; vertical-align: middle; }
+        .spec-info-btn:hover { color: #fff; text-shadow: 0 0 10px var(--neon-purple); transform: scale(1.2); }
+
         .compare-grid { display: grid; grid-template-columns: 1fr 1px 1fr; gap: 30px; width: 1100px; align-items: start; }
         .compare-divider { background: #222; height: 100%; width: 1px; }
         .compare-col { text-align: center; padding: 10px; }
@@ -294,29 +281,22 @@
             flex-direction: column;
         }
         #cli-overlay.active { display: flex; }
-        .cli-close { position: absolute; top: 15px; right: 20px; color: #0f0; font-size: 1.2rem; cursor: pointer; transition: 0.3s; }
+        .cli-close { position: absolute; top: 15px; right: 20px; color: #0f0; font-size: 1.2rem; cursor: pointer; transition: 0.3s; z-index:100; }
         .cli-close:hover { color: #fff; text-shadow: 0 0 10px #0f0; }
         .cli-output { flex: 1; overflow-y: auto; white-space: pre-wrap; margin-bottom: 20px; }
         .cli-input-line { display: flex; gap: 10px; align-items: center; border-top: 1px solid #333; padding-top: 10px; }
         .cli-prompt { color: var(--neon-green); font-weight: bold; }
         #cli-input { background: transparent; border: none; color: #fff; flex: 1; outline: none; font-family: monospace; font-size: 1.1rem; }
 
-        /* RESPONSIVE CSS (MOBILE & TABLET) - COMPACT PRO WAY */
+        /* RESPONSIVE CSS (MOBILE & TABLET) */
         @media (max-width: 1024px) {
             body { overflow-y: auto; overflow-x: hidden; padding-bottom: 80px; }
-            
-            .bg-layer {
-                background-size: contain; 
-                background-position: center center;
-            }
-
+            .bg-layer { background-size: contain; background-position: center center; }
             header { position: relative; height: auto; flex-direction: column; padding: 10px; gap: 10px; }
             .right-header-group { width: 100%; justify-content: center; }
             .nav-bar { position: relative; left: 0; transform: none; width: 100%; overflow-x: auto; justify-content: flex-start; padding-bottom: 5px; }
-            
             .stage { position: relative; inset: auto; display: flex; flex-direction: column; padding: 10px 0 90px 0; margin-top: 0; }
             .carousel-wrapper { width: 100%; position: relative; padding: 0 10px; justify-content: center; gap: 5px; }
-            
             .holo-card { width: 95%; max-width: 400px; padding: 15px; margin: 0 auto; }
             .system-select-label { font-size: 1rem; margin-bottom: 10px; }
             .hero-img { height: 140px; margin-bottom: 5px; }
@@ -326,72 +306,34 @@
             .stock-badge { margin-bottom: 5px; padding: 3px 8px; }
             .perf-container { margin-bottom: 10px; padding: 5px; }
             .btn-inspect { padding: 10px; font-size: 0.9rem; }
-            
             .nav-arrow { position: absolute; z-index: 10; height: 50px; top: 50%; transform: translateY(-50%); width: 30px; font-size: 1.2rem; }
             .nav-arrow:first-child { left: 0px; }
             .nav-arrow:last-child { right: 0px; }
-
-            .left-sidebar { 
-                position: fixed; top: auto; bottom: 0; left: 0; width: 100%; height: 60px; 
-                flex-direction: row; justify-content: space-around; align-items: center; 
-                border-right: none; border-top: 1px solid var(--neon-green); 
-                background: #000; z-index: 9000; padding: 0 5px;
-            }
+            .left-sidebar { position: fixed; top: auto; bottom: 0; left: 0; width: 100%; height: 60px; flex-direction: row; justify-content: space-around; align-items: center; border-right: none; border-top: 1px solid var(--neon-green); background: #000; z-index: 9000; padding: 0 5px; }
             .left-sidebar .side-group { flex-direction: row; width: auto; gap: 5px; }
             .left-sidebar .side-divider { display: none; }
             .left-sidebar .side-btn { margin: 0; width: 40px; height: 40px; font-size: 1.2rem; }
             .chat-toggle { margin-top: 0 !important; width: 40px; height: 40px; }
-
-            .right-sidebar { 
-                position: relative; top: auto; right: auto; width: 95%; max-width: 500px; 
-                height: auto; max-height: 400px; margin: 20px auto; border-left: none; 
-                border: 1px solid rgba(176,38,255,0.3); border-radius: 12px; 
-                background: rgba(0,0,0,0.8); padding: 15px;
-            }
-
-            .listing-card, .compare-grid { width: 95%; height: auto; grid-template-columns: 1fr; overflow-y: visible; margin-top: 20px; }
-            .listing-visual { border-right: none; border-bottom: 1px solid #333; height: auto; padding-bottom: 20px; }
-            .visual-main-row { height: auto; }
+            .right-sidebar { position: relative; top: auto; right: auto; width: 95%; max-width: 500px; height: auto; max-height: 400px; margin: 20px auto; border-left: none; border: 1px solid rgba(176,38,255,0.3); border-radius: 12px; background: rgba(0,0,0,0.8); padding: 15px; }
+            
+            .flip-card-container { width: 95%; height: auto; min-height: 600px; }
+            .card-front { grid-template-columns: 1fr; height: auto; position: relative; }
+            .card-back { transform: rotateY(0); position: relative; display:none; } /* Simple fallback for mobile */
+            .is-flipped .card-front { display:none; }
+            .is-flipped .card-back { display:flex; transform: rotateY(0); }
+            
+            .listing-visual { border-right: none; border-bottom: 1px solid #1a1a1a; padding-bottom: 20px; }
             .footer { display: none; } 
             .compare-float { bottom: 80px; padding: 10px 20px; font-size: 0.9rem; } 
             .vote-container { width: 95%; padding: 15px; }
+            .g-title { font-size: 2rem; }
         }
 
         /* DRIVER.JS CYBERPUNK THEME */
-        .driver-popover {
-            background-color: #0a0a0c !important;
-            border: 1px solid var(--neon-green) !important;
-            color: #fff !important;
-            font-family: var(--font-body) !important;
-            box-shadow: 0 0 20px rgba(204, 255, 0, 0.2) !important;
-        }
-        .driver-popover-title {
-            font-family: var(--font-ui) !important;
-            color: var(--neon-green) !important;
-            font-size: 1.5rem !important;
-            letter-spacing: 1px !important;
-        }
-        .driver-popover-description {
-            color: #aaa !important;
-            font-size: 0.9rem !important;
-        }
-        .driver-popover-footer button {
-            background-color: #222 !important;
-            color: #fff !important;
-            border: 1px solid #444 !important;
-            text-shadow: none !important;
-            font-family: var(--font-ui) !important;
-            font-weight: bold !important;
-            border-radius: 4px !important;
-        }
-        .driver-popover-footer button:hover {
-            background-color: var(--neon-green) !important;
-            color: #000 !important;
-            border-color: var(--neon-green) !important;
-        }
-        .driver-popover-progress-text {
-            color: #888 !important;
-        }
-        .driver-popover-arrow {
-            border-color: var(--neon-green) !important;
-        }
+        .driver-popover { background-color: #0a0a0c !important; border: 1px solid var(--neon-green) !important; color: #fff !important; font-family: var(--font-body) !important; box-shadow: 0 0 20px rgba(204, 255, 0, 0.2) !important; }
+        .driver-popover-title { font-family: var(--font-ui) !important; color: var(--neon-green) !important; font-size: 1.5rem !important; letter-spacing: 1px !important; }
+        .driver-popover-description { color: #aaa !important; font-size: 0.9rem !important; }
+        .driver-popover-footer button { background-color: #222 !important; color: #fff !important; border: 1px solid #444 !important; text-shadow: none !important; font-family: var(--font-ui) !important; font-weight: bold !important; border-radius: 4px !important; }
+        .driver-popover-footer button:hover { background-color: var(--neon-green) !important; color: #000 !important; border-color: var(--neon-green) !important; }
+        .driver-popover-progress-text { color: #888 !important; }
+        .driver-popover-arrow { border-color: var(--neon-green) !important; }
