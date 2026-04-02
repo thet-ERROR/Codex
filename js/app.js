@@ -381,7 +381,7 @@ const API = 'https://codex-backend-9kij.onrender.com/api';
             setTimeout(()=>document.querySelectorAll('.bar-fill').forEach(b=>b.style.width=b.getAttribute('data-width')), 50); 
         }
 
-        // 🌟 ΑΝΑΝΕΩΜΕΝΟ OPENGALLERY (ΓΕΜΙΖΕΙ FRONT & BACK ΟΨΗ ΤΟΥ FLIP) 🌟
+        // 🌟 ΑΝΑΝΕΩΜΕΝΟ OPENGALLERY (ΓΕΜΙΖΕΙ FRONT & BACK ΟΨΗ) 🌟
         function openGallery() { 
             currentGalleryPC = filtered[index]; 
             galleryIndex = 0; 
@@ -412,7 +412,7 @@ const API = 'https://codex-backend-9kij.onrender.com/api';
             for(const [k,v] of Object.entries(currentGalleryPC.specs)) { 
                 const safeKey = k.replace(/'/g, "\\'"); 
                 
-                // Η Μπροστινή όψη (Front) δείχνει μόνο 3 βασικά specs για να είναι καθαρή
+                // Front Side
                 if(k.toLowerCase() === 'cpu' || k.toLowerCase() === 'gpu' || k.toLowerCase() === 'ram') {
                     frontH += `
                     <div style="padding:10px; background:rgba(255,255,255,0.05); border:1px solid #222; border-radius:6px;">
@@ -421,14 +421,14 @@ const API = 'https://codex-backend-9kij.onrender.com/api';
                     </div>`;
                 }
 
-                // Η Πίσω όψη (Back) δείχνει όλα τα specs με το νέο Info Εικονίδιο!
+                // 🌟 Back Side (Με τα Legendary Styles και το Info Icon) 🌟
                 backH += `
-                <div class="spec-row">
-                    <div style="display:flex; justify-content:space-between; align-items:center;">
-                        <div class="spec-label">${k.toUpperCase()}</div>
-                        <i class="ph-bold ph-info spec-info-btn" onclick="playClick(); openSpecInfo('${safeKey}')"></i>
+                <div class="spec-row-back">
+                    <div class="spec-label-back">
+                        ${k.toUpperCase()}
+                        <i class="ph-bold ph-info spec-info-btn" style="color:var(--legendary-orange)" onclick="playClick(); openSpecInfo('${safeKey}')"></i>
                     </div>
-                    <div class="spec-val" style="margin-top:5px;">${v}</div>
+                    <div class="spec-val-back">${v}</div>
                 </div>`; 
             } 
             
