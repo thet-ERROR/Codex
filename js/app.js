@@ -381,63 +381,65 @@ const API = 'https://codex-backend-9kij.onrender.com/api';
             setTimeout(()=>document.querySelectorAll('.bar-fill').forEach(b=>b.style.width=b.getAttribute('data-width')), 50); 
         }
 
-        function selectStorageUI(el, extra) {
-            document.querySelectorAll('.lc-storage-opt').forEach(o => o.classList.remove('active'));
-            el.classList.add('active');
-            document.getElementById('storage-select').value = extra;
-            updatePrice();
-        }
-        
-        function updatePrice() { const extra = parseInt(document.getElementById('storage-select').value); const base = parseInt(currentGalleryPC.price.replace(/[^0-9]/g, '')); document.getElementById('g-price-live').innerText = "€" + (base + extra); }
-        function removeFromCart(i) { cart.splice(i, 1); localStorage.setItem('codex_cart', JSON.stringify(cart)); updateCartUI(); }
-        function handleCheckout() { if(cart.length === 0) return alert("Cart is empty!"); let msg = "Hello! I want to order:%0A%0A"; let total = 0; cart.forEach(item => { msg += `- ${item.name} (${item.option}): €${item.price}%0A`; total += item.price; }); msg += `%0A*TOTAL: €${total}*`; window.open(`https://wa.me/306912345678?text=${msg}`, '_blank'); }
-        async function submitReviewCode() { const code = document.getElementById('rc-code').value; const user = document.getElementById('rc-user').value; const rating = document.getElementById('rc-rating').value; const text = document.getElementById('rc-text').value; if(!code || !user || !text) return alert("Please fill all fields"); const res = await fetch(`${API}/submit-review`, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ code, user, rating, text }) }); const data = await res.json(); if(data.success) { showToast("REVIEW VERIFIED & POSTED", "achievement"); closeModal('review-code-modal'); const currentPCID = filtered[index] ? filtered[index]._id : null; const resDrops = await fetch(`${API}/drops`); inventory = await resDrops.json(); renderGlobalReviews(); renderCard(); } else { alert(data.error); } }
-        function showToast(msg, type) { const t = document.createElement('div'); t.className = `toast ${type}`; t.innerHTML = type === 'achievement' ? `<i class="ph-fill ph-trophy"></i> ${msg}` : `<i class="ph-bold ph-check-circle"></i> ${msg}`; document.getElementById('toast-container').appendChild(t); setTimeout(() => t.remove(), 3000); }
-        
+        // 🌟 ΑΝΑΝΕΩΜΕΝΟ OPENGALLERY (ΓΕΜΙΖΕΙ FRONT & BACK ΟΨΗ ΤΟΥ FLIP) 🌟
         function openGallery() { 
             currentGalleryPC = filtered[index]; 
             galleryIndex = 0; 
+            
+            // Επαναφορά της κάρτας στην μπροστινή όψη αν είχε μείνει γυρισμένη
+            const cardInner = document.getElementById('lc-inner');
+            if(cardInner) cardInner.classList.remove('is-flipped');
+
             document.getElementById('g-title').innerText = currentGalleryPC.name; 
+            document.getElementById('g-desc').innerText = currentGalleryPC.description || "Detailed specifications for this system.";
+            
             const basePrice = parseInt(currentGalleryPC.price.replace(/[^0-9]/g, '')); 
             document.getElementById('g-price-live').innerText = "€" + basePrice; 
             document.getElementById('g-price-old').innerText = "€" + Math.floor(basePrice * 1.2); 
             
             document.getElementById('storage-select').value = "0"; 
-            document.querySelectorAll('.lc-storage-opt').forEach(o => o.classList.remove('active'));
-            if(document.querySelectorAll('.lc-storage-opt')[0]) {
-                document.querySelectorAll('.lc-storage-opt')[0].classList.add('active');
-            }
 
             const stock = currentGalleryPC.stock || 0; 
             const badge = document.getElementById('g-stock-badge'); 
             const addBtn = document.getElementById('g-add-cart'); 
-            const buyBtn = document.getElementById('g-buy-btn'); 
-            if(stock === 0) { badge.innerText = "SOLD OUT"; badge.className = "stock-badge out"; addBtn.disabled = true; buyBtn.disabled = true; } else if(stock < 5) { badge.innerText = `LOW STOCK: ${stock}`; badge.className = "stock-badge low"; addBtn.disabled = false; buyBtn.disabled = false; } else { badge.innerText = "IN STOCK"; badge.className = "stock-badge in"; addBtn.disabled = false; buyBtn.disabled = false; } 
+            if(stock === 0) { badge.innerText = "SOLD OUT"; badge.className = "stock-badge out"; addBtn.disabled = true; } 
+            else if(stock < 5) { badge.innerText = `LOW STOCK: ${stock}`; badge.className = "stock-badge low"; addBtn.disabled = false; } 
+            else { badge.innerText = "IN STOCK"; badge.className = "stock-badge in"; addBtn.disabled = false; } 
             
-            let h=""; 
-            let hoverH = `<div class="specs-title">◈ SYSTEM SPECS</div>`;
+            let frontH = ""; 
+            let backH = ""; 
+            
             for(const [k,v] of Object.entries(currentGalleryPC.specs)) { 
-                const safeKey = k.replace(/'/g, "\\'"); // Ασφάλεια για τα quotes
-                h+=`<div class="spec-row">
-                        <div style="display:flex; justify-content:space-between; align-items:center;">
-                            <div class="spec-label">${k.toUpperCase()}</div>
-                            <i class="ph-bold ph-info spec-info-btn" onclick="playClick(); openSpecInfo('${safeKey}')"></i>
-                        </div>
-                        <div class="spec-val">${v}</div>
-                    </div>`; 
-                hoverH += `<div class="s-line"><b>${k.toUpperCase()}</b><span>${v}</span></div>`;
+                const safeKey = k.replace(/'/g, "\\'"); 
+                
+                // Η Μπροστινή όψη (Front) δείχνει μόνο 3 βασικά specs για να είναι καθαρή
+                if(k.toLowerCase() === 'cpu' || k.toLowerCase() === 'gpu' || k.toLowerCase() === 'ram') {
+                    frontH += `
+                    <div style="padding:10px; background:rgba(255,255,255,0.05); border:1px solid #222; border-radius:6px;">
+                        <div style="font-size:0.65rem; color:#666; text-transform:uppercase; font-weight:bold;">${k}</div>
+                        <div style="font-size:0.9rem; color:#fff; font-weight:bold; margin-top:3px;">${v}</div>
+                    </div>`;
+                }
+
+                // Η Πίσω όψη (Back) δείχνει όλα τα specs με το νέο Info Εικονίδιο!
+                backH += `
+                <div class="spec-row">
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <div class="spec-label">${k.toUpperCase()}</div>
+                        <i class="ph-bold ph-info spec-info-btn" onclick="playClick(); openSpecInfo('${safeKey}')"></i>
+                    </div>
+                    <div class="spec-val" style="margin-top:5px;">${v}</div>
+                </div>`; 
             } 
-            document.getElementById('g-specs').innerHTML = h; 
             
-            // Το κρατάμε σε περίπτωση που έχεις αφήσει το .specs-box-main του Claude στο HTML του index
-            if (document.getElementById('g-specs-hover')) {
-                document.getElementById('g-specs-hover').innerHTML = hoverH;
-            }
+            document.getElementById('g-specs-front').innerHTML = frontH; 
+            document.getElementById('g-specs-back').innerHTML = backH; 
             
             document.getElementById('g-main-img').src = currentGalleryPC.images[0]; 
             document.getElementById('gallery-overlay').classList.add('active'); 
         }
 
+        // 🌟 ΝΕΑ ΣΥΝΑΡΤΗΣΗ ΠΟΥ ΑΝΟΙΓΕΙ ΤΟ INFO MODAL 🌟
         function openSpecInfo(key) {
             const pc = currentGalleryPC;
             if(!pc) return;
@@ -451,6 +453,14 @@ const API = 'https://codex-backend-9kij.onrender.com/api';
             }
             
             openModal('spec-info-modal');
+        }
+
+        // 🌟 ΝΕΑ ΣΥΝΑΡΤΗΣΗ ΓΙΑ ΤΟ YU-GI-OH FLIP 🌟
+        function toggleCardFlip() {
+            const cardInner = document.getElementById('lc-inner');
+            if (cardInner) {
+                cardInner.classList.toggle('is-flipped');
+            }
         }
 
         function updateGalleryImage() { document.getElementById('g-main-img').src = currentGalleryPC.images[galleryIndex]; }
