@@ -339,7 +339,6 @@ const API = 'https://codex-backend-9kij.onrender.com/api';
         function nextPC() { if(filtered.length) { index=(index+1)%filtered.length; renderCard(); } }
         function prevPC() { if(filtered.length) { index=(index-1+filtered.length)%filtered.length; renderCard(); } }
         
-        /* 🌟 ΚΑΘΑΡΗ ΕΙΚΟΝΑ ΧΩΡΙΣ HOVER + ΝΕΑ ΧΡΩΜΑΤΑ ΚΟΥΜΠΙΩΝ 🌟 */
         function renderCard() { 
             const c = document.getElementById('main-card'); 
             if(!filtered.length) { c.innerHTML = "<h3>NO SIGNAL</h3>"; return; } 
@@ -406,22 +405,33 @@ const API = 'https://codex-backend-9kij.onrender.com/api';
             else if(stock < 5) { badge.innerText = `LOW STOCK: ${stock}`; badge.className = "stock-badge low"; addBtn.disabled = false; } 
             else { badge.innerText = "IN STOCK"; badge.className = "stock-badge in"; addBtn.disabled = false; } 
             
+            let frontH = ""; 
             let backH = ""; 
             
             for(const [k,v] of Object.entries(currentGalleryPC.specs)) { 
                 const safeKey = k.replace(/'/g, "\\'"); 
                 
+                // Front Side
+                if(k.toLowerCase() === 'cpu' || k.toLowerCase() === 'gpu' || k.toLowerCase() === 'ram') {
+                    frontH += `
+                    <div style="padding:10px; background:rgba(255,255,255,0.05); border:1px solid #222; border-radius:6px;">
+                        <div style="font-size:0.65rem; color:#666; text-transform:uppercase; font-weight:bold;">${k}</div>
+                        <div style="font-size:0.9rem; color:#fff; font-weight:bold; margin-top:3px;">${v}</div>
+                    </div>`;
+                }
+
                 // 🌟 Back Side (Με τα Legendary Styles και το Info Icon) 🌟
                 backH += `
                 <div class="spec-row-back">
                     <div class="spec-label-back">
                         ${k.toUpperCase()}
-                        <i class="ph-bold ph-info spec-info-btn" style="color:var(--legendary-orange)" onclick="playClick(); openSpecInfo('${safeKey}')"></i>
+                        <i class="ph-bold ph-info spec-info-btn" style="color:var(--neon-purple)" onclick="playClick(); openSpecInfo('${safeKey}')"></i>
                     </div>
                     <div class="spec-val-back">${v}</div>
                 </div>`; 
             } 
             
+            document.getElementById('g-specs-front').innerHTML = frontH; 
             document.getElementById('g-specs-back').innerHTML = backH; 
 
             // 🌟 Populate Game Benchmarks 🌟
