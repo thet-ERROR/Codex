@@ -350,6 +350,14 @@ const API = 'https://codex-backend-9kij.onrender.com/api';
             const fakeOldPrice = Math.floor(priceVal * 1.2); 
             const stock = pc.stock || 0; 
             
+            // Υπολογισμός Tier Badge
+            let mScore = pc.multitasking || 0;
+            let tier = mScore > 80 ? 'S-TIER' : (mScore > 50 ? 'A-TIER' : 'B-TIER');
+            let tierColor = mScore > 80 ? 'var(--legendary-orange)' : (mScore > 50 ? 'var(--neon-purple)' : 'var(--neon-green)');
+
+            let cpuText = pc.specs && pc.specs.cpu ? pc.specs.cpu.split(' ').slice(0,2).join(' ') : 'CPU';
+            let gpuText = pc.specs && pc.specs.gpu ? pc.specs.gpu.split(' ').slice(0,2).join(' ') : 'GPU';
+
             let stockHTML = ''; 
             if(stock === 0) stockHTML = '<div class="stock-badge out">SOLD OUT</div>'; 
             else if(stock < 5) stockHTML = `<div class="stock-badge low">LOW STOCK: ${stock} UNITS</div>`; 
@@ -364,8 +372,18 @@ const API = 'https://codex-backend-9kij.onrender.com/api';
             }); 
             
             c.innerHTML = `
-                <div class="holo-card-inner">
+                <div class="holo-card-inner" style="overflow: hidden; position: relative;">
+                    <div class="bg-watermark" style="font-size: 4rem;">${pc.name}</div>
+                    <div class="tier-badge" style="border-color:${tierColor}; box-shadow: 0 0 10px ${tierColor}40;">${tier}</div>
+                    <div class="grid-decal" style="bottom: 50%; opacity: 0.1;"></div>
+                    
                     <img src="${pc.images[0]||'assets/images/bg.jpg'}" class="hero-img">
+                    
+                    <div class="quick-specs-row" style="margin-bottom: 15px;">
+                        <div class="quick-pill"><i class="ph-bold ph-cpu"></i> ${cpuText}</div>
+                        <div class="quick-pill"><i class="ph-bold ph-graphics-card"></i> ${gpuText}</div>
+                    </div>
+
                     ${stockHTML}
                     <div class="pc-title">${pc.name}</div>
                     <div class="card-price-row">
@@ -381,18 +399,40 @@ const API = 'https://codex-backend-9kij.onrender.com/api';
             setTimeout(()=>document.querySelectorAll('.bar-fill').forEach(b=>b.style.width=b.getAttribute('data-width')), 50); 
         }
 
-        // 🌟 ΑΝΑΝΕΩΜΕΝΟ OPENGALLERY (ΓΕΜΙΖΕΙ FRONT & BACK ΟΨΗ ΜΕ ΤΑ ΝΕΑ BENCHMARKS) 🌟
+        // 🌟 ΑΝΑΝΕΩΜΕΝΟ OPENGALLERY 🌟
         function openGallery() { 
             currentGalleryPC = filtered[index]; 
             galleryIndex = 0; 
             
-            // Επαναφορά της κάρτας στην μπροστινή όψη αν είχε μείνει γυρισμένη
             const cardInner = document.getElementById('lc-inner');
             if(cardInner) cardInner.classList.remove('is-flipped');
 
             document.getElementById('g-title').innerText = currentGalleryPC.name; 
             document.getElementById('g-desc').innerText = currentGalleryPC.description || "Detailed specifications for this system.";
             
+            // Watermark & Tier Badge
+            document.getElementById('g-watermark').innerText = currentGalleryPC.name;
+            
+            let mScore = currentGalleryPC.multitasking || 0;
+            let tier = mScore > 80 ? 'S-TIER' : (mScore > 50 ? 'A-TIER' : 'B-TIER');
+            let tierColor = mScore > 80 ? 'var(--legendary-orange)' : (mScore > 50 ? 'var(--neon-purple)' : 'var(--neon-green)');
+            
+            let badgeEl = document.getElementById('g-tier-badge');
+            badgeEl.innerText = tier;
+            badgeEl.style.borderColor = tierColor;
+            badgeEl.style.boxShadow = `0 0 15px ${tierColor}40`;
+
+            // Quick Spec Pills
+            let cpuText = currentGalleryPC.specs.cpu ? currentGalleryPC.specs.cpu.split(' ').slice(0,2).join(' ') : 'CPU';
+            let gpuText = currentGalleryPC.specs.gpu ? currentGalleryPC.specs.gpu.split(' ').slice(0,2).join(' ') : 'GPU';
+            let ramText = currentGalleryPC.specs.ram ? currentGalleryPC.specs.ram.split(' ')[0] : 'RAM';
+            
+            document.getElementById('g-quick-specs').innerHTML = `
+                <div class="quick-pill"><i class="ph-bold ph-cpu"></i> ${cpuText}</div>
+                <div class="quick-pill"><i class="ph-bold ph-graphics-card"></i> ${gpuText}</div>
+                <div class="quick-pill"><i class="ph-bold ph-memory"></i> ${ramText}</div>
+            `;
+
             const basePrice = parseInt(currentGalleryPC.price.replace(/[^0-9]/g, '')); 
             document.getElementById('g-price-live').innerText = "€" + basePrice; 
             document.getElementById('g-price-old').innerText = "€" + Math.floor(basePrice * 1.2); 
@@ -411,7 +451,6 @@ const API = 'https://codex-backend-9kij.onrender.com/api';
             for(const [k,v] of Object.entries(currentGalleryPC.specs)) { 
                 const safeKey = k.replace(/'/g, "\\'"); 
                 
-                // 🌟 Back Side (Με τα Legendary Styles και το Info Icon) 🌟
                 backH += `
                 <div class="spec-row-back">
                     <div class="spec-label-back">
@@ -424,11 +463,10 @@ const API = 'https://codex-backend-9kij.onrender.com/api';
             
             document.getElementById('g-specs-back').innerHTML = backH; 
 
-            // 🌟 Populate Game Benchmarks 🌟
+            // Populate Game Benchmarks
             let benchH = "";
             if (currentGalleryPC.fps && currentGalleryPC.fps.length > 0) {
                 currentGalleryPC.fps.forEach(f => {
-                    // Προσωρινά settings μέχρι να τα προσθέσεις στο Admin Panel
                     let settings = "Competitive Settings / Low";
                     if(f.game.toLowerCase().includes('cyberpunk') || f.game.toLowerCase().includes('gta')) settings = "High / Ultra Settings";
                     
