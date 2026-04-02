@@ -88,8 +88,14 @@ Type 'help' for a list of commands.
             <div class="profile-container">
                 <div class="profile-btn" onclick="playClick(); toggleProfileMenu()"><i class="ph-fill ph-user-circle"></i></div>
                 <div class="profile-menu" id="profile-menu">
-                    <div id="guest-options"><div class="p-item action" onclick="playClick(); openModal('login')">SIGN IN</div><div class="p-item" onclick="playClick(); openModal('signup')">SIGN UP</div></div>
-                    <div id="user-options" class="hidden"><div style="text-align:center; color:#fff; margin-bottom:5px;" id="user-display">AGENT_01</div><div class="p-item" onclick="playClick(); logout()">SIGN OUT</div></div>
+                    <div id="guest-options">
+                        <div class="p-item action" onclick="playClick(); openModal('login')">SIGN IN</div>
+                        <div class="p-item" onclick="playClick(); openModal('signup')">SIGN UP</div>
+                    </div>
+                    <div id="user-options" class="hidden">
+                        <div style="text-align:center; color:#fff; margin-bottom:5px;" id="user-display">AGENT_01</div>
+                        <div class="p-item" onclick="playClick(); logout()">SIGN OUT</div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -103,19 +109,44 @@ Type 'help' for a list of commands.
             <button class="nav-arrow" onclick="playClick(); nextPC()"><i class="ph-bold ph-caret-right"></i></button>
         </div>
         <div class="starter-menu hidden" id="starter-menu">
-            <div class="pack-card" onclick="selectPack('gaming')"><i class="ph-duotone ph-game-controller pack-icon"></i><div class="pack-title">GAMING</div></div>
-            <div class="pack-card" onclick="selectPack('streaming')"><i class="ph-duotone ph-video-camera pack-icon"></i><div class="pack-title">STREAMING</div></div>
-            <div class="pack-card" onclick="selectPack('coding')"><i class="ph-duotone ph-code pack-icon"></i><div class="pack-title">CODING</div></div>
+            <div class="pack-card" onclick="selectPack('gaming')">
+                <i class="ph-duotone ph-game-controller pack-icon"></i>
+                <div class="pack-title">GAMING</div>
+            </div>
+            <div class="pack-card" onclick="selectPack('streaming')">
+                <i class="ph-duotone ph-video-camera pack-icon"></i>
+                <div class="pack-title">STREAMING</div>
+            </div>
+            <div class="pack-card" onclick="selectPack('coding')">
+                <i class="ph-duotone ph-code pack-icon"></i>
+                <div class="pack-title">CODING</div>
+            </div>
         </div>
-        <div class="holo-card hidden" id="gear-view"><div class="gear-container"><i class="ph-duotone ph-lock-key gear-lock"></i><h2 style="color:#fff;">ARMORY LOCKED</h2></div></div>
+        <div class="holo-card hidden" id="gear-view">
+            <div class="gear-container">
+                <i class="ph-duotone ph-lock-key gear-lock"></i>
+                <h2 style="color:#fff;">ARMORY LOCKED</h2>
+            </div>
+        </div>
         <div id="vote-view" class="hidden">
             <div class="vote-container">
-                <div class="vote-header-row"><span style="font-family:var(--font-ui); font-weight:800; color:var(--neon-purple); font-size:1.2rem;">COMMUNITY DROP</span><div class="info-icon" onclick="document.getElementById('vote-info-modal').style.display='flex'">?</div></div>
+                <div class="vote-header-row">
+                    <span style="font-family:var(--font-ui); font-weight:800; color:var(--neon-purple); font-size:1.2rem;">COMMUNITY DROP</span>
+                    <div class="info-icon" onclick="document.getElementById('vote-info-modal').style.display='flex'">?</div>
+                </div>
                 <h2 id="v-title" style="color:#fff; margin-bottom:5px; font-size:2rem; text-transform:uppercase;">LOADING...</h2>
                 <div id="v-price-display" style="color:var(--neon-green); font-family:var(--font-ui); font-weight:bold; font-size:1.5rem; margin-bottom:20px;"></div>
-                <div class="mystery-img-wrap"><img id="v-img" src="" class="mystery-img"><i class="ph-fill ph-lock-key lock-icon" id="v-lock"></i></div>
-                <div style="display:flex; justify-content:space-between; font-size:0.8rem; color:#ccc;"><span>PROGRESS</span><span id="v-count">0 / 0 VOTES</span></div>
-                <div class="vote-progress-wrap"><div class="vote-progress-fill" id="v-fill"></div></div>
+                <div class="mystery-img-wrap">
+                    <img id="v-img" src="" class="mystery-img">
+                    <i class="ph-fill ph-lock-key lock-icon" id="v-lock"></i>
+                </div>
+                <div style="display:flex; justify-content:space-between; font-size:0.8rem; color:#ccc;">
+                    <span>PROGRESS</span>
+                    <span id="v-count">0 / 0 VOTES</span>
+                </div>
+                <div class="vote-progress-wrap">
+                    <div class="vote-progress-fill" id="v-fill"></div>
+                </div>
                 <button class="vote-btn" id="v-btn" onclick="castVote()">AUTHORIZE DROP</button>
                 <button class="vote-btn hidden" id="v-buy-btn" onclick="buyVotePC()" style="background:#ccff00; color:#000; margin-top:10px;">SECURE NOW</button>
                 <div class="timer-text" id="v-timer">CALCULATING TIME...</div>
@@ -123,26 +154,39 @@ Type 'help' for a list of commands.
         </div>
     </div>
 
-    <div class="compare-float" id="compare-float" onclick="playClick(); openCompareModal()"><i class="ph-bold ph-scales"></i> VS MODE READY</div>
+    <div class="compare-float" id="compare-float" onclick="playClick(); openCompareModal()">
+        <i class="ph-bold ph-scales"></i> VS MODE READY
+    </div>
 
     <div class="chat-widget" id="chat-widget">
         <div class="chat-body">
             <div class="chat-top">CODEX AI</div>
-            <div class="chat-msgs" id="chat-msgs"><div class="msg bot">Online.</div></div>
+            <div class="chat-msgs" id="chat-msgs">
+                <div class="msg bot">Online.</div>
+            </div>
             <input class="chat-input" placeholder="Type..." onkeypress="if(event.key==='Enter'){sendChat(this)}">
         </div>
     </div>
 
+    <!-- 🌟 YU-GI-OH GALLERY OVERLAY 🌟 -->
     <div class="gallery-overlay" id="gallery-overlay">
         <div class="flip-card-container">
             <div class="card-inner" id="lc-inner">
                 
+                <!-- FRONT SIDE (ΕΙΚΟΝΑ & ΑΓΟΡΑ) -->
                 <div class="card-front">
                     <div class="close-modal" onclick="playClick(); closeModal('gallery-overlay')" style="position:absolute; top:20px; right:20px; z-index:10;"><i class="ph-bold ph-x"></i></div>
                     
                     <div class="listing-visual">
+                        <!-- ΝΕΑ AESTHETIC ELEMENTS -->
+                        <div class="bg-watermark" id="g-watermark">CODEX</div>
+                        <div class="tier-badge" id="g-tier-badge">S-TIER</div>
+                        <div class="grid-decal"></div>
+                        
                         <img src="" id="g-main-img" class="hero-img" alt="PC System">
-                        <div class="spec-grid" id="g-specs-front" style="margin-top: 20px;"></div>
+                        
+                        <!-- QUICK SPEC PILLS -->
+                        <div class="quick-specs-row" id="g-quick-specs"></div>
                     </div>
 
                     <div class="listing-info">
@@ -169,7 +213,7 @@ Type 'help' for a list of commands.
                         </div>
 
                         <div style="display:flex; gap:10px; margin-top:20px;">
-                            <button class="btn-card-inspect" onclick="playClick(); toggleCardFlip()" style="flex:1;">
+                            <button class="btn-card-inspect btn-card-inspect-breathe" onclick="playClick(); toggleCardFlip()" style="flex:1;">
                                 <i class="ph-bold ph-arrows-left-right"></i> FLIP TO SPECS
                             </button>
                             <button class="lc-btn-buy" id="g-add-cart" onclick="addToCart()" style="flex:1;">ADD TO CART</button>
@@ -177,6 +221,7 @@ Type 'help' for a list of commands.
                     </div>
                 </div>
 
+                <!-- BACK SIDE (RARE CARD AESTHETIC - NEON PURPLE) -->
                 <div class="card-back">
                     <div class="close-back" onclick="playClick(); toggleCardFlip()"><i class="ph-bold ph-arrow-u-up-left"></i></div>
                     
@@ -193,10 +238,11 @@ Type 'help' for a list of commands.
 
                     <div class="spec-grid-back" id="g-specs-back"></div>
 
+                    <!-- GAME BENCHMARKS -->
                     <div class="benchmarks-container" style="margin-top: 20px;">
                         <h3 style="color:var(--neon-purple); font-family:var(--font-ui); letter-spacing: 1px; margin-bottom: 10px; border-bottom: 1px solid rgba(176, 38, 255, 0.3); padding-bottom: 5px;">GAME BENCHMARKS (1080p)</h3>
                         <div class="benchmark-grid" id="g-benchmarks">
-                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -278,10 +324,14 @@ Type 'help' for a list of commands.
             <span class="close-modal" onclick="closeModal('review-code-modal')">X</span>
             <h2 class="modal-title">VERIFIED REVIEW</h2>
             <div class="auth-form">
-                <label style="color:#888; font-size:0.8rem;">ENTER ORDER CODE</label><input type="text" id="rc-code" class="auth-input" placeholder="CDX-XXXXXX">
-                <label style="color:#888; font-size:0.8rem;">YOUR NAME</label><input type="text" id="rc-user" class="auth-input" placeholder="Agent Name">
-                <label style="color:#888; font-size:0.8rem;">RATING (1-5)</label><input type="number" id="rc-rating" class="auth-input" min="1" max="5" value="5">
-                <label style="color:#888; font-size:0.8rem;">REVIEW</label><textarea id="rc-text" class="auth-input" style="height:80px; resize:none;" placeholder="System performance..."></textarea>
+                <label style="color:#888; font-size:0.8rem;">ENTER ORDER CODE</label>
+                <input type="text" id="rc-code" class="auth-input" placeholder="CDX-XXXXXX">
+                <label style="color:#888; font-size:0.8rem;">YOUR NAME</label>
+                <input type="text" id="rc-user" class="auth-input" placeholder="Agent Name">
+                <label style="color:#888; font-size:0.8rem;">RATING (1-5)</label>
+                <input type="number" id="rc-rating" class="auth-input" min="1" max="5" value="5">
+                <label style="color:#888; font-size:0.8rem;">REVIEW</label>
+                <textarea id="rc-text" class="auth-input" style="height:80px; resize:none;" placeholder="System performance..."></textarea>
                 <button class="btn-inspect" onclick="submitReviewCode()" style="margin-top:10px;">SUBMIT TRANSMISSION</button>
             </div>
         </div>
@@ -387,10 +437,37 @@ Type 'help' for a list of commands.
         </div>
     </div>
 
-    <div class="modal-overlay" id="vote-info-modal"><div class="modal-content"><div class="close-btn" onclick="document.getElementById('vote-info-modal').style.display='none'">X</div><h2 style="color:var(--neon-purple); margin-bottom:15px;">HOW IT WORKS</h2><p style="color:#ccc; font-size:0.9rem; line-height:1.6;">1. Voting opens at the specified date.<br>2. Reach the target votes before time expires.<br>3. Successful unlocks become available for purchase.</p></div></div>
-    <div class="modal-overlay" id="rules-modal"><div class="modal-content"><span class="close-modal" onclick="playClick(); closeModal('rules-modal')">X</span><h2>RULES</h2><p>1. First come first served.</p></div></div>
-    <div class="modal-overlay" id="help-modal"><div class="modal-content"><span class="close-modal" onclick="playClick(); closeModal('help-modal')">X</span><h2>HELP</h2><p>Contact support.</p></div></div>
-    <div class="modal-overlay" id="compare-modal"><div class="modal-content" style="width:1200px;"><span class="close-modal" onclick="playClick(); closeModal('compare-modal')">X</span><h2 style="text-align:center;">VS MODE</h2><div class="compare-grid" id="compare-grid"></div></div></div>
+    <div class="modal-overlay" id="vote-info-modal">
+        <div class="modal-content">
+            <div class="close-btn" onclick="document.getElementById('vote-info-modal').style.display='none'">X</div>
+            <h2 style="color:var(--neon-purple); margin-bottom:15px;">HOW IT WORKS</h2>
+            <p style="color:#ccc; font-size:0.9rem; line-height:1.6;">1. Voting opens at the specified date.<br>2. Reach the target votes before time expires.<br>3. Successful unlocks become available for purchase.</p>
+        </div>
+    </div>
+    
+    <div class="modal-overlay" id="rules-modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="playClick(); closeModal('rules-modal')">X</span>
+            <h2>RULES</h2>
+            <p>1. First come first served.</p>
+        </div>
+    </div>
+    
+    <div class="modal-overlay" id="help-modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="playClick(); closeModal('help-modal')">X</span>
+            <h2>HELP</h2>
+            <p>Contact support.</p>
+        </div>
+    </div>
+    
+    <div class="modal-overlay" id="compare-modal">
+        <div class="modal-content" style="width:1200px;">
+            <span class="close-modal" onclick="playClick(); closeModal('compare-modal')">X</span>
+            <h2 style="text-align:center;">VS MODE</h2>
+            <div class="compare-grid" id="compare-grid"></div>
+        </div>
+    </div>
 
     <div class="footer">
         <div class="footer-left"><span>© 2026 PHOENIX CODEX DEMO</span></div>
