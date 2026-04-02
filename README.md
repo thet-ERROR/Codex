@@ -1,4 +1,3 @@
-
 # 🦅 Phoenix Codex - Cyberpunk PC Store DEMO
 🔗 Live Demo: https://codex-iota-nine.vercel.app
 A high-end custom PC retail platform featuring a cyberpunk aesthetic and AI integration.
