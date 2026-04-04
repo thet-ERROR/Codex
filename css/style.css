@@ -121,36 +121,36 @@
         .stage { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; z-index: 10; flex-direction: column; pointer-events: none; }
         .carousel-wrapper, .starter-menu, .holo-card, .vote-container { pointer-events: auto; }
         .system-select-label { font-family: var(--font-ui); font-size: 1.2rem; color: #fff; letter-spacing: 6px; font-weight: 800; margin-bottom: 20px; text-transform: uppercase; opacity: 0.8; }
-        .holo-card { width: 420px; background: var(--glass-dark); backdrop-filter: blur(40px); border: 1px solid var(--glass-border); border-radius: 16px; padding: 35px; text-align: center; position: relative; transition: 0.4s; box-shadow: 0 40px 100px rgba(0,0,0,0.8); display: flex; flex-direction: column; align-items: center; }
-        .hero-img { height: 200px; object-fit: contain; filter: drop-shadow(0 20px 40px rgba(0,0,0,0.5)); margin-bottom: 10px; transition: 0.3s; }
+        .holo-card { width: 420px; background: var(--glass-dark); backdrop-filter: blur(40px); border: 1px solid var(--glass-border); border-radius: 16px; padding: 35px; text-align: center; position: relative; transition: 0.4s; box-shadow: 0 40px 100px rgba(0,0,0,0.8); display: flex; flex-direction: column; align-items: center; overflow: hidden; }
+        .hero-img { height: 200px; object-fit: contain; filter: drop-shadow(0 20px 40px rgba(0,0,0,0.5)); margin-bottom: 10px; transition: 0.3s; z-index: 2; position: relative; }
         .pc-title { font-family: var(--font-ui); font-size: 2.5rem; font-weight: 800; line-height: 1; text-transform: uppercase; margin-bottom: 5px; color: #fff; }
         .card-price-row { display: flex; justify-content: center; align-items: baseline; gap: 10px; margin-bottom: 15px; }
         .pc-price { font-family: var(--font-ui); font-size: 2rem; color: var(--neon-green); font-weight: bold; }
         .pc-price-old { font-family: var(--font-ui); font-size: 1.2rem; color: #666; text-decoration: line-through; }
-        .stock-badge { padding: 4px 10px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; display: inline-block; margin-bottom: 10px; letter-spacing: 1px; }
+        .stock-badge { padding: 4px 10px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; display: inline-block; margin-bottom: 10px; letter-spacing: 1px; z-index: 2; position: relative;}
         .stock-badge.low { background: rgba(255, 170, 0, 0.2); color: var(--legendary-orange); border: 1px solid var(--legendary-orange); }
         .stock-badge.out { background: rgba(255, 51, 51, 0.2); color: var(--retro-red); border: 1px solid var(--retro-red); }
         .stock-badge.in { background: rgba(204, 255, 0, 0.2); color: var(--neon-green); border: 1px solid var(--neon-green); }
-        .perf-container { margin-bottom: 15px; background: rgba(0,0,0,0.3); padding: 8px; border-radius: 6px; width: 100%; }
+        .perf-container { margin-bottom: 15px; background: rgba(0,0,0,0.3); padding: 8px; border-radius: 6px; width: 100%; z-index: 2; position: relative;}
         .fps-row { display: flex; align-items: center; margin-bottom: 4px; }
         .fps-name { font-size: 0.7rem; font-weight: bold; width: 70px; text-align: left; color: #888; letter-spacing: 1px; }
         .bar-track { flex: 1; height: 3px; background: rgba(255,255,255,0.1); border-radius: 2px; margin: 0 10px; overflow: hidden; }
         .bar-fill { height: 100%; background: var(--neon-green); width: 0%; transition: 1s ease-out; }
         .fps-num { font-family: var(--font-ui); font-weight: bold; font-size: 0.8rem; color: #fff; width: 30px; text-align: right; }
         
-        /* ΚΟΥΜΠΙΑ ΚΑΡΤΑΣ (ΓΕΝΙΚΑ & NEON) */
-        .btn-inspect { width: 100%; padding: 14px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2); color: #fff; font-family: var(--font-ui); font-weight: 700; font-size: 1rem; text-transform: uppercase; cursor: pointer; transition: 0.3s; margin-top: 5px; border-radius: 6px; }
+        /* 🌟 ΚΟΥΜΠΙΑ ΚΑΡΤΑΣ (ΓΕΝΙΚΑ & NEON) 🌟 */
+        .btn-inspect { width: 100%; padding: 14px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2); color: #fff; font-family: var(--font-ui); font-weight: 700; font-size: 1rem; text-transform: uppercase; cursor: pointer; transition: 0.3s; margin-top: 5px; border-radius: 6px; position: relative; z-index: 2;}
         .btn-inspect:hover { background: var(--neon-green); color: #000; border-color: var(--neon-green); box-shadow: 0 0 20px var(--neon-green); }
         .btn-inspect:disabled { opacity: 0.5; cursor: not-allowed; background: #333; border-color: #555; color: #888; box-shadow: none; }
         
-        .btn-card-inspect { width: 100%; padding: 14px; background: rgba(176, 38, 255, 0.1); border: 1px solid var(--neon-purple); color: #fff; font-family: var(--font-ui); font-weight: 700; font-size: 1rem; text-transform: uppercase; cursor: pointer; transition: 0.3s; margin-top: 5px; border-radius: 6px; }
+        .btn-card-inspect { width: 100%; padding: 14px; background: rgba(176, 38, 255, 0.1); border: 1px solid var(--neon-purple); color: #fff; font-family: var(--font-ui); font-weight: 700; font-size: 1rem; text-transform: uppercase; cursor: pointer; transition: 0.3s; margin-top: 5px; border-radius: 6px; position: relative; z-index: 2;}
         .btn-card-inspect:hover { background: var(--neon-purple); color: #fff; box-shadow: 0 0 20px var(--neon-purple); }
         
-        .btn-card-compare { width: 100%; margin-top: 8px; font-size: 0.75rem; background: transparent; border: 1px dashed var(--neon-green); color: var(--neon-green); padding: 6px; cursor: pointer; font-family: var(--font-ui); transition: 0.3s; border-radius: 4px; text-transform: uppercase; }
+        .btn-card-compare { width: 100%; margin-top: 8px; font-size: 0.75rem; background: transparent; border: 1px dashed var(--neon-green); color: var(--neon-green); padding: 6px; cursor: pointer; font-family: var(--font-ui); transition: 0.3s; border-radius: 4px; text-transform: uppercase; position: relative; z-index: 2;}
         .btn-card-compare:hover { background: rgba(204, 255, 0, 0.1); color: #fff; border-style: solid; box-shadow: 0 0 10px var(--neon-green); }
         .btn-card-compare.selected { background: var(--neon-green); color: #000; border: 1px solid var(--neon-green); font-weight: bold; box-shadow: 0 0 15px var(--neon-green); }
         
-        .lc-btn-buy { padding: 12px; border: 1px solid var(--neon-green); background: rgba(204,255,0,0.08); color: var(--neon-green); font-family: var(--font-ui); font-size: 0.9rem; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; border-radius: 6px; cursor: pointer; transition: all 0.2s; animation: lc-pulse 2.5s ease-in-out infinite; }
+        .lc-btn-buy { padding: 12px; border: 1px solid var(--neon-green); background: rgba(204,255,0,0.08); color: var(--neon-green); font-family: var(--font-ui); font-size: 0.9rem; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; border-radius: 6px; cursor: pointer; transition: all 0.2s; animation: lc-pulse 2.5s ease-in-out infinite; position: relative; z-index: 2;}
         @keyframes lc-pulse { 0%,100%{box-shadow:0 0 0 0 rgba(204,255,0,0)} 50%{box-shadow:0 0 15px rgba(204,255,0,0.25)} }
         .lc-btn-buy:hover { background: rgba(204,255,0,0.15); }
 
@@ -202,52 +202,35 @@
         .auth-input:focus { border-color: var(--neon-green); }
 
         /* 🌟 YU-GI-OH FLIP ANIMATION STYLES (VERTICAL LAYOUT) 🌟 */
-        .flip-card-container { width: 450px; max-width: 95%; height: 85vh; perspective: 1500px; margin: 0 auto; }
+        .flip-card-container { width: 450px; max-width: 95%; height: 85vh; max-height: 850px; min-height: 600px; perspective: 1500px; margin: 0 auto; }
         .card-inner { width: 100%; height: 100%; position: relative; transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275); transform-style: preserve-3d; }
         .is-flipped { transform: rotateY(180deg); }
         
-        /* 🌟 **UPDATE**: ΚΑΝΟΥΜΕ MATCH TO ΘΕΜΑ ΤΗΣ ΜΠΡΟΣΤΙΝΗΣ ΟΨΗΣ ΜΕ ΤΗΝ ΠΙΣΩ (Deep Purple) 🌟 */
-        .card-front { 
-            position: absolute; inset: 0; backface-visibility: hidden; border-radius: 20px; 
-            background: linear-gradient(135deg, #0e0014 0%, #000000 100%); /* Deep Purple Match */
-            border: 2px solid var(--neon-purple); /* Purple Border Match */
-            overflow-y: auto; overflow-x: hidden; 
-            box-shadow: inset 0 0 30px rgba(176, 38, 255, 0.1), 0 40px 100px rgba(0,0,0,0.9); 
-            display: flex; flex-direction: column; z-index: 2; 
-        }
+        .card-front { position: absolute; inset: 0; backface-visibility: hidden; border-radius: 20px; background: #08080a; border: 1px solid #222; overflow-y: auto; overflow-x: hidden; box-shadow: 0 40px 100px rgba(0,0,0,0.9); display: flex; flex-direction: column; z-index: 2; }
         .card-front::-webkit-scrollbar { width: 4px; }
         .card-front::-webkit-scrollbar-thumb { background: var(--neon-purple); border-radius: 2px; }
         
-        /* 🌟 **UPDATE**: Το visual area αποκτά HUD αισθητική 🌟 */
-        .listing-visual { position: relative; display: flex; align-items: center; justify-content: center; padding: 30px; background: radial-gradient(circle at 50% 50%, rgba(26, 26, 36, 0.5) 0%, #000 100%); border-bottom: 1px solid rgba(176, 38, 255, 0.2); flex-shrink: 0; }
-        .hero-img { height: 250px; object-fit: contain; filter: drop-shadow(0 20px 40px rgba(0,0,0,0.5)); transition: 0.3s; position: relative; z-index: 2; }
+        /* 🌟 NΕΑ ΔΙΑΚΟΣΜΗΤΙΚΑ ΓΙΑ THN ΜΠΡΟΣΤΙΝΗ ΟΨΗ (WATERMARK, TIER, GRID, PILLS) 🌟 */
+        .listing-visual { position: relative; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px 20px 25px 20px; background: radial-gradient(circle at 50% 50%, #1a1a24 0%, #000 100%); border-bottom: 1px solid #1a1a1a; flex-shrink: 0; }
         
-        /* 🌟 ΝΕΑ HUD FRAMING ΣΤΟΙΧΕΙΑ 🌟 */
-        .hud-corners { position: absolute; width: 20px; height: 20px; border: 2px solid var(--neon-purple); z-index: 1; pointer-events: none; opacity: 0.7; }
-        .top-left { top: 20px; left: 20px; border-right: none; border-bottom: none; }
-        .top-right { top: 20px; right: 20px; border-left: none; border-bottom: none; }
-        .bottom-left { bottom: 20px; left: 20px; border-right: none; border-top: none; }
-        .bottom-right { bottom: 20px; right: 20px; border-left: none; border-top: none; }
-        .hud-coor { position: absolute; font-family: monospace; font-size: 0.6rem; color: var(--neon-purple); opacity: 0.5; z-index: 1; pointer-events: none; }
-        .coor-x { top: 25px; left: 50px; }
-        .coor-y { top: 50px; left: 25px; transform: rotate(-90deg); }
-
-        /* 🌟 **UPDATE**: Το info area αποκτά deep purple background 🌟 */
-        .listing-info { padding: 20px 30px 40px 30px; display: flex; flex-direction: column; justify-content: flex-start; background: rgba(10, 5, 15, 0.8); gap: 10px; flex-grow: 1; }
+        .bg-watermark { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-5deg); font-size: 5rem; font-family: var(--font-ui); font-weight: 900; color: rgba(255,255,255,0.03); white-space: nowrap; pointer-events: none; z-index: 0; text-transform: uppercase; }
         
-        .g-title { font-family: var(--font-ui); color: #fff; font-weight: 800; font-size: 2.2rem; text-transform: uppercase; line-height: 1; margin-bottom: 2px; letter-spacing: 1px; }
+        .tier-badge { position: absolute; top: 15px; left: 15px; background: linear-gradient(135deg, var(--neon-purple), #111); border: 1px solid var(--neon-purple); color: #fff; font-family: var(--font-ui); font-weight: 800; font-size: 0.75rem; padding: 4px 12px; border-radius: 2px; z-index: 3; box-shadow: 0 0 15px rgba(176,38,255,0.4); letter-spacing: 1px; clip-path: polygon(10% 0, 100% 0, 90% 100%, 0 100%); }
         
-        /* 🌟 ΝΕΟ TAGLINE STYLING 🌟 */
-        .g-tagline { font-family: var(--font-body); font-style: italic; color: #aaa; font-size: 0.8rem; margin-bottom: 15px; border-left: 2px solid var(--neon-purple); padding-left: 10px; }
+        .grid-decal { position: absolute; bottom: 20px; right: 20px; width: 50px; height: 50px; background-image: radial-gradient(rgba(255,255,255,0.15) 2px, transparent 2px); background-size: 8px 8px; z-index: 1; }
         
-        .g-price-live { font-family: var(--font-ui); color: var(--neon-green); font-weight: bold; font-size: 1.8rem; }
-        .g-price-old { font-family: var(--font-ui); color: #555; text-decoration: line-through; font-size: 1rem; margin-left: 10px; }
-        .mc-remove { color: var(--retro-red); cursor: pointer; }
-        .spec-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
-        .spec-item { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; color: #ccc; }
-        .spec-icon { color: var(--neon-purple); font-size: 1rem; }
+        .hero-img { height: 220px; object-fit: contain; filter: drop-shadow(0 20px 40px rgba(0,0,0,0.5)); transition: 0.3s; z-index: 2; position: relative; }
         
-        /* 🌟 **UPDATE**: Η πίσω όψη (RARE CARD) παραμένει όπως είναι 🌟 */
+        .quick-specs-row { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-top: 15px; z-index: 2; width: 100%; padding: 0 10px; }
+        .quick-pill { background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.1); color: #ccc; padding: 6px 12px; border-radius: 20px; font-size: 0.7rem; font-family: var(--font-ui); font-weight: 700; display: flex; align-items: center; gap: 6px; letter-spacing: 0.5px; text-transform: uppercase; backdrop-filter: blur(5px); }
+        .quick-pill i { color: var(--neon-purple); font-size: 0.9rem; }
+        
+        .listing-info { padding: 20px 30px 40px 30px; display: flex; flex-direction: column; justify-content: flex-start; background: #0b0b0e; gap: 10px; flex-grow: 1; }
+        .lc-top-badge { display: flex; align-items: center; gap: 8px; }
+        .config-row { margin-bottom: 15px; }
+        .config-select { width: 100%; background: #111; color: #fff; padding: 10px; border: 1px solid #333; border-radius: 6px; font-family: var(--font-ui); }
+        
+        /* 🌟 RARE CARD BACK STYLES (NEON PURPLE) 🌟 */
         .card-back { 
             position: absolute; inset: 0; backface-visibility: hidden; border-radius: 20px;
             transform: rotateY(180deg); padding: 30px 20px; display: flex; flex-direction: column; 
@@ -256,8 +239,10 @@
             box-shadow: inset 0 0 50px rgba(176, 38, 255, 0.1), 0 40px 100px rgba(0,0,0,0.9);
             overflow-y: auto; overflow-x: hidden;
         }
+        .card-back::-webkit-scrollbar { width: 4px; }
+        .card-back::-webkit-scrollbar-thumb { background: var(--neon-purple); border-radius: 2px; }
         
-        /* Holographic Shimmer Effect (BACK ONLY) */
+        /* 🌟 Holographic Shimmer Effect 🌟 */
         .card-back::after {
             content: ''; position: absolute; top: -100%; left: -100%; right: -100%; bottom: -100%;
             background: linear-gradient(45deg, transparent 45%, rgba(255, 255, 255, 0.1) 48%, rgba(176, 38, 255, 0.2) 50%, rgba(255, 255, 255, 0.1) 52%, transparent 55%);
@@ -285,7 +270,7 @@
         .close-back { position: absolute; top: 15px; right: 15px; font-size: 1.2rem; cursor: pointer; color: var(--neon-purple); transition: 0.3s; z-index: 10; background: rgba(0,0,0,0.5); padding: 5px; border-radius: 50%; border: 1px solid var(--neon-purple); display: flex; align-items: center; justify-content: center; width: 35px; height: 35px; }
         .close-back:hover { color: #fff; transform: scale(1.1); background: var(--neon-purple); }
 
-        /* GAME BENCHMARKS */
+        /* 🌟 GAME BENCHMARKS 🌟 */
         .benchmarks-container h3 { color: var(--neon-purple); font-family: var(--font-ui); letter-spacing: 1px; margin-bottom: 10px; border-bottom: 1px solid rgba(176, 38, 255, 0.3); padding-bottom: 5px; }
         .benchmark-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         .bench-card { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; padding: 10px; text-align: center; }
@@ -293,9 +278,20 @@
         .bench-fps { font-size: 1.5rem; font-family: var(--font-ui); font-weight: bold; color: var(--neon-green); }
         .bench-settings { font-size: 0.65rem; color: #666; font-style: italic; margin-top: 5px; }
 
-        /* ΕΙΚΟΝΙΔΙΟ INFO ΓΙΑ ΤΑ SPECS (FRONT & BACK) */
+        /* 🌟 ΕΙΚΟΝΙΔΙΟ INFO ΓΙΑ ΤΑ SPECS (FRONT & BACK) 🌟 */
         .spec-info-btn { cursor: pointer; font-size: 1.2rem; transition: 0.2s ease; vertical-align: middle; }
         .spec-info-btn:hover { color: #fff !important; transform: scale(1.2); }
+
+        /* 🌟 BREATHING EFFECT KEYFRAMES 🌟 */
+        @keyframes lc-breathe {
+            0% { box-shadow: 0 0 10px rgba(176, 38, 255, 0.1); transform: scale(1); }
+            50% { box-shadow: 0 0 30px rgba(176, 38, 255, 0.4); transform: scale(1.02); }
+            100% { box-shadow: 0 0 10px rgba(176, 38, 255, 0.1); transform: scale(1); }
+        }
+
+        .btn-card-inspect-breathe {
+            animation: lc-breathe 2.5s ease-in-out infinite;
+        }
 
         .compare-grid { display: grid; grid-template-columns: 1fr 1px 1fr; gap: 30px; width: 1100px; align-items: start; }
         .compare-divider { background: #222; height: 100%; width: 1px; }
@@ -351,10 +347,4 @@
             .compare-float { bottom: 80px; padding: 10px 20px; font-size: 0.9rem; } 
             .vote-container { width: 95%; padding: 15px; }
             .g-title { font-size: 2rem; }
-            
-            /* HUD adjustments for mobile */
-            .hud-corners { width: 10px; height: 10px; }
-            .hud-coor { font-size: 0.5rem; }
-            .coor-x { top: 22px; left: 35px; }
-            .coor-y { top: 35px; left: 22px; }
         }

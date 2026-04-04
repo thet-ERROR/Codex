@@ -339,6 +339,7 @@ const API = 'https://codex-backend-9kij.onrender.com/api';
         function nextPC() { if(filtered.length) { index=(index+1)%filtered.length; renderCard(); } }
         function prevPC() { if(filtered.length) { index=(index-1+filtered.length)%filtered.length; renderCard(); } }
         
+        /* 🌟 ΚΑΘΑΡΗ ΕΙΚΟΝΑ ΧΩΡΙΣ HOVER + ΝΕΑ ΧΡΩΜΑΤΑ ΚΟΥΜΠΙΩΝ 🌟 */
         function renderCard() { 
             const c = document.getElementById('main-card'); 
             if(!filtered.length) { c.innerHTML = "<h3>NO SIGNAL</h3>"; return; } 
@@ -349,6 +350,14 @@ const API = 'https://codex-backend-9kij.onrender.com/api';
             const fakeOldPrice = Math.floor(priceVal * 1.2); 
             const stock = pc.stock || 0; 
             
+            // Υπολογισμός Tier Badge
+            let mScore = pc.multitasking || 0;
+            let tier = mScore > 80 ? 'S-TIER' : (mScore > 50 ? 'A-TIER' : 'B-TIER');
+            let tierColor = mScore > 80 ? 'var(--legendary-orange)' : (mScore > 50 ? 'var(--neon-purple)' : 'var(--neon-green)');
+
+            let cpuText = pc.specs && pc.specs.cpu ? pc.specs.cpu.split(' ').slice(0,2).join(' ') : 'CPU';
+            let gpuText = pc.specs && pc.specs.gpu ? pc.specs.gpu.split(' ').slice(0,2).join(' ') : 'GPU';
+
             let stockHTML = ''; 
             if(stock === 0) stockHTML = '<div class="stock-badge out">SOLD OUT</div>'; 
             else if(stock < 5) stockHTML = `<div class="stock-badge low">LOW STOCK: ${stock} UNITS</div>`; 
@@ -363,8 +372,18 @@ const API = 'https://codex-backend-9kij.onrender.com/api';
             }); 
             
             c.innerHTML = `
-                <div class="holo-card-inner">
+                <div class="holo-card-inner" style="overflow: hidden; position: relative;">
+                    <div class="bg-watermark" style="font-size: 4rem;">${pc.name}</div>
+                    <div class="tier-badge" style="border-color:${tierColor}; box-shadow: 0 0 10px ${tierColor}40;">${tier}</div>
+                    <div class="grid-decal" style="bottom: 50%; opacity: 0.1;"></div>
+                    
                     <img src="${pc.images[0]||'assets/images/bg.jpg'}" class="hero-img">
+                    
+                    <div class="quick-specs-row" style="margin-bottom: 15px;">
+                        <div class="quick-pill"><i class="ph-bold ph-cpu"></i> ${cpuText}</div>
+                        <div class="quick-pill"><i class="ph-bold ph-graphics-card"></i> ${gpuText}</div>
+                    </div>
+
                     ${stockHTML}
                     <div class="pc-title">${pc.name}</div>
                     <div class="card-price-row">
@@ -380,6 +399,7 @@ const API = 'https://codex-backend-9kij.onrender.com/api';
             setTimeout(()=>document.querySelectorAll('.bar-fill').forEach(b=>b.style.width=b.getAttribute('data-width')), 50); 
         }
 
+        // 🌟 ΑΝΑΝΕΩΜΕΝΟ OPENGALLERY 🌟
         function openGallery() { 
             currentGalleryPC = filtered[index]; 
             galleryIndex = 0; 
@@ -390,18 +410,6 @@ const API = 'https://codex-backend-9kij.onrender.com/api';
             document.getElementById('g-title').innerText = currentGalleryPC.name; 
             document.getElementById('g-desc').innerText = currentGalleryPC.description || "Detailed specifications for this system.";
             
-            document.getElementById('g-tagline').innerText = currentGalleryPC.tagline || "Authorized Codex System Build";
-
-            const basePrice = parseInt(currentGalleryPC.price.replace(/[^0-9]/g, '')); 
-            document.getElementById('g-price-live').innerText = "€" + basePrice; 
-            document.getElementById('g-price-old').innerText = "€" + Math.floor(basePrice * 1.2); 
-            
-            const powerScore = currentGalleryPC.multitasking || 0;
-            const powerFill = document.getElementById('g-power-fill');
-            powerFill.style.width = powerScore + "%";
-
-            document.getElementById('storage-select').value = "0"; 
-
             // Watermark & Tier Badge
             document.getElementById('g-watermark').innerText = currentGalleryPC.name;
             
@@ -425,17 +433,24 @@ const API = 'https://codex-backend-9kij.onrender.com/api';
                 <div class="quick-pill"><i class="ph-bold ph-memory"></i> ${ramText}</div>
             `;
 
+            const basePrice = parseInt(currentGalleryPC.price.replace(/[^0-9]/g, '')); 
+            document.getElementById('g-price-live').innerText = "€" + basePrice; 
+            document.getElementById('g-price-old').innerText = "€" + Math.floor(basePrice * 1.2); 
+            
+            document.getElementById('storage-select').value = "0"; 
+
             const stock = currentGalleryPC.stock || 0; 
-            const stockBadge = document.getElementById('g-stock-badge'); 
+            const badge = document.getElementById('g-stock-badge'); 
             const addBtn = document.getElementById('g-add-cart'); 
-            if(stock === 0) { stockBadge.innerText = "SOLD OUT"; stockBadge.className = "stock-badge out"; addBtn.disabled = true; } 
-            else if(stock < 5) { stockBadge.innerText = `LOW STOCK: ${stock}`; stockBadge.className = "stock-badge low"; addBtn.disabled = false; } 
-            else { stockBadge.innerText = "IN STOCK"; stockBadge.className = "stock-badge in"; addBtn.disabled = false; } 
+            if(stock === 0) { badge.innerText = "SOLD OUT"; badge.className = "stock-badge out"; addBtn.disabled = true; } 
+            else if(stock < 5) { badge.innerText = `LOW STOCK: ${stock}`; badge.className = "stock-badge low"; addBtn.disabled = false; } 
+            else { badge.innerText = "IN STOCK"; badge.className = "stock-badge in"; addBtn.disabled = false; } 
             
             let backH = ""; 
             
             for(const [k,v] of Object.entries(currentGalleryPC.specs)) { 
                 const safeKey = k.replace(/'/g, "\\'"); 
+                
                 backH += `
                 <div class="spec-row-back">
                     <div class="spec-label-back">
@@ -448,11 +463,13 @@ const API = 'https://codex-backend-9kij.onrender.com/api';
             
             document.getElementById('g-specs-back').innerHTML = backH; 
 
+            // Populate Game Benchmarks
             let benchH = "";
             if (currentGalleryPC.fps && currentGalleryPC.fps.length > 0) {
                 currentGalleryPC.fps.forEach(f => {
                     let settings = "Competitive Settings / Low";
                     if(f.game.toLowerCase().includes('cyberpunk') || f.game.toLowerCase().includes('gta')) settings = "High / Ultra Settings";
+                    
                     benchH += `
                     <div class="bench-card">
                         <div class="bench-game">${f.game}</div>
@@ -469,6 +486,7 @@ const API = 'https://codex-backend-9kij.onrender.com/api';
             document.getElementById('gallery-overlay').classList.add('active'); 
         }
 
+        // 🌟 ΝΕΑ ΣΥΝΑΡΤΗΣΗ ΠΟΥ ΑΝΟΙΓΕΙ ΤΟ INFO MODAL 🌟
         function openSpecInfo(key) {
             const pc = currentGalleryPC;
             if(!pc) return;
@@ -484,6 +502,7 @@ const API = 'https://codex-backend-9kij.onrender.com/api';
             openModal('spec-info-modal');
         }
 
+        // 🌟 ΝΕΑ ΣΥΝΑΡΤΗΣΗ ΓΙΑ ΤΟ YU-GI-OH FLIP 🌟
         function toggleCardFlip() {
             const cardInner = document.getElementById('lc-inner');
             if (cardInner) {
