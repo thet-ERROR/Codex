@@ -1,3 +1,6 @@
+/* =========================================
+   1. VARIABLES & FONTS
+   ========================================= */
 :root {
     --neon-green: #ccff00;
     --neon-purple: #b026ff;
@@ -40,7 +43,71 @@ body {
 }
 
 /* =========================================
-   LOADER & ENV
+   2. TERMINAL CLI (ΟΡΙΣΤΙΚΗ ΔΙΟΡΘΩΣΗ)
+   ========================================= */
+#cli-overlay {
+    display: none !important; /* Κρύβει το Terminal 100% */
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 700px;
+    height: 450px;
+    max-width: 90%;
+    background: rgba(5, 5, 10, 0.98);
+    border: 1px solid var(--neon-green);
+    border-radius: 12px;
+    box-shadow: 0 20px 100px rgba(0,0,0,0.9);
+    z-index: 9999;
+    padding: 20px;
+    font-family: monospace;
+    color: #0f0;
+    flex-direction: column;
+}
+
+#cli-overlay.active {
+    display: flex !important; /* Εμφανίζεται ΜΟΝΟ όταν πατηθεί το κουμπί */
+}
+
+.cli-close {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    color: #0f0;
+    cursor: pointer;
+    font-size: 1.2rem;
+}
+
+.cli-output {
+    flex: 1;
+    overflow-y: auto;
+    margin-bottom: 10px;
+    white-space: pre-wrap;
+    line-height: 1.4;
+}
+
+.cli-input-line {
+    display: flex;
+    align-items: center;
+}
+
+.cli-prompt {
+    color: #0f0;
+    margin-right: 10px;
+}
+
+#cli-input {
+    background: transparent;
+    border: none;
+    color: #fff;
+    font-family: monospace;
+    flex: 1;
+    font-size: 1rem;
+    outline: none;
+}
+
+/* =========================================
+   3. BACKGROUND & EFFECTS
    ========================================= */
 #startup-overlay {
     position: fixed;
@@ -90,7 +157,7 @@ body {
     z-index: -2;
     background: url('../assets/images/bg.gif') no-repeat center center fixed;
     background-size: cover;
-    filter: brightness(0.4);
+    filter: brightness(0.4) contrast(1.1);
     transition: opacity 0.5s;
 }
 
@@ -132,7 +199,7 @@ canvas#matrix-canvas {
 }
 
 /* =========================================
-   TOAST
+   4. TOAST NOTIFICATIONS
    ========================================= */
 #toast-container {
     position: fixed;
@@ -162,23 +229,12 @@ canvas#matrix-canvas {
     pointer-events: auto;
 }
 
-.toast.achievement {
-    border-color: var(--legendary-orange);
-    color: var(--legendary-orange);
-}
-
-.toast.error {
-    border-color: var(--retro-red);
-    color: var(--retro-red);
-}
-
-@keyframes slideUpFade {
-    from { transform: translateY(20px); opacity: 0; }
-    to { transform: translateY(0); opacity: 1; }
-}
+.toast.achievement { border-color: var(--legendary-orange); color: var(--legendary-orange); }
+.toast.error { border-color: var(--retro-red); color: var(--retro-red); }
+@keyframes slideUpFade { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
 /* =========================================
-   HEADER
+   5. HEADER & NAVIGATION
    ========================================= */
 header {
     position: fixed;
@@ -254,16 +310,12 @@ header {
 .nav-btn.active-live { background: var(--neon-green); color: #000; box-shadow: 0 0 15px var(--neon-green); }
 .nav-btn.active-vault { background: var(--legendary-orange); color: #000; box-shadow: 0 0 15px var(--legendary-orange); }
 .nav-btn.active-starter { background: var(--retro-red); color: #fff; box-shadow: 0 0 15px var(--retro-red); }
-.nav-btn.active-gear { background: #fff; color: #000; box-shadow: 0 0 15px #fff; }
 .nav-btn.active-vote { background: var(--neon-purple); color: #fff; box-shadow: 0 0 20px var(--neon-purple); }
-
 .nav-btn.cart-btn { border: 1px solid #444; color: var(--neon-green); position: relative; }
 .nav-btn.cart-btn:hover, .nav-btn.cart-btn.active { background: var(--neon-green); color: #000; border-color: var(--neon-green); }
 .cart-count { background: var(--retro-red); color: #fff; font-size: 0.7rem; padding: 2px 6px; border-radius: 10px; font-weight: bold; }
 
-/* =========================================
-   CART DROPDOWN
-   ========================================= */
+/* CART DROPDOWN */
 .cart-dropdown {
     position: absolute;
     top: 55px;
@@ -280,7 +332,6 @@ header {
     backdrop-filter: blur(20px);
     z-index: 6000;
 }
-
 .cart-dropdown.show { display: flex; animation: fadeIn 0.2s; }
 .mini-cart-header { font-family: var(--font-ui); color: #fff; font-weight: bold; font-size: 1.1rem; border-bottom: 1px solid #333; padding-bottom: 10px; display: flex; justify-content: space-between; }
 .mini-cart-list { max-height: 300px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
@@ -290,8 +341,11 @@ header {
 .mc-name { font-weight: bold; font-size: 0.9rem; color: #fff; }
 .mc-opt { font-size: 0.75rem; color: #888; }
 .mc-price { color: var(--neon-green); font-family: var(--font-ui); font-weight: bold; }
+
+/* FIX: REMOVE BUTTON */
 .mc-remove { color: var(--retro-red); cursor: pointer; font-size: 1.2rem; transition: 0.2s; }
 .mc-remove:hover { color: #fff; transform: scale(1.2); }
+
 .mini-cart-footer { border-top: 1px solid #333; padding-top: 15px; }
 .mc-total-row { display: flex; justify-content: space-between; margin-bottom: 15px; font-weight: bold; font-family: var(--font-ui); font-size: 1.2rem; }
 .mc-checkout-btn { width: 100%; background: var(--neon-green); color: #000; border: none; padding: 12px; font-weight: bold; font-family: var(--font-ui); cursor: pointer; border-radius: 6px; transition: 0.3s; letter-spacing: 1px; }
@@ -311,7 +365,7 @@ header {
 .p-item:hover { background: rgba(255,255,255,0.1); color: #fff; }
 
 /* =========================================
-   SIDEBARS
+   6. SIDEBARS
    ========================================= */
 .left-sidebar, .right-sidebar {
     position: fixed;
@@ -325,7 +379,6 @@ header {
     padding: 20px 0;
     pointer-events: auto;
 }
-
 .left-sidebar { left: 0; border-right: 1px solid rgba(255,255,255,0.05); background: linear-gradient(to right, rgba(0,0,0,0.8), transparent); }
 .right-sidebar { right: 0; width: 300px; border-left: 1px solid rgba(255,255,255,0.05); background: linear-gradient(to left, rgba(0,0,0,0.8), transparent); padding: 20px; align-items: stretch; }
 
@@ -351,14 +404,26 @@ header {
 .add-review-btn:hover { background: var(--neon-purple); color: #fff; }
 
 /* =========================================
-   STAGE & MAIN CARD
+   7. STAGE & MAIN CARD (LIVE DROPS)
    ========================================= */
 .stage { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; z-index: 10; flex-direction: column; pointer-events: none; }
 .carousel-wrapper, .starter-menu, .holo-card, .vote-container { pointer-events: auto; }
 .system-select-label { font-family: var(--font-ui); font-size: 1.2rem; color: #fff; letter-spacing: 6px; font-weight: 800; margin-bottom: 20px; text-transform: uppercase; opacity: 0.8; }
 
-.holo-card { width: 420px; background: var(--glass-dark); backdrop-filter: blur(40px); border: 1px solid var(--glass-border); border-radius: 16px; padding: 35px; text-align: center; position: relative; transition: 0.4s; box-shadow: 0 40px 100px rgba(0,0,0,0.8); display: flex; flex-direction: column; align-items: center; }
-.hero-img { height: 200px; object-fit: contain; filter: drop-shadow(0 20px 40px rgba(0,0,0,0.5)); margin-bottom: 10px; transition: 0.3s; }
+.holo-card { 
+    width: 420px; background: var(--glass-dark); backdrop-filter: blur(40px); 
+    border: 1px solid var(--glass-border); border-radius: 16px; padding: 35px; 
+    text-align: center; position: relative; transition: 0.4s; box-shadow: 0 40px 100px rgba(0,0,0,0.8); 
+    display: flex; flex-direction: column; align-items: center; 
+}
+.carousel-wrapper { display: flex; align-items: center; justify-content: center; gap: 40px; transition: 0.3s; width: 100%; }
+
+/* FIX: ΕΙΚΟΝΑ ΣΤΟ ΚΕΝΤΡΟ (ΑΡΧΙΚΗ) */
+.hero-img { 
+    height: 200px; object-fit: contain; filter: drop-shadow(0 20px 40px rgba(0,0,0,0.5)); 
+    margin: 0 auto 10px auto; display: block; transition: 0.3s; 
+}
+
 .pc-title { font-family: var(--font-ui); font-size: 2.5rem; font-weight: 800; line-height: 1; text-transform: uppercase; margin-bottom: 5px; color: #fff; }
 .card-price-row { display: flex; justify-content: center; align-items: baseline; gap: 10px; margin-bottom: 15px; }
 .pc-price { font-family: var(--font-ui); font-size: 2rem; color: var(--neon-green); font-weight: bold; }
@@ -383,11 +448,10 @@ header {
 .btn-card-compare:hover { background: rgba(204, 255, 0, 0.1); color: #fff; border-style: solid; box-shadow: 0 0 10px var(--neon-green); }
 .btn-card-compare.selected { background: var(--neon-green); color: #000; border: 1px solid var(--neon-green); font-weight: bold; box-shadow: 0 0 15px var(--neon-green); }
 
-.carousel-wrapper { display: flex; align-items: center; gap: 40px; transition: 0.3s; }
 .nav-arrow { background: rgba(255,255,255,0.05); color: #fff; width: 40px; height: 80px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; cursor: pointer; clip-path: polygon(0 20%, 100% 0, 100% 100%, 0 80%); transition: 0.3s; }
 .nav-arrow:hover { background: var(--neon-green); color:#000; }
 
-/* STARTER PACKS (Οριζόντια) */
+/* STARTER PACKS (ΟΡΙΖΟΝΤΙΑ) */
 .starter-menu { display: flex; flex-direction: row; justify-content: center; gap: 20px; width: 100%; }
 .pack-card { width: 220px; height: 320px; background: rgba(20, 20, 25, 0.7); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; transition: 0.3s; backdrop-filter: blur(20px); }
 .pack-card:hover { transform: translateY(-10px); border-color: var(--retro-red); background: rgba(255, 51, 51, 0.1); }
@@ -396,21 +460,24 @@ header {
 
 /* VOTE VIEW FIX */
 .vote-container { width: 500px; background: rgba(10,10,15,0.95); border: 2px solid var(--neon-purple); border-radius: 20px; padding: 30px; text-align: center; position: relative; box-shadow: 0 0 50px rgba(176,38,255,0.2); }
-.mystery-img-wrap { position: relative; width: 100%; height: 300px; max-width: 400px; margin: 0 auto 20px auto; border-radius: 12px; overflow: hidden; border: 1px solid var(--neon-purple); }
+.mystery-img-wrap { position: relative; width: 100%; height: 250px; max-width: 350px; margin: 0 auto 20px auto; border-radius: 12px; overflow: hidden; border: 1px solid var(--neon-purple); }
 .mystery-img { width: 100%; height: 100%; object-fit: cover; filter: blur(25px) brightness(0.3); transition: 2s ease-in-out; }
 .mystery-img.unlocked { filter: blur(0) brightness(1); }
 .lock-icon { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); font-size: 4rem; color: #fff; z-index: 10; transition: 0.5s; }
+.vote-progress-wrap { background: #222; height: 12px; border-radius: 6px; margin: 20px 0; overflow: hidden; }
+.vote-progress-fill { background: var(--neon-purple); height: 100%; width: 0%; transition: 0.5s; }
+.vote-btn { width: 100%; padding: 15px; background: var(--neon-purple); color: #fff; border: none; font-family: var(--font-ui); font-weight: 800; font-size: 1.2rem; cursor: pointer; border-radius: 8px; letter-spacing: 2px; }
+.vote-btn:disabled { background: #333; cursor: not-allowed; color: #666; }
+.timer-text { font-family: monospace; color: #aaa; margin-top: 10px; font-size: 0.9rem; }
 
 /* =========================================
-   GENERAL MODALS & CHAT
+   8. SYSTEM PREFERENCES & MODALS (FIXED)
    ========================================= */
 .modal-overlay, .gallery-overlay { 
     position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 6000; 
     display: none; align-items: center; justify-content: center; backdrop-filter: blur(15px); 
 }
-.modal-overlay.active, .gallery-overlay.active { 
-    display: flex; animation: fadeInUp 0.3s forwards; 
-}
+.modal-overlay.active, .gallery-overlay.active { display: flex; animation: fadeInUp 0.3s forwards; }
 @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
 .modal-content { width: 600px; background: #0a0a0c; border: 1px solid #333; padding: 40px; border-radius: 20px; position: relative; max-height: 80vh; overflow-y: auto; box-shadow: 0 0 50px rgba(0,0,0,0.8); }
@@ -418,10 +485,24 @@ header {
 .close-modal:hover, .close-btn:hover { color: #fff; }
 .modal-title { font-family: var(--font-ui); font-size: 2rem; color: #fff; margin-bottom: 20px; border-bottom: 1px solid #333; padding-bottom: 10px; }
 
+/* Επαναφορά του Styling των Ρυθμίσεων */
+.settings-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
+.setting-card { background: rgba(255,255,255,0.05); border: 1px solid #333; padding: 15px; border-radius: 8px; display: flex; align-items: center; justify-content: center; gap: 10px; cursor: pointer; transition: 0.3s; }
+.setting-card:hover { background: rgba(255,255,255,0.1); }
+.setting-card.active { border-color: var(--neon-green); box-shadow: 0 0 15px rgba(204,255,0,0.2); }
+.s-icon { font-size: 1.5rem; color: var(--neon-green); }
+.s-title { font-family: var(--font-ui); font-weight: bold; color: #fff; font-size: 0.9rem; }
+.neon-slider { width: 100%; -webkit-appearance: none; background: #333; height: 4px; border-radius: 2px; outline: none; }
+.neon-slider::-webkit-slider-thumb { -webkit-appearance: none; width: 15px; height: 15px; background: var(--neon-green); border-radius: 50%; cursor: pointer; box-shadow: 0 0 10px var(--neon-green); }
+.color-opts { display: flex; justify-content: center; gap: 15px; }
+.color-btn { width: 30px; height: 30px; border-radius: 50%; cursor: pointer; border: 2px solid transparent; transition: 0.3s; box-shadow: 0 0 10px rgba(255,255,255,0.1); }
+.color-btn:hover { transform: scale(1.2); }
+
 .auth-form { display: flex; flex-direction: column; gap: 15px; margin-top: 20px; }
 .auth-input { background: #111; border: 1px solid #333; padding: 12px; color: #fff; border-radius: 6px; outline: none; }
 .auth-input:focus { border-color: var(--neon-green); }
 
+/* Chat Widget */
 .chat-widget { position: fixed; left: 90px; bottom: 60px; width: 300px; z-index: 5000; transform: translateY(20px); opacity: 0; pointer-events: none; transition: 0.3s; }
 .chat-widget.open { transform: translateY(0); opacity: 1; pointer-events: auto; }
 .chat-body { background: #0a0a0c; border: 1px solid #333; border-radius: 10px; height: 350px; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
@@ -433,10 +514,10 @@ header {
 .chat-input { width: 100%; background: #000; border: none; border-top: 1px solid #222; color: #fff; padding: 12px; outline: none; font-size: 0.9rem; }
 
 /* =========================================
-   🌟 YU-GI-OH FLIP CARD (ISOLATED) 🌟
+   9. 🌟 YU-GI-OH FLIP CARD (ISOLATED) 🌟
    ========================================= */
 .yg-card-container { width: 450px; max-width: 95vw; perspective: 1500px; margin: 0 auto; display: flex; justify-content: center; align-items: center; }
-.yg-card { width: 100%; background: #0f0f0f; border-radius: 16px; position: relative; transform-style: preserve-3d; transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+.yg-card { width: 100%; background: #0f0f0f; border-radius: 16px; position: relative; transform-style: preserve-3d; transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275); box-shadow: 0 0 40px rgba(168, 85, 247, 0.3), 0 0 80px rgba(236, 72, 153, 0.2); }
 .yg-card.flipped { transform: rotateY(180deg); }
 .yg-card-face { backface-visibility: hidden; width: 100%; border-radius: 16px; overflow: hidden; border: 1px solid #333; }
 
@@ -453,9 +534,10 @@ header {
 .yg-close-btn::before { transform: rotate(45deg); }
 .yg-close-btn::after { transform: rotate(-45deg); }
 
-.yg-image-section { width: 100%; height: 280px; position: relative; background: #111; display: flex; align-items: center; justify-content: center; border-bottom: 1px solid #222; overflow: hidden; }
+/* FIX: ΕΙΚΟΝΑ ΣΤΟ ΚΕΝΤΡΟ ΤΗΣ ΚΑΡΤΑΣ */
+.yg-image-section { width: 100%; height: 280px; position: relative; background: #111; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; border-bottom: 1px solid #222; overflow: hidden; }
 .yg-bg-watermark { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-5deg); font-size: 5rem; font-family: var(--font-ui); font-weight: 900; color: rgba(255,255,255,0.03); white-space: nowrap; pointer-events: none; z-index: 0; text-transform: uppercase; }
-.yg-pc-image { max-width: 85%; max-height: 85%; object-fit: contain; filter: drop-shadow(0 0 20px var(--neon-purple)); z-index: 1; }
+.yg-pc-image { max-width: 85%; height: 220px; object-fit: contain; filter: drop-shadow(0 0 20px var(--neon-purple)); z-index: 1; margin: 0 auto; display: block; }
 
 .yg-specs-badges { position: absolute; bottom: 15px; left: 50%; transform: translateX(-50%); display: flex; gap: 10px; z-index: 2; width: 100%; justify-content: center; padding: 0 10px; }
 .yg-spec-badge { background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(10px); padding: 6px 12px; border-radius: 8px; border: 1px solid rgba(168, 85, 247, 0.5); display: flex; align-items: center; gap: 6px; font-family: var(--card-font-primary); font-size: 11px; font-weight: 700; color: #fff; text-transform: uppercase; }
@@ -467,7 +549,7 @@ header {
 
 /* FIX: Star sizes */
 .yg-card-stars { display: flex; justify-content: center; gap: 4px; margin-bottom: 15px; color: #fbbf24; }
-.yg-star { width: 18px !important; height: 18px !important; color: #fbbf24; }
+.yg-star { width: 18px !important; height: 18px !important; color: #fbbf24; filter: drop-shadow(0 0 4px #fbbf24); display: inline-block; }
 
 .yg-price-section { display: flex; justify-content: center; gap: 15px; align-items: center; margin-bottom: 20px; font-family: var(--card-font-secondary); }
 .yg-current-price { font-size: 32px; font-weight: 900; color: var(--neon-green); }
@@ -499,11 +581,14 @@ header {
 .yg-card-back::-webkit-scrollbar { width: 4px; }
 .yg-card-back::-webkit-scrollbar-thumb { background: #a855f7; border-radius: 2px; }
 
-.yg-close-back { position: absolute; top: 15px; right: 15px; font-size: 1.2rem; cursor: pointer; color: #a855f7; transition: 0.3s; z-index: 10; background: rgba(0,0,0,0.5); padding: 5px; border-radius: 50%; border: 1px solid #a855f7; display: flex; align-items: center; justify-content: center; width: 35px; height: 35px; }
-.yg-close-back:hover { color: #fff; transform: scale(1.1); background: #a855f7; }
+/* FIX: Back Button Design */
+.yg-close-back { width: 100%; padding: 12px; background: rgba(168, 85, 247, 0.1); border: 2px solid var(--neon-purple); border-radius: 8px; color: var(--neon-purple); font-size: 13px; font-weight: 700; font-family: var(--card-font-secondary); text-transform: uppercase; cursor: pointer; transition: all 0.3s ease; margin-bottom: 15px; text-align: center; display: block; }
+.yg-close-back:hover { background: rgba(168, 85, 247, 0.2); box-shadow: 0 0 20px rgba(168, 85, 247, 0.4); color: #fff; }
 
-.yg-sys-header { text-align: center; margin-bottom: 25px; margin-top: 20px; }
-.yg-sys-title { font-family: var(--card-font-secondary); font-size: 28px; font-weight: 900; color: #fff; margin-bottom: 8px; display: flex; align-items: center; justify-content: center; gap: 10px; }
+.yg-rarity-badge { align-self: center; background: linear-gradient(90deg, var(--neon-purple), #d47aff); color: #fff; font-family: var(--font-ui); font-weight: 900; letter-spacing: 4px; padding: 5px 20px; border-radius: 4px; font-size: 0.8rem; text-transform: uppercase; margin-bottom: 15px; box-shadow: 0 0 20px rgba(176, 38, 255, 0.5); text-align: center; }
+.yg-sys-header { text-align: center; margin-bottom: 25px; margin-top: 10px; }
+.yg-sys-data-title { font-family: var(--card-font-secondary); font-size: 28px; font-weight: 900; color: #fff; margin-bottom: 8px; display: flex; align-items: center; justify-content: center; gap: 10px; }
+.yg-sys-icon { font-size: 32px; filter: drop-shadow(0 0 10px rgba(168, 85, 247, 0.6)); }
 .yg-sys-subtitle { font-family: var(--card-font-primary); color: #ec48d9; font-size: 12px; font-style: italic; }
 
 .yg-specs-list { flex-grow: 1; margin-bottom: 15px; padding-right: 5px; }
@@ -515,16 +600,17 @@ header {
 .yg-info-btn { color: #a855f7; cursor: pointer; font-size: 1.1rem; margin-left: 5px; transition: 0.2s; vertical-align: middle;}
 .yg-info-btn:hover { color: #fff; transform: scale(1.2);}
 
+/* FIX: BIG FPS NUMBERS */
 .yg-benchmarks { margin-top: 15px; padding-top: 15px; border-top: 2px solid rgba(168, 85, 247, 0.3); }
 .yg-benchmarks-title { font-family: var(--card-font-secondary); color: #a855f7; font-size: 14px; font-weight: 900; text-transform: uppercase; margin-bottom: 12px; text-align: center; }
 .yg-benchmark-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
 .yg-benchmark-card { background: rgba(26, 10, 46, 0.8); border: 2px solid rgba(168, 85, 247, 0.3); border-radius: 8px; padding: 10px; text-align: center; }
 .yg-benchmark-game { font-family: var(--card-font-primary); color: #fff; font-size: 10px; font-weight: 700; margin-bottom: 4px; text-transform: uppercase; }
-.yg-benchmark-fps { font-family: var(--card-font-secondary); color: #bef264; font-size: 24px; font-weight: 900; text-shadow: 0 0 10px rgba(190, 242, 100, 0.6); margin-bottom: 2px; }
+.yg-benchmark-fps { font-family: var(--card-font-secondary); color: #bef264; font-size: 28px; font-weight: 900; text-shadow: 0 0 10px rgba(190, 242, 100, 0.6); margin-bottom: 2px; }
 .yg-benchmark-settings { font-family: var(--card-font-primary); color: #888; font-size: 9px; font-style: italic; }
 
 /* =========================================
-   8. MEDIA QUERIES (MOBILE)
+   10. MEDIA QUERIES
    ========================================= */
 @media (max-width: 1024px) {
     body { overflow-y: auto; overflow-x: hidden; padding-bottom: 80px; }
@@ -545,10 +631,8 @@ header {
     .chat-toggle { margin-top: 0 !important; width: 40px; height: 40px; }
     .right-sidebar { position: relative; top: auto; right: auto; width: 95%; max-width: 500px; height: auto; max-height: 400px; margin: 20px auto; border-left: none; border: 1px solid rgba(176,38,255,0.3); border-radius: 12px; background: rgba(0,0,0,0.8); padding: 15px; }
     .footer { display: none; } 
+    
     .yg-card-container { width: 100%; height: 90vh; }
     .yg-buttons-section { grid-template-columns: 1fr; }
     .starter-menu { flex-direction: column; align-items: center; }
 }
-
-/* TERMINAL FIXES */
-#cli-overlay.active { display: flex !important; }
