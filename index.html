@@ -159,7 +159,6 @@ Type 'help' for a list of commands.
                     <div class="vote-progress-fill" id="v-fill"></div>
                 </div>
                 <button class="vote-btn" id="v-btn" onclick="castVote()">AUTHORIZE DROP</button>
-                <button class="vote-btn hidden" id="v-buy-btn" onclick="buyVotePC()" style="background:#ccff00; color:#000; margin-top:10px;">SECURE NOW</button>
                 <div class="timer-text" id="v-timer">CALCULATING TIME...</div>
             </div>
         </div>
@@ -188,14 +187,14 @@ Type 'help' for a list of commands.
                     <div class="yg-image-section">
                         <div class="yg-bg-watermark" id="g-watermark">CODEX</div>
                         <div class="yg-hud-corners yg-top-left"></div>
-                        <div class="yg-hud-corners yg-top-right"></div>
-                        <div class="yg-hud-corners yg-bottom-left"></div>
-                        <div class="yg-hud-corners yg-bottom-right"></div>
-                        <div class="yg-hud-coor yg-coor-x">X: 45.2</div>
-                        <div class="yg-hud-coor yg-coor-y">Y: 12.8</div>
+                        <div class="yg-top-right yg-hud-corners"></div>
+                        <div class="yg-bottom-left yg-hud-corners"></div>
+                        <div class="yg-bottom-right yg-hud-corners"></div>
                         <div class="yg-grid-decal"></div>
 
-                        <img src="" id="yg-main-img" alt="PC Build" class="yg-pc-image">
+                        <button class="yg-gallery-btn left" onclick="playClick(); changeGalleryImage(-1)"><i class="ph-bold ph-caret-left"></i></button>
+                        <img src="" id="yg-main-img" alt="PC Build" class="yg-pc-image" onclick="playClick(); changeGalleryImage(1)" style="cursor: pointer;" title="Next Image">
+                        <button class="yg-gallery-btn right" onclick="playClick(); changeGalleryImage(1)"><i class="ph-bold ph-caret-right"></i></button>
 
                         <div class="yg-specs-badges" id="yg-quick-specs"></div>
                     </div>
@@ -220,10 +219,6 @@ Type 'help' for a list of commands.
                         <div class="yg-price-section">
                             <div class="yg-current-price" id="yg-price-live">€0</div>
                             <div class="yg-old-price" id="yg-price-old">€0</div>
-                        </div>
-
-                        <div class="yg-stock-warning" id="yg-stock-container">
-                            <div class="yg-stock-warning-text" id="yg-stock-badge">IN STOCK</div>
                         </div>
 
                         <div class="yg-storage-section">
