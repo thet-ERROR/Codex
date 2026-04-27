@@ -400,23 +400,33 @@ const API = 'https://codex-backend-9kij.onrender.com/api';
             setTimeout(()=>document.querySelectorAll('.bar-fill').forEach(b=>b.style.width=b.getAttribute('data-width')), 50); 
         }
 
-        // 🌟 ΑΝΑΝΕΩΜΕΝΟ OPENGALLERY 🌟
+        // 🌟 YU-GI-OH OPENGALLERY FUNCTION 🌟
         function openGallery() { 
             currentGalleryPC = filtered[index]; 
             if(!currentGalleryPC) return;
             galleryIndex = 0; 
             
-            const cardInner = document.getElementById('yg-card');
+            const cardInner = document.getElementById('card');
             if(cardInner) cardInner.classList.remove('flipped');
 
-            document.getElementById('yg-title').innerText = currentGalleryPC.name; 
-            document.getElementById('yg-desc').innerText = currentGalleryPC.description || "Detailed specifications for this system.";
+            // 1. ΒΑΣΙΚΑ ΣΤΟΙΧΕΙΑ
+            const elTitle = document.getElementById('yg-title');
+            if(elTitle) elTitle.innerText = currentGalleryPC.name; 
+            
+            const elDesc = document.getElementById('yg-desc');
+            if(elDesc) elDesc.innerText = currentGalleryPC.description || "Detailed specifications for this system.";
             
             const basePrice = parseInt(currentGalleryPC.price.replace(/[^0-9]/g, '')); 
-            document.getElementById('yg-price-live').innerText = "€" + basePrice; 
-            document.getElementById('yg-price-old').innerText = "€" + Math.floor(basePrice * 1.2); 
-            document.getElementById('storage-select').value = "0"; 
+            const elLivePrice = document.getElementById('yg-price-live');
+            if(elLivePrice) elLivePrice.innerText = "€" + basePrice; 
+            
+            const elOldPrice = document.getElementById('yg-price-old');
+            if(elOldPrice) elOldPrice.innerText = "€" + Math.floor(basePrice * 1.2); 
+            
+            const elSelect = document.getElementById('storage-select');
+            if(elSelect) elSelect.value = "0"; 
 
+            // 2. ΥΠΟΛΟΓΙΣΜΟΣ TIER BADGE
             let mScore = currentGalleryPC.multitasking || 0;
             let tier = mScore > 80 ? 'S-TIER' : (mScore > 50 ? 'A-TIER' : 'B-TIER');
             let tierColor = mScore > 80 ? '#a855f7' : (mScore > 50 ? '#ec48d9' : '#bef264');
@@ -427,45 +437,55 @@ const API = 'https://codex-backend-9kij.onrender.com/api';
                 tierBadge.style.boxShadow = `0 0 20px ${tierColor}80`;
             }
 
-            document.getElementById('g-main-img').src = currentGalleryPC.images[0] || 'assets/images/bg.jpg';
+            // 3. ΕΙΚΟΝΑ
+            const elImg = document.getElementById('g-main-img');
+            if(elImg) elImg.src = currentGalleryPC.images[0] || 'assets/images/bg.jpg';
 
+            // 4. QUICK SPEC PILLS
             let cpuText = currentGalleryPC.specs && currentGalleryPC.specs.cpu ? currentGalleryPC.specs.cpu.split(' ').slice(0,2).join(' ') : 'CPU';
             let gpuText = currentGalleryPC.specs && currentGalleryPC.specs.gpu ? currentGalleryPC.specs.gpu.split(' ').slice(0,2).join(' ') : 'GPU';
             let ramText = currentGalleryPC.specs && currentGalleryPC.specs.ram ? currentGalleryPC.specs.ram.split(' ')[0] : 'RAM';
             
-            document.getElementById('g-quick-specs').innerHTML = `
-                <div class="yg-spec-badge"><div class="yg-spec-icon">⚙️</div><span>${cpuText}</span></div>
-                <div class="yg-spec-badge"><div class="yg-spec-icon">🎮</div><span>${gpuText}</span></div>
-                <div class="yg-spec-badge"><div class="yg-spec-icon">💾</div><span>${ramText}</span></div>
-            `;
+            const elQuickSpecs = document.getElementById('yg-quick-specs');
+            if(elQuickSpecs) {
+                elQuickSpecs.innerHTML = `
+                    <div class="yg-spec-badge"><div class="yg-spec-icon">⚙️</div><span>${cpuText}</span></div>
+                    <div class="yg-spec-badge"><div class="yg-spec-icon">🎮</div><span>${gpuText}</span></div>
+                    <div class="yg-spec-badge"><div class="yg-spec-icon">💾</div><span>${ramText}</span></div>
+                `;
+            }
 
+            // 5. ΑΠΟΘΕΜΑ
             const stock = currentGalleryPC.stock || 0; 
-            const stockContainer = document.getElementById('g-stock-container');
-            const stockBadge = document.getElementById('g-stock-badge'); 
-            const addBtn = document.getElementById('g-add-cart'); 
+            const stockContainer = document.getElementById('yg-stock-container');
+            const stockBadge = document.getElementById('yg-stock-badge'); 
+            const addBtn = document.getElementById('yg-add-cart'); 
             
-            if(stock === 0) { 
-                stockContainer.style.borderColor = "#ff3333";
-                stockContainer.style.background = "rgba(255, 51, 51, 0.1)";
-                stockBadge.style.color = "#ff3333";
-                stockBadge.innerText = "❌ OUT OF STOCK"; 
-                if(addBtn) addBtn.disabled = true;
-            } 
-            else if(stock < 5) { 
-                stockContainer.style.borderColor = "#fbbf24";
-                stockContainer.style.background = "rgba(251, 191, 36, 0.1)";
-                stockBadge.style.color = "#fbbf24";
-                stockBadge.innerText = `⚠️ LOW STOCK: ${stock} UNITS`; 
-                if(addBtn) addBtn.disabled = false;
-            } 
-            else { 
-                stockContainer.style.borderColor = "#bef264";
-                stockContainer.style.background = "rgba(190, 242, 100, 0.1)";
-                stockBadge.style.color = "#bef264";
-                stockBadge.innerText = "✔️ IN STOCK"; 
-                if(addBtn) addBtn.disabled = false;
-            } 
+            if(stockContainer && stockBadge) {
+                if(stock === 0) { 
+                    stockContainer.style.borderColor = "#ff3333";
+                    stockContainer.style.background = "rgba(255, 51, 51, 0.1)";
+                    stockBadge.style.color = "#ff3333";
+                    stockBadge.innerText = "❌ OUT OF STOCK"; 
+                    if(addBtn) addBtn.disabled = true;
+                } 
+                else if(stock < 5) { 
+                    stockContainer.style.borderColor = "#fbbf24";
+                    stockContainer.style.background = "rgba(251, 191, 36, 0.1)";
+                    stockBadge.style.color = "#fbbf24";
+                    stockBadge.innerText = `⚠️ LOW STOCK: ${stock} UNITS`; 
+                    if(addBtn) addBtn.disabled = false;
+                } 
+                else { 
+                    stockContainer.style.borderColor = "#bef264";
+                    stockContainer.style.background = "rgba(190, 242, 100, 0.1)";
+                    stockBadge.style.color = "#bef264";
+                    stockBadge.innerText = "✔️ IN STOCK"; 
+                    if(addBtn) addBtn.disabled = false;
+                } 
+            }
             
+            // 6. ΑΝΑΛΥΤΙΚΑ SPECS
             let backH = ""; 
             if(currentGalleryPC.specs) {
                 for(const [k,v] of Object.entries(currentGalleryPC.specs)) { 
@@ -480,8 +500,10 @@ const API = 'https://codex-backend-9kij.onrender.com/api';
                     </div>`; 
                 } 
             }
-            document.getElementById('g-specs-back').innerHTML = backH; 
+            const elSpecsBack = document.getElementById('yg-specs-back');
+            if(elSpecsBack) elSpecsBack.innerHTML = backH; 
 
+            // 7. GAME BENCHMARKS
             let benchH = "";
             if (currentGalleryPC.fps && currentGalleryPC.fps.length > 0) {
                 currentGalleryPC.fps.forEach(f => {
@@ -497,9 +519,11 @@ const API = 'https://codex-backend-9kij.onrender.com/api';
             } else {
                 benchH = "<div style='color:#888; font-size:12px; font-style:italic; text-align:center; grid-column: span 2; padding: 20px;'>No benchmark data available.</div>";
             }
-            document.getElementById('g-benchmarks').innerHTML = benchH;
+            const elBenchmarks = document.getElementById('yg-benchmarks');
+            if(elBenchmarks) elBenchmarks.innerHTML = benchH;
             
-            document.getElementById('gallery-overlay').classList.add('active'); 
+            const elOverlay = document.getElementById('gallery-overlay');
+            if(elOverlay) elOverlay.classList.add('active'); 
         }
 
         function openSpecInfo(key) {
@@ -525,7 +549,7 @@ const API = 'https://codex-backend-9kij.onrender.com/api';
         }
 
         function toggleCardFlip() {
-            const cardInner = document.getElementById('yg-card');
+            const cardInner = document.getElementById('card');
             if (cardInner) {
                 cardInner.classList.toggle('flipped');
             }
@@ -553,7 +577,7 @@ const API = 'https://codex-backend-9kij.onrender.com/api';
         function logout() { isLoggedIn = false; document.getElementById('guest-options').classList.remove('hidden'); document.getElementById('user-options').classList.add('hidden'); showToast("LOGGED OUT", "normal"); }
         function toggleChat() { document.getElementById('chat-widget').classList.toggle('open'); }
         
-        let codexAiState = 'idle'; // Παγκόσμια, μόνιμη μνήμη
+        let codexAiState = 'idle'; 
 
         function removeAccents(str) {
             return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
