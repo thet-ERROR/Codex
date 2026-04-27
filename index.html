@@ -4,14 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PHOENIX CODEX | TERMINAL v52.0</title>
+    
     <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700;800&family=Space+Grotesk:wght@300;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;600;700&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+    
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/driver.js@1.0.1/dist/driver.css"/>
     <script src="https://cdn.jsdelivr.net/npm/driver.js@1.0.1/dist/driver.js.iife.js"></script>
 
-<link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/style.css">
 </head>
 <body id="main-body">
 
@@ -28,7 +30,11 @@ Type 'help' for a list of commands.
 
     <canvas id="matrix-canvas"></canvas>
 
-    <div id="startup-overlay"><div id="startup-text">PHOENIX CODEX</div><div class="loader-bar"><div class="loader-fill" id="loader-fill"></div></div></div>
+    <div id="startup-overlay">
+        <div id="startup-text">PHOENIX CODEX</div>
+        <div class="loader-bar"><div class="loader-fill" id="loader-fill"></div></div>
+    </div>
+    
     <div id="toast-container"></div>
 
     <div class="bg-layer"></div>
@@ -104,11 +110,13 @@ Type 'help' for a list of commands.
 
     <div class="stage">
         <div class="system-select-label" id="stage-label">// SYSTEM SELECT //</div>
+        
         <div class="carousel-wrapper" id="carousel-wrapper">
             <button class="nav-arrow" onclick="playClick(); prevPC()"><i class="ph-bold ph-caret-left"></i></button>
             <div class="holo-card" id="main-card"></div>
             <button class="nav-arrow" onclick="playClick(); nextPC()"><i class="ph-bold ph-caret-right"></i></button>
         </div>
+
         <div class="starter-menu hidden" id="starter-menu">
             <div class="pack-card" onclick="selectPack('gaming')">
                 <i class="ph-duotone ph-game-controller pack-icon"></i>
@@ -123,12 +131,14 @@ Type 'help' for a list of commands.
                 <div class="pack-title">CODING</div>
             </div>
         </div>
+
         <div class="holo-card hidden" id="gear-view">
             <div class="gear-container">
                 <i class="ph-duotone ph-lock-key gear-lock"></i>
                 <h2 style="color:#fff;">ARMORY LOCKED</h2>
             </div>
         </div>
+
         <div id="vote-view" class="hidden">
             <div class="vote-container">
                 <div class="vote-header-row">
@@ -149,7 +159,6 @@ Type 'help' for a list of commands.
                     <div class="vote-progress-fill" id="v-fill"></div>
                 </div>
                 <button class="vote-btn" id="v-btn" onclick="castVote()">AUTHORIZE DROP</button>
-                <button class="vote-btn hidden" id="v-buy-btn" onclick="buyVotePC()" style="background:#ccff00; color:#000; margin-top:10px;">SECURE NOW</button>
                 <div class="timer-text" id="v-timer">CALCULATING TIME...</div>
             </div>
         </div>
@@ -162,14 +171,12 @@ Type 'help' for a list of commands.
     <div class="chat-widget" id="chat-widget">
         <div class="chat-body">
             <div class="chat-top">CODEX AI</div>
-            <div class="chat-msgs" id="chat-msgs">
-                <div class="msg bot">Online.</div>
-            </div>
+            <div class="chat-msgs" id="chat-msgs"><div class="msg bot">Online.</div></div>
             <input class="chat-input" placeholder="Type..." onkeypress="if(event.key==='Enter'){sendChat(this)}">
         </div>
     </div>
 
-    <div class="modal-overlay" id="gallery-overlay">
+    <div class="gallery-overlay" id="gallery-overlay">
         <div class="yg-card-container">
             <div class="yg-card" id="yg-card">
                 
@@ -178,7 +185,17 @@ Type 'help' for a list of commands.
                     <div class="yg-close-btn" onclick="playClick(); closeModal('gallery-overlay')"></div>
 
                     <div class="yg-image-section">
+                        <div class="yg-bg-watermark" id="g-watermark">CODEX</div>
+                        <div class="yg-hud-corners yg-top-left"></div>
+                        <div class="yg-hud-corners yg-top-right"></div>
+                        <div class="yg-hud-corners yg-bottom-left"></div>
+                        <div class="yg-hud-corners yg-bottom-right"></div>
+                        <div class="yg-hud-coor yg-coor-x">X: 45.2</div>
+                        <div class="yg-hud-coor yg-coor-y">Y: 12.8</div>
+                        <div class="yg-grid-decal"></div>
+
                         <img src="" id="yg-main-img" alt="PC Build" class="yg-pc-image">
+
                         <div class="yg-specs-badges" id="yg-quick-specs"></div>
                     </div>
 
@@ -189,6 +206,7 @@ Type 'help' for a list of commands.
                         </div>
 
                         <h1 class="yg-project-name" id="yg-title">Project Cali</h1>
+                        <div class="yg-tagline" id="yg-tagline">AUTHORIZED SYSTEM BUILD</div>
 
                         <div class="yg-card-stars">
                             <svg class="yg-star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
@@ -216,8 +234,15 @@ Type 'help' for a list of commands.
                             </select>
                         </div>
 
+                        <div class="yg-power-row">
+                            <span class="yg-power-label">SYSTEM POWER</span>
+                            <div class="yg-bar-track">
+                                <div class="yg-bar-fill" id="g-power-fill"></div>
+                            </div>
+                        </div>
+
                         <div class="yg-buttons-section">
-                            <button class="yg-btn yg-btn-specs" onclick="playClick(); toggleCardFlip()">
+                            <button class="yg-btn yg-btn-specs yg-btn-breathe" onclick="playClick(); toggleCardFlip()">
                                 <span>⇄</span> Flip to Specs
                             </button>
                             <button class="yg-btn yg-btn-cart" id="yg-add-cart" onclick="addToCart()">
@@ -230,9 +255,11 @@ Type 'help' for a list of commands.
                 <div class="yg-card-face yg-card-back">
                     <div class="yg-close-back" onclick="playClick(); toggleCardFlip()"><i class="ph-bold ph-arrow-u-up-left"></i></div>
 
-                    <div class="yg-sys-data-header">
+                    <div class="yg-rarity-badge">CLASSIFIED HARDWARE</div>
+
+                    <div class="yg-sys-header">
                         <div class="yg-sys-data-title">
-                            <span class="yg-sys-icon">⚙️</span>
+                            <span class="yg-sys-icon"><i class="ph-fill ph-cpu"></i></span>
                             SYS_DATA
                         </div>
                         <div class="yg-sys-subtitle" id="yg-desc">Detailed specifications for this system.</div>
@@ -252,24 +279,32 @@ Type 'help' for a list of commands.
     <div class="modal-overlay" id="trust-modal">
         <div class="modal-content" style="width:750px; text-align:center;">
             <span class="close-modal" onclick="closeModal('trust-modal')">X</span>
-            <h2 class="modal-title" style="color:var(--neon-green); letter-spacing:2px;">TRUST PROTOCOLS</h2>
+            <h2 class="modal-title">TRUST PROTOCOLS</h2>
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-top:30px;">
                 <div style="background: rgba(255,255,255,0.03); padding:20px; border: 1px solid #333; border-radius:10px;">
                     <i class="ph-duotone ph-shield-check" style="font-size: 3rem; color: var(--neon-green); margin-bottom: 15px;"></i>
                     <h4 style="font-family: var(--font-ui); color: #fff; margin-bottom: 10px; font-size:1.2rem;">2 YEAR WARRANTY</h4>
-                    <p style="font-size: 0.85rem; color: #888; line-height: 1.4;">All builds come with full part coverage and premium support.</p>
+                    <p style="font-size: 0.85rem; color: #888; line-height: 1.4;">All builds come with full support.</p>
                 </div>
                 <div style="background: rgba(255,255,255,0.03); padding:20px; border: 1px solid #333; border-radius:10px;">
                     <i class="ph-duotone ph-truck" style="font-size: 3rem; color: var(--neon-green); margin-bottom: 15px;"></i>
-                    <h4 style="font-family: var(--font-ui); color: #fff; margin-bottom: 10px; font-size:1.2rem;">NATIONWIDE SHIPPING</h4>
-                    <p style="font-size: 0.85rem; color: #888; line-height: 1.4;">Securely packed and delivered across Greece via trusted couriers.</p>
-                </div>
-                <div style="background: rgba(255,255,255,0.03); padding:20px; border: 1px solid #333; border-radius:10px;">
-                    <i class="ph-duotone ph-wrench" style="font-size: 3rem; color: var(--neon-green); margin-bottom: 15px;"></i>
-                    <h4 style="font-family: var(--font-ui); color: #fff; margin-bottom: 10px; font-size:1.2rem;">MASTER BUILDER</h4>
-                    <p style="font-size: 0.85rem; color: #888; line-height: 1.4;">Each system is stress-tested, optimized, and cable-managed to perfection.</p>
+                    <h4 style="font-family: var(--font-ui); color: #fff; margin-bottom: 10px; font-size:1.2rem;">GR SHIPPING</h4>
+                    <p style="font-size: 0.85rem; color: #888; line-height: 1.4;">Securely packed and delivered across Greece.</p>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="spec-info-modal">
+        <div class="modal-content" style="width:400px; text-align:center; border-color: var(--neon-purple);">
+            <span class="close-modal" onclick="closeModal('spec-info-modal')">X</span>
+            <div style="font-size: 3rem; color: var(--neon-purple); margin-bottom: 10px;">
+                <i class="ph-duotone ph-cpu"></i>
+            </div>
+            <h2 class="modal-title" id="spec-info-title" style="color:var(--neon-purple); font-size: 1.5rem; letter-spacing: 2px;">COMPONENT INFO</h2>
+            <p class="modal-text" id="spec-info-desc" style="color: #ccc; font-size: 0.95rem; line-height: 1.6;">
+                Technical data incoming...
+            </p>
         </div>
     </div>
 
@@ -309,11 +344,9 @@ Type 'help' for a list of commands.
         <div class="modal-content" style="width:450px;">
             <span class="close-modal" onclick="closeModal('newsletter-modal')">X</span>
             <h2 class="modal-title">THE NETWORK</h2>
-            <p class="modal-text">Establish a secure connection to receive classified drops and intel.</p>
             <div class="auth-form">
-                <label style="color:#888; font-size:0.8rem;">SECURE EMAIL</label>
                 <input type="email" id="nl-email" class="auth-input" placeholder="agent@codex.com">
-                <button class="btn-inspect" onclick="submitNewsletter()" style="margin-top:10px;">ESTABLISH CONNECTION</button>
+                <button class="btn-inspect" onclick="submitNewsletter()">ESTABLISH CONNECTION</button>
             </div>
         </div>
     </div>
@@ -323,15 +356,11 @@ Type 'help' for a list of commands.
             <span class="close-modal" onclick="closeModal('review-code-modal')">X</span>
             <h2 class="modal-title">VERIFIED REVIEW</h2>
             <div class="auth-form">
-                <label style="color:#888; font-size:0.8rem;">ENTER ORDER CODE</label>
                 <input type="text" id="rc-code" class="auth-input" placeholder="CDX-XXXXXX">
-                <label style="color:#888; font-size:0.8rem;">YOUR NAME</label>
                 <input type="text" id="rc-user" class="auth-input" placeholder="Agent Name">
-                <label style="color:#888; font-size:0.8rem;">RATING (1-5)</label>
                 <input type="number" id="rc-rating" class="auth-input" min="1" max="5" value="5">
-                <label style="color:#888; font-size:0.8rem;">REVIEW</label>
                 <textarea id="rc-text" class="auth-input" style="height:80px; resize:none;" placeholder="System performance..."></textarea>
-                <button class="btn-inspect" onclick="submitReviewCode()" style="margin-top:10px;">SUBMIT TRANSMISSION</button>
+                <button class="btn-inspect" onclick="submitReviewCode()">SUBMIT TRANSMISSION</button>
             </div>
         </div>
     </div>
@@ -339,48 +368,26 @@ Type 'help' for a list of commands.
     <div class="modal-overlay" id="mission-modal">
         <div class="modal-content" style="text-align:center; border: 2px solid var(--neon-green); width: 500px;">
             <span class="close-modal" onclick="closeModal('mission-modal')">X</span>
-            
             <h2 style="color:var(--neon-green); font-family:var(--font-ui); letter-spacing:2px; margin-bottom:5px;">SYSTEM VALIDATION</h2>
             <div id="mission-pc-name" style="font-size:1.2rem; font-weight:bold; color:#fff; margin-bottom:20px;">PROJECT X</div>
-            
             <div style="background:#111; padding:15px; border-radius:8px; margin-bottom:20px; border:1px solid #333;">
                 <div style="color:#aaa; font-size:0.7rem; letter-spacing:1px;">VALIDATION WINDOW CLOSES IN:</div>
                 <div id="mission-timer" style="font-size:2.5rem; font-family:monospace; color:#fff; font-weight:bold;">47:59:00</div>
             </div>
-
             <div style="display:flex; flex-direction:column; gap:15px;">
-                
                 <button class="btn-inspect" onclick="openReviewForm()" style="background:var(--neon-green); color:#000; border:none;">
-                    <i class="ph-bold ph-check-circle"></i> SYSTEM OPERATIONAL (KEEP & REVIEW)
+                    SYSTEM OPERATIONAL (KEEP & REVIEW)
                 </button>
-
-                <div style="display:flex; align-items:center; gap:10px; color:#444; font-size:0.8rem;">
-                    <div style="height:1px; background:#333; flex:1;"></div> OR <div style="height:1px; background:#333; flex:1;"></div>
-                </div>
-
                 <div style="background:rgba(255, 51, 51, 0.1); padding:15px; border:1px solid var(--retro-red); border-radius:8px;">
-                    <h4 style="color:var(--retro-red); margin-bottom:10px; text-transform:uppercase;">Report System Failure</h4>
+                    <h4 style="color:var(--retro-red); margin-bottom:10px;">Report System Failure</h4>
                     <select id="return-reason" style="width:100%; padding:10px; background:#000; color:#fff; border:1px solid #555; border-radius:4px; margin-bottom:10px;">
                         <option value="" disabled selected>Select Error Protocol...</option>
-                        <option value="1">1. FPS Mismatch (Performance Issue)</option>
-                        <option value="2">2. Hardware Defect (Dead on Arrival)</option>
-                        <option value="3">3. Specification Mismatch (Wrong Specs)</option>
-                        <option value="4">4. Other Critical Error</option>
+                        <option value="1">1. FPS Mismatch</option>
+                        <option value="2">2. Hardware Defect (DOA)</option>
                     </select>
-                    <button class="btn-inspect" onclick="requestReturn()" style="background:transparent; border:1px solid var(--retro-red); color:var(--retro-red); font-size:0.9rem;">
-                        INITIATE RETURN PROTOCOL
-                    </button>
+                    <button class="btn-inspect" onclick="requestReturn()" style="background:transparent; border:1px solid var(--retro-red); color:var(--retro-red);">INITIATE RETURN</button>
                 </div>
-
             </div>
-        </div>
-    </div>
-
-    <div class="modal-overlay" id="achievements-modal">
-        <div class="modal-content">
-            <span class="close-modal" onclick="closeModal('achievements-modal')">X</span>
-            <h2 class="modal-title">AGENT RECORD</h2>
-            <div class="ach-grid" id="ach-list"></div>
         </div>
     </div>
 
@@ -392,7 +399,7 @@ Type 'help' for a list of commands.
                 <input type="text" id="login-user" class="auth-input" placeholder="USERNAME">
                 <input type="password" id="login-pass" class="auth-input" placeholder="PASSWORD">
                 <button class="btn-inspect" onclick="handleLogin()">AUTHENTICATE</button>
-                <div style="text-align:center; margin-top:15px; font-size:0.8rem; color:#666; cursor:pointer;" onclick="openRecovery()">[ LOST ACCESS? INITIATE RECOVERY ]</div>
+                <div style="text-align:center; margin-top:15px; font-size:0.8rem; color:#666; cursor:pointer;" onclick="openRecovery()">[ LOST ACCESS? ]</div>
             </div>
         </div>
     </div>
@@ -414,7 +421,6 @@ Type 'help' for a list of commands.
         <div class="modal-content" style="width:400px;">
             <span class="close-modal" onclick="closeModal('forgot-modal')">X</span>
             <h2 class="modal-title">RECOVERY PROTOCOL</h2>
-            <p class="modal-text">Enter your secure email to receive a reset token.</p>
             <div class="auth-form">
                 <input type="email" id="forgot-email" class="auth-input" placeholder="agent@codex.com">
                 <button class="btn-inspect" onclick="requestReset()">SEND TOKEN</button>
@@ -427,39 +433,21 @@ Type 'help' for a list of commands.
             <span class="close-modal" onclick="closeModal('reset-modal')">X</span>
             <h2 class="modal-title">NEW CREDENTIALS</h2>
             <div class="auth-form">
-                <label style="color:#888; font-size:0.8rem;">ENTER TOKEN (FROM EMAIL)</label>
-                <input type="text" id="reset-token" class="auth-input" placeholder="Paste Token Here">
-                <label style="color:#888; font-size:0.8rem;">NEW PASSWORD</label>
+                <input type="text" id="reset-token" class="auth-input" placeholder="Token">
                 <input type="password" id="new-pass" class="auth-input" placeholder="New Password">
                 <button class="btn-inspect" onclick="completeReset()">UPDATE SYSTEM</button>
             </div>
         </div>
     </div>
 
-    <div class="modal-overlay" id="vote-info-modal">
+    <div class="modal-overlay" id="achievements-modal">
         <div class="modal-content">
-            <div class="close-btn" onclick="document.getElementById('vote-info-modal').style.display='none'">X</div>
-            <h2 style="color:var(--neon-purple); margin-bottom:15px;">HOW IT WORKS</h2>
-            <p style="color:#ccc; font-size:0.9rem; line-height:1.6;">1. Voting opens at the specified date.<br>2. Reach the target votes before time expires.<br>3. Successful unlocks become available for purchase.</p>
+            <span class="close-modal" onclick="closeModal('achievements-modal')">X</span>
+            <h2 class="modal-title">AGENT RECORD</h2>
+            <div class="ach-grid" id="ach-list"></div>
         </div>
     </div>
-    
-    <div class="modal-overlay" id="rules-modal">
-        <div class="modal-content">
-            <span class="close-modal" onclick="playClick(); closeModal('rules-modal')">X</span>
-            <h2>RULES</h2>
-            <p>1. First come first served.</p>
-        </div>
-    </div>
-    
-    <div class="modal-overlay" id="help-modal">
-        <div class="modal-content">
-            <span class="close-modal" onclick="playClick(); closeModal('help-modal')">X</span>
-            <h2>HELP</h2>
-            <p>Contact support.</p>
-        </div>
-    </div>
-    
+
     <div class="modal-overlay" id="compare-modal">
         <div class="modal-content" style="width:1200px;">
             <span class="close-modal" onclick="playClick(); closeModal('compare-modal')">X</span>
@@ -468,25 +456,30 @@ Type 'help' for a list of commands.
         </div>
     </div>
 
-    <div class="footer">
-        <div class="footer-left"><span>© 2026 PHOENIX CODEX DEMO</span></div>
-        <div class="footer-center"></div>
-        <div class="footer-right"><span style="color:#666;">DATABASE:</span> <span style="color:#fff;">SYNCED</span><div class="status-dot"></div></div>
+    <div class="modal-overlay" id="vote-info-modal">
+        <div class="modal-content">
+            <div class="close-btn" onclick="closeModal('vote-info-modal')">X</div>
+            <h2 style="color:var(--neon-purple); margin-bottom:15px;">HOW IT WORKS</h2>
+            <p style="color:#ccc; font-size:0.9rem; line-height:1.6;">1. Voting opens at the specified date.<br>2. Reach target votes to unlock drops.</p>
+        </div>
     </div>
     
-    <div class="modal-overlay" id="spec-info-modal">
-        <div class="modal-content" style="width:400px; text-align:center; border-color: var(--neon-purple);">
-            <span class="close-modal" onclick="closeModal('spec-info-modal')">X</span>
-            <div style="font-size: 3rem; color: var(--neon-purple); margin-bottom: 10px;">
-                <i class="ph-duotone ph-cpu"></i>
-            </div>
-            <h2 class="modal-title" id="spec-info-title" style="color:var(--neon-purple); font-size: 1.5rem; letter-spacing: 2px;">COMPONENT INFO</h2>
-            <p class="modal-text" id="spec-info-desc" style="color: #ccc; font-size: 0.95rem; line-height: 1.6;">
-                Λεπτομέρειες εξαρτήματος...
-            </p>
+    <div class="modal-overlay" id="rules-modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal('rules-modal')">X</span>
+            <h2>RULES</h2>
+            <p>1. First come first served.</p>
+        </div>
+    </div>
+    
+    <div class="modal-overlay" id="help-modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal('help-modal')">X</span>
+            <h2>HELP</h2>
+            <p>Contact support.</p>
         </div>
     </div>
 
-<script src="js/app.js"></script>
+    <script src="js/app.js"></script>
 </body>
 </html>
