@@ -32,13 +32,6 @@ body {
     display: none !important;
 }
 
-.holo-card-inner {
-    position: relative;
-    width: 100%;
-    height: 100%;
-    pointer-events: auto;
-}
-
 /* =========================================
    LOADER & ENV
    ========================================= */
@@ -162,20 +155,9 @@ canvas#matrix-canvas {
     pointer-events: auto;
 }
 
-.toast.achievement {
-    border-color: var(--legendary-orange);
-    color: var(--legendary-orange);
-}
-
-.toast.error {
-    border-color: var(--retro-red);
-    color: var(--retro-red);
-}
-
-@keyframes slideUpFade {
-    from { transform: translateY(20px); opacity: 0; }
-    to { transform: translateY(0); opacity: 1; }
-}
+.toast.achievement { border-color: var(--legendary-orange); color: var(--legendary-orange); }
+.toast.error { border-color: var(--retro-red); color: var(--retro-red); }
+@keyframes slideUpFade { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
 /* =========================================
    HEADER
@@ -278,7 +260,6 @@ header {
     backdrop-filter: blur(20px);
     z-index: 6000;
 }
-
 .cart-dropdown.show { display: flex; animation: fadeIn 0.2s; }
 .mini-cart-header { font-family: var(--font-ui); color: #fff; font-weight: bold; font-size: 1.1rem; border-bottom: 1px solid #333; padding-bottom: 10px; display: flex; justify-content: space-between; }
 .mini-cart-list { max-height: 300px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
@@ -294,7 +275,6 @@ header {
 .mc-checkout-btn { width: 100%; background: var(--neon-green); color: #000; border: none; padding: 12px; font-weight: bold; font-family: var(--font-ui); cursor: pointer; border-radius: 6px; transition: 0.3s; letter-spacing: 1px; }
 .mc-checkout-btn:hover { box-shadow: 0 0 20px var(--neon-green); transform: scale(1.02); }
 
-/* HEADER RIGHT GROUP */
 .right-header-group { display: flex; align-items: center; gap: 15px; position: relative; z-index: 5001; }
 .achievements-btn, .cli-btn { width: 45px; height: 45px; border-radius: 50%; background: rgba(255,255,255,0.05); border: 1px solid #555; color: #888; font-size: 1.2rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.3s; }
 .achievements-btn:hover { background: var(--legendary-orange); color: #000; border-color: var(--legendary-orange); box-shadow: 0 0 15px var(--legendary-orange); }
@@ -323,7 +303,6 @@ header {
     padding: 20px 0;
     pointer-events: auto;
 }
-
 .left-sidebar { left: 0; border-right: 1px solid rgba(255,255,255,0.05); background: linear-gradient(to right, rgba(0,0,0,0.8), transparent); }
 .right-sidebar { right: 0; width: 300px; border-left: 1px solid rgba(255,255,255,0.05); background: linear-gradient(to left, rgba(0,0,0,0.8), transparent); padding: 20px; align-items: stretch; }
 .side-group { display: flex; flex-direction: column; gap: 10px; width: 100%; align-items: center; }
@@ -354,8 +333,39 @@ header {
 .carousel-wrapper, .starter-menu, .holo-card, .vote-container { pointer-events: auto; }
 .system-select-label { font-family: var(--font-ui); font-size: 1.2rem; color: #fff; letter-spacing: 6px; font-weight: 800; margin-bottom: 20px; text-transform: uppercase; opacity: 0.8; }
 
-.holo-card { width: 420px; background: var(--glass-dark); backdrop-filter: blur(40px); border: 1px solid var(--glass-border); border-radius: 16px; padding: 35px; text-align: center; position: relative; transition: 0.4s; box-shadow: 0 40px 100px rgba(0,0,0,0.8); display: flex; flex-direction: column; align-items: center; }
-.hero-img { height: 200px; object-fit: contain; filter: drop-shadow(0 20px 40px rgba(0,0,0,0.5)); margin-bottom: 10px; transition: 0.3s; }
+.holo-card { 
+    width: 420px; 
+    background: var(--glass-dark); 
+    backdrop-filter: blur(40px); 
+    border: 1px solid var(--glass-border); 
+    border-radius: 16px; 
+    padding: 35px; 
+    text-align: center; 
+    position: relative; 
+    transition: 0.4s; 
+    box-shadow: 0 40px 100px rgba(0,0,0,0.8); 
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+}
+.holo-card-inner { 
+    position: relative; 
+    width: 100%; 
+    height: 100%; 
+    pointer-events: auto; 
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+}
+.hero-img { 
+    height: 200px; 
+    object-fit: contain; 
+    filter: drop-shadow(0 20px 40px rgba(0,0,0,0.5)); 
+    margin: 0 auto 10px auto; 
+    display: block; 
+    transition: 0.3s; 
+}
+
 .pc-title { font-family: var(--font-ui); font-size: 2.5rem; font-weight: 800; line-height: 1; text-transform: uppercase; margin-bottom: 5px; color: #fff; }
 .card-price-row { display: flex; justify-content: center; align-items: baseline; gap: 10px; margin-bottom: 15px; }
 .pc-price { font-family: var(--font-ui); font-size: 2rem; color: var(--neon-green); font-weight: bold; }
@@ -380,39 +390,41 @@ header {
 .btn-card-compare:hover { background: rgba(204, 255, 0, 0.1); color: #fff; border-style: solid; box-shadow: 0 0 10px var(--neon-green); }
 .btn-card-compare.selected { background: var(--neon-green); color: #000; border: 1px solid var(--neon-green); font-weight: bold; box-shadow: 0 0 15px var(--neon-green); }
 
-.carousel-wrapper { display: flex; align-items: center; gap: 40px; transition: 0.3s; }
+.carousel-wrapper { display: flex; align-items: center; justify-content: center; gap: 40px; transition: 0.3s; width: 100%; }
 .nav-arrow { background: rgba(255,255,255,0.05); color: #fff; width: 40px; height: 80px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; cursor: pointer; clip-path: polygon(0 20%, 100% 0, 100% 100%, 0 80%); transition: 0.3s; }
 .nav-arrow:hover { background: var(--neon-green); color:#000; }
 
 /* =========================================
-   GENERAL MODALS
+   STARTER PACKS
+   ========================================= */
+.starter-menu { 
+    display: flex; 
+    flex-direction: row; 
+    justify-content: center; 
+    gap: 20px; 
+    width: 100%; 
+}
+.pack-card { width: 220px; height: 320px; background: rgba(20, 20, 25, 0.7); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; transition: 0.3s; backdrop-filter: blur(20px); }
+.pack-card:hover { transform: translateY(-10px); border-color: var(--retro-red); background: rgba(255, 51, 51, 0.1); }
+.pack-icon { font-size: 3.5rem; color: #666; margin-bottom: 15px; }
+.pack-title { font-family: var(--font-ui); font-size: 1.4rem; color: #fff; text-transform: uppercase; font-weight: 800; }
+.pack-desc { font-size: 0.75rem; color: #aaa; text-align: center; padding: 0 15px; margin-top: 10px; }
+
+/* =========================================
+   GENERAL MODALS & TERMINAL
    ========================================= */
 .modal-overlay, .gallery-overlay { 
     position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 6000; 
     display: none; align-items: center; justify-content: center; backdrop-filter: blur(15px); 
 }
-
 .modal-overlay.active, .gallery-overlay.active { 
     display: flex; animation: fadeInUp 0.3s forwards; 
 }
+@keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
-@keyframes fadeInUp { 
-    from { opacity: 0; transform: translateY(20px); } 
-    to { opacity: 1; transform: translateY(0); } 
-}
-
-.modal-content { 
-    width: 600px; background: #0a0a0c; border: 1px solid #333; padding: 40px; 
-    border-radius: 20px; position: relative; max-height: 80vh; overflow-y: auto; 
-    box-shadow: 0 0 50px rgba(0,0,0,0.8); 
-}
-
-.close-modal, .close-btn { 
-    position: absolute; top: 20px; right: 20px; font-size: 1.5rem; 
-    cursor: pointer; color: #666; z-index: 100; transition: 0.2s;
-}
+.modal-content { width: 600px; background: #0a0a0c; border: 1px solid #333; padding: 40px; border-radius: 20px; position: relative; max-height: 80vh; overflow-y: auto; box-shadow: 0 0 50px rgba(0,0,0,0.8); }
+.close-modal, .close-btn { position: absolute; top: 20px; right: 20px; font-size: 1.5rem; cursor: pointer; color: #666; z-index: 100; transition: 0.2s;}
 .close-modal:hover, .close-btn:hover { color: #fff; }
-
 .modal-title { font-family: var(--font-ui); font-size: 2rem; color: #fff; margin-bottom: 20px; border-bottom: 1px solid #333; padding-bottom: 10px; }
 .modal-text { color: #aaa; line-height: 1.6; font-size: 0.95rem; }
 
@@ -420,11 +432,9 @@ header {
 .auth-input { background: #111; border: 1px solid #333; padding: 12px; color: #fff; border-radius: 6px; outline: none; }
 .auth-input:focus { border-color: var(--neon-green); }
 
-/* =========================================
-   TERMINAL CLI
-   ========================================= */
 #cli-overlay { 
-    display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); 
+    display: none; 
+    position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); 
     width: 700px; height: 450px; max-width: 90%; background: rgba(5, 5, 10, 0.95); 
     border: 1px solid var(--neon-green); border-radius: 12px; box-shadow: 0 20px 50px rgba(0,0,0,0.8); 
     z-index: 8000; padding: 20px; font-family: monospace; color: #0f0; flex-direction: column; 
