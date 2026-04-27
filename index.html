@@ -96,8 +96,8 @@ Type 'help' for a list of commands.
                 <div class="profile-btn" onclick="playClick(); toggleProfileMenu()"><i class="ph-fill ph-user-circle"></i></div>
                 <div class="profile-menu" id="profile-menu">
                     <div id="guest-options">
-                        <div class="p-item action" onclick="playClick(); openModal('login')">SIGN IN</div>
-                        <div class="p-item" onclick="playClick(); openModal('signup')">SIGN UP</div>
+                        <div class="p-item action" onclick="playClick(); openModal('login-modal')">SIGN IN</div>
+                        <div class="p-item" onclick="playClick(); openModal('signup-modal')">SIGN UP</div>
                     </div>
                     <div id="user-options" class="hidden">
                         <div style="text-align:center; color:#fff; margin-bottom:5px;" id="user-display">AGENT_01</div>
@@ -143,7 +143,7 @@ Type 'help' for a list of commands.
             <div class="vote-container">
                 <div class="vote-header-row">
                     <span style="font-family:var(--font-ui); font-weight:800; color:var(--neon-purple); font-size:1.2rem;">COMMUNITY DROP</span>
-                    <div class="info-icon" onclick="document.getElementById('vote-info-modal').style.display='flex'">?</div>
+                    <div class="info-icon" onclick="openModal('vote-info-modal')">?</div>
                 </div>
                 <h2 id="v-title" style="color:#fff; margin-bottom:5px; font-size:2rem; text-transform:uppercase;">LOADING...</h2>
                 <div id="v-price-display" style="color:var(--neon-green); font-family:var(--font-ui); font-weight:bold; font-size:1.5rem; margin-bottom:20px;"></div>
@@ -159,6 +159,7 @@ Type 'help' for a list of commands.
                     <div class="vote-progress-fill" id="v-fill"></div>
                 </div>
                 <button class="vote-btn" id="v-btn" onclick="castVote()">AUTHORIZE DROP</button>
+                <button class="vote-btn hidden" id="v-buy-btn" onclick="buyVotePC()" style="background:#ccff00; color:#000; margin-top:10px;">SECURE NOW</button>
                 <div class="timer-text" id="v-timer">CALCULATING TIME...</div>
             </div>
         </div>
