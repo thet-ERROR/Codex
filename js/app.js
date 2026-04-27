@@ -427,22 +427,22 @@ const API = 'https://codex-backend-9kij.onrender.com/api';
                 tierBadge.style.boxShadow = `0 0 20px ${tierColor}80`;
             }
 
-            document.getElementById('yg-main-img').src = currentGalleryPC.images[0] || 'assets/images/bg.jpg';
+            document.getElementById('g-main-img').src = currentGalleryPC.images[0] || 'assets/images/bg.jpg';
 
             let cpuText = currentGalleryPC.specs && currentGalleryPC.specs.cpu ? currentGalleryPC.specs.cpu.split(' ').slice(0,2).join(' ') : 'CPU';
             let gpuText = currentGalleryPC.specs && currentGalleryPC.specs.gpu ? currentGalleryPC.specs.gpu.split(' ').slice(0,2).join(' ') : 'GPU';
             let ramText = currentGalleryPC.specs && currentGalleryPC.specs.ram ? currentGalleryPC.specs.ram.split(' ')[0] : 'RAM';
             
-            document.getElementById('yg-quick-specs').innerHTML = `
+            document.getElementById('g-quick-specs').innerHTML = `
                 <div class="yg-spec-badge"><div class="yg-spec-icon">⚙️</div><span>${cpuText}</span></div>
                 <div class="yg-spec-badge"><div class="yg-spec-icon">🎮</div><span>${gpuText}</span></div>
                 <div class="yg-spec-badge"><div class="yg-spec-icon">💾</div><span>${ramText}</span></div>
             `;
 
             const stock = currentGalleryPC.stock || 0; 
-            const stockContainer = document.getElementById('yg-stock-container');
-            const stockBadge = document.getElementById('yg-stock-badge'); 
-            const addBtn = document.getElementById('yg-add-cart'); 
+            const stockContainer = document.getElementById('g-stock-container');
+            const stockBadge = document.getElementById('g-stock-badge'); 
+            const addBtn = document.getElementById('g-add-cart'); 
             
             if(stock === 0) { 
                 stockContainer.style.borderColor = "#ff3333";
@@ -480,7 +480,7 @@ const API = 'https://codex-backend-9kij.onrender.com/api';
                     </div>`; 
                 } 
             }
-            document.getElementById('yg-specs-back').innerHTML = backH; 
+            document.getElementById('g-specs-back').innerHTML = backH; 
 
             let benchH = "";
             if (currentGalleryPC.fps && currentGalleryPC.fps.length > 0) {
@@ -497,7 +497,7 @@ const API = 'https://codex-backend-9kij.onrender.com/api';
             } else {
                 benchH = "<div style='color:#888; font-size:12px; font-style:italic; text-align:center; grid-column: span 2; padding: 20px;'>No benchmark data available.</div>";
             }
-            document.getElementById('yg-benchmarks').innerHTML = benchH;
+            document.getElementById('g-benchmarks').innerHTML = benchH;
             
             document.getElementById('gallery-overlay').classList.add('active'); 
         }
