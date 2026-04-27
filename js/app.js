@@ -291,7 +291,27 @@ const API = 'https://codex-backend-9kij.onrender.com/api';
         function toggleCartDropdown() { const d = document.getElementById('cart-dropdown'); const btn = document.querySelector('.nav-btn.cart-btn'); d.classList.toggle('show'); btn.classList.toggle('active'); }
         window.onclick = function(event) { if (!event.target.closest('.cart-btn') && !event.target.closest('.cart-dropdown') && !event.target.closest('.add-review-btn')) { document.getElementById('cart-dropdown').classList.remove('show'); } }
         function updateCartUI() { document.getElementById('cart-count').innerText = cart.length; const items = document.getElementById('mini-cart-items'); let total = 0; if (cart.length === 0) { items.innerHTML = '<div style="color:#666; text-align:center; padding:20px; font-size:0.9rem;">CART IS EMPTY</div>'; } else { items.innerHTML = cart.map((item, i) => { total += item.price; return `<div class="mini-cart-item"><img src="${item.img}" class="mc-img"><div class="mc-details"><div class="mc-name">${item.name}</div><div class="mc-opt">${item.option}</div><div class="mc-price">€${item.price}</div></div><i class="ph-bold ph-x mc-remove" onclick="removeFromCart(${i})"></i></div>`; }).join(''); } document.getElementById('mc-total').innerText = "€" + total; }
-        function addToCart() { if(currentGalleryPC.stock === 0) return alert("SOLD OUT!"); const extra = parseInt(document.getElementById('storage-select').value); const base = parseInt(currentGalleryPC.price.replace(/[^0-9]/g, '')); cart.push({ name: currentGalleryPC.name, price: base + extra, option: extra === 50 ? "+1TB HDD" : extra === 80 ? "+1TB SSD" : "Standard", img: currentGalleryPC.images[0] }); localStorage.setItem('codex_cart', JSON.stringify(cart)); updateCartUI(); const dropdown = document.getElementById('cart-dropdown'); dropdown.classList.add('show'); setTimeout(() => dropdown.classList.remove('show'), 2000); closeModal('gallery-overlay'); showToast("ITEM ADDED TO CART", "normal"); checkAchievement('cart'); }
+        
+        function addToCart() { 
+            if(!currentGalleryPC) return;
+            if(currentGalleryPC.stock === 0) return alert("SOLD OUT!"); 
+            const extra = parseInt(document.getElementById('storage-select').value) || 0; 
+            const base = parseInt(currentGalleryPC.price.replace(/[^0-9]/g, '')) || 0; 
+            cart.push({ 
+                name: currentGalleryPC.name, 
+                price: base + extra, 
+                option: extra === 50 ? "+1TB HDD" : (extra === 80 ? "+1TB SSD" : "Standard"), 
+                img: currentGalleryPC.images[0] 
+            }); 
+            localStorage.setItem('codex_cart', JSON.stringify(cart)); 
+            updateCartUI(); 
+            const dropdown = document.getElementById('cart-dropdown'); 
+            dropdown.classList.add('show'); 
+            setTimeout(() => dropdown.classList.remove('show'), 2000); 
+            closeModal('gallery-overlay'); 
+            showToast("ITEM ADDED TO CART", "normal"); 
+            checkAchievement('cart'); 
+        }
         
         function renderVoteState() { 
             document.getElementById('v-title').innerText = activeEvent.title; 
@@ -339,7 +359,6 @@ const API = 'https://codex-backend-9kij.onrender.com/api';
         function nextPC() { if(filtered.length) { index=(index+1)%filtered.length; renderCard(); } }
         function prevPC() { if(filtered.length) { index=(index-1+filtered.length)%filtered.length; renderCard(); } }
         
-        /* 🌟 ΚΑΘΑΡΗ ΕΙΚΟΝΑ ΧΩΡΙΣ HOVER + ΝΕΑ ΧΡΩΜΑΤΑ ΚΟΥΜΠΙΩΝ 🌟 */
         function renderCard() { 
             const c = document.getElementById('main-card'); 
             if(!filtered.length) { c.innerHTML = "<h3>NO SIGNAL</h3>"; return; } 
@@ -350,14 +369,6 @@ const API = 'https://codex-backend-9kij.onrender.com/api';
             const fakeOldPrice = Math.floor(priceVal * 1.2); 
             const stock = pc.stock || 0; 
             
-            // Υπολογισμός Tier Badge
-            let mScore = pc.multitasking || 0;
-            let tier = mScore > 80 ? 'S-TIER' : (mScore > 50 ? 'A-TIER' : 'B-TIER');
-            let tierColor = mScore > 80 ? 'var(--legendary-orange)' : (mScore > 50 ? 'var(--neon-purple)' : 'var(--neon-green)');
-
-            let cpuText = pc.specs && pc.specs.cpu ? pc.specs.cpu.split(' ').slice(0,2).join(' ') : 'CPU';
-            let gpuText = pc.specs && pc.specs.gpu ? pc.specs.gpu.split(' ').slice(0,2).join(' ') : 'GPU';
-
             let stockHTML = ''; 
             if(stock === 0) stockHTML = '<div class="stock-badge out">SOLD OUT</div>'; 
             else if(stock < 5) stockHTML = `<div class="stock-badge low">LOW STOCK: ${stock} UNITS</div>`; 
@@ -372,18 +383,8 @@ const API = 'https://codex-backend-9kij.onrender.com/api';
             }); 
             
             c.innerHTML = `
-                <div class="holo-card-inner" style="overflow: hidden; position: relative;">
-                    <div class="bg-watermark" style="font-size: 4rem;">${pc.name}</div>
-                    <div class="tier-badge" style="border-color:${tierColor}; box-shadow: 0 0 10px ${tierColor}40;">${tier}</div>
-                    <div class="grid-decal" style="bottom: 50%; opacity: 0.1;"></div>
-                    
+                <div class="holo-card-inner">
                     <img src="${pc.images[0]||'assets/images/bg.jpg'}" class="hero-img">
-                    
-                    <div class="quick-specs-row" style="margin-bottom: 15px;">
-                        <div class="quick-pill"><i class="ph-bold ph-cpu"></i> ${cpuText}</div>
-                        <div class="quick-pill"><i class="ph-bold ph-graphics-card"></i> ${gpuText}</div>
-                    </div>
-
                     ${stockHTML}
                     <div class="pc-title">${pc.name}</div>
                     <div class="card-price-row">
@@ -402,91 +403,105 @@ const API = 'https://codex-backend-9kij.onrender.com/api';
         // 🌟 ΑΝΑΝΕΩΜΕΝΟ OPENGALLERY 🌟
         function openGallery() { 
             currentGalleryPC = filtered[index]; 
+            if(!currentGalleryPC) return;
             galleryIndex = 0; 
             
-            const cardInner = document.getElementById('lc-inner');
-            if(cardInner) cardInner.classList.remove('is-flipped');
+            const cardInner = document.getElementById('yg-card');
+            if(cardInner) cardInner.classList.remove('flipped');
 
-            document.getElementById('g-title').innerText = currentGalleryPC.name; 
-            document.getElementById('g-desc').innerText = currentGalleryPC.description || "Detailed specifications for this system.";
+            document.getElementById('yg-title').innerText = currentGalleryPC.name; 
+            document.getElementById('yg-desc').innerText = currentGalleryPC.description || "Detailed specifications for this system.";
             
-            // Watermark & Tier Badge
-            document.getElementById('g-watermark').innerText = currentGalleryPC.name;
-            
-            let mScore = currentGalleryPC.multitasking || 0;
-            let tier = mScore > 80 ? 'S-TIER' : (mScore > 50 ? 'A-TIER' : 'B-TIER');
-            let tierColor = mScore > 80 ? 'var(--legendary-orange)' : (mScore > 50 ? 'var(--neon-purple)' : 'var(--neon-green)');
-            
-            let badgeEl = document.getElementById('g-tier-badge');
-            badgeEl.innerText = tier;
-            badgeEl.style.borderColor = tierColor;
-            badgeEl.style.boxShadow = `0 0 15px ${tierColor}40`;
-
-            // Quick Spec Pills
-            let cpuText = currentGalleryPC.specs.cpu ? currentGalleryPC.specs.cpu.split(' ').slice(0,2).join(' ') : 'CPU';
-            let gpuText = currentGalleryPC.specs.gpu ? currentGalleryPC.specs.gpu.split(' ').slice(0,2).join(' ') : 'GPU';
-            let ramText = currentGalleryPC.specs.ram ? currentGalleryPC.specs.ram.split(' ')[0] : 'RAM';
-            
-            document.getElementById('g-quick-specs').innerHTML = `
-                <div class="quick-pill"><i class="ph-bold ph-cpu"></i> ${cpuText}</div>
-                <div class="quick-pill"><i class="ph-bold ph-graphics-card"></i> ${gpuText}</div>
-                <div class="quick-pill"><i class="ph-bold ph-memory"></i> ${ramText}</div>
-            `;
-
             const basePrice = parseInt(currentGalleryPC.price.replace(/[^0-9]/g, '')); 
-            document.getElementById('g-price-live').innerText = "€" + basePrice; 
-            document.getElementById('g-price-old').innerText = "€" + Math.floor(basePrice * 1.2); 
-            
+            document.getElementById('yg-price-live').innerText = "€" + basePrice; 
+            document.getElementById('yg-price-old').innerText = "€" + Math.floor(basePrice * 1.2); 
             document.getElementById('storage-select').value = "0"; 
 
+            let mScore = currentGalleryPC.multitasking || 0;
+            let tier = mScore > 80 ? 'S-TIER' : (mScore > 50 ? 'A-TIER' : 'B-TIER');
+            let tierColor = mScore > 80 ? '#a855f7' : (mScore > 50 ? '#ec48d9' : '#bef264');
+            let tierBadge = document.getElementById('yg-tier-badge');
+            if(tierBadge) {
+                tierBadge.innerText = tier;
+                tierBadge.style.background = `linear-gradient(135deg, ${tierColor} 0%, #111 100%)`;
+                tierBadge.style.boxShadow = `0 0 20px ${tierColor}80`;
+            }
+
+            document.getElementById('yg-main-img').src = currentGalleryPC.images[0] || 'assets/images/bg.jpg';
+
+            let cpuText = currentGalleryPC.specs && currentGalleryPC.specs.cpu ? currentGalleryPC.specs.cpu.split(' ').slice(0,2).join(' ') : 'CPU';
+            let gpuText = currentGalleryPC.specs && currentGalleryPC.specs.gpu ? currentGalleryPC.specs.gpu.split(' ').slice(0,2).join(' ') : 'GPU';
+            let ramText = currentGalleryPC.specs && currentGalleryPC.specs.ram ? currentGalleryPC.specs.ram.split(' ')[0] : 'RAM';
+            
+            document.getElementById('yg-quick-specs').innerHTML = `
+                <div class="yg-spec-badge"><div class="yg-spec-icon">⚙️</div><span>${cpuText}</span></div>
+                <div class="yg-spec-badge"><div class="yg-spec-icon">🎮</div><span>${gpuText}</span></div>
+                <div class="yg-spec-badge"><div class="yg-spec-icon">💾</div><span>${ramText}</span></div>
+            `;
+
             const stock = currentGalleryPC.stock || 0; 
-            const badge = document.getElementById('g-stock-badge'); 
-            const addBtn = document.getElementById('g-add-cart'); 
-            if(stock === 0) { badge.innerText = "SOLD OUT"; badge.className = "stock-badge out"; addBtn.disabled = true; } 
-            else if(stock < 5) { badge.innerText = `LOW STOCK: ${stock}`; badge.className = "stock-badge low"; addBtn.disabled = false; } 
-            else { badge.innerText = "IN STOCK"; badge.className = "stock-badge in"; addBtn.disabled = false; } 
+            const stockContainer = document.getElementById('yg-stock-container');
+            const stockBadge = document.getElementById('yg-stock-badge'); 
+            const addBtn = document.getElementById('yg-add-cart'); 
             
-            let backH = ""; 
-            
-            for(const [k,v] of Object.entries(currentGalleryPC.specs)) { 
-                const safeKey = k.replace(/'/g, "\\'"); 
-                
-                backH += `
-                <div class="spec-row-back">
-                    <div class="spec-label-back">
-                        ${k.toUpperCase()}
-                        <i class="ph-bold ph-info spec-info-btn" style="color:var(--neon-purple)" onclick="playClick(); openSpecInfo('${safeKey}')"></i>
-                    </div>
-                    <div class="spec-val-back">${v}</div>
-                </div>`; 
+            if(stock === 0) { 
+                stockContainer.style.borderColor = "#ff3333";
+                stockContainer.style.background = "rgba(255, 51, 51, 0.1)";
+                stockBadge.style.color = "#ff3333";
+                stockBadge.innerText = "❌ OUT OF STOCK"; 
+                if(addBtn) addBtn.disabled = true;
+            } 
+            else if(stock < 5) { 
+                stockContainer.style.borderColor = "#fbbf24";
+                stockContainer.style.background = "rgba(251, 191, 36, 0.1)";
+                stockBadge.style.color = "#fbbf24";
+                stockBadge.innerText = `⚠️ LOW STOCK: ${stock} UNITS`; 
+                if(addBtn) addBtn.disabled = false;
+            } 
+            else { 
+                stockContainer.style.borderColor = "#bef264";
+                stockContainer.style.background = "rgba(190, 242, 100, 0.1)";
+                stockBadge.style.color = "#bef264";
+                stockBadge.innerText = "✔️ IN STOCK"; 
+                if(addBtn) addBtn.disabled = false;
             } 
             
-            document.getElementById('g-specs-back').innerHTML = backH; 
+            let backH = ""; 
+            if(currentGalleryPC.specs) {
+                for(const [k,v] of Object.entries(currentGalleryPC.specs)) { 
+                    const safeKey = k.replace(/'/g, "\\'"); 
+                    backH += `
+                    <div class="yg-spec-item">
+                        <div class="yg-spec-label">
+                            ${k.toUpperCase()}
+                            <i class="ph-bold ph-info yg-info-btn" onclick="playClick(); openSpecInfo('${safeKey}')"></i>
+                        </div>
+                        <div class="yg-spec-value">${v}</div>
+                    </div>`; 
+                } 
+            }
+            document.getElementById('yg-specs-back').innerHTML = backH; 
 
-            // Populate Game Benchmarks
             let benchH = "";
             if (currentGalleryPC.fps && currentGalleryPC.fps.length > 0) {
                 currentGalleryPC.fps.forEach(f => {
-                    let settings = "Competitive Settings / Low";
-                    if(f.game.toLowerCase().includes('cyberpunk') || f.game.toLowerCase().includes('gta')) settings = "High / Ultra Settings";
-                    
+                    let settings = "Competitive / Low";
+                    if(f.game.toLowerCase().includes('cyberpunk') || f.game.toLowerCase().includes('gta')) settings = "High / Ultra";
                     benchH += `
-                    <div class="bench-card">
-                        <div class="bench-game">${f.game}</div>
-                        <div class="bench-fps">${f.score} FPS</div>
-                        <div class="bench-settings">${settings}</div>
+                    <div class="yg-benchmark-card">
+                        <div class="yg-benchmark-game">${f.game}</div>
+                        <div class="yg-benchmark-fps">${f.score}</div>
+                        <div class="yg-benchmark-settings">${settings}</div>
                     </div>`;
                 });
             } else {
-                benchH = "<div style='color:#666; font-size:0.8rem; text-align:center; grid-column: span 2;'>No benchmark data available.</div>";
+                benchH = "<div style='color:#888; font-size:12px; font-style:italic; text-align:center; grid-column: span 2; padding: 20px;'>No benchmark data available.</div>";
             }
-            document.getElementById('g-benchmarks').innerHTML = benchH;
+            document.getElementById('yg-benchmarks').innerHTML = benchH;
             
-            document.getElementById('g-main-img').src = currentGalleryPC.images[0]; 
             document.getElementById('gallery-overlay').classList.add('active'); 
         }
 
-        // 🌟 ΝΕΑ ΣΥΝΑΡΤΗΣΗ ΠΟΥ ΑΝΟΙΓΕΙ ΤΟ INFO MODAL 🌟
         function openSpecInfo(key) {
             const pc = currentGalleryPC;
             if(!pc) return;
@@ -502,11 +517,17 @@ const API = 'https://codex-backend-9kij.onrender.com/api';
             openModal('spec-info-modal');
         }
 
-        // 🌟 ΝΕΑ ΣΥΝΑΡΤΗΣΗ ΓΙΑ ΤΟ YU-GI-OH FLIP 🌟
+        function updatePrice() { 
+            if(!currentGalleryPC) return;
+            const extra = parseInt(document.getElementById('storage-select').value) || 0; 
+            const base = parseInt(currentGalleryPC.price.replace(/[^0-9]/g, '')) || 0; 
+            document.getElementById('yg-price-live').innerText = "€" + (base + extra); 
+        }
+
         function toggleCardFlip() {
-            const cardInner = document.getElementById('lc-inner');
+            const cardInner = document.getElementById('yg-card');
             if (cardInner) {
-                cardInner.classList.toggle('is-flipped');
+                cardInner.classList.toggle('flipped');
             }
         }
 
@@ -521,13 +542,15 @@ const API = 'https://codex-backend-9kij.onrender.com/api';
         }
         function closeModal(id) { 
             let modal = document.getElementById(id) || document.getElementById(id + '-modal');
-            if(modal) modal.classList.remove('active'); 
+            if(modal) {
+                modal.classList.remove('active'); 
+            }
         }
         
         function handleBuy() { if(currentGalleryPC.stock === 0) return alert("SOLD OUT!"); window.open(`https://wa.me/306912345678`, '_blank'); }
         function toggleProfileMenu() { document.getElementById('profile-menu').classList.toggle('show'); }
         function login() { isLoggedIn = true; document.getElementById('guest-options').classList.add('hidden'); document.getElementById('user-options').classList.remove('hidden'); closeModal('login-modal'); closeModal('signup-modal'); showToast("WELCOME BACK, AGENT", "normal"); checkAchievement('login'); }
-        function logout() { isLoggedIn = false; document.getElementById('guest-options').classList.remove('hidden'); document.getElementById('user-options').classList.add('hidden'); }
+        function logout() { isLoggedIn = false; document.getElementById('guest-options').classList.remove('hidden'); document.getElementById('user-options').classList.add('hidden'); showToast("LOGGED OUT", "normal"); }
         function toggleChat() { document.getElementById('chat-widget').classList.toggle('open'); }
         
         let codexAiState = 'idle'; // Παγκόσμια, μόνιμη μνήμη

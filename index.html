@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PHOENIX CODEX | TERMINAL v52.0</title>
     <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700;800&family=Space+Grotesk:wght@300;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;600;700&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/driver.js@1.0.1/dist/driver.css"/>
@@ -168,84 +169,89 @@ Type 'help' for a list of commands.
         </div>
     </div>
 
-    <!-- 🌟 YU-GI-OH GALLERY OVERLAY 🌟 -->
-    <div class="gallery-overlay" id="gallery-overlay">
-        <div class="flip-card-container">
-            <div class="card-inner" id="lc-inner">
+    <div class="modal-overlay" id="gallery-overlay">
+        <div class="yg-card-container">
+            <div class="yg-card" id="yg-card">
                 
-                <!-- FRONT SIDE (ΕΙΚΟΝΑ & ΑΓΟΡΑ) -->
-                <div class="card-front">
-                    <div class="close-modal" onclick="playClick(); closeModal('gallery-overlay')" style="position:absolute; top:20px; right:20px; z-index:10;"><i class="ph-bold ph-x"></i></div>
-                    
-                    <div class="listing-visual">
-                        <!-- ΝΕΑ AESTHETIC ELEMENTS -->
-                        <div class="bg-watermark" id="g-watermark">CODEX</div>
-                        <div class="tier-badge" id="g-tier-badge">S-TIER</div>
-                        <div class="grid-decal"></div>
-                        
-                        <img src="" id="g-main-img" class="hero-img" alt="PC System">
-                        
-                        <!-- QUICK SPEC PILLS -->
-                        <div class="quick-specs-row" id="g-quick-specs"></div>
+                <div class="yg-card-face yg-card-front">
+                    <div class="yg-tier-badge" id="yg-tier-badge">S-TIER</div>
+                    <div class="yg-close-btn" onclick="playClick(); closeModal('gallery-overlay')"></div>
+
+                    <div class="yg-image-section">
+                        <img src="" id="yg-main-img" alt="PC Build" class="yg-pc-image">
+
+                        <div class="yg-specs-badges" id="yg-quick-specs"></div>
+
+                        <div class="yg-dots-grid">
+                            <div class="yg-dot"></div><div class="yg-dot"></div><div class="yg-dot"></div><div class="yg-dot"></div><div class="yg-dot"></div>
+                            <div class="yg-dot"></div><div class="yg-dot"></div><div class="yg-dot"></div><div class="yg-dot"></div><div class="yg-dot"></div>
+                            <div class="yg-dot"></div><div class="yg-dot"></div><div class="yg-dot"></div><div class="yg-dot"></div><div class="yg-dot"></div>
+                        </div>
                     </div>
 
-                    <div class="listing-info">
-                        <div class="lc-top-badge" style="margin-bottom:10px;">
-                            <div class="status-dot"></div>
-                            <div style="font-family:var(--font-ui); font-size:0.7rem; color:#666; letter-spacing:2px;">BUILD AUTHORIZED</div>
+                    <div class="yg-card-content">
+                        <div class="yg-build-status">
+                            <div class="yg-status-dot"></div>
+                            <div class="yg-status-text">Build Authorized</div>
                         </div>
 
-                        <h1 class="g-title" id="g-title">PROJECT X</h1>
-                        <div class="card-price-row" style="margin-bottom:20px;">
-                            <div class="g-price-live" id="g-price-live">€0</div>
-                            <div class="g-price-old" id="g-price-old">€0</div>
+                        <h1 class="yg-project-name" id="yg-title">Project Cali</h1>
+
+                        <div class="yg-card-stars">
+                            <svg class="yg-star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                            <svg class="yg-star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                            <svg class="yg-star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                            <svg class="yg-star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                            <svg class="yg-star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
                         </div>
 
-                        <div class="stock-badge in" id="g-stock-badge" style="margin-bottom:20px;">IN STOCK</div>
+                        <div class="yg-price-section">
+                            <div class="yg-current-price" id="yg-price-live">€0</div>
+                            <div class="yg-old-price" id="yg-price-old">€0</div>
+                        </div>
 
-                        <div class="config-row">
-                            <label style="color:#888; font-size:0.8rem; display:block; margin-bottom:5px;">STORAGE EXPANSION</label>
-                            <select class="config-select" id="storage-select" onchange="updatePrice()">
+                        <div class="yg-stock-warning" id="yg-stock-container">
+                            <div class="yg-stock-warning-text" id="yg-stock-badge">IN STOCK</div>
+                        </div>
+
+                        <div class="yg-storage-section">
+                            <div class="yg-storage-label">Storage Expansion</div>
+                            <select class="yg-storage-select" id="storage-select" onchange="updatePrice()">
                                 <option value="0">Standard (No Extra)</option>
                                 <option value="50">+ 1TB HDD (€50)</option>
                                 <option value="80">+ 1TB SSD (€80)</option>
                             </select>
                         </div>
 
-                        <div style="display:flex; gap:10px; margin-top:20px;">
-                            <button class="btn-card-inspect btn-card-inspect-breathe" onclick="playClick(); toggleCardFlip()" style="flex:1;">
-                                <i class="ph-bold ph-arrows-left-right"></i> FLIP TO SPECS
+                        <div class="yg-buttons-section">
+                            <button class="yg-btn yg-btn-specs" onclick="playClick(); toggleCardFlip()">
+                                <span>⇄</span> Flip to Specs
                             </button>
-                            <button class="lc-btn-buy" id="g-add-cart" onclick="addToCart()" style="flex:1;">ADD TO CART</button>
+                            <button class="yg-btn yg-btn-cart" id="yg-add-cart" onclick="addToCart()">
+                                Add to Cart
+                            </button>
                         </div>
                     </div>
                 </div>
 
-                <!-- BACK SIDE (RARE CARD AESTHETIC - NEON PURPLE) -->
-                <div class="card-back">
-                    <div class="close-back" onclick="playClick(); toggleCardFlip()"><i class="ph-bold ph-arrow-u-up-left"></i></div>
-                    
-                    <div class="rarity-badge">CLASSIFIED HARDWARE</div>
+                <div class="yg-card-face yg-card-back">
+                    <div class="yg-close-back" onclick="playClick(); toggleCardFlip()"><i class="ph-bold ph-arrow-u-up-left"></i></div>
 
-                    <div class="back-title-row">
-                        <i class="ph-fill ph-cpu specs-icon"></i>
-                        <h2 class="back-title">SYS_DATA</h2>
-                    </div>
-
-                    <div class="gallery-desc-box" id="g-desc">
-                        System description loading...
-                    </div>
-
-                    <div class="spec-grid-back" id="g-specs-back"></div>
-
-                    <!-- GAME BENCHMARKS -->
-                    <div class="benchmarks-container" style="margin-top: 20px;">
-                        <h3 style="color:var(--neon-purple); font-family:var(--font-ui); letter-spacing: 1px; margin-bottom: 10px; border-bottom: 1px solid rgba(176, 38, 255, 0.3); padding-bottom: 5px;">GAME BENCHMARKS (1080p)</h3>
-                        <div class="benchmark-grid" id="g-benchmarks">
+                    <div class="yg-sys-data-header">
+                        <div class="yg-sys-data-title">
+                            <span class="yg-sys-icon">⚙️</span>
+                            SYS_DATA
                         </div>
+                        <div class="yg-sys-subtitle" id="yg-desc">Detailed specifications for this system.</div>
+                    </div>
+
+                    <div class="yg-specs-list" id="yg-specs-back"></div>
+
+                    <div class="yg-benchmarks">
+                        <div class="yg-benchmarks-title">GAME BENCHMARKS (1080p)</div>
+                        <div class="yg-benchmark-grid" id="yg-benchmarks"></div>
                     </div>
                 </div>
-
             </div>
         </div>
     </div>
