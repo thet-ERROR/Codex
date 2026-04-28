@@ -796,3 +796,42 @@ header {
     backdrop-filter: none !important; /* Κλείνουμε το γυαλί που το έκανε αόρατο */
     -webkit-backdrop-filter: none !important;
 }
+/* =========================================
+   ΑΠΟΛΥΤΗ ΔΙΟΡΘΩΣΗ UI (ΦΟΝΤΟ & ΣΦΑΛΜΑΤΑ)
+   ========================================= */
+
+/* 1. Κρύβουμε σωστά το Armory Locked και τα μενού όταν δεν χρειάζονται */
+.hidden, #gear-view.hidden, .holo-card.hidden, #starter-menu.hidden {
+    display: none !important;
+}
+
+/* 2. Αναγκάζουμε την Κεντρική Κάρτα να πάρει το Γκρι Πλαίσιο (ακόμα κι αν έχασε την class της) */
+#main-card { 
+    width: 420px !important;
+    max-width: 95vw !important;
+    background: #111111 !important; /* Το συμπαγές σκούρο γκρι */
+    border: 2px solid #333333 !important; /* Το γκρι περίγραμμα */
+    border-radius: 16px !important; 
+    padding: 35px !important; 
+    text-align: center !important; 
+    position: relative !important; 
+    box-shadow: 0 40px 100px rgba(0,0,0,0.8) !important; 
+    display: flex !important; 
+    flex-direction: column !important; 
+    align-items: center !important; 
+    backdrop-filter: none !important; 
+    -webkit-backdrop-filter: none !important;
+}
+
+/* 3. Μικρή φωτογραφία στο Inspect & Καθαρισμός */
+.yg-pc-image { 
+    max-width: 60% !important; 
+    height: 160px !important;  
+    object-fit: contain !important; 
+    display: block !important;
+    margin: 0 auto !important;
+}
+
+.yg-coordinates, .yg-grid-decal, .yg-hud-corners {
+    display: none !important;
+}
