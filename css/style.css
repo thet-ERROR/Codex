@@ -31,6 +31,7 @@ body {
     transition: 0.5s;
 }
 
+/* Η σημαντικότερη κλάση για να κρύβονται τα μενού */
 .hidden {
     display: none !important;
 }
@@ -412,12 +413,11 @@ header {
 .carousel-wrapper, .starter-menu, .vote-container { pointer-events: auto; }
 .system-select-label { font-family: var(--font-ui); font-size: 1.2rem; color: #fff; letter-spacing: 6px; font-weight: 800; margin-bottom: 20px; text-transform: uppercase; opacity: 0.8; }
 
-/* 🌟 ΑΡΧΙΚΗ ΚΑΡΤΑ ΜΕ ΣΤΑΘΕΡΟ ΓΚΡΙ ΦΟΝΤΟ ΚΑΙ ΠΛΑΙΣΙΟ 🌟 */
-.holo-card, #main-card { 
+/* 🌟 ΑΡΧΙΚΗ ΚΑΡΤΑ ΜΕ ΣΥΜΠΑΓΕΣ ΓΚΡΙ ΦΟΝΤΟ & ΠΛΑΙΣΙΟ (ΟΠΩΣ ΖΗΤΗΣΕΣ) 🌟 */
+.holo-card { 
     width: 420px; 
-    max-width: 95vw;
-    background: #111111 !important; /* Σκούρο γκρι/μαύρο συμπαγές χρώμα */
-    border: 2px solid #333333 !important; /* Ξεκάθαρο γκρι πλαίσιο */
+    background: #111111; /* Σκούρο γκρι/μαύρο συμπαγές χρώμα */
+    border: 2px solid #333333; /* Ξεκάθαρο γκρι πλαίσιο */
     border-radius: 16px; 
     padding: 35px; 
     text-align: center; 
@@ -428,8 +428,6 @@ header {
     flex-direction: column; 
     align-items: center; 
     pointer-events: auto;
-    backdrop-filter: none !important; 
-    -webkit-backdrop-filter: none !important;
 }
 
 .carousel-wrapper { display: flex; align-items: center; justify-content: center; gap: 40px; transition: 0.3s; width: 100%; }
@@ -466,7 +464,7 @@ header {
 .nav-arrow { background: rgba(255,255,255,0.05); color: #fff; width: 40px; height: 80px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; cursor: pointer; clip-path: polygon(0 20%, 100% 0, 100% 100%, 0 80%); transition: 0.3s; }
 .nav-arrow:hover { background: var(--neon-green); color:#000; }
 
-/* STARTER PACKS (ΟΡΙΖΟΝΤΙΑ) */
+/* STARTER PACKS */
 .starter-menu { display: flex; flex-direction: row; justify-content: center; gap: 20px; width: 100%; }
 .pack-card { width: 220px; height: 320px; background: rgba(20, 20, 25, 0.7); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; transition: 0.3s; backdrop-filter: blur(20px); }
 .pack-card:hover { transform: translateY(-10px); border-color: var(--retro-red); background: rgba(255, 51, 51, 0.1); }
@@ -542,10 +540,6 @@ header {
 .color-btn { width: 30px; height: 30px; border-radius: 50%; cursor: pointer; border: 2px solid transparent; transition: 0.3s; box-shadow: 0 0 10px rgba(255,255,255,0.1); }
 .color-btn:hover { transform: scale(1.2); }
 
-.auth-form { display: flex; flex-direction: column; gap: 15px; margin-top: 20px; }
-.auth-input { background: #111; border: 1px solid #333; padding: 12px; color: #fff; border-radius: 6px; outline: none; }
-.auth-input:focus { border-color: var(--neon-green); }
-
 /* Chat Widget */
 .chat-widget { position: fixed; left: 90px; bottom: 60px; width: 300px; z-index: 5000; transform: translateY(20px); opacity: 0; pointer-events: none; transition: 0.3s; }
 .chat-widget.open { transform: translateY(0); opacity: 1; pointer-events: auto; }
@@ -557,50 +551,56 @@ header {
 .msg.user { background: #222; color: #fff; align-self: flex-end; }
 .chat-input { width: 100%; background: #000; border: none; border-top: 1px solid #222; color: #fff; padding: 12px; outline: none; font-size: 0.9rem; }
 
+
 /* =========================================
    9. 🌟 YU-GI-OH FLIP CARD (UPGRADED) 🌟
    ========================================= */
 
-/* ΚΛΕΙΔΩΜΑ ΔΙΑΣΤΑΣΕΩΝ ΚΑΙ 3D SETUP ΓΙΑ ΝΑ ΜΗΝ ΚΑΤΑΡΡΕΕΙ */
-.yg-card-container { 
-    width: 400px; 
-    height: 80vh; /* <--- ΑΥΤΟ ΚΡΑΤΑΕΙ ΤΟ ΥΨΟΣ */
-    max-height: 750px;
-    max-width: 95vw; 
-    perspective: 1500px; 
-    margin: 0 auto; 
+/* CONTAINER - Defines the 3D space and size */
+.yg-card-container {
+    width: 400px;
+    height: 700px; /* Mandatory fixed height for absolute faces */
+    max-height: 85vh;
+    max-width: 95vw;
+    perspective: 1500px;
+    margin: 0 auto;
 }
 
-.yg-card { 
-    width: 100%; 
-    height: 100%; 
-    position: relative; 
-    transform-style: preserve-3d; 
-    transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+/* THE CARD - Handles the 3D rotation */
+.yg-card {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    transform-style: preserve-3d;
+    transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
-.yg-card.flipped { transform: rotateY(180deg); }
+.yg-card.flipped {
+    transform: rotateY(180deg);
+}
 
-/* Η κάθε όψη της κάρτας (μπροστά & πίσω) */
-.yg-card-face { 
-    width: 100%; 
-    height: 100%; 
+/* CARD FACES - Shared styles */
+.yg-card-face {
+    width: 100%;
+    height: 100%;
     position: absolute; 
-    top: 0; left: 0;
-    backface-visibility: hidden; 
+    top: 0;
+    left: 0;
+    backface-visibility: hidden;
     -webkit-backface-visibility: hidden;
-    border-radius: 16px; 
-    overflow: hidden; 
-    border: 2px solid #333333; 
+    border-radius: 16px;
+    overflow: hidden;
+    border: 2px solid #333333;
+    background: #0a0a0c;
+    box-shadow: 0 0 40px rgba(168, 85, 247, 0.3);
 }
 
-/* --- 1. FRONT FACE --- */
-.yg-card-front { 
-    z-index: 2; 
-    display: flex; 
-    flex-direction: column; 
-    background: #0a0a0c; /* Συμπαγές μαύρο */
-    transform: rotateY(0deg); 
+/* FRONT FACE */
+.yg-card-front {
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    transform: rotateY(0deg);
 }
 
 .yg-tier-badge { position: absolute; top: 15px; left: 15px; background: linear-gradient(135deg, #a855f7 0%, #ec48d9 100%); padding: 6px 16px; border-radius: 6px; font-family: var(--card-font-primary); font-size: 14px; font-weight: 700; color: #fff; text-transform: uppercase; letter-spacing: 1px; box-shadow: 0 0 20px rgba(168, 85, 247, 0.6); z-index: 10; }
@@ -610,18 +610,17 @@ header {
 .yg-close-btn::before { transform: rotate(45deg); }
 .yg-close-btn::after { transform: rotate(-45deg); }
 
-/* 🌟 ΒΙΤΡΙΝΑ & ANIMATION ΑΙΩΡΗΣΗΣ (ΚΕΝΤΡΑΡΙΣΜΕΝΗ) 🌟 */
-.yg-image-section { 
-    width: 100%; 
-    height: 300px; /* Λίγο πιο ψηλό για να φαίνεται πιο απλωτό */
-    flex-shrink: 0; 
-    position: relative; 
-    background: radial-gradient(circle at center, rgba(30, 15, 50, 0.8) 0%, rgba(10, 5, 20, 1) 100%); 
+/* 🌟 ΒΙΤΡΙΝΑ ΟΠΩΣ ΣΤΗ ΦΩΤΟΓΡΑΦΙΑ (ΚΕΝΤΡΑΡΙΣΜΕΝΗ) 🌟 */
+.yg-image-section {
+    width: 100%;
+    height: 280px; /* Ιδανικό ύψος για να χωράει ολόκληρο το PC */
+    position: relative;
+    background: radial-gradient(circle at center, rgba(30, 15, 50, 0.8) 0%, rgba(10, 5, 20, 1) 100%);
     border-bottom: 1px solid rgba(176, 38, 255, 0.2);
-    display: flex; 
-    align-items: center; 
-    justify-content: center; 
-    overflow: hidden; 
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
     padding: 20px;
 }
 
@@ -630,22 +629,22 @@ header {
     display: none !important;
 }
 
-/* ΠΟΛΥ ΜΙΚΡΗ ΕΙΚΟΝΑ ΓΙΑ ΝΑ ΧΩΡΑΕΙ ΟΛΟΚΛΗΡΟ ΤΟ PC (ΚΕΝΤΡΑΡΙΣΜΕΝΗ & ΑΙΩΡΟΥΜΕΝΗ) */
-.yg-pc-image { 
-    max-width: 45%; 
-    height: 150px; 
-    object-fit: contain; 
-    filter: drop-shadow(0 15px 30px rgba(0, 0, 0, 1)); 
-    z-index: 1; 
-    display: block; 
+/* 🌟 ΟΛΟΚΛΗΡΗ Η ΦΩΤΟΓΡΑΦΙΑ (ΧΩΡΙΣ ΝΑ ΚΟΒΕΤΑΙ) 🌟 */
+.yg-pc-image {
+    height: 200px; /* Το ύψος ρυθμίζεται ώστε να χωράει στο container */
+    max-width: 80%; /* Δεν αφήνουμε να ακουμπάει στις άκρες */
+    width: auto;
+    object-fit: contain; /* Το μυστικό για να μη κόβεται ποτέ */
+    filter: drop-shadow(0 15px 30px rgba(0, 0, 0, 1));
+    display: block;
     margin: 0 auto;
-    animation: pc-float 4s ease-in-out infinite; /* Animation αιώρησης */
+    animation: pc-float 4s ease-in-out infinite;
 }
 
 /* Animation Αιώρησης */
 @keyframes pc-float {
     0% { transform: translateY(0px); }
-    50% { transform: translateY(-15px); }
+    50% { transform: translateY(-10px); }
     100% { transform: translateY(0px); }
 }
 
@@ -653,7 +652,7 @@ header {
 .yg-image-section::after {
     content: '';
     position: absolute;
-    bottom: 40px;
+    bottom: 30px;
     left: 50%;
     transform: translateX(-50%);
     width: 150px;
@@ -673,15 +672,14 @@ header {
 .yg-spec-badge { background: rgba(0, 0, 0, 0.8); padding: 6px 12px; border-radius: 8px; border: 1px solid rgba(168, 85, 247, 0.5); display: flex; align-items: center; gap: 6px; font-family: var(--card-font-primary); font-size: 11px; font-weight: 700; color: #fff; text-transform: uppercase; }
 .yg-spec-icon { width: 18px; height: 18px; background: linear-gradient(135deg, #a855f7 0%, #ec48d9 100%); border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 10px; }
 
-/* ΠΕΡΙΕΧΟΜΕΝΟ ΚΑΡΤΑΣ (Scrollable αν δεν χωράει) */
+/* ΠΕΡΙΕΧΟΜΕΝΟ ΚΑΡΤΑΣ */
 .yg-card-content { 
     padding: 20px; 
-    background: #0f0f0f; 
+    background: transparent; 
     flex-grow: 1; 
     display: flex; 
     flex-direction: column; 
     overflow-y: auto;
-    border-top: 1px solid #222;
 }
 .yg-project-name { font-family: var(--card-font-secondary); font-size: 26px; color: #fff; text-align: center; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 1px;}
 .yg-tagline { font-family: var(--font-body); font-style: italic; color: #888; font-size: 0.85rem; margin-bottom: 15px; border-left: 2px solid var(--neon-purple); padding-left: 10px; text-align: center; }
@@ -718,16 +716,14 @@ header {
 .yg-card-back { 
     transform: rotateY(180deg); 
     z-index: 1; 
-    background: #050507; /* Πολύ σκούρο μαύρο */
+    background: #050507; 
     display: flex; 
     flex-direction: column; 
     padding: 25px; 
     overflow-y: auto; 
-    /* Cyber Glow Εφέ */
     box-shadow: inset 0 0 60px rgba(176, 38, 255, 0.1), 0 0 30px rgba(176, 38, 255, 0.2);
-    border: 2px solid var(--neon-purple); /* Μωβ περίγραμμα για την πίσω όψη */
+    border: 2px solid var(--neon-purple);
 }
-.yg-card-back * { backface-visibility: visible; -webkit-backface-visibility: visible; }
 
 .yg-close-back { width: 100%; padding: 12px; background: rgba(168, 85, 247, 0.1); border: 1px solid var(--neon-purple); border-radius: 8px; color: var(--neon-purple); font-size: 13px; font-weight: 700; text-transform: uppercase; text-align: center; display: block; margin-bottom: 20px; cursor:pointer; font-family: var(--card-font-primary); transition: 0.3s;}
 .yg-close-back:hover { background: rgba(168, 85, 247, 0.2); color: #fff; box-shadow: 0 0 15px rgba(176, 38, 255, 0.3);}
