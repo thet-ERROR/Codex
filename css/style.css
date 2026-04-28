@@ -412,6 +412,7 @@ header {
 .carousel-wrapper, .starter-menu, .holo-card, .vote-container { pointer-events: auto; }
 .system-select-label { font-family: var(--font-ui); font-size: 1.2rem; color: #fff; letter-spacing: 6px; font-weight: 800; margin-bottom: 20px; text-transform: uppercase; opacity: 0.8; }
 
+/* 🌟 ΑΡΧΙΚΗ ΚΑΡΤΑ (Image 1) - ΕΠΑΝΑΦΟΡΑ ΑΚΡΙΒΩΣ ΟΠΩΣ ΗΤΑΝ 🌟 */
 .holo-card { 
     width: 420px; background: var(--glass-dark); backdrop-filter: blur(40px); 
     border: 1px solid var(--glass-border); border-radius: 16px; padding: 35px; 
@@ -551,8 +552,17 @@ header {
 .yg-card.flipped { transform: rotateY(180deg); }
 .yg-card-face { backface-visibility: hidden; width: 100%; border-radius: 16px; overflow: hidden; border: 1px solid #333; }
 
-/* Front */
-.yg-card-front { z-index: 2; background: #0a0a0c; display: flex; flex-direction: column; height: 85vh; max-height: 850px; overflow-x: hidden; overflow-y: auto; }
+/* 🌟 Front Inspect Card - Unified Glass Style 🌟 */
+.yg-card-front { 
+    z-index: 2; 
+    /* Επαναφορά γυάλινου background από την αρχική κάρτα */
+    background: var(--glass-dark); 
+    backdrop-filter: blur(40px); 
+    border: 1px solid var(--glass-border); 
+    display: flex; flex-direction: column; 
+    height: 85vh; max-height: 850px; 
+    overflow-x: hidden; overflow-y: auto; 
+}
 .yg-card-front::-webkit-scrollbar { width: 4px; }
 .yg-card-front::-webkit-scrollbar-thumb { background: var(--neon-purple); border-radius: 2px; }
 
@@ -582,9 +592,22 @@ header {
     overflow: hidden; 
 }
 
-/* Αφαίρεση του grid/συντεταγμένων/corners για πιο καθαρό visual */
-.yg-grid-decal, .yg-coordinates, .yg-hud-corners {
+/* Αφαίρεση παλιών συντεταγμένων κλπ για να είναι καθαρό το TCG Art */
+.yg-coordinates, .yg-grid-decal, .yg-hud-corners {
     display: none !important;
+}
+
+.yg-bg-watermark { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-5deg); font-size: 5rem; font-family: var(--font-ui); font-weight: 900; color: rgba(255,255,255,0.03); white-space: nowrap; pointer-events: none; z-index: 0; text-transform: uppercase; }
+
+.yg-pc-image { 
+    max-width: 85%; 
+    height: 200px; 
+    object-fit: contain; 
+    filter: drop-shadow(0 15px 25px rgba(0, 0, 0, 0.8)); 
+    z-index: 1; 
+    margin: 0 auto; 
+    display: block; 
+    animation: pc-float 4s ease-in-out infinite; 
 }
 
 /* Φωτεινή βάση (Stand) */
@@ -599,33 +622,6 @@ header {
     background: radial-gradient(ellipse at center, rgba(176, 38, 255, 0.6) 0%, transparent 70%);
     filter: blur(10px);
     z-index: 0;
-}
-
-.yg-bg-watermark { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-5deg); font-size: 5rem; font-family: var(--font-ui); font-weight: 900; color: rgba(255,255,255,0.03); white-space: nowrap; pointer-events: none; z-index: 0; text-transform: uppercase; }
-
-/* Η φωτογραφία του PC στο Inspect (μεγαλύτερη και καθαρή) */
-.yg-pc-image { 
-    width: 100%; 
-    height: 90%; 
-    object-fit: contain; 
-    filter: drop-shadow(0 15px 25px rgba(0, 0, 0, 0.8)); 
-    z-index: 1; 
-    margin: auto; 
-    display: block; 
-    animation: pc-float 4s ease-in-out infinite; 
-    transform: scale(1.15);
-    transition: transform 0.3s ease;
-    cursor: pointer;
-}
-
-.yg-pc-image:hover {
-    transform: scale(1.2);
-}
-
-@keyframes pc-float {
-    0% { transform: translateY(0px) scale(1.15); }
-    50% { transform: translateY(-8px) scale(1.15); }
-    100% { transform: translateY(0px) scale(1.15); }
 }
 
 .yg-specs-badges { position: absolute; bottom: 15px; left: 50%; transform: translateX(-50%); display: flex; gap: 10px; z-index: 2; width: 100%; justify-content: center; padding: 0 10px; }
