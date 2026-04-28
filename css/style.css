@@ -412,11 +412,13 @@ header {
 .carousel-wrapper, .starter-menu, .vote-container { pointer-events: auto; }
 .system-select-label { font-family: var(--font-ui); font-size: 1.2rem; color: #fff; letter-spacing: 6px; font-weight: 800; margin-bottom: 20px; text-transform: uppercase; opacity: 0.8; }
 
-/* 🌟 ΚΕΝΤΡΙΚΗ ΚΑΡΤΑ ΜΕ ΓΚΡΙ ΦΟΝΤΟ & ΠΛΑΙΣΙΟ 🌟 */
+/* 🌟 ΑΡΧΙΚΗ ΚΑΡΤΑ ΜΕ ΣΥΜΠΑΓΕΣ ΓΚΡΙ ΦΟΝΤΟ & ΠΛΑΙΣΙΟ 🌟 */
 .holo-card { 
     width: 420px; 
-    background: #111111; 
-    border: 2px solid #333333; 
+    background: #111111 !important;  /* Συμπαγές σκούρο γκρι */
+    border: 2px solid #333333 !important; /* Γκρι περίγραμμα */
+    backdrop-filter: none !important; 
+    -webkit-backdrop-filter: none !important;
     border-radius: 16px; 
     padding: 35px; 
     text-align: center; 
@@ -561,14 +563,9 @@ header {
 /* ΚΛΕΙΔΩΜΑ ΔΙΑΣΤΑΣΕΩΝ ΚΑΙ 3D SETUP */
 .yg-card-container { 
     width: 400px; 
-    height: 80vh; 
-    max-height: 750px; 
     max-width: 95vw; 
     perspective: 1500px; 
     margin: 0 auto; 
-    display: flex; 
-    justify-content: center; 
-    align-items: center; 
 }
 
 .yg-card { 
@@ -577,20 +574,21 @@ header {
     position: relative; 
     transform-style: preserve-3d; 
     transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
-    box-shadow: 0 0 40px rgba(168, 85, 247, 0.3), 0 0 80px rgba(236, 72, 153, 0.2); 
-    border-radius: 16px;
 }
 
-.yg-card.flipped { transform: rotateY(180deg); }
+.yg-card.flipped { 
+    transform: rotateY(180deg); 
+}
 
 /* Η κάθε όψη της κάρτας (μπροστά & πίσω) */
 .yg-card-face { 
-    backface-visibility: hidden; 
-    -webkit-backface-visibility: hidden;
     width: 100%; 
     height: 100%; 
     position: absolute; 
-    top: 0; left: 0;
+    top: 0; 
+    left: 0;
+    backface-visibility: hidden; 
+    -webkit-backface-visibility: hidden;
     border-radius: 16px; 
     overflow: hidden; 
     border: 1px solid #333; 
@@ -615,7 +613,7 @@ header {
 /* 🌟 ΟΡΙΣΤΙΚΟ ΞΕΖΟΥΜΑΡΙΣΜΑ ΦΩΤΟΓΡΑΦΙΑΣ 🌟 */
 .yg-image-section { 
     width: 100%; 
-    height: 250px; /* Πιο μαζευτό container */
+    height: 250px; 
     flex-shrink: 0; 
     position: relative; 
     background: linear-gradient(135deg, rgba(30, 15, 50, 0.6) 0%, rgba(10, 5, 20, 0.8) 100%); 
@@ -624,6 +622,7 @@ header {
     align-items: center; 
     justify-content: center; 
     overflow: hidden; 
+    padding: 10px;
 }
 
 /* ΑΦΑΙΡΕΣΗ ΣΥΝΤΕΤΑΓΜΕΝΩΝ */
@@ -635,12 +634,13 @@ header {
 
 /* ΠΟΛΥ ΜΙΚΡΗ ΕΙΚΟΝΑ ΓΙΑ ΝΑ ΧΩΡΑΕΙ ΟΛΟΚΛΗΡΟ ΤΟ PC */
 .yg-pc-image { 
-    max-width: 45%; 
-    height: 150px; 
+    max-width: 40%; 
+    height: 120px; 
     object-fit: contain; 
     filter: drop-shadow(0 15px 25px rgba(0, 0, 0, 0.8)); 
     z-index: 1; 
     display: block; 
+    margin: 0 auto;
     animation: pc-float 4s ease-in-out infinite; 
 }
 
@@ -712,7 +712,7 @@ header {
 .yg-benchmarks { margin-top: 15px; padding-top: 15px; border-top: 2px solid rgba(168, 85, 247, 0.3); }
 .yg-benchmarks-title { font-family: var(--card-font-secondary); color: #a855f7; font-size: 14px; font-weight: 900; text-transform: uppercase; margin-bottom: 12px; text-align: center; }
 .yg-benchmark-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
-.yg-benchmark-card { background: rgba(26, 10, 46, 0.8); border: 2px solid rgba(168, 85, 247, 0.3); border-radius: 8px; padding: 10px; text-align: center; }
+.yg-benchmark-card { background: rgba(26, 10, 46, 0.8); border: 1px solid rgba(168, 85, 247, 0.3); border-radius: 8px; padding: 10px; text-align: center; }
 .yg-benchmark-game { font-family: var(--card-font-primary); color: #fff; font-size: 10px; font-weight: 700; text-transform: uppercase; margin-bottom: 4px; }
 .yg-benchmark-fps { font-family: var(--card-font-secondary); color: #bef264; font-size: 24px; font-weight: 900; margin-bottom: 2px; }
 .yg-benchmark-settings { font-family: var(--card-font-primary); color: #888; font-size: 9px; font-style: italic; }
