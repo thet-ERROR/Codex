@@ -861,3 +861,63 @@ header {
 }
 .yg-arrow.left { left: 10px; }
 .yg-arrow.right { right: 10px; }
+/* =========================================
+   FIX: SHRINK FRAME & UNZOOM IMAGE
+   ========================================= */
+
+/* 1. Μικραίνουμε το ύψος του πλαισίου της εικόνας */
+.yg-image-section {
+    height: 220px !important; /* Από 350px το πάμε 220px */
+    padding: 20px !important;  /* Δίνουμε εσωτερικό κενό για να αναπνέει η φωτό */
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    background: #000 !important;
+    position: relative !important;
+    overflow: hidden !important;
+}
+
+/* 2. Ξεζουμάρουμε την εικόνα για να φαίνεται ΟΛΗ */
+.yg-pc-image {
+    width: auto !important;
+    height: 100% !important;
+    max-width: 85% !important; /* Την περιορίζουμε για να μη βρίσκει στις άκρες */
+    object-fit: contain !important; /* ΑΥΤΟ την ξεζουμάρει οριστικά */
+    margin: 0 auto !important;
+    display: block !important;
+    filter: drop-shadow(0 10px 20px rgba(0,0,0,0.8)) !important;
+}
+
+/* 3. Στυλ για τα Βελάκια Swipe */
+.yg-arrow {
+    position: absolute !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    z-index: 20 !important;
+    background: rgba(176, 38, 255, 0.15) !important;
+    border: 1px solid var(--neon-purple) !important;
+    color: white !important;
+    width: 30px !important;
+    height: 40px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    cursor: pointer !important;
+    border-radius: 4px !important;
+    transition: 0.3s !important;
+    font-size: 1.2rem !important;
+}
+
+.yg-arrow:hover {
+    background: var(--neon-purple) !important;
+    box-shadow: 0 0 15px var(--neon-purple) !important;
+}
+
+.yg-arrow.left { left: 10px !important; }
+.yg-arrow.right { right: 10px !important; }
+
+/* 4. Προστασία του Border της αρχικής κάρτας */
+#main-card, .holo-card {
+    border: 2px solid #333333 !important;
+    background: #111111 !important;
+}
