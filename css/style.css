@@ -596,9 +596,14 @@ header {
 
 .yg-bg-watermark { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-5deg); font-size: 5rem; font-family: var(--font-ui); font-weight: 900; color: rgba(255,255,255,0.03); white-space: nowrap; pointer-events: none; z-index: 0; text-transform: uppercase; }
 
+/* Κρύβουμε τις συντεταγμένες/πλέγμα για να είναι καθαρό */
+.yg-coordinates, .yg-grid-decal, .yg-hud-corners {
+    display: none !important;
+}
+
 .yg-pc-image { 
-    max-width: 85%; 
-    height: 200px; 
+    max-width: 65%; /* Την κάναμε πιο μικρή (ήταν 85%) */
+    height: 160px; /* Μικρύναμε το ύψος για να χωράει τέλεια στα κινητά */
     object-fit: contain; 
     filter: drop-shadow(0 15px 25px rgba(0, 0, 0, 0.8)); 
     z-index: 1; 
@@ -751,18 +756,21 @@ header {
     .stage { position: relative; inset: auto; display: flex; flex-direction: column; padding: 10px 0 90px 0; margin-top: 0; }
     .carousel-wrapper { width: 100%; position: relative; padding: 0 10px; justify-content: center; gap: 5px; }
     /* 🌟 Holo-card: Μικρότερο πλάτος για tablet/mobile 🌟 */
-    .holo-card { width: 95%; max-width: 400px; padding: 15px; margin: 0 auto; }
-    .nav-arrow { position: absolute; z-index: 10; height: 50px; top: 50%; transform: translateY(-50%); width: 30px; font-size: 1.2rem; }
-    .nav-arrow:first-child { left: 0px; }
-    .nav-arrow:last-child { right: 0px; }
-    .left-sidebar { position: fixed; top: auto; bottom: 0; left: 0; width: 100%; height: 60px; flex-direction: row; justify-content: space-around; align-items: center; border-right: none; border-top: 1px solid var(--neon-green); background: #000; z-index: 9000; padding: 0 5px; }
-    .left-sidebar .side-group { flex-direction: row; width: auto; gap: 5px; }
-    .left-sidebar .side-divider { display: none; }
-    .left-sidebar .side-btn { margin: 0; width: 40px; height: 40px; font-size: 1.2rem; }
-    .chat-toggle { margin-top: 0 !important; width: 40px; height: 40px; }
-    .right-sidebar { position: relative; top: auto; right: auto; width: 95%; max-width: 500px; height: auto; max-height: 400px; margin: 20px auto; border-left: none; border: 1px solid rgba(176,38,255,0.3); border-radius: 12px; background: rgba(0,0,0,0.8); padding: 15px; }
-    .footer { display: none; } 
-    
+.holo-card { 
+    width: 420px; 
+    background: #1a1a1a; /* Σκούρο γκρι φόντο αντί για κενό/γυαλί */
+    border: 2px solid #555; /* Το γκρι πλαίσιο που ζήτησες */
+    backdrop-filter: blur(40px); 
+    border-radius: 16px; 
+    padding: 35px; 
+    text-align: center; 
+    position: relative; 
+    transition: 0.4s; 
+    box-shadow: 0 40px 100px rgba(0,0,0,0.8); 
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+}
     /* 🌟 Yugion Container: Πλήρες πλάτος & ύψος για κινητά 🌟 */
     .yg-card-container { width: 100%; height: 90vh; }
     .yg-buttons-section { grid-template-columns: 1fr; }
