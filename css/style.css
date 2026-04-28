@@ -412,7 +412,7 @@ header {
 .carousel-wrapper, .starter-menu, .vote-container { pointer-events: auto; }
 .system-select-label { font-family: var(--font-ui); font-size: 1.2rem; color: #fff; letter-spacing: 6px; font-weight: 800; margin-bottom: 20px; text-transform: uppercase; opacity: 0.8; }
 
-/* --- 🌟 ΚΕΝΤΡΙΚΗ ΚΑΡΤΑ ΜΕ ΣΤΑΘΕΡΟ ΓΚΡΙ ΦΟΝΤΟ ΚΑΙ ΠΛΑΙΣΙΟ 🌟 --- */
+/* 🌟 ΑΡΧΙΚΗ ΚΑΡΤΑ ΜΕ ΣΤΑΘΕΡΟ ΓΚΡΙ ΦΟΝΤΟ ΚΑΙ ΠΛΑΙΣΙΟ 🌟 */
 .holo-card, #main-card { 
     width: 420px; 
     max-width: 95vw;
@@ -564,7 +564,7 @@ header {
 /* ΚΛΕΙΔΩΜΑ ΔΙΑΣΤΑΣΕΩΝ ΚΑΙ 3D SETUP ΓΙΑ ΝΑ ΜΗΝ ΚΑΤΑΡΡΕΕΙ */
 .yg-card-container { 
     width: 400px; 
-    height: 75vh; /* <--- ΑΥΤΟ ΚΡΑΤΑΕΙ ΤΟ ΥΨΟΣ */
+    height: 80vh; /* <--- ΑΥΤΟ ΚΡΑΤΑΕΙ ΤΟ ΥΨΟΣ */
     max-height: 750px;
     max-width: 95vw; 
     perspective: 1500px; 
@@ -592,15 +592,14 @@ header {
     border-radius: 16px; 
     overflow: hidden; 
     border: 2px solid #333333; 
-    background: #111111; /* Σκούρο γκρι φόντο */
-    box-shadow: 0 0 40px rgba(168, 85, 247, 0.3);
 }
 
-/* --- FRONT FACE --- */
+/* --- 1. FRONT FACE --- */
 .yg-card-front { 
     z-index: 2; 
     display: flex; 
     flex-direction: column; 
+    background: #0a0a0c; /* Συμπαγές μαύρο */
     transform: rotateY(0deg); 
 }
 
@@ -611,19 +610,19 @@ header {
 .yg-close-btn::before { transform: rotate(45deg); }
 .yg-close-btn::after { transform: rotate(-45deg); }
 
-/* 🌟 ΟΡΙΣΤΙΚΟ ΞΕΖΟΥΜΑΡΙΣΜΑ ΦΩΤΟΓΡΑΦΙΑΣ 🌟 */
+/* 🌟 ΒΙΤΡΙΝΑ & ANIMATION ΑΙΩΡΗΣΗΣ (ΚΕΝΤΡΑΡΙΣΜΕΝΗ) 🌟 */
 .yg-image-section { 
     width: 100%; 
-    height: 250px; 
+    height: 300px; /* Λίγο πιο ψηλό για να φαίνεται πιο απλωτό */
     flex-shrink: 0; 
     position: relative; 
-    background: linear-gradient(135deg, rgba(30, 15, 50, 0.6) 0%, rgba(10, 5, 20, 0.8) 100%); 
-    border-bottom: 1px solid rgba(176, 38, 255, 0.3);
+    background: radial-gradient(circle at center, rgba(30, 15, 50, 0.8) 0%, rgba(10, 5, 20, 1) 100%); 
+    border-bottom: 1px solid rgba(176, 38, 255, 0.2);
     display: flex; 
     align-items: center; 
     justify-content: center; 
     overflow: hidden; 
-    padding: 10px;
+    padding: 20px;
 }
 
 /* ΑΦΑΙΡΕΣΗ ΣΥΝΤΕΤΑΓΜΕΝΩΝ */
@@ -631,18 +630,43 @@ header {
     display: none !important;
 }
 
-.yg-bg-watermark { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-5deg); font-size: 5rem; font-family: var(--font-ui); font-weight: 900; color: rgba(255,255,255,0.03); white-space: nowrap; pointer-events: none; z-index: 0; text-transform: uppercase; }
-
-/* ΠΟΛΥ ΜΙΚΡΗ ΕΙΚΟΝΑ ΓΙΑ ΝΑ ΧΩΡΑΕΙ ΟΛΟΚΛΗΡΟ ΤΟ PC */
+/* ΠΟΛΥ ΜΙΚΡΗ ΕΙΚΟΝΑ ΓΙΑ ΝΑ ΧΩΡΑΕΙ ΟΛΟΚΛΗΡΟ ΤΟ PC (ΚΕΝΤΡΑΡΙΣΜΕΝΗ & ΑΙΩΡΟΥΜΕΝΗ) */
 .yg-pc-image { 
     max-width: 45%; 
     height: 150px; 
     object-fit: contain; 
-    filter: drop-shadow(0 15px 25px rgba(0, 0, 0, 0.8)); 
+    filter: drop-shadow(0 15px 30px rgba(0, 0, 0, 1)); 
     z-index: 1; 
     display: block; 
     margin: 0 auto;
-    animation: pc-float 4s ease-in-out infinite; 
+    animation: pc-float 4s ease-in-out infinite; /* Animation αιώρησης */
+}
+
+/* Animation Αιώρησης */
+@keyframes pc-float {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-15px); }
+    100% { transform: translateY(0px); }
+}
+
+/* Φωτεινή βάση (Stand) - Σαν Ολόγραμμα */
+.yg-image-section::after {
+    content: '';
+    position: absolute;
+    bottom: 40px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 150px;
+    height: 15px;
+    background: radial-gradient(ellipse at center, rgba(176, 38, 255, 0.5) 0%, transparent 70%);
+    filter: blur(8px);
+    z-index: 0;
+    animation: stand-glow 4s ease-in-out infinite;
+}
+
+@keyframes stand-glow {
+    0%, 100% { opacity: 0.5; transform: translateX(-50%) scale(1); }
+    50% { opacity: 0.8; transform: translateX(-50%) scale(1.1); }
 }
 
 .yg-specs-badges { position: absolute; bottom: 15px; left: 50%; transform: translateX(-50%); display: flex; gap: 10px; z-index: 2; width: 100%; justify-content: center; padding: 0 10px; }
@@ -651,72 +675,82 @@ header {
 
 /* ΠΕΡΙΕΧΟΜΕΝΟ ΚΑΡΤΑΣ (Scrollable αν δεν χωράει) */
 .yg-card-content { 
-    padding: 15px; 
-    background: transparent; /* Παίρνει το γκρι από το yg-card-face */
+    padding: 20px; 
+    background: #0f0f0f; 
     flex-grow: 1; 
     display: flex; 
     flex-direction: column; 
     overflow-y: auto;
+    border-top: 1px solid #222;
 }
-.yg-project-name { font-family: var(--card-font-secondary); font-size: 28px; color: #fff; text-align: center; margin-bottom: 5px; text-transform: uppercase; }
-.yg-tagline { font-family: var(--font-body); font-style: italic; color: #aaa; font-size: 0.8rem; margin-bottom: 15px; border-left: 2px solid var(--neon-purple); padding-left: 10px; text-align: center; }
+.yg-project-name { font-family: var(--card-font-secondary); font-size: 26px; color: #fff; text-align: center; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 1px;}
+.yg-tagline { font-family: var(--font-body); font-style: italic; color: #888; font-size: 0.85rem; margin-bottom: 15px; border-left: 2px solid var(--neon-purple); padding-left: 10px; text-align: center; }
 
 .yg-card-stars { display: flex; justify-content: center; gap: 4px; margin-bottom: 15px; color: #fbbf24; }
 .yg-star { width: 18px; height: 18px; color: #fbbf24; filter: drop-shadow(0 0 4px #fbbf24); display: inline-block; }
 
 .yg-price-section { display: flex; justify-content: center; gap: 15px; align-items: center; margin-bottom: 20px; font-family: var(--card-font-secondary); }
-.yg-current-price { font-size: 32px; font-weight: 900; color: var(--neon-green); }
-.yg-old-price { font-size: 20px; color: #555; text-decoration: line-through; }
+.yg-current-price { font-size: 32px; font-weight: 900; color: var(--neon-green); text-shadow: 0 0 10px rgba(204, 255, 0, 0.3);}
+.yg-old-price { font-size: 20px; color: #444; text-decoration: line-through; }
 
-.yg-stock-warning { background: rgba(251, 191, 36, 0.1); border: 2px solid #fbbf24; border-radius: 8px; padding: 10px 15px; margin-bottom: 15px; text-align: center; }
+.yg-stock-warning { background: rgba(251, 191, 36, 0.1); border: 2px solid #fbbf24; border-radius: 8px; padding: 10px 15px; margin-bottom: 15px; text-align: center; box-shadow: 0 0 10px rgba(251, 191, 36, 0.1);}
 .yg-stock-warning-text { color: #fbbf24; font-family: var(--card-font-primary); font-size: 13px; font-weight: 700; text-transform: uppercase; }
 
 .yg-storage-section { margin-bottom: 15px; }
 .yg-storage-label { color: #888; font-family: var(--card-font-primary); font-size: 11px; text-transform: uppercase; margin-bottom: 6px; }
-.yg-storage-select { width: 100%; background: rgba(255, 255, 255, 0.05); border: 2px solid rgba(168, 85, 247, 0.3); border-radius: 8px; padding: 12px 14px; color: #fff; font-size: 13px; font-weight: 600; outline: none; cursor: pointer; transition: all 0.3s ease; }
+.yg-storage-select { width: 100%; background: rgba(0, 0, 0, 0.3); border: 1px solid #333; border-radius: 8px; padding: 12px 14px; color: #fff; font-size: 13px; font-weight: 600; outline: none; cursor: pointer; transition: all 0.3s ease; font-family: var(--font-body);}
 .yg-storage-select:hover { border-color: #a855f7; background: rgba(168, 85, 247, 0.1); }
 .yg-storage-select option { background: #1a1a1a; color: #fff; }
 
-.yg-power-row { display: flex; align-items: center; margin-bottom: 15px; width: 100%; background: rgba(0, 0, 0, 0.6); padding: 10px; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.05); }
-.yg-power-label { font-size: 0.75rem; font-weight: 900; width: 100px; text-align: left; color: var(--neon-purple); letter-spacing: 1px; }
-.yg-bar-track { flex: 1; height: 10px; background: rgba(255,255,255,0.05); border-radius: 2px; position: relative; }
-.yg-bar-fill { height: 100%; background: var(--neon-purple); width: 0%; transition: width 1.5s ease-out; box-shadow: 0 0 15px var(--neon-purple); }
+.yg-power-row { display: flex; align-items: center; margin-bottom: 15px; width: 100%; background: rgba(0, 0, 0, 0.6); padding: 10px; border-radius: 8px; border: 1px solid #222; }
+.yg-power-label { font-size: 0.75rem; font-weight: 900; width: 100px; text-align: left; color: var(--neon-purple); letter-spacing: 1px; text-transform: uppercase;}
+.yg-bar-track { flex: 1; height: 10px; background: repeating-linear-gradient(90deg, rgba(255,255,255,0.05), rgba(255,255,255,0.05) 3px, transparent 3px, transparent 5px); border-radius: 2px; position: relative; }
+.yg-bar-fill { height: 100%; background: var(--neon-purple); width: 0%; transition: width 1.5s ease-out; box-shadow: 0 0 15px var(--neon-purple); mask-image: repeating-linear-gradient(90deg, #000, #000 3px, transparent 3px, transparent 5px); -webkit-mask-image: repeating-linear-gradient(90deg, #000, #000 3px, transparent 3px, transparent 5px);}
 
-.yg-buttons-section { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: auto; }
-.yg-btn { padding: 15px; border-radius: 8px; font-weight: 900; cursor: pointer; border: none; text-transform: uppercase; font-family: var(--card-font-primary); display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.3s ease; }
+.yg-buttons-section { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: auto; padding-top: 10px;}
+.yg-btn { padding: 16px; border-radius: 8px; font-weight: 900; cursor: pointer; border: none; text-transform: uppercase; font-family: var(--card-font-primary); display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.3s ease; font-size: 0.95rem; letter-spacing: 1px;}
 .yg-btn-specs { background: rgba(176, 38, 255, 0.1); border: 1px solid var(--neon-purple); color: var(--neon-purple); }
+.yg-btn-specs:hover { background: rgba(176, 38, 255, 0.2); box-shadow: 0 0 20px rgba(168, 85, 247, 0.4); color: #fff;}
 .yg-btn-cart { background: var(--neon-green); color: #000; }
+.yg-btn-cart:hover { box-shadow: 0 0 20px rgba(204, 255, 0, 0.5); transform: translateY(-2px);}
 
-/* --- BACK FACE --- */
+/* --- 2. BACK FACE (CYBER GLOW & SPECS) --- */
 .yg-card-back { 
     transform: rotateY(180deg); 
     z-index: 1; 
+    background: #050507; /* Πολύ σκούρο μαύρο */
     display: flex; 
     flex-direction: column; 
-    padding: 20px; 
+    padding: 25px; 
     overflow-y: auto; 
+    /* Cyber Glow Εφέ */
+    box-shadow: inset 0 0 60px rgba(176, 38, 255, 0.1), 0 0 30px rgba(176, 38, 255, 0.2);
+    border: 2px solid var(--neon-purple); /* Μωβ περίγραμμα για την πίσω όψη */
 }
 .yg-card-back * { backface-visibility: visible; -webkit-backface-visibility: visible; }
 
-.yg-close-back { width: 100%; padding: 12px; background: rgba(168, 85, 247, 0.1); border: 2px solid var(--neon-purple); border-radius: 8px; color: var(--neon-purple); font-size: 13px; font-weight: 700; text-transform: uppercase; text-align: center; display: block; margin-bottom: 15px; cursor:pointer;}
-.yg-rarity-badge { align-self: center; background: linear-gradient(90deg, var(--neon-purple), #d47aff); color: #fff; font-weight: 900; padding: 5px 20px; border-radius: 4px; font-size: 0.8rem; text-transform: uppercase; margin-bottom: 15px; text-align: center; }
-.yg-sys-header { text-align: center; margin-bottom: 25px; margin-top: 10px; }
-.yg-sys-data-title { font-family: var(--card-font-secondary); font-size: 28px; font-weight: 900; color: #fff; margin-bottom: 8px; display: flex; align-items: center; justify-content: center; gap: 10px; }
-.yg-sys-icon { font-size: 32px; filter: drop-shadow(0 0 10px rgba(168, 85, 247, 0.6)); }
-.yg-sys-subtitle { font-family: var(--card-font-primary); color: #ec48d9; font-size: 12px; font-style: italic; }
+.yg-close-back { width: 100%; padding: 12px; background: rgba(168, 85, 247, 0.1); border: 1px solid var(--neon-purple); border-radius: 8px; color: var(--neon-purple); font-size: 13px; font-weight: 700; text-transform: uppercase; text-align: center; display: block; margin-bottom: 20px; cursor:pointer; font-family: var(--card-font-primary); transition: 0.3s;}
+.yg-close-back:hover { background: rgba(168, 85, 247, 0.2); color: #fff; box-shadow: 0 0 15px rgba(176, 38, 255, 0.3);}
 
-.yg-specs-list { flex-grow: 1; margin-bottom: 15px; }
-.yg-spec-item { background: rgba(255,255,255,0.03); border: 1px solid rgba(176, 38, 255, 0.2); padding: 12px; border-radius: 8px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
-.yg-spec-label { font-family: var(--card-font-primary); color: #a855f7; font-size: 11px; font-weight: 700; text-transform: uppercase; }
-.yg-spec-value { font-family: var(--card-font-secondary); color: #fff; font-size: 13px; font-weight: 700; text-align: right; }
+.yg-rarity-badge { align-self: center; background: linear-gradient(90deg, var(--neon-purple), #d47aff); color: #fff; font-weight: 900; padding: 6px 25px; border-radius: 4px; font-size: 0.85rem; text-transform: uppercase; margin-bottom: 20px; text-align: center; font-family: var(--font-ui); letter-spacing: 2px; box-shadow: 0 0 15px rgba(176, 38, 255, 0.4);}
+.yg-sys-header { text-align: center; margin-bottom: 25px; }
+.yg-sys-data-title { font-family: var(--card-font-secondary); font-size: 26px; font-weight: 900; color: #fff; margin-bottom: 8px; text-transform: uppercase; text-shadow: 0 0 10px rgba(176, 38, 255, 0.5);}
+.yg-sys-subtitle { font-family: var(--card-font-primary); color: #ec48d9; font-size: 12px; font-style: italic; text-transform: uppercase;}
 
-.yg-benchmarks { margin-top: 15px; padding-top: 15px; border-top: 2px solid rgba(168, 85, 247, 0.3); }
-.yg-benchmarks-title { font-family: var(--card-font-secondary); color: #a855f7; font-size: 14px; font-weight: 900; text-transform: uppercase; margin-bottom: 12px; text-align: center; }
-.yg-benchmark-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
-.yg-benchmark-card { background: rgba(26, 10, 46, 0.8); border: 1px solid rgba(168, 85, 247, 0.3); border-radius: 8px; padding: 10px; text-align: center; }
-.yg-benchmark-game { font-family: var(--card-font-primary); color: #fff; font-size: 10px; font-weight: 700; text-transform: uppercase; margin-bottom: 4px; }
-.yg-benchmark-fps { font-family: var(--card-font-secondary); color: #bef264; font-size: 24px; font-weight: 900; margin-bottom: 2px; }
-.yg-benchmark-settings { font-family: var(--card-font-primary); color: #888; font-size: 9px; font-style: italic; }
+.yg-specs-list { flex-grow: 1; margin-bottom: 20px; }
+.yg-spec-item { background: rgba(255,255,255,0.03); border: 1px solid #222; padding: 14px; border-radius: 8px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; transition: 0.3s; }
+.yg-spec-item:hover { background: rgba(176, 38, 255, 0.05); border-color: var(--neon-purple); transform: translateX(5px);}
+.yg-spec-label { font-family: var(--card-font-primary); color: #a855f7; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;}
+.yg-spec-value { font-family: var(--card-font-secondary); color: #fff; font-size: 13px; font-weight: 700; text-align: right; letter-spacing: 1px;}
+
+.yg-benchmarks { margin-top: 15px; padding-top: 20px; border-top: 1px solid #222; }
+.yg-benchmarks-title { font-family: var(--card-font-secondary); color: #a855f7; font-size: 14px; font-weight: 900; text-transform: uppercase; margin-bottom: 15px; text-align: center; letter-spacing: 1px;}
+.yg-benchmark-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+.yg-benchmark-card { background: rgba(26, 10, 46, 0.4); border: 1px solid #222; border-radius: 8px; padding: 12px; text-align: center; transition: 0.3s;}
+.yg-benchmark-card:hover { border-color: var(--neon-green); background: rgba(204, 255, 0, 0.03);}
+.yg-benchmark-game { font-family: var(--card-font-primary); color: #aaa; font-size: 10px; font-weight: 700; text-transform: uppercase; margin-bottom: 6px; letter-spacing: 1px;}
+.yg-benchmark-fps { font-family: var(--card-font-secondary); color: var(--neon-green); font-size: 26px; font-weight: 900; margin-bottom: 4px; text-shadow: 0 0 10px rgba(204, 255, 0, 0.4);}
+.yg-benchmark-settings { font-family: var(--card-font-primary); color: #555; font-size: 9px; font-style: italic; text-transform: uppercase;}
 
 /* =========================================
    10. MEDIA QUERIES
@@ -741,7 +775,7 @@ header {
     .right-sidebar { position: relative; top: auto; right: auto; width: 95%; max-width: 500px; height: auto; max-height: 400px; margin: 20px auto; border-left: none; border: 1px solid rgba(176,38,255,0.3); border-radius: 12px; background: rgba(0,0,0,0.8); padding: 15px; }
     .footer { display: none; } 
     
-    .yg-card-container { width: 100%; height: 70vh; }
+    .yg-card-container { width: 95%; height: 80vh; max-height: 750px; }
     .yg-buttons-section { grid-template-columns: 1fr; }
     .starter-menu { flex-direction: column; align-items: center; }
 }
