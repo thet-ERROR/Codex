@@ -396,8 +396,7 @@ header {
 @keyframes blink { 50% { opacity: 0.3; } }
 .review-list { overflow-y: auto; flex: 1; display: flex; flex-direction: column; gap: 15px; padding-right: 5px; }
 .review-list::-webkit-scrollbar { width: 4px; }
-.review-list::-webkit-scrollbar-thumb { background: var(--neon-purple); border-radius: 2px; }
-.review-card { background: rgba(20, 10, 30, 0.6); border: 1px solid rgba(176, 38, 255, 0.3); padding: 12px; border-radius: 8px; position: relative; }
+.review-list::-webkit-scrollbar-thumb { background: var(--neon-purple); border-radius: 2px; }.review-card { background: rgba(20, 10, 30, 0.6); border: 1px solid rgba(176, 38, 255, 0.3); padding: 12px; border-radius: 8px; position: relative; }
 .r-user { font-family: var(--font-ui); font-weight: bold; color: #fff; font-size: 0.9rem; }
 .r-stars { color: var(--neon-green); font-size: 0.7rem; margin-left: 5px; }
 .r-text { font-size: 0.8rem; color: #aaa; margin-top: 5px; line-height: 1.4; font-style: italic; }
@@ -565,12 +564,9 @@ header {
 .yg-close-btn::after { transform: rotate(-45deg); }
 
 /* --- 1. GLASSMORPHISM ΒΙΤΡΙΝΑ & ANIMATION ΑΙΩΡΗΣΗΣ --- */
-/* style.css */
-
-/* --- 1. GLASSMORPHISM ΒΙΤΡΙΝΑ & ANIMATION ΑΙΩΡΗΣΗΣ --- */
 .yg-image-section { 
     width: 100%; 
-    height: 350px; /* Αύξηση ύψους από 280px */
+    height: 350px; 
     position: relative; 
     background: linear-gradient(135deg, rgba(30, 15, 50, 0.6) 0%, rgba(10, 5, 20, 0.8) 100%); 
     backdrop-filter: blur(10px);
@@ -590,20 +586,28 @@ header {
     display: none !important;
 }
 
-/* Αφαίρεση συντεταγμένων (αν υπάρχει CSS κλάση) */
-.yg-coordinates {
+/* Αφαίρεση συντεταγμένων (κρύβουμε πλέον και το grid/γραμμές) */
+.yg-coordinates, .yg-grid-decal {
     display: none !important;
 }
 
+/* Βελτιωμένη κεντρική εικόνα PC */
 .yg-pc-image { 
-    max-width: 95%; /* Αύξηση από 85% */
-    height: 280px; /* Αύξηση από 200px */
-    object-fit: contain; 
+    width: 100%; 
+    height: 90%; /* Πιάνει όλο το διαθέσιμο ύψος αλλά αφήνει μικρό περιθώριο */
+    object-fit: contain; /* Κρατάει τις αναλογίες χωρίς να κόβει την εικόνα */
     filter: drop-shadow(0 15px 25px rgba(0, 0, 0, 0.8)); 
     z-index: 1; 
-    margin: 0 auto; 
+    margin: auto; 
     display: block; 
     animation: pc-float 4s ease-in-out infinite; 
+    transform: scale(1.15); /* Ελαφρύ zoom για να γεμίσει πιο ωραία το κάδρο */
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+
+.yg-pc-image:hover {
+    transform: scale(1.2); /* Μικρό effect όταν περνάει το ποντίκι από πάνω */
 }
 
 /* Φωτεινή βάση (Stand) */
@@ -622,21 +626,10 @@ header {
 
 .yg-bg-watermark { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-5deg); font-size: 5rem; font-family: var(--font-ui); font-weight: 900; color: rgba(255,255,255,0.03); white-space: nowrap; pointer-events: none; z-index: 0; text-transform: uppercase; }
 
-.yg-pc-image { 
-    max-width: 85%; 
-    height: 200px; 
-    object-fit: contain; 
-    filter: drop-shadow(0 15px 25px rgba(0, 0, 0, 0.8)); 
-    z-index: 1; 
-    margin: 0 auto; 
-    display: block; 
-    animation: pc-float 4s ease-in-out infinite; 
-}
-
 @keyframes pc-float {
-    0% { transform: translateY(0px); }
-    50% { transform: translateY(-8px); }
-    100% { transform: translateY(0px); }
+    0% { transform: translateY(0px) scale(1.15); }
+    50% { transform: translateY(-8px) scale(1.15); }
+    100% { transform: translateY(0px) scale(1.15); }
 }
 
 .yg-specs-badges { position: absolute; bottom: 15px; left: 50%; transform: translateX(-50%); display: flex; gap: 10px; z-index: 2; width: 100%; justify-content: center; padding: 0 10px; }
