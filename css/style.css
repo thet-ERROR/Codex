@@ -412,20 +412,11 @@ header {
 .carousel-wrapper, .starter-menu, .holo-card, .vote-container { pointer-events: auto; }
 .system-select-label { font-family: var(--font-ui); font-size: 1.2rem; color: #fff; letter-spacing: 6px; font-weight: 800; margin-bottom: 20px; text-transform: uppercase; opacity: 0.8; }
 
-/* 🌟 ΑΡΧΙΚΗ ΚΑΡΤΑ - ΕΠΑΝΑΦΟΡΑ ΣΤΟ ORIGINAL ΓΥΑΛΙΝΟ/ΓΚΡΙ ΠΛΑΙΣΙΟ 🌟 */
-.holo-card {
-    width: 420px;
-    /* 1. Transparent Γκρι Φόντο (75% ορατότητα) */
-    background: rgba(20, 20, 25, 0.75); 
-    
-    /* 2. Έντονο Θόλωμα Φόντου (Glass Effect) */
-    backdrop-filter: blur(20px); 
-    -webkit-backdrop-filter: blur(20px); /* Για Safari */
-    
-    /* 3. Λεπτό, Διακριτικό Πλαίσιο (από την var σου) */
-    border: 1px solid var(--glass-border); 
-    
-    /* --- Τα υπόλοιπα στυλ παραμένουν ίδια για τη δομή --- */
+/* 🌟 ΑΡΧΙΚΗ ΚΑΡΤΑ - ΣΥΜΠΑΓΕΣ ΓΚΡΙ ΦΟΝΤΟ & ΠΛΑΙΣΙΟ 🌟 */
+.holo-card { 
+    width: 420px; 
+    background: #111111; /* Σκούρο γκρι/μαύρο συμπαγές χρώμα */
+    border: 2px solid #333333; /* Ξεκάθαρο γκρι πλαίσιο */
     border-radius: 16px; 
     padding: 35px; 
     text-align: center; 
@@ -435,8 +426,8 @@ header {
     display: flex; 
     flex-direction: column; 
     align-items: center; 
-    pointer-events: auto;
 }
+
 .carousel-wrapper { display: flex; align-items: center; justify-content: center; gap: 40px; transition: 0.3s; width: 100%; }
 
 .hero-img { 
@@ -565,14 +556,13 @@ header {
 /* =========================================
    9. 🌟 YU-GI-OH FLIP CARD (UPGRADED) 🌟
    ========================================= */
-/* 🌟 CONTAINER: Μικρότερο πλάτος για καλύτερη προσαρμογή 🌟 */
-.yg-card-container { width: 400px; max-width: 95vw; perspective: 1500px; margin: 0 auto; display: flex; justify-content: center; align-items: center; }
+.yg-card-container { width: 450px; max-width: 95vw; perspective: 1500px; margin: 0 auto; display: flex; justify-content: center; align-items: center; }
 .yg-card { width: 100%; background: #0f0f0f; border-radius: 16px; position: relative; transform-style: preserve-3d; transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275); box-shadow: 0 0 40px rgba(168, 85, 247, 0.3), 0 0 80px rgba(236, 72, 153, 0.2); }
 .yg-card.flipped { transform: rotateY(180deg); }
 .yg-card-face { backface-visibility: hidden; width: 100%; border-radius: 16px; overflow: hidden; border: 1px solid #333; }
 
-/* Front: Μικρότερο Ύψος */
-.yg-card-front { z-index: 2; background: #0a0a0c; display: flex; flex-direction: column; height: 75vh; max-height: 750px; overflow-x: hidden; overflow-y: auto; }
+/* Front */
+.yg-card-front { z-index: 2; background: #0a0a0c; display: flex; flex-direction: column; height: 85vh; max-height: 850px; overflow-x: hidden; overflow-y: auto; }
 .yg-card-front::-webkit-scrollbar { width: 4px; }
 .yg-card-front::-webkit-scrollbar-thumb { background: var(--neon-purple); border-radius: 2px; }
 
@@ -587,7 +577,7 @@ header {
 /* --- 1. GLASSMORPHISM ΒΙΤΡΙΝΑ & ANIMATION ΑΙΩΡΗΣΗΣ --- */
 .yg-image-section { 
     width: 100%; 
-    height: 280px; /* Μικρύναμε το container της εικόνας */
+    height: 350px; 
     position: relative; 
     background: linear-gradient(135deg, rgba(30, 15, 50, 0.6) 0%, rgba(10, 5, 20, 0.8) 100%); 
     backdrop-filter: blur(10px);
@@ -602,17 +592,17 @@ header {
     overflow: hidden; 
 }
 
-/* 🌟 ΑΦΑΙΡΕΣΗ ΣΥΝΤΕΤΑΓΜΕΝΩΝ & ΠΛΕΓΜΑΤΟΣ 🌟 */
+/* 🌟 ΚΡΥΒΟΥΜΕ ΣΥΝΤΕΤΑΓΜΕΝΕΣ & ΠΛΕΓΜΑ ΓΙΑ ΚΑΘΑΡΗ ΕΙΚΟΝΑ 🌟 */
 .yg-coordinates, .yg-grid-decal, .yg-hud-corners {
     display: none !important;
 }
 
 .yg-bg-watermark { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-5deg); font-size: 5rem; font-family: var(--font-ui); font-weight: 900; color: rgba(255,255,255,0.03); white-space: nowrap; pointer-events: none; z-index: 0; text-transform: uppercase; }
 
-/* 🌟 ΦΩΤΟΓΡΑΦΙΑ ΠΙΟ ΜΙΚΡΗ 🌟 */
+/* 🌟 ΜΙΚΡΟΤΕΡΗ ΦΩΤΟΓΡΑΦΙΑ ΣΤΟ INSPECT 🌟 */
 .yg-pc-image { 
-    max-width: 65%; /* Ήταν 85% - Έγινε πιο μικρή */
-    height: 180px;  /* Μικρότερο ύψος */
+    max-width: 65%; /* Ήταν 85% */
+    height: 180px;  /* Ήταν 200px */
     object-fit: contain; 
     filter: drop-shadow(0 15px 25px rgba(0, 0, 0, 0.8)); 
     z-index: 1; 
@@ -719,7 +709,7 @@ header {
 .yg-btn-cart:hover { transform: translateY(-2px); box-shadow: 0 5px 20px rgba(204, 255, 0, 0.4); }
 
 /* Back Face */
-.yg-card-back { position: absolute; inset: 0; transform: rotateY(180deg); background: linear-gradient(135deg, #1a0a2e 0%, #000 100%); padding: 30px; display: flex; flex-direction: column; overflow-y: auto; overflow-x: hidden; height: 75vh; max-height: 750px; }
+.yg-card-back { position: absolute; inset: 0; transform: rotateY(180deg); background: linear-gradient(135deg, #1a0a2e 0%, #000 100%); padding: 30px; display: flex; flex-direction: column; overflow-y: auto; overflow-x: hidden; height: 85vh; max-height: 850px; }
 .yg-card-back::-webkit-scrollbar { width: 4px; }
 .yg-card-back::-webkit-scrollbar-thumb { background: #a855f7; border-radius: 2px; }
 
