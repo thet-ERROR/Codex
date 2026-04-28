@@ -835,3 +835,45 @@ header {
 .yg-coordinates, .yg-grid-decal, .yg-hud-corners {
     display: none !important;
 }
+/* =========================================
+   ΚΛΕΙΔΩΜΑ ΔΙΑΣΤΑΣΕΩΝ INSPECT ΚΑΡΤΑΣ & 3D FLIP
+   ========================================= */
+
+/* Κλειδώνουμε το πλάτος ώστε να μην απλώνει ποτέ στην οθόνη */
+.yg-card-container {
+    width: 400px !important;
+    max-width: 95vw !important;
+    margin: 0 auto !important;
+}
+
+/* Ενεργοποιούμε ξανά τον 3D χώρο για το flip */
+.yg-card {
+    position: relative !important;
+    width: 100% !important;
+    transform-style: preserve-3d !important;
+}
+
+/* Διασφαλίζουμε ότι και η μπροστά και η πίσω όψη έχουν αυστηρά όρια */
+.yg-card-front, .yg-card-back {
+    width: 100% !important;
+    max-width: 400px !important;
+    box-sizing: border-box !important;
+    backface-visibility: hidden !important;
+    -webkit-backface-visibility: hidden !important; /* Για να μην φαίνονται ανάποδα τα γράμματα */
+}
+
+/* Η πίσω όψη (το Specs) μπαίνει ακριβώς πίσω από τη μπροστινή */
+.yg-card-back {
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    transform: rotateY(180deg) !important;
+}
+
+/* Στα κινητά, η κάρτα πιάνει το 95% της οθόνης αλλά δεν ξεχειλώνει */
+@media (max-width: 1024px) {
+    .yg-card-container {
+        width: 95% !important;
+        height: auto !important;
+    }
+}
