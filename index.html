@@ -113,7 +113,7 @@ Type 'help' for a list of commands.
         
         <div class="carousel-wrapper" id="carousel-wrapper">
             <button class="nav-arrow" onclick="playClick(); prevPC()"><i class="ph-bold ph-caret-left"></i></button>
-            <div class="holo-card" id="main-card"></div>
+            <div id="main-card"></div>
             <button class="nav-arrow" onclick="playClick(); nextPC()"><i class="ph-bold ph-caret-right"></i></button>
         </div>
 
@@ -181,39 +181,28 @@ Type 'help' for a list of commands.
         <div class="yg-card-container">
             <div class="yg-card" id="yg-card">
                 
-                <div class="yg-card-face yg-card-front">
-                    <div class="yg-tier-badge" id="yg-tier-badge">S-TIER</div>
-                    <div class="yg-close-btn" onclick="playClick(); closeModal('gallery-overlay')"></div>
+                <div class="yg-card-face yg-card-front tcg-front-frame">
+                    <div class="yg-close-btn" onclick="playClick(); closeModal('gallery-overlay')" style="top:10px; right:10px; position:absolute;"></div>
 
-                    <div class="yg-image-section">
-                        <div class="yg-bg-watermark" id="g-watermark">CODEX</div>
-                        <div class="yg-grid-decal"></div>
-
-                        <button class="yg-gallery-btn left" onclick="playClick(); changeGalleryImage(-1)"><i class="ph-bold ph-caret-left"></i></button>
-                        <img src="" id="yg-main-img" alt="PC Build" class="yg-pc-image" onclick="playClick(); changeGalleryImage(1)" style="cursor: pointer;" title="Next Image">
-                        <button class="yg-gallery-btn right" onclick="playClick(); changeGalleryImage(1)"><i class="ph-bold ph-caret-right"></i></button>
-
-                        <div class="yg-specs-badges" id="yg-quick-specs"></div>
+                    <div class="tcg-header" style="margin-top:20px;">
+                        <div class="tcg-title" id="yg-title">Project Cali</div>
+                        <div class="yg-tier-badge-new" id="yg-tier-badge">S-TIER</div>
                     </div>
 
-                    <div class="yg-card-content">
-                        <div class="yg-build-status">
-                            <div class="yg-status-dot"></div>
-                            <div class="yg-status-text">Build Authorized</div>
+                    <div class="tcg-art-box yg-image-section">
+                        <div class="yg-bg-watermark" id="g-watermark">CODEX</div>
+                        <button class="yg-gallery-btn left" onclick="playClick(); changeGalleryImage(-1)"><i class="ph-bold ph-caret-left"></i></button>
+                        <img src="" id="yg-main-img" alt="PC Build" class="tcg-art-img" onclick="playClick(); changeGalleryImage(1)" style="cursor: pointer;" title="Next Image">
+                        <button class="yg-gallery-btn right" onclick="playClick(); changeGalleryImage(1)"><i class="ph-bold ph-caret-right"></i></button>
+                        <div class="yg-specs-badges" id="yg-quick-specs" style="bottom:10px;"></div>
+                    </div>
+
+                    <div class="tcg-stats-box yg-card-content">
+                        <div class="tcg-desc" id="yg-tagline" style="border-bottom:1px solid #333; padding-bottom:10px;">
+                            [ Machine / System ]<br>AUTHORIZED SYSTEM BUILD
                         </div>
 
-                        <h1 class="yg-project-name" id="yg-title">Project Cali</h1>
-                        <div class="yg-tagline" id="yg-tagline">AUTHORIZED SYSTEM BUILD</div>
-
-                        <div class="yg-card-stars">
-                            <svg class="yg-star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-                            <svg class="yg-star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-                            <svg class="yg-star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-                            <svg class="yg-star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-                            <svg class="yg-star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-                        </div>
-
-                        <div class="yg-price-section">
+                        <div class="yg-price-section" style="margin: 15px 0;">
                             <div class="yg-current-price" id="yg-price-live">€0</div>
                             <div class="yg-old-price" id="yg-price-old">€0</div>
                         </div>
@@ -227,14 +216,14 @@ Type 'help' for a list of commands.
                             </select>
                         </div>
 
-                        <div class="yg-power-row">
+                        <div class="yg-power-row" style="margin-bottom:15px; margin-top:10px;">
                             <span class="yg-power-label">MULTITASKING</span>
                             <div class="yg-bar-track">
                                 <div class="yg-bar-fill" id="g-power-fill"></div>
                             </div>
                         </div>
 
-                        <div class="yg-buttons-section">
+                        <div class="yg-buttons-section" style="margin-top:auto;">
                             <button class="yg-btn yg-btn-specs yg-btn-breathe" onclick="playClick(); toggleCardFlip()">
                                 <span>⇄</span> Flip to Specs
                             </button>
