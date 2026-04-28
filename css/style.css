@@ -556,24 +556,33 @@ header {
 /* =========================================
    9. 🌟 YU-GI-OH FLIP CARD (UPGRADED) 🌟
    ========================================= */
-.yg-card-container { width: 450px; max-width: 95vw; perspective: 1500px; margin: 0 auto; display: flex; justify-content: center; align-items: center; }
-.yg-card { width: 100%; background: #0f0f0f; border-radius: 16px; position: relative; transform-style: preserve-3d; transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275); box-shadow: 0 0 40px rgba(168, 85, 247, 0.3), 0 0 80px rgba(236, 72, 153, 0.2); }
-.yg-card.flipped { transform: rotateY(180deg); }
-.yg-card-face { backface-visibility: hidden; width: 100%; border-radius: 16px; overflow: hidden; border: 1px solid #333; }
+/* Κάνουμε την κάρτα Inspect πιο μικρή και με το ίδιο γκρι φόντο/πλαίσιο */
+.yg-card-front { 
+    z-index: 2; 
+    background: #111111 !important; 
+    border: 2px solid #333333 !important; 
+    display: flex; flex-direction: column; 
+    height: 75vh !important; /* Μικρύναμε το ύψος (ήταν 85vh) */
+    max-height: 700px !important; 
+    overflow-x: hidden; overflow-y: auto; 
+}
 
-/* Front */
-.yg-card-front { z-index: 2; background: #0a0a0c; display: flex; flex-direction: column; height: 85vh; max-height: 850px; overflow-x: hidden; overflow-y: auto; }
-.yg-card-front::-webkit-scrollbar { width: 4px; }
-.yg-card-front::-webkit-scrollbar-thumb { background: var(--neon-purple); border-radius: 2px; }
+/* Κρύβουμε τις συντεταγμένες οριστικά */
+.yg-coordinates, .yg-grid-decal, .yg-hud-corners {
+    display: none !important;
+}
 
-.yg-tier-badge { position: absolute; top: 15px; left: 15px; background: linear-gradient(135deg, #a855f7 0%, #ec48d9 100%); padding: 6px 16px; border-radius: 6px; font-family: var(--card-font-primary); font-size: 14px; font-weight: 700; color: #fff; text-transform: uppercase; letter-spacing: 1px; box-shadow: 0 0 20px rgba(168, 85, 247, 0.6); z-index: 10; }
-
-.yg-close-btn { position: absolute; top: 15px; right: 15px; width: 35px; height: 35px; background: rgba(255, 255, 255, 0.1); border: 2px solid rgba(255, 255, 255, 0.2); border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.3s ease; z-index: 10; }
-.yg-close-btn:hover { background: rgba(255, 255, 255, 0.2); border-color: #a855f7; }
-.yg-close-btn::before, .yg-close-btn::after { content: ''; position: absolute; width: 16px; height: 2px; background: #fff; }
-.yg-close-btn::before { transform: rotate(45deg); }
-.yg-close-btn::after { transform: rotate(-45deg); }
-
+/* Κάνουμε την φωτογραφία πιο μικρή στο Inspect */
+.yg-pc-image { 
+    max-width: 60% !important; /* Μίκρυνε πολύ (ήταν 85%) */
+    height: 170px !important;  
+    object-fit: contain !important; 
+    filter: drop-shadow(0 15px 25px rgba(0, 0, 0, 0.8)) !important; 
+    z-index: 1 !important; 
+    margin: 0 auto !important; 
+    display: block !important; 
+    animation: pc-float 4s ease-in-out infinite !important; 
+}
 /* --- 1. GLASSMORPHISM ΒΙΤΡΙΝΑ & ANIMATION ΑΙΩΡΗΣΗΣ --- */
 .yg-image-section { 
     width: 100%; 
@@ -772,22 +781,18 @@ header {
 
 /* 1. ΣΤΑΘΕΡΟ ΓΚΡΙ ΦΟΝΤΟ & ΠΛΑΙΣΙΟ ΣΤΗΝ ΑΡΧΙΚΗ ΚΑΡΤΑ */
 .holo-card { 
-    background: #111111 !important;       /* Συμπαγές σκούρο γκρι/μαύρο */
-    border: 2px solid #333333 !important; /* Γκρι περίγραμμα */
-    backdrop-filter: none !important;     /* Βγάζουμε οποιοδήποτε γυάλινο εφέ */
+    width: 420px !important;
+    background: #111111 !important; /* Το συμπαγές σκούρο γκρι φόντο */
+    border: 2px solid #333333 !important; /* Το γκρι πλαίσιο που θες */
+    border-radius: 16px !important; 
+    padding: 35px !important; 
+    text-align: center !important; 
+    position: relative !important; 
+    transition: 0.4s !important; 
+    box-shadow: 0 40px 100px rgba(0,0,0,0.8) !important; 
+    display: flex !important; 
+    flex-direction: column !important; 
+    align-items: center !important; 
+    backdrop-filter: none !important; /* Κλείνουμε το γυαλί που το έκανε αόρατο */
     -webkit-backdrop-filter: none !important;
-}
-
-/* 2. ΜΙΚΡΟΤΕΡΗ ΦΩΤΟΓΡΑΦΙΑ ΣΤΟ INSPECT */
-.yg-pc-image { 
-    max-width: 60% !important; /* Πιο μικρό πλάτος για να ταιριάζει */
-    height: 160px !important;  /* Πιο μικρό ύψος */
-    object-fit: contain !important; 
-    display: block !important;
-    margin: 0 auto !important;
-}
-
-/* 3. ΚΡΥΒΟΥΜΕ ΤΙΣ ΣΥΝΤΕΤΑΓΜΕΝΕΣ ΑΠΟ ΤΟ INSPECT */
-.yg-coordinates, .yg-grid-decal, .yg-hud-corners {
-    display: none !important;
 }
