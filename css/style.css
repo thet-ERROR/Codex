@@ -552,10 +552,10 @@ header {
 .yg-card.flipped { transform: rotateY(180deg); }
 .yg-card-face { backface-visibility: hidden; width: 100%; border-radius: 16px; overflow: hidden; border: 1px solid #333; }
 
-/* 🌟 Front Inspect Card - Unified Glass Style 🌟 */
+/* 🌟 Front Inspect Card - ΕΠΑΝΑΦΟΡΑ ΤΟΥ LOOK ΤΗΣ ΤΡΙΤΗΣ ΦΩΤΟΓΡΑΦΙΑΣ 🌟 */
 .yg-card-front { 
     z-index: 2; 
-    /* Επαναφορά γυάλινου background από την αρχική κάρτα */
+    /* Επαναφορά γυάλινου background από την αρχική κάρτα, όπως φαίνεται να έχει και το inspect modal στην τρίτη φωτό */
     background: var(--glass-dark); 
     backdrop-filter: blur(40px); 
     border: 1px solid var(--glass-border); 
@@ -574,7 +574,7 @@ header {
 .yg-close-btn::before { transform: rotate(45deg); }
 .yg-close-btn::after { transform: rotate(-45deg); }
 
-/* --- 1. GLASSMORPHISM ΒΙΤΡΙΝΑ & ANIMATION ΑΙΩΡΗΣΗΣ --- */
+/* --- 1. GLASSMORPHISM ΒΙΤΡΙΝΑ & ANIMATION ΑΙΩΡΗΣΗΣ (Επαναφορά) --- */
 .yg-image-section { 
     width: 100%; 
     height: 350px; 
@@ -592,7 +592,7 @@ header {
     overflow: hidden; 
 }
 
-/* Αφαίρεση παλιών συντεταγμένων κλπ για να είναι καθαρό το TCG Art */
+/* Αφαίρεση παλιών συντεταγμένων κλπ για να είναι καθαρό το TCG Art, όπως στην τρίτη φωτό */
 .yg-coordinates, .yg-grid-decal, .yg-hud-corners {
     display: none !important;
 }
