@@ -44,15 +44,15 @@ Type 'help' for a list of commands.
 
     <div class="left-sidebar">
         <div class="side-group">
-            <button class="side-btn" onclick="playClick(); openModal('settings')" title="System Settings"><i class="ph-bold ph-gear"></i></button>
+            <button class="side-btn" onclick="playClick(); openModal('settings-modal')" title="System Settings"><i class="ph-bold ph-gear"></i></button>
             <div class="side-divider"></div>
             <button class="side-btn" onclick="playClick(); openModal('trust-modal')" title="Warranty & Trust"><i class="ph-bold ph-shield-check"></i></button>
-            <button class="side-btn" onclick="playClick(); openModal('rules')" title="Rules"><i class="ph-bold ph-book-bookmark"></i></button>
-            <button class="side-btn" onclick="playClick(); openModal('help')" title="Help"><i class="ph-bold ph-headset"></i></button>
+            <button class="side-btn" onclick="playClick(); openModal('rules-modal')" title="Rules"><i class="ph-bold ph-book-bookmark"></i></button>
+            <button class="side-btn" onclick="playClick(); openModal('help-modal')" title="Help"><i class="ph-bold ph-headset"></i></button>
             <div class="side-divider"></div>
             <button class="side-btn" onclick="playClick(); showToast('DISCORD SERVER: COMING SOON', 'normal')" title="Discord"><i class="ph-bold ph-discord-logo"></i></button>
             <button class="side-btn" onclick="playClick(); window.open('https://instagram.com/codex_rigs', '_blank')" title="Instagram"><i class="ph-bold ph-instagram-logo"></i></button>
-            <button class="side-btn" onclick="playClick(); openModal('newsletter')" title="The Network"><i class="ph-bold ph-envelope-simple"></i></button>
+            <button class="side-btn" onclick="playClick(); openModal('newsletter-modal')" title="The Network"><i class="ph-bold ph-envelope-simple"></i></button>
         </div>
         <button class="side-btn chat-toggle" onclick="playClick(); toggleChat()"><i class="ph-bold ph-chat-circle-dots"></i></button>
     </div>
@@ -159,6 +159,7 @@ Type 'help' for a list of commands.
                     <div class="vote-progress-fill" id="v-fill"></div>
                 </div>
                 <button class="vote-btn" id="v-btn" onclick="castVote()">AUTHORIZE DROP</button>
+                <button class="vote-btn hidden" id="v-buy-btn" onclick="buyVotePC()" style="background:#ccff00; color:#000; margin-top:10px;">SECURE NOW</button>
                 <div class="timer-text" id="v-timer">CALCULATING TIME...</div>
             </div>
         </div>
@@ -182,19 +183,19 @@ Type 'help' for a list of commands.
                 
                 <div class="yg-card-face yg-card-front">
                     <div class="yg-tier-badge" id="yg-tier-badge">S-TIER</div>
-                    <div class="yg-close-btn" onclick="playClick(); closeModal('gallery-overlay')"></div>
+                    <div class="yg-close-btn" onclick="closeModal('gallery-overlay')"></div>
 
                     <div class="yg-image-section">
                         <div class="yg-bg-watermark" id="g-watermark">CODEX</div>
                         <div class="yg-hud-corners yg-top-left"></div>
-                        <div class="yg-top-right yg-hud-corners"></div>
-                        <div class="yg-bottom-left yg-hud-corners"></div>
-                        <div class="yg-bottom-right yg-hud-corners"></div>
+                        <div class="yg-hud-corners yg-top-right"></div>
+                        <div class="yg-hud-corners yg-bottom-left"></div>
+                        <div class="yg-hud-corners yg-bottom-right"></div>
+                        <div class="yg-hud-coor yg-coor-x">X: 45.2</div>
+                        <div class="yg-hud-coor yg-coor-y">Y: 12.8</div>
                         <div class="yg-grid-decal"></div>
 
-                        <button class="yg-gallery-btn left" onclick="playClick(); changeGalleryImage(-1)"><i class="ph-bold ph-caret-left"></i></button>
-                        <img src="" id="yg-main-img" alt="PC Build" class="yg-pc-image" onclick="playClick(); changeGalleryImage(1)" style="cursor: pointer;" title="Next Image">
-                        <button class="yg-gallery-btn right" onclick="playClick(); changeGalleryImage(1)"><i class="ph-bold ph-caret-right"></i></button>
+                        <img src="" id="yg-main-img" class="yg-pc-image" onclick="changeGalleryImage(1)" style="cursor: pointer;" title="Click for next photo" alt="PC Build">
 
                         <div class="yg-specs-badges" id="yg-quick-specs"></div>
                     </div>
@@ -219,6 +220,10 @@ Type 'help' for a list of commands.
                         <div class="yg-price-section">
                             <div class="yg-current-price" id="yg-price-live">€0</div>
                             <div class="yg-old-price" id="yg-price-old">€0</div>
+                        </div>
+
+                        <div class="yg-stock-warning" id="yg-stock-container">
+                            <div class="yg-stock-warning-text" id="yg-stock-badge">IN STOCK</div>
                         </div>
 
                         <div class="yg-storage-section">
@@ -446,7 +451,7 @@ Type 'help' for a list of commands.
 
     <div class="modal-overlay" id="compare-modal">
         <div class="modal-content" style="width:1200px;">
-            <span class="close-modal" onclick="playClick(); closeModal('compare-modal')">X</span>
+            <span class="close-modal" onclick="closeModal('compare-modal')">X</span>
             <h2 style="text-align:center;">VS MODE</h2>
             <div class="compare-grid" id="compare-grid"></div>
         </div>
