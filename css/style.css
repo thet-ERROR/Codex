@@ -413,11 +413,19 @@ header {
 .system-select-label { font-family: var(--font-ui); font-size: 1.2rem; color: #fff; letter-spacing: 6px; font-weight: 800; margin-bottom: 20px; text-transform: uppercase; opacity: 0.8; }
 
 /* 🌟 ΑΡΧΙΚΗ ΚΑΡΤΑ - ΕΠΑΝΑΦΟΡΑ ΣΤΟ ORIGINAL ΓΥΑΛΙΝΟ/ΓΚΡΙ ΠΛΑΙΣΙΟ 🌟 */
-.holo-card { 
-    width: 420px; 
-    background: var(--glass-dark); 
-    backdrop-filter: blur(40px); 
+.holo-card {
+    width: 420px;
+    /* 1. Transparent Γκρι Φόντο (75% ορατότητα) */
+    background: rgba(20, 20, 25, 0.75); 
+    
+    /* 2. Έντονο Θόλωμα Φόντου (Glass Effect) */
+    backdrop-filter: blur(20px); 
+    -webkit-backdrop-filter: blur(20px); /* Για Safari */
+    
+    /* 3. Λεπτό, Διακριτικό Πλαίσιο (από την var σου) */
     border: 1px solid var(--glass-border); 
+    
+    /* --- Τα υπόλοιπα στυλ παραμένουν ίδια για τη δομή --- */
     border-radius: 16px; 
     padding: 35px; 
     text-align: center; 
@@ -427,8 +435,8 @@ header {
     display: flex; 
     flex-direction: column; 
     align-items: center; 
+    pointer-events: auto;
 }
-
 .carousel-wrapper { display: flex; align-items: center; justify-content: center; gap: 40px; transition: 0.3s; width: 100%; }
 
 .hero-img { 
