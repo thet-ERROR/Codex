@@ -611,20 +611,62 @@ header {
 .yg-close-btn::after { transform: rotate(-45deg); }
 
 /* 🌟 ΒΙΤΡΙΝΑ & ANIMATION ΑΙΩΡΗΣΗΣ (ΚΕΝΤΡΑΡΙΣΜΕΝΗ) 🌟 */
+/* 🌟 ΒΙΤΡΙΝΑ & ΞΕΖΟΥΜΑΡΙΣΜΑ 🌟 */
 .yg-image-section { 
     width: 100%; 
-    height: 300px; /* Λίγο πιο ψηλό για να φαίνεται πιο απλωτό */
-    flex-shrink: 0; 
+    height: 260px; /* Λίγο πιο μαζεμένο για να μην ξεχειλώνει στο κινητό */
     position: relative; 
-    background: radial-gradient(circle at center, rgba(30, 15, 50, 0.8) 0%, rgba(10, 5, 20, 1) 100%); 
-    border-bottom: 1px solid rgba(176, 38, 255, 0.2);
+    background: radial-gradient(circle at center, rgba(30, 15, 50, 0.6) 0%, rgba(10, 5, 20, 0.9) 100%); 
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(176, 38, 255, 0.3);
+    box-shadow: inset 0 0 30px rgba(176, 38, 255, 0.1);
     display: flex; 
     align-items: center; 
     justify-content: center; 
     overflow: hidden; 
-    padding: 20px;
 }
 
+/* ΟΛΟΚΛΗΡΗ Η ΦΩΤΟΓΡΑΦΙΑ (ΧΩΡΙΣ ΝΑ ΚΟΒΕΤΑΙ) */
+.yg-pc-image { 
+    height: 80%; /* Πιάνει το 80% του ύψους, άρα δεν κόβεται ΠΟΤΕ */
+    max-width: 70%; /* Αφήνει χώρο δεξιά/αριστερά για τα βελάκια */
+    width: auto;
+    object-fit: contain; /* Το μαγικό property για το unzoom */
+    filter: drop-shadow(0 15px 25px rgba(0, 0, 0, 0.8)); 
+    z-index: 1; 
+    display: block; 
+    margin: 0 auto; 
+    animation: pc-float 4s ease-in-out infinite; 
+}
+
+/* 🌟 ΒΕΛΑΚΙΑ ΓΙΑ SWIPE ΣΤΟ INSPECT 🌟 */
+.yg-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #fff;
+    width: 30px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 10;
+    border-radius: 6px;
+    transition: 0.3s;
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+.yg-arrow:hover {
+    background: var(--neon-purple);
+    border-color: var(--neon-purple);
+    box-shadow: 0 0 15px var(--neon-purple);
+}
+.yg-arrow.left { left: 15px; }
+.yg-arrow.right { right: 15px; }
 /* ΑΦΑΙΡΕΣΗ ΣΥΝΤΕΤΑΓΜΕΝΩΝ */
 .yg-coordinates, .yg-grid-decal, .yg-hud-corners {
     display: none !important;
