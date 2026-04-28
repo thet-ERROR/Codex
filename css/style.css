@@ -565,9 +565,12 @@ header {
 .yg-close-btn::after { transform: rotate(-45deg); }
 
 /* --- 1. GLASSMORPHISM ΒΙΤΡΙΝΑ & ANIMATION ΑΙΩΡΗΣΗΣ --- */
+/* style.css */
+
+/* --- 1. GLASSMORPHISM ΒΙΤΡΙΝΑ & ANIMATION ΑΙΩΡΗΣΗΣ --- */
 .yg-image-section { 
     width: 100%; 
-    height: 280px; 
+    height: 350px; /* Αύξηση ύψους από 280px */
     position: relative; 
     background: linear-gradient(135deg, rgba(30, 15, 50, 0.6) 0%, rgba(10, 5, 20, 0.8) 100%); 
     backdrop-filter: blur(10px);
@@ -580,6 +583,27 @@ header {
     justify-content: center; 
     text-align: center; 
     overflow: hidden; 
+}
+
+/* Αφαίρεση HUD στοιχείων (corners) */
+.yg-hud-corners {
+    display: none !important;
+}
+
+/* Αφαίρεση συντεταγμένων (αν υπάρχει CSS κλάση) */
+.yg-coordinates {
+    display: none !important;
+}
+
+.yg-pc-image { 
+    max-width: 95%; /* Αύξηση από 85% */
+    height: 280px; /* Αύξηση από 200px */
+    object-fit: contain; 
+    filter: drop-shadow(0 15px 25px rgba(0, 0, 0, 0.8)); 
+    z-index: 1; 
+    margin: 0 auto; 
+    display: block; 
+    animation: pc-float 4s ease-in-out infinite; 
 }
 
 /* Φωτεινή βάση (Stand) */

@@ -183,19 +183,15 @@ Type 'help' for a list of commands.
                 
                 <div class="yg-card-face yg-card-front">
                     <div class="yg-tier-badge" id="yg-tier-badge">S-TIER</div>
-                    <div class="yg-close-btn" onclick="closeModal('gallery-overlay')"></div>
+                    <div class="yg-close-btn" onclick="playClick(); closeModal('gallery-overlay')"></div>
 
                     <div class="yg-image-section">
                         <div class="yg-bg-watermark" id="g-watermark">CODEX</div>
-                        <div class="yg-hud-corners yg-top-left"></div>
-                        <div class="yg-hud-corners yg-top-right"></div>
-                        <div class="yg-hud-corners yg-bottom-left"></div>
-                        <div class="yg-hud-corners yg-bottom-right"></div>
-                        <div class="yg-hud-coor yg-coor-x">X: 45.2</div>
-                        <div class="yg-hud-coor yg-coor-y">Y: 12.8</div>
                         <div class="yg-grid-decal"></div>
 
-                        <img src="" id="yg-main-img" class="yg-pc-image" onclick="changeGalleryImage(1)" style="cursor: pointer;" title="Click for next photo" alt="PC Build">
+                        <button class="yg-gallery-btn left" onclick="playClick(); changeGalleryImage(-1)"><i class="ph-bold ph-caret-left"></i></button>
+                        <img src="" id="yg-main-img" alt="PC Build" class="yg-pc-image" onclick="playClick(); changeGalleryImage(1)" style="cursor: pointer;" title="Next Image">
+                        <button class="yg-gallery-btn right" onclick="playClick(); changeGalleryImage(1)"><i class="ph-bold ph-caret-right"></i></button>
 
                         <div class="yg-specs-badges" id="yg-quick-specs"></div>
                     </div>
@@ -222,10 +218,6 @@ Type 'help' for a list of commands.
                             <div class="yg-old-price" id="yg-price-old">€0</div>
                         </div>
 
-                        <div class="yg-stock-warning" id="yg-stock-container">
-                            <div class="yg-stock-warning-text" id="yg-stock-badge">IN STOCK</div>
-                        </div>
-
                         <div class="yg-storage-section">
                             <div class="yg-storage-label">Storage Expansion</div>
                             <select class="yg-storage-select" id="storage-select" onchange="updatePrice()">
@@ -236,7 +228,7 @@ Type 'help' for a list of commands.
                         </div>
 
                         <div class="yg-power-row">
-                            <span class="yg-power-label">SYSTEM POWER</span>
+                            <span class="yg-power-label">MULTITASKING</span>
                             <div class="yg-bar-track">
                                 <div class="yg-bar-fill" id="g-power-fill"></div>
                             </div>
@@ -451,7 +443,7 @@ Type 'help' for a list of commands.
 
     <div class="modal-overlay" id="compare-modal">
         <div class="modal-content" style="width:1200px;">
-            <span class="close-modal" onclick="closeModal('compare-modal')">X</span>
+            <span class="close-modal" onclick="playClick(); closeModal('compare-modal')">X</span>
             <h2 style="text-align:center;">VS MODE</h2>
             <div class="compare-grid" id="compare-grid"></div>
         </div>
