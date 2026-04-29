@@ -181,16 +181,64 @@ Type 'help' for a list of commands.
         <div class="yg-card-container">
             <div class="yg-card" id="yg-card">
                 
-                <div class="yg-card-face yg-card-front tcg-front-frame">
-                    <div class="yg-close-btn" onclick="playClick(); closeModal('gallery-overlay')" style="top:10px; right:10px; position:absolute;"></div>
+<div class="yg-tier-badge" id="yg-tier-badge">S-TIER</div>
+<div class="yg-close-btn" onclick="playClick(); closeModal('gallery-overlay')"></div>
 
-                    <div class="tcg-header" style="margin-top:20px;">
-                        <div class="tcg-title" id="yg-title">Project Cali</div>
-                        <div class="yg-tier-badge-new" id="yg-tier-badge">S-TIER</div>
-                    </div>
+<div class="yg-card-content" style="padding-top: 55px;">
+    <div class="yg-build-status">
+        <div class="yg-status-dot"></div>
+        <div class="yg-status-text">Build Authorized</div>
+    </div>
 
-                    <div class="tcg-art-box yg-image-section">
-                        <div class="yg-image-section">
+    <h1 class="yg-project-name" id="yg-title">Project Cali</h1>
+    <div class="yg-tagline" id="yg-tagline">AUTHORIZED SYSTEM BUILD</div>
+
+    <div style="display: flex; align-items: center; justify-content: center; gap: 15px; margin: 15px 0;">
+        <button class="yg-gallery-btn left" onclick="playClick(); changeGalleryImage(-1)" style="background: rgba(0,0,0,0.5); padding: 5px; border-radius: 5px; border: 1px solid #333; color: #fff; cursor: pointer;"><i class="ph-bold ph-caret-left"></i></button>
+        
+        <img src="" id="yg-main-img" alt="PC Build" onclick="playClick(); changeGalleryImage(1)" style="cursor: pointer; height: 140px; max-width: 140px; object-fit: contain;" title="Next Image">
+        
+        <button class="yg-gallery-btn right" onclick="playClick(); changeGalleryImage(1)" style="background: rgba(0,0,0,0.5); padding: 5px; border-radius: 5px; border: 1px solid #333; color: #fff; cursor: pointer;"><i class="ph-bold ph-caret-right"></i></button>
+    </div>
+
+    <div class="yg-card-stars">
+        <svg class="yg-star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        <svg class="yg-star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        <svg class="yg-star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        <svg class="yg-star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        <svg class="yg-star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+    </div>
+
+    <div class="yg-price-section">
+        <div class="yg-current-price" id="yg-price-live">€0</div>
+        <div class="yg-old-price" id="yg-price-old">€0</div>
+    </div>
+
+    <div class="yg-storage-section">
+        <div class="yg-storage-label">Storage Expansion</div>
+        <select class="yg-storage-select" id="storage-select" onchange="updatePrice()">
+            <option value="0">Standard (No Extra)</option>
+            <option value="50">+ 1TB HDD (€50)</option>
+            <option value="80">+ 1TB SSD (€80)</option>
+        </select>
+    </div>
+
+    <div class="yg-power-row">
+        <span class="yg-power-label">MULTITASKING</span>
+        <div class="yg-bar-track">
+            <div class="yg-bar-fill" id="g-power-fill"></div>
+        </div>
+    </div>
+
+    <div class="yg-buttons-section">
+        <button class="yg-btn yg-btn-specs yg-btn-breathe" onclick="playClick(); toggleCardFlip()">
+            <span>⇄</span> Flip to Specs
+        </button>
+        <button class="yg-btn yg-btn-cart" id="yg-add-cart" onclick="addToCart()">
+            Add to Cart
+        </button>
+    </div>
+</div>
     <div class="yg-arrow left" onclick="prevInspectImage()">&#10094;</div>
     <img src="..." class="yg-pc-image">
     <div class="yg-arrow right" onclick="nextInspectImage()">&#10095;</div>
