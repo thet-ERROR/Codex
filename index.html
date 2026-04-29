@@ -185,16 +185,18 @@ Type 'help' for a list of commands.
     <div class="yg-tier-badge" id="yg-tier-badge">S-TIER</div>
     <div class="yg-close-btn" onclick="playClick(); closeModal('gallery-overlay')"></div>
 
-    <div class="yg-image-section" style="position: relative; height: 280px; background: #0a0a0c; border-bottom: 1px solid #222; display: flex; flex-direction: column; align-items: center; justify-content: center; padding-top: 20px;">
-        <div style="display: flex; align-items: center; justify-content: center; gap: 20px; width: 100%;">
-            <button class="yg-gallery-btn left" onclick="playClick(); changeGalleryImage(-1)" style="background: rgba(255,255,255,0.1); padding: 8px 15px; border-radius: 5px; border: none; color: #fff; cursor: pointer; transition: 0.2s;"><i class="ph-bold ph-caret-left"></i></button>
-            
-            <img src="" id="yg-main-img" alt="PC Build" class="yg-pc-image" onclick="playClick(); changeGalleryImage(1)" style="height: 170px; max-width: 170px; object-fit: contain; filter: none; cursor: pointer; display: block;" title="Next Image">
-            
-            <button class="yg-gallery-btn right" onclick="playClick(); changeGalleryImage(1)" style="background: rgba(255,255,255,0.1); padding: 8px 15px; border-radius: 5px; border: none; color: #fff; cursor: pointer; transition: 0.2s;"><i class="ph-bold ph-caret-right"></i></button>
-        </div>
-        <div class="yg-specs-badges" id="yg-quick-specs" style="position: absolute; bottom: 15px; left: 50%; transform: translateX(-50%); display: flex; gap: 10px; width: 100%; justify-content: center;"></div>
+    <div class="yg-image-section" style="position: relative; height: 280px; background: linear-gradient(135deg, rgba(30, 15, 50, 0.4) 0%, rgba(10, 5, 20, 0.6) 100%); border-bottom: 1px solid rgba(176, 38, 255, 0.2); display: flex; flex-direction: column; align-items: center; justify-content: center; padding-top: 45px;">
+    
+    <div style="display: flex; align-items: center; justify-content: center; gap: 20px; width: 100%;">
+        <button class="yg-gallery-btn left" onclick="playClick(); changeGalleryImage(-1)" style="background: rgba(255,255,255,0.05); padding: 8px 12px; border-radius: 5px; border: 1px solid rgba(255,255,255,0.1); color: #fff; cursor: pointer; transition: 0.2s;"><i class="ph-bold ph-caret-left"></i></button>
+        
+        <img src="" id="yg-main-img" alt="PC Build" class="yg-pc-image" onclick="playClick(); changeGalleryImage(1)" style="height: 190px; max-width: 190px; object-fit: contain; filter: drop-shadow(0 10px 15px rgba(0,0,0,0.5)); cursor: pointer; display: block;" title="Next Image">
+        
+        <button class="yg-gallery-btn right" onclick="playClick(); changeGalleryImage(1)" style="background: rgba(255,255,255,0.05); padding: 8px 12px; border-radius: 5px; border: 1px solid rgba(255,255,255,0.1); color: #fff; cursor: pointer; transition: 0.2s;"><i class="ph-bold ph-caret-right"></i></button>
     </div>
+
+    <div class="yg-specs-badges" id="yg-quick-specs" style="position: absolute; bottom: 15px; left: 50%; transform: translateX(-50%); display: flex; gap: 10px; width: 100%; justify-content: center;"></div>
+</div>
 
     <div class="yg-card-content" style="padding: 30px 25px; display: flex; flex-direction: column; flex-grow: 1;">
         <div class="yg-build-status" style="margin-bottom: 8px;">
