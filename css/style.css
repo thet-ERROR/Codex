@@ -951,10 +951,56 @@ header {
     scrollbar-color: var(--neon-purple) rgba(10, 5, 20, 0.8);
 }
 /* Κρύβουμε τα βελάκια (πάνω/κάτω) από τα scrollbars */
-::-webkit-scrollbar-button {
-    display: none !important;
-    width: 0px;
-    height: 0px;
+/* =========================================
+   MOBILE RESPONSIVE TWEAKS (GIF & REVIEWS)
+   ========================================= */
+
+/* 1. Διόρθωση του GIF στο background για κινητά (λύση για το πάγωμα) */
+@media (max-width: 1024px) {
+    .bg-layer {
+        background-size: cover !important; 
+        background-position: center center !important;
+        background-attachment: scroll !important; /* Αυτό επιτρέπει στο GIF να παίζει σωστά */
+    }
+}
+
+/* 2. Κρύβουμε το κουμπί με το αστεράκι στους υπολογιστές */
+@media (min-width: 1025px) {
+    .mobile-reviews-btn { 
+        display: none !important; 
+    }
+}
+
+/* 3. Μετατροπή της δεξιάς μπάρας των Reviews σε ένα όμορφο Popup (Mobile) */
+@media (max-width: 1024px) {
+    .right-sidebar {
+        position: fixed !important;
+        top: auto !important;
+        bottom: 80px !important; /* Να κάθεται ακριβώς πάνω από το μενού */
+        left: 50% !important;
+        right: auto !important;
+        transform: translateX(-50%) translateY(30px) scale(0.95);
+        width: 95% !important;
+        max-width: 400px;
+        max-height: 60vh !important; /* Δεν πιάνει όλη την οθόνη, αφήνει χώρο */
+        background: rgba(10, 5, 20, 0.98) !important;
+        backdrop-filter: blur(20px);
+        border: 1px solid var(--neon-purple) !important;
+        border-radius: 16px !important;
+        z-index: 8500 !important;
+        opacity: 0;
+        pointer-events: none; /* Δεν μπορείς να το πατήσεις όταν είναι κρυφό */
+        transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        display: flex !important;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.9);
+    }
+
+    /* Όταν πατάμε το κουμπί με το αστεράκι, εμφανίζεται με animation */
+    .right-sidebar.mobile-active {
+        transform: translateX(-50%) translateY(0) scale(1);
+        opacity: 1;
+        pointer-events: auto;
+    }
 }
 /* =========================================
    MOBILE RESPONSIVE (YUGIOH CARD)
