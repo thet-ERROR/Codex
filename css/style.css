@@ -954,3 +954,52 @@ header {
     width: 0px;
     height: 0px;
 }
+/* =========================================
+   MOBILE RESPONSIVE (YUGIOH CARD)
+   ========================================= */
+@media (max-width: 768px) {
+    /* Προσαρμογή του container στο ύψος της οθόνης */
+    .gallery-overlay .yg-card-container {
+        height: 90vh !important;
+        margin-top: 5vh;
+    }
+
+    /* Ενεργοποίηση εσωτερικού scroll και μείωση περιθωρίων */
+    .gallery-overlay .yg-card-front,
+    .gallery-overlay .yg-card-back {
+        height: 100% !important;
+        max-height: none !important;
+        overflow-y: auto !important;
+        padding: 15px !important;
+    }
+
+    /* Μικρότερα padding στο περιεχόμενο */
+    .gallery-overlay .yg-card-content {
+        padding: 15px !important;
+        padding-top: 20px !important;
+    }
+
+    /* Πιο μαζεμένη περιοχή για τη φωτογραφία */
+    .gallery-overlay .yg-image-section {
+        height: auto !important;
+        padding-top: 15px !important;
+        margin-bottom: 15px !important;
+    }
+
+    /* Σμίκρυνση της εικόνας για να μην πιάνει όλη την οθόνη */
+    .gallery-overlay .yg-pc-image {
+        height: 130px !important;
+        max-width: 130px !important;
+    }
+
+    /* Μικρότερος τίτλος */
+    .gallery-overlay .yg-project-name {
+        font-size: 22px !important;
+        margin-bottom: 10px !important;
+    }
+    
+    /* Προσαρμογή στα κουμπιά γκαλερί */
+    .gallery-overlay .yg-gallery-btn {
+        padding: 5px 10px !important;
+    }
+}
