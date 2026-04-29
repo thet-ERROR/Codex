@@ -814,8 +814,10 @@ header {
     .left-sidebar .side-divider { display: none; }
     .left-sidebar .side-btn { margin: 0; width: 40px; height: 40px; font-size: 1.2rem; }
     .chat-toggle { margin-top: 0 !important; width: 40px; height: 40px; }
-    .right-sidebar { position: relative; top: auto; right: auto; width: 95%; max-width: 500px; height: auto; max-height: 400px; margin: 20px auto; border-left: none; border: 1px solid rgba(176,38,255,0.3); border-radius: 12px; background: rgba(0,0,0,0.8); padding: 15px; }
-    .footer { display: none; } 
+    /* Εξαφανίζουμε τη δεξιά μπάρα στα κινητά */
+    .right-sidebar { 
+        display: none !important; 
+    }
     
     .yg-card-container { width: 95%; height: 80vh; max-height: 750px; }
     .yg-buttons-section { grid-template-columns: 1fr; }
