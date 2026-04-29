@@ -948,3 +948,9 @@ header {
     scrollbar-width: thin;
     scrollbar-color: var(--neon-purple) rgba(10, 5, 20, 0.8);
 }
+/* Κρύβουμε τα βελάκια (πάνω/κάτω) από τα scrollbars */
+::-webkit-scrollbar-button {
+    display: none !important;
+    width: 0px;
+    height: 0px;
+}
