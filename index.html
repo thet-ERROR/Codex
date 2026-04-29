@@ -181,34 +181,31 @@ Type 'help' for a list of commands.
         <div class="yg-card-container">
             <div class="yg-card" id="yg-card">
                 
-                <div class="yg-card-face yg-card-front tcg-front-frame">
-                    <div class="yg-card-face yg-card-front">
+<div class="yg-card-face yg-card-front">
     <div class="yg-tier-badge" id="yg-tier-badge">S-TIER</div>
     <div class="yg-close-btn" onclick="playClick(); closeModal('gallery-overlay')"></div>
 
-    <div class="yg-image-section" style="position: relative; height: 230px; background: #0a0a0c; border-bottom: 1px solid #222; display: flex; flex-direction: column; align-items: center; justify-content: center;">
-        
-        <div style="display: flex; align-items: center; justify-content: center; gap: 20px; width: 100%; margin-bottom: 20px;">
-            <button class="yg-gallery-btn left" onclick="playClick(); changeGalleryImage(-1)" style="background: rgba(255,255,255,0.1); padding: 5px 12px; border-radius: 5px; border: none; color: #fff; cursor: pointer; transition: 0.2s;"><i class="ph-bold ph-caret-left"></i></button>
+    <div class="yg-image-section" style="position: relative; height: 280px; background: #0a0a0c; border-bottom: 1px solid #222; display: flex; flex-direction: column; align-items: center; justify-content: center; padding-top: 20px;">
+        <div style="display: flex; align-items: center; justify-content: center; gap: 20px; width: 100%;">
+            <button class="yg-gallery-btn left" onclick="playClick(); changeGalleryImage(-1)" style="background: rgba(255,255,255,0.1); padding: 8px 15px; border-radius: 5px; border: none; color: #fff; cursor: pointer; transition: 0.2s;"><i class="ph-bold ph-caret-left"></i></button>
             
-            <img src="" id="yg-main-img" alt="PC Build" class="yg-pc-image" onclick="playClick(); changeGalleryImage(1)" style="height: 140px; max-width: 140px; object-fit: contain; filter: none; cursor: pointer; display: block;" title="Next Image">
+            <img src="" id="yg-main-img" alt="PC Build" class="yg-pc-image" onclick="playClick(); changeGalleryImage(1)" style="height: 170px; max-width: 170px; object-fit: contain; filter: none; cursor: pointer; display: block;" title="Next Image">
             
-            <button class="yg-gallery-btn right" onclick="playClick(); changeGalleryImage(1)" style="background: rgba(255,255,255,0.1); padding: 5px 12px; border-radius: 5px; border: none; color: #fff; cursor: pointer; transition: 0.2s;"><i class="ph-bold ph-caret-right"></i></button>
+            <button class="yg-gallery-btn right" onclick="playClick(); changeGalleryImage(1)" style="background: rgba(255,255,255,0.1); padding: 8px 15px; border-radius: 5px; border: none; color: #fff; cursor: pointer; transition: 0.2s;"><i class="ph-bold ph-caret-right"></i></button>
         </div>
-
-        <div class="yg-specs-badges" id="yg-quick-specs" style="position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); display: flex; gap: 10px; width: 100%; justify-content: center;"></div>
+        <div class="yg-specs-badges" id="yg-quick-specs" style="position: absolute; bottom: 15px; left: 50%; transform: translateX(-50%); display: flex; gap: 10px; width: 100%; justify-content: center;"></div>
     </div>
 
-    <div class="yg-card-content">
-        <div class="yg-build-status">
+    <div class="yg-card-content" style="padding: 30px 25px; display: flex; flex-direction: column; flex-grow: 1;">
+        <div class="yg-build-status" style="margin-bottom: 8px;">
             <div class="yg-status-dot"></div>
             <div class="yg-status-text">Build Authorized</div>
         </div>
 
-        <h1 class="yg-project-name" id="yg-title">Project Cali</h1>
-        <div class="yg-tagline" id="yg-tagline">AUTHORIZED SYSTEM BUILD</div>
+        <h1 class="yg-project-name" id="yg-title" style="margin-bottom: 5px;">Project Cali</h1>
+        <div class="yg-tagline" id="yg-tagline" style="margin-bottom: 20px;">AUTHORIZED SYSTEM BUILD</div>
 
-        <div class="yg-card-stars">
+        <div class="yg-card-stars" style="margin-bottom: 20px;">
             <svg class="yg-star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
             <svg class="yg-star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
             <svg class="yg-star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
@@ -216,12 +213,12 @@ Type 'help' for a list of commands.
             <svg class="yg-star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
         </div>
 
-        <div class="yg-price-section">
+        <div class="yg-price-section" style="margin-bottom: 25px;">
             <div class="yg-current-price" id="yg-price-live">€0</div>
             <div class="yg-old-price" id="yg-price-old">€0</div>
         </div>
 
-        <div class="yg-storage-section">
+        <div class="yg-storage-section" style="margin-bottom: 25px;">
             <div class="yg-storage-label">Storage Expansion</div>
             <select class="yg-storage-select" id="storage-select" onchange="updatePrice()">
                 <option value="0">Standard (No Extra)</option>
@@ -230,14 +227,14 @@ Type 'help' for a list of commands.
             </select>
         </div>
 
-        <div class="yg-power-row">
+        <div class="yg-power-row" style="margin-bottom: 25px;">
             <span class="yg-power-label">MULTITASKING</span>
             <div class="yg-bar-track">
                 <div class="yg-bar-fill" id="g-power-fill"></div>
             </div>
         </div>
 
-        <div class="yg-buttons-section">
+        <div class="yg-buttons-section" style="margin-top: auto;">
             <button class="yg-btn yg-btn-specs yg-btn-breathe" onclick="playClick(); toggleCardFlip()">
                 <span>⇄</span> Flip to Specs
             </button>
