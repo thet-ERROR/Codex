@@ -921,3 +921,30 @@ header {
     border: 2px solid #333333 !important;
     background: #111111 !important;
 }
+/* =========================================
+   NEON PURPLE SCROLLBAR (GLOBAL)
+   ========================================= */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: rgba(10, 5, 20, 0.8);
+    border-left: 1px solid rgba(176, 38, 255, 0.2);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--neon-purple);
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #d47aff; /* Πιο ανοιχτό μωβ στο hover */
+}
+
+/* Ειδικά για Firefox (αν και το Webkit καλύπτει το 90% των browsers) */
+* {
+    scrollbar-width: thin;
+    scrollbar-color: var(--neon-purple) rgba(10, 5, 20, 0.8);
+}
