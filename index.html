@@ -83,19 +83,7 @@ Type 'help' for a list of commands.
             <button class="nav-btn" id="tab-starter" onclick="playClick(); switchTab('starter')">STARTER PACKS</button>
             <button class="nav-btn" id="tab-vote" onclick="playClick(); switchTab('vote')">VOTE</button>
             
-            <div style="position:relative;">
-                <button class="nav-btn cart-btn" onclick="toggleCartDropdown()">
-                    <i class="ph-bold ph-shopping-cart"></i> CART <span class="cart-count" id="cart-count">0</span>
-                </button>
-                <div class="cart-dropdown" id="cart-dropdown">
-                    <div class="mini-cart-header"><span>YOUR LOOT</span><span onclick="toggleCartDropdown()" style="cursor:pointer;">X</span></div>
-                    <div class="mini-cart-list" id="mini-cart-items"><div style="color:#666; text-align:center; padding:20px;">CART IS EMPTY</div></div>
-                    <div class="mini-cart-footer">
-                        <div class="mc-total-row"><span>TOTAL</span><span id="mc-total">€0</span></div>
-                        <button class="mc-checkout-btn" onclick="handleCheckout()">SECURE CHECKOUT</button>
-                    </div>
-                </div>
-            </div>
+
         </div>
         
         <div class="right-header-group">
@@ -462,7 +450,19 @@ Type 'help' for a list of commands.
             <p>Contact support.</p>
         </div>
     </div>
-
+            <div style="position:relative;">
+                <button class="nav-btn cart-btn" onclick="toggleCartDropdown()">
+                    <i class="ph-bold ph-shopping-cart"></i> CART <span class="cart-count" id="cart-count">0</span>
+                </button>
+                <div class="cart-dropdown" id="cart-dropdown">
+                    <div class="mini-cart-header"><span>YOUR LOOT</span><span onclick="toggleCartDropdown()" style="cursor:pointer;">X</span></div>
+                    <div class="mini-cart-list" id="mini-cart-items"><div style="color:#666; text-align:center; padding:20px;">CART IS EMPTY</div></div>
+                    <div class="mini-cart-footer">
+                        <div class="mc-total-row"><span>TOTAL</span><span id="mc-total">€0</span></div>
+                        <button class="mc-checkout-btn" onclick="handleCheckout()">SECURE CHECKOUT</button>
+                    </div>
+                </div>
+            </div>
     <script src="js/app.js"></script>
     <script>
     // 1. Εμφάνιση / Απόκρυψη Socials
