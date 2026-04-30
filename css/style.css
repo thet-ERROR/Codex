@@ -1232,36 +1232,40 @@ body.ui-locked .left-sidebar {
     color: #fff !important;
 }
 /* =========================================
-   MOBILE RESPONSIVE: INSPECT CARD FIXES
-   ========================================= */
-/* =========================================
-   MOBILE RESPONSIVE: INSPECT CARD FIXES
+   MOBILE RESPONSIVE: THE ULTIMATE CARD FIX
    ========================================= */
 @media (max-width: 768px) {
-    /* 1. Μεγαλώνουμε την εικόνα για να γεμίσει το μάτι */
+    
+    /* 1. ΣΥΜΠΑΓΗΣ ΜΠΡΟΣΤΙΝΗ ΟΨΗ (Ανεβάζουμε τα κουμπιά) */
+    .gallery-overlay .yg-card-content {
+        justify-content: flex-start !important; /* Αποτρέπει το άπλωμα των στοιχείων */
+    }
+    
+    .gallery-overlay .yg-buttons-section {
+        margin-top: 30px !important; /* Καταργεί το 'auto' που τα έσπρωχνε τέρμα κάτω */
+    }
+
+    /* 2. ΚΛΕΙΔΩΜΑ ΥΨΟΥΣ ΤΗΣ ΚΑΡΤΑΣ (Το μυστικό για το scroll) */
+    .gallery-overlay .yg-card {
+        height: 85vh !important; /* Αναγκάζει την κάρτα να πιάσει ακριβώς το 85% της οθόνης */
+    }
+
+    /* 3. ΞΕΚΛΕΙΔΩΜΑ SCROLL ΓΙΑ ΤΟ IPHONE (3D Context Fix) */
+    .gallery-overlay .yg-card-face {
+        height: 100% !important; /* Γεμίζει το ύψος του γονέα (85vh) */
+        overflow-y: auto !important; /* Εμφανίζει την μπάρα scroll */
+        -webkit-overflow-scrolling: touch !important; /* Η απόλυτη εντολή για ομαλό scroll στο iOS */
+        overscroll-behavior: none !important;
+    }
+
+    /* 4. Έξτρα χώρος στο τέλος της πίσω κάρτας για να μην κόβεται το κουμπί */
+    .gallery-overlay .yg-card-back {
+        padding-bottom: 80px !important; 
+    }
+    
+    /* Διατηρούμε το μέγεθος της εικόνας */
     .gallery-overlay .yg-pc-image {
         height: 180px !important;
         max-width: 180px !important;
-    }
-
-    /* 2. Κρατάμε τη σωστή διάταξη μπροστά */
-    .gallery-overlay .yg-card-front {
-        display: flex !important;
-        flex-direction: column !important;
-        justify-content: space-between !important;
-    }
-
-    /* 3. ΞΕΚΛΕΙΔΩΜΑ ΚΙΝΗΤΟΥ: Επιβολή Scroll στην Πίσω Όψη */
-    .gallery-overlay .yg-card-back {
-        max-height: 80vh !important; /* ΤΟ ΜΥΣΤΙΚΟ: Βάζουμε όριο 80% της οθόνης */
-        overflow-y: auto !important; /* Ενεργοποιεί την μπάρα */
-        -webkit-overflow-scrolling: touch !important; /* Ενεργοποιεί την αφή για iPhone/Android */
-        overscroll-behavior: contain !important; /* Μπλοκάρει το scroll στο background */
-        pointer-events: auto !important;
-        padding-bottom: 50px !important;
-    }
-    
-    .yg-benchmarks {
-        padding-bottom: 20px !important;
     }
 }
