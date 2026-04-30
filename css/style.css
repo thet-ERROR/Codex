@@ -1231,3 +1231,33 @@ body.ui-locked .left-sidebar {
 .driver-popover-close-btn {
     color: #fff !important;
 }
+/* =========================================
+   MOBILE RESPONSIVE: INSPECT CARD FIXES
+   ========================================= */
+@media (max-width: 768px) {
+    /* 1. Μεγαλώνουμε την εικόνα για να γεμίσει το μαύρο κενό μπροστά */
+    .gallery-overlay .yg-pc-image {
+        height: 180px !important;
+        max-width: 180px !important;
+    }
+
+    /* 2. Σιγουρευόμαστε ότι το περιεχόμενο απλώνεται σωστά μπροστά */
+    .gallery-overlay .yg-card-front {
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: space-between !important;
+    }
+
+    /* 3. ΞΕΚΛΕΙΔΩΜΑ SCROLL ΓΙΑ ΤΗΝ ΠΙΣΩ ΟΨΗ (Fix για iOS / Safari) */
+    .gallery-overlay .yg-card-back {
+        overflow-y: auto !important;
+        -webkit-overflow-scrolling: touch !important; /* Επιτρέπει το scroll με το δάχτυλο */
+        pointer-events: auto !important;
+        padding-bottom: 40px !important; /* Δίνει έξτρα χώρο κάτω-κάτω */
+    }
+    
+    /* 4. Έξτρα περιθώριο στο κουμπί επιστροφής για να μην ακουμπάει στο τέλος της οθόνης */
+    .yg-benchmarks {
+        padding-bottom: 20px !important;
+    }
+}
