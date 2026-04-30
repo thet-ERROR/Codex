@@ -458,5 +458,44 @@ Type 'help' for a list of commands.
     </div>
 
     <script src="js/app.js"></script>
+    <script>
+    // 1. Εμφάνιση / Απόκρυψη Socials
+    function toggleSocials() {
+        document.getElementById('social-menu').classList.toggle('active');
+    }
+
+    // 2. Εμφάνιση Reviews στο Κινητό + Κουμπί Κλεισίματος
+    function toggleMobileReviews() {
+        const sidebar = document.querySelector('.right-sidebar');
+        sidebar.classList.toggle('mobile-active');
+        
+        // Αν άνοιξαν τα reviews, προσθέτει ένα "Χ" στο κάτω μέρος για να μπορεί ο χρήστης να τα κλείσει
+        if(sidebar.classList.contains('mobile-active') && !document.getElementById('close-mobile-reviews')) {
+            const closeBtn = document.createElement('button');
+            closeBtn.id = 'close-mobile-reviews';
+            closeBtn.innerHTML = 'CLOSE REVIEWS';
+            closeBtn.style.cssText = 'width: 100%; margin-top: 20px; padding: 12px; background: var(--neon-purple); border: none; color: white; font-weight: bold; border-radius: 8px; cursor: pointer; font-family: var(--font-ui);';
+            closeBtn.onclick = () => sidebar.classList.remove('mobile-active');
+            sidebar.appendChild(closeBtn);
+        }
+    }
+
+    // 3. Ο ΑΥΤΟΜΑΤΟΣ ΚΛΕΙΔΑΡΑΣ (UI Locker)
+    setInterval(() => {
+        // Ελέγχει τι είναι ανοιχτό
+        const isTerminalOpen = document.getElementById('cli-overlay') && (document.getElementById('cli-overlay').style.display === 'flex' || document.getElementById('cli-overlay').style.display === 'block');
+        const isReviewsOpen = document.querySelector('.right-sidebar') && document.querySelector('.right-sidebar').classList.contains('mobile-active');
+        const isGalleryOpen = document.getElementById('gallery-overlay') && document.getElementById('gallery-overlay').style.display === 'flex';
+        const isAnyModalOpen = document.querySelector('.modal[style*="display: flex"]') || document.querySelector('.modal[style*="display: block"]');
+        
+        // Αν βρει κάτι ανοιχτό, εφαρμόζει την κλάση ui-locked στο body
+        if (isTerminalOpen || isReviewsOpen || isGalleryOpen || isAnyModalOpen) {
+            document.body.classList.add('ui-locked');
+            document.getElementById('social-menu').classList.remove('active'); // Κρύβει τα socials αν ήταν ανοιχτά
+        } else {
+            document.body.classList.remove('ui-locked');
+        }
+    }, 200); // Σαρώνει την οθόνη κάθε 200ms
+</script>
 </body>
 </html>
