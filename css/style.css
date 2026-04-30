@@ -1314,3 +1314,46 @@ body.ui-locked .left-sidebar {
         display: none !important;
     }
 }
+/* =========================================
+   MOBILE RESPONSIVE: VOTE TAB OPTIMIZATION
+   ========================================= */
+@media (max-width: 768px) {
+    .vote-container {
+        padding: 15px !important;
+        max-width: 90vw !important; /* Κρατάει ένα ωραίο κενό δεξιά-αριστερά */
+        margin: 10px auto !important; /* Κεντράρει την κάρτα */
+    }
+    
+    /* Σμίκρυνση της εικόνας και του πλαισίου της */
+    .mystery-img-wrap {
+        height: 180px !important; /* Αισθητά μικρότερο για να χωράει τέλεια */
+        margin-bottom: 15px !important;
+    }
+    
+    .mystery-img {
+        max-height: 100% !important;
+        object-fit: contain !important;
+    }
+    
+    /* Μαζεύουμε τον τίτλο και την τιμή */
+    #v-title {
+        font-size: 1.5rem !important; 
+    }
+    
+    #v-price-display {
+        font-size: 1.2rem !important;
+        margin-bottom: 15px !important;
+    }
+    
+    /* Λεπταίνουμε λίγο τη μπάρα προόδου για εξοικονόμηση χώρου */
+    .vote-progress-wrap {
+        height: 15px !important;
+        margin-bottom: 12px !important;
+    }
+    
+    /* Μικραίνουμε τα κουμπιά του Vote */
+    .vote-btn {
+        padding: 12px !important;
+        font-size: 0.95rem !important;
+    }
+}
