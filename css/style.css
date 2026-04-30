@@ -1080,3 +1080,58 @@ header {
         align-items: center;
     }
 }
+/* =========================================
+   SOCIAL MENU DROPDOWN
+   ========================================= */
+.social-menu {
+    display: none;
+    flex-direction: column;
+    gap: 10px;
+    position: absolute;
+    left: 70px; /* Εμφάνιση δίπλα από την μπάρα στο Desktop */
+    top: 0;
+    background: rgba(10,5,20,0.95);
+    padding: 10px;
+    border: 1px solid var(--neon-purple);
+    border-radius: 12px;
+    z-index: 1000;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.8);
+}
+.social-menu.active {
+    display: flex;
+    animation: fadeIn 0.2s ease;
+}
+
+/* Προσαρμογή του Social Menu για Κινητά */
+@media (max-width: 768px) {
+    .social-menu {
+        left: 0;
+        top: auto;
+        bottom: 70px; /* Στα κινητά εμφανίζεται από πάνω */
+        flex-direction: row;
+    }
+}
+
+/* =========================================
+   UI LOCK SYSTEM (ΑΠΟΤΡΕΠΕΙ SCROLL & ΠΟΛΛΑΠΛΑ ΚΛΙΚ)
+   ========================================= */
+body.ui-locked {
+    overflow: hidden !important; /* Κόβει το scroll παντού */
+}
+
+body.ui-locked header,
+body.ui-locked .stage,
+body.ui-locked .left-sidebar {
+    pointer-events: none !important; /* Απενεργοποιεί όλα τα background κουμπιά */
+    filter: blur(2px); /* Θολώνει ελαφρώς το background για focus */
+    opacity: 0.6;
+    transition: 0.3s ease;
+}
+
+/* ΕΞΑΙΡΕΣΕΙΣ: Τι επιτρέπεται να πατηθεί όταν η οθόνη είναι κλειδωμένη */
+.right-sidebar.mobile-active,
+#cli-overlay,
+.gallery-overlay,
+.modal {
+    pointer-events: auto !important;
+}
