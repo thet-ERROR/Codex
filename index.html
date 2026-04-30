@@ -42,7 +42,7 @@ Type 'help' for a list of commands.
     <div class="grid-overlay"></div>
     <div class="scanlines"></div>
 
-<div class="left-sidebar">
+    <div class="left-sidebar">
         <div class="side-group">
             <button class="side-btn" onclick="playClick(); openModal('settings')" title="System Settings"><i class="ph-bold ph-gear"></i></button>
             <div class="side-divider"></div>
@@ -74,6 +74,7 @@ Type 'help' for a list of commands.
             <button class="add-review-btn" onclick="checkMissionCode()">[+] WRITE REVIEW</button>
         </div>
     </div>
+    
     <header>
         <div class="logo">PHOENIX CODEX</div>
         
@@ -83,7 +84,10 @@ Type 'help' for a list of commands.
             <button class="nav-btn" id="tab-starter" onclick="playClick(); switchTab('starter')">STARTER PACKS</button>
             <button class="nav-btn" id="tab-vote" onclick="playClick(); switchTab('vote')">VOTE</button>
             
-
+            <!-- Κουμπί Καλαθιού στο σωστό σημείο -->
+            <button class="nav-btn cart-btn" onclick="toggleCartDropdown()">
+                <i class="ph-bold ph-shopping-cart"></i> CART <span class="cart-count" id="cart-count">0</span>
+            </button>
         </div>
         
         <div class="right-header-group">
@@ -347,8 +351,7 @@ Type 'help' for a list of commands.
             </div>
             <div style="display:flex; flex-direction:column; gap:15px;">
                 <button class="btn-inspect" onclick="openReviewForm()" style="background:var(--neon-green); color:#000; border:none;">
-                    SYSTEM OPERATIONAL (KEEP & REVIEW)
-                </button>
+                    SYSTEM OPERATIONAL (KEEP & REVIEW)                </button>
                 <div style="background:rgba(255, 51, 51, 0.1); padding:15px; border:1px solid var(--retro-red); border-radius:8px;">
                     <h4 style="color:var(--retro-red); margin-bottom:10px;">Report System Failure</h4>
                     <select id="return-reason" style="width:100%; padding:10px; background:#000; color:#fff; border:1px solid #555; border-radius:4px; margin-bottom:10px;">
@@ -450,19 +453,17 @@ Type 'help' for a list of commands.
             <p>Contact support.</p>
         </div>
     </div>
-            <div style="position:relative;">
-                <button class="nav-btn cart-btn" onclick="toggleCartDropdown()">
-                    <i class="ph-bold ph-shopping-cart"></i> CART <span class="cart-count" id="cart-count">0</span>
-                </button>
-                <div class="cart-dropdown" id="cart-dropdown">
-                    <div class="mini-cart-header"><span>YOUR LOOT</span><span onclick="toggleCartDropdown()" style="cursor:pointer;">X</span></div>
-                    <div class="mini-cart-list" id="mini-cart-items"><div style="color:#666; text-align:center; padding:20px;">CART IS EMPTY</div></div>
-                    <div class="mini-cart-footer">
-                        <div class="mc-total-row"><span>TOTAL</span><span id="mc-total">€0</span></div>
-                        <button class="mc-checkout-btn" onclick="handleCheckout()">SECURE CHECKOUT</button>
-                    </div>
-                </div>
-            </div>
+    
+    <!-- Ελεύθερο Dropdown Καλαθιού (Εκτός Menu) -->
+    <div class="cart-dropdown" id="cart-dropdown">
+        <div class="mini-cart-header"><span>YOUR LOOT</span><span onclick="toggleCartDropdown()" style="cursor:pointer;">X</span></div>
+        <div class="mini-cart-list" id="mini-cart-items"><div style="color:#666; text-align:center; padding:20px;">CART IS EMPTY</div></div>
+        <div class="mini-cart-footer">
+            <div class="mc-total-row"><span>TOTAL</span><span id="mc-total">€0</span></div>
+            <button class="mc-checkout-btn" onclick="handleCheckout()">SECURE CHECKOUT</button>
+        </div>
+    </div>
+
     <script src="js/app.js"></script>
     <script>
     // 1. Εμφάνιση / Απόκρυψη Socials
@@ -502,6 +503,6 @@ Type 'help' for a list of commands.
             document.body.classList.remove('ui-locked');
         }
     }, 200); // Σαρώνει την οθόνη κάθε 200ms
-</script>
+    </script>
 </body>
 </html>
