@@ -1051,3 +1051,32 @@ header {
         padding: 5px 10px !important;
     }
 }
+/* =========================================
+   MOBILE RESPONSIVE: LOGO & MAIN CARD
+   ========================================= */
+@media (max-width: 768px) {
+    
+    /* 1. Διόρθωση του Logo (Ομοιόμορφο, 1 γραμμή) */
+    header .logo {
+        font-size: 2.2rem !important; /* Ελαφρώς μικρότερο για να χωράει */
+        white-space: nowrap !important; /* Απαγορεύει στο κείμενο να σπάσει σε 2η γραμμή */
+        text-align: center !important;
+        width: 100% !important;
+        margin-bottom: 10px !important;
+    }
+
+    /* 2. Σμίκρυνση της αρχικής κάρτας (Zoom out κατά 15%) */
+    #carousel-wrapper {
+        transform: scale(0.85) !important; /* Μικραίνει όλη την κάρτα μαζί με τα βελάκια */
+        transform-origin: top center !important; /* Η κάρτα μικραίνει προς τα πάνω, αφήνοντας χώρο κάτω */
+        margin-bottom: -100px !important; /* Μαζεύουμε το "κενό" που αφήνει η σμίκρυνση στο κάτω μέρος */
+    }
+
+    /* Προαιρετικά: Μικραίνουμε λίγο και τα κενά του Header για να κερδίσουμε χώρο */
+    header {
+        padding: 10px 5px !important;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+}
