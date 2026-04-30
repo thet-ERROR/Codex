@@ -1232,40 +1232,85 @@ body.ui-locked .left-sidebar {
     color: #fff !important;
 }
 /* =========================================
-   MOBILE RESPONSIVE: THE ULTIMATE CARD FIX
+   MOBILE RESPONSIVE: COMPACT UI & BENCHMARKS TOGGLE
    ========================================= */
 @media (max-width: 768px) {
     
-    /* 1. ΣΥΜΠΑΓΗΣ ΜΠΡΟΣΤΙΝΗ ΟΨΗ (Ανεβάζουμε τα κουμπιά) */
+    /* -- ΜΠΡΟΣΤΙΝΗ ΟΨΗ (Πιο Συμπαγής) -- */
     .gallery-overlay .yg-card-content {
-        justify-content: flex-start !important; /* Αποτρέπει το άπλωμα των στοιχείων */
+        justify-content: flex-start !important; 
     }
-    
     .gallery-overlay .yg-buttons-section {
-        margin-top: 30px !important; /* Καταργεί το 'auto' που τα έσπρωχνε τέρμα κάτω */
+        margin-top: 15px !important; 
     }
-
-    /* 2. ΚΛΕΙΔΩΜΑ ΥΨΟΥΣ ΤΗΣ ΚΑΡΤΑΣ (Το μυστικό για το scroll) */
-    .gallery-overlay .yg-card {
-        height: 85vh !important; /* Αναγκάζει την κάρτα να πιάσει ακριβώς το 85% της οθόνης */
-    }
-
-    /* 3. ΞΕΚΛΕΙΔΩΜΑ SCROLL ΓΙΑ ΤΟ IPHONE (3D Context Fix) */
-    .gallery-overlay .yg-card-face {
-        height: 100% !important; /* Γεμίζει το ύψος του γονέα (85vh) */
-        overflow-y: auto !important; /* Εμφανίζει την μπάρα scroll */
-        -webkit-overflow-scrolling: touch !important; /* Η απόλυτη εντολή για ομαλό scroll στο iOS */
-        overscroll-behavior: none !important;
-    }
-
-    /* 4. Έξτρα χώρος στο τέλος της πίσω κάρτας για να μην κόβεται το κουμπί */
-    .gallery-overlay .yg-card-back {
-        padding-bottom: 80px !important; 
-    }
-    
-    /* Διατηρούμε το μέγεθος της εικόνας */
     .gallery-overlay .yg-pc-image {
         height: 180px !important;
         max-width: 180px !important;
+    }
+
+    /* -- ΠΙΣΩ ΟΨΗ (Compact Design) -- */
+    .mobile-hide { 
+        display: none !important; /* Εξαφανίζει Classified Hardware & Subtitle */
+    }
+    
+    .gallery-overlay .yg-card-back {
+        padding: 20px 15px !important;
+        display: flex !important;
+        flex-direction: column !important;
+        overflow: visible !important; /* Ξεμπλοκάρει τον Safari */
+    }
+
+    .yg-sys-header {
+        margin-top: 10px !important;
+        margin-bottom: 15px !important;
+    }
+
+    .yg-specs-list {
+        gap: 6px !important; /* Φέρνει τα Specs πιο κοντά μεταξύ τους */
+        margin-bottom: 15px !important;
+    }
+
+    /* -- BENCHMARKS TOGGLE BUTTON -- */
+    .mobile-bench-btn {
+        display: block !important;
+        width: 100% !important;
+        margin-top: auto !important;
+        background: rgba(204, 255, 0, 0.05) !important;
+        border: 1px solid var(--neon-green, #ccff00) !important;
+        color: var(--neon-green, #ccff00) !important;
+    }
+    
+    #bench-section {
+        display: none; /* Κρυμμένα αρχικά */
+        margin-top: 15px !important;
+    }
+    
+    /* Όταν πατιέται το κουμπί, εμφανίζονται με εφέ */
+    #bench-section.show-bench {
+        display: flex !important;
+        flex-direction: column !important;
+        animation: fadeIn 0.3s ease;
+    }
+
+    /* -- ΤΟ ΑΠΟΛΥΤΟ FIX ΓΙΑ ΤΟ IPHONE SCROLL -- */
+    /* Όταν ανοίγουν τα Benchmarks, μεγαλώνει όλη η κάρτα και σκρολάρει το background! */
+    .gallery-overlay {
+        overflow-y: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+        align-items: flex-start !important; 
+        padding: 20px 0 !important;
+    }
+    
+    .gallery-overlay .yg-card {
+        height: auto !important;
+        min-height: 85vh !important;
+        margin: auto !important;
+    }
+}
+
+/* Κρύβουμε το κουμπί "SHOW BENCHMARKS" στους Υπολογιστές, γιατί εκεί τα δείχνει όλα ανοιχτά */
+@media (min-width: 769px) {
+    .mobile-bench-btn {
+        display: none !important;
     }
 }
