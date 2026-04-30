@@ -1357,3 +1357,47 @@ body.ui-locked .left-sidebar {
         font-size: 0.95rem !important;
     }
 }
+/* =========================================
+   MOBILE RESPONSIVE: COMPACT BENCHMARK FRAMES
+   ========================================= */
+@media (max-width: 768px) {
+    /* 1. Μαζεύουμε το Benchmark Section */
+    .yg-benchmarks {
+        padding: 10px 0 !important;
+        margin-bottom: 20px !important;
+    }
+
+    .yg-benchmarks-title {
+        font-size: 1rem !important;
+        margin-bottom: 10px !important;
+    }
+
+    /* 2. ΤΑ ΦΡΕΙΜΣ (Τα κουτάκια με τα FPS) */
+    .yg-benchmark-grid {
+        grid-template-columns: repeat(2, 1fr) !important; /* Βάζουμε 2 στήλες για εξοικονόμηση χώρου */
+        gap: 8px !important; /* Μειώνουμε το κενό */
+        padding: 0 10px !important;
+    }
+
+    /* Selector για τα ίδια τα κουτάκια (τα flex/grid items) */
+    /* Θα χρησιμοποιήσω general selectors, αν τα class names είναι διαφορετικά */
+    .yg-benchmark-grid > div {
+        padding: 10px !important; /* Λιγότερο padding */
+        border-radius: 6px !important;
+        flex-direction: column !important; /* Εξασφαλίζουμε ότι το όνομα είναι πάνω και τα FPS κάτω */
+        align-items: center !important;
+        text-align: center !important;
+    }
+
+    /* Selector για το όνομα του παιχνιδιού */
+    .yg-benchmark-grid > div > span:first-child {
+        font-size: 0.75rem !important; /* Πιο μικρά γράμματα */
+        margin-bottom: 4px !important;
+    }
+
+    /* Selector για τα FPS (τα νούμερα) */
+    .yg-benchmark-grid > div > span:last-child {
+        font-size: 1rem !important; /* Πιο μικρά γράμματα */
+        font-weight: 800 !important;
+    }
+}
