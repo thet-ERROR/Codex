@@ -42,10 +42,30 @@ Type 'help' for a list of commands.
     <div class="grid-overlay"></div>
     <div class="scanlines"></div>
 
-    <div class="left-sidebar">
+<div class="left-sidebar">
         <div class="side-group">
-            <button class="side-btn" onclick="playClick(); openModal('settings-modal')" title="System Settings"><i class="ph-bold ph-gear"></i></button>
+            <button class="side-btn" onclick="playClick(); openModal('settings')" title="System Settings"><i class="ph-bold ph-gear"></i></button>
             <div class="side-divider"></div>
+            <button class="side-btn" onclick="playClick(); openModal('trust-modal')" title="Warranty & Trust"><i class="ph-bold ph-shield-check"></i></button>
+            <button class="side-btn" onclick="playClick(); openModal('rules')" title="Rules"><i class="ph-bold ph-book-bookmark"></i></button>
+            <button class="side-btn" onclick="playClick(); openModal('help')" title="Help"><i class="ph-bold ph-headset"></i></button>
+            <div class="side-divider"></div>
+            
+            <div class="social-dropdown" style="position: relative;">
+                <button class="side-btn" onclick="playClick(); toggleSocials()" title="Social Networks"><i class="ph-bold ph-share-network"></i></button>
+                
+                <div class="social-menu" id="social-menu">
+                    <button class="side-btn" onclick="playClick(); showToast('DISCORD SERVER: COMING SOON', 'normal')" title="Discord"><i class="ph-bold ph-discord-logo"></i></button>
+                    <button class="side-btn" onclick="playClick(); window.open('https://instagram.com/codex_rigs', '_blank')" title="Instagram"><i class="ph-bold ph-instagram-logo"></i></button>
+                    <button class="side-btn" onclick="playClick(); openModal('newsletter')" title="The Network"><i class="ph-bold ph-envelope-simple"></i></button>
+                </div>
+            </div>
+
+            <button class="side-btn mobile-reviews-btn" onclick="playClick(); toggleMobileReviews()" title="Reviews"><i class="ph-bold ph-star"></i></button>
+        </div>
+        
+        <button class="side-btn chat-toggle" onclick="playClick(); toggleChat()"><i class="ph-bold ph-chat-circle-dots"></i></button>
+    </div>
 
 <div class="social-dropdown" style="position: relative;">
     <button class="side-btn" onclick="playClick(); toggleSocials()" title="Social Networks"><i class="ph-bold ph-share-network"></i></button>
