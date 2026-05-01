@@ -1437,3 +1437,27 @@ body.ui-locked .left-sidebar {
         flex-shrink: 0;
     }
 }
+/* =========================================
+   MOBILE RESPONSIVE: CARD CENTERING FIX
+   ========================================= */
+@media (max-width: 768px) {
+    /* 1. Κεντράρουμε αυστηρά το overlay οριζόντια */
+    .gallery-overlay {
+        justify-content: center !important; 
+        align-items: flex-start !important; 
+    }
+    
+    /* 2. Κλειδώνουμε το container της κάρτας στη μέση της οθόνης */
+    .yg-card-container {
+        width: 90vw !important; /* Πιάνει το 90% της οθόνης */
+        margin: 0 auto !important; /* Το κρατάει τέλεια στο κέντρο */
+        display: flex !important;
+        justify-content: center !important;
+    }
+    
+    /* 3. Η ίδια η κάρτα ακολουθεί το container της */
+    .gallery-overlay .yg-card {
+        width: 100% !important; 
+        margin: 0 !important; /* Διαγράφουμε οποιοδήποτε margin την έσπρωχνε αριστερά */
+    }
+}
