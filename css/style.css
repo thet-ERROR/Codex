@@ -1438,27 +1438,26 @@ body.ui-locked .left-sidebar {
     }
 }
 /* =========================================
-   MOBILE RESPONSIVE: SAFARI ULTIMATE CENTERING FIX
+   MOBILE RESPONSIVE: THE NUCLEAR CENTERING FIX
    ========================================= */
 @media (max-width: 768px) {
-    /* 1. Καταργούμε το Flexbox. Ο Safari μισεί το Flexbox + 3D + Scroll */
+    /* 1. Απενεργοποιούμε εντελώς το flexbox του background */
     .gallery-overlay.active {
-        display: block !important; 
-        text-align: center !important; /* Κεντράρει τα πάντα οριζόντια */
-        overflow-x: hidden !important; /* Απαγορεύει το scroll δεξιά-αριστερά */
+        display: block !important;
     }
     
-    /* 2. Σταθεροποιούμε την κάρτα στη μέση της οθόνης */
+    /* 2. ΚΑΡΦΩΝΟΥΜΕ την κάρτα στο απόλυτο κέντρο με συντεταγμένες */
     .yg-card-container {
-        display: inline-block !important; /* Για να υπακούει στο text-align: center του γονέα */
+        position: absolute !important;
+        top: 50% !important;
+        left: 50% !important;
+        transform: translate(-50%, -50%) !important; /* Τραβάει την κάρτα ακριβώς στη μέση */
         width: 90vw !important;
-        margin: 5vh auto 0 auto !important; /* Το κρατάει τέλεια στο κέντρο */
-        text-align: left !important; /* Επαναφέρουμε τη στοίχιση κειμένου μέσα στην κάρτα */
-        position: relative !important;
-        left: 0 !important;
+        height: 85vh !important;
+        margin: 0 !important; /* Καταργούμε τα margins που μπερδεύουν το iOS */
     }
 
-    /* 3. Η ίδια η κάρτα ακολουθεί πιστά */
+    /* 3. Η κάρτα ακολουθεί 100% το container */
     .gallery-overlay .yg-card {
         width: 100% !important; 
         margin: 0 !important; 
