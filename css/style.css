@@ -1415,3 +1415,25 @@ body.ui-locked .left-sidebar {
         padding-bottom: 40px !important;
     }
 }
+/* =========================================
+   BUG FIXES: INVISIBLE SHIELD & SCROLL CLEARANCE
+   ========================================= */
+
+/* 1. Επιδιόρθωση των "Νεκρών" Κουμπιών (Σπάμε την αόρατη ασπίδα) */
+/* Αν το Inspect δεν είναι ανοιχτό (display: flex), του απαγορεύουμε να μπλοκάρει κλικ */
+#gallery-overlay:not([style*="display: flex"]) {
+    pointer-events: none !important;
+    visibility: hidden !important;
+}
+
+/* 2. Σπρώχνουμε το LoL ΠΑΝΩ από τα κουμπιά (Help, κτλ.) στο κινητό */
+@media (max-width: 768px) {
+    /* Δημιουργούμε ένα φυσικό "κενό" 110px στο τέλος του scroll */
+    .gallery-overlay::after {
+        content: "";
+        display: block;
+        height: 110px !important;
+        width: 100%;
+        flex-shrink: 0;
+    }
+}
