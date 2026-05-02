@@ -1463,3 +1463,51 @@ body.ui-locked .left-sidebar {
         margin: 0 !important; 
     }
 }
+/* =========================================
+   MODAL LOCK: BLOCK BACKGROUND CLICKS
+   ========================================= */
+.modal-overlay.active {
+    z-index: 99999 !important; /* Το φέρνει πάνω από Header και Sidebars */
+    pointer-events: auto !important; /* Ενεργοποιεί το "αόρατο τζάμι" */
+}
+
+/* Θολώνουμε και απενεργοποιούμε το background για έξτρα εστίαση */
+body.ui-locked header,
+body.ui-locked .left-sidebar,
+body.ui-locked .right-sidebar,
+body.ui-locked .stage {
+    pointer-events: none !important;
+    filter: blur(3px) !important;
+    opacity: 0.5 !important;
+    transition: all 0.3s ease !important;
+}
+/* =========================================
+   FRONT CARD: CLASSIFIED LORE / BRIEF
+   ========================================= */
+.sys-brief {
+    background: rgba(0, 0, 0, 0.5);
+    border-left: 2px solid var(--neon-purple);
+    padding: 12px;
+    margin-bottom: 15px;
+    width: 100%;
+    text-align: left;
+    border-radius: 0 6px 6px 0;
+}
+
+.sys-brief-title {
+    color: var(--neon-purple);
+    font-family: var(--font-ui);
+    font-weight: 800;
+    font-size: 0.9rem;
+    letter-spacing: 2px;
+    margin-bottom: 6px;
+    text-transform: uppercase;
+}
+
+.sys-brief-text {
+    font-family: var(--font-body);
+    font-size: 0.8rem;
+    color: #aaa;
+    font-style: italic;
+    line-height: 1.5;
+}
