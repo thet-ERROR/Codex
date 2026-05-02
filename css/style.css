@@ -1467,14 +1467,14 @@ body.ui-locked .left-sidebar {
    MODAL LOCK: BLOCK BACKGROUND CLICKS
    ========================================= */
 .modal-overlay.active {
-    z-index: 99999 !important; /* Το φέρνει πάνω από Header και Sidebars */
-    pointer-events: auto !important; /* Ενεργοποιεί το "αόρατο τζάμι" */
+    z-index: 99999 !important; 
+    pointer-events: auto !important; 
 }
 
-/* Θολώνουμε και απενεργοποιούμε το background για έξτρα εστίαση */
+/* Εξαιρούμε το .mobile-active ώστε να μην θολώνουν τα Reviews στο κινητό! */
 body.ui-locked header,
 body.ui-locked .left-sidebar,
-body.ui-locked .right-sidebar,
+body.ui-locked .right-sidebar:not(.mobile-active),
 body.ui-locked .stage {
     pointer-events: none !important;
     filter: blur(3px) !important;

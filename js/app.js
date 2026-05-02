@@ -674,12 +674,16 @@ function renderCard() {
                 <div class="pc-price">${pc.price}</div>
                 <div class="pc-price-old">€${fakeOldPrice}</div>
             </div>
-            <div class="sys-brief">
-                <div class="sys-brief-title">>// SYSTEM_LOG</div>
-                <div class="sys-brief-text">
-                 Ανακτήθηκε από τα εργαστήρια της Sector 4. Κατασκευασμένο για αθόρυβες ψηφιακές επιδρομές. Ιδανικό για 1080p κυριαρχία.
-                </div>
-            </div>
+           <div class="sys-brief">
+    <div class="sys-brief-title">>// SYSTEM_LOG</div>
+    <div class="sys-brief-text">
+        Ανακτήθηκε από τα εργαστήρια της Sector 4. Κατασκευασμένο για αθόρυβες ψηφιακές επιδρομές. Ιδανικό για 1080p κυριαρχία.
+    </div>
+</div>
+
+<!-- ΑΥΤΑ ΕΙΝΑΙ ΤΑ 2 ΚΟΥΜΠΙΑ ΠΟΥ ΛΕΙΠΟΥΝ -->
+<button class="btn-card-inspect" onclick="openInspect('${pc.id}')">INSPECT SYSTEM</button>
+<button class="btn-card-compare" onclick="toggleCompare('${pc.id}', this)">COMPARE</button>
     `; 
     
     setTimeout(()=> {
