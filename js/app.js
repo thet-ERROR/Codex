@@ -664,7 +664,9 @@ function renderCard() {
             fpsHTML += `<div class="fps-row"><span class="fps-name">${f.game}</span><div class="bar-track"><div class="bar-fill" data-width="${Math.min((f.score/max)*100,100)}%" style="width:0%"></div></div><span class="fps-num">${f.score}</span></div>`; 
         }); 
     }
-    
+// Αν το PC δεν έχει lore από τη βάση, βάζουμε ένα default μήνυμα
+    const pcLore = pc.lore || "Σύστημα τακτικών επιχειρήσεων. Οι πλήρεις προδιαγραφές βρίσκονται στον φάκελο INSPECT. Απαιτείται εξουσιοδότηση.";
+
     c.innerHTML = `
         <div class="holo-card-inner">
             <img src="${pc.images[0]||'assets/images/bg.jpg'}" class="hero-img">
@@ -674,17 +676,18 @@ function renderCard() {
                 <div class="pc-price">${pc.price}</div>
                 <div class="pc-price-old">€${fakeOldPrice}</div>
             </div>
-           <div class="sys-brief">
-    <div class="sys-brief-title">>// SYSTEM_LOG</div>
-    <div class="sys-brief-text">
-        Ανακτήθηκε από τα εργαστήρια της Sector 4. Κατασκευασμένο για αθόρυβες ψηφιακές επιδρομές. Ιδανικό για 1080p κυριαρχία.
-    </div>
-</div>
+            
+            <div class="sys-brief">
+                <div class="sys-brief-title">>// CLASSIFIED_BRIEF</div>
+                <div class="sys-brief-text">${pcLore}</div>
+            </div>
 
-<!-- ΑΥΤΑ ΕΙΝΑΙ ΤΑ 2 ΚΟΥΜΠΙΑ ΠΟΥ ΛΕΙΠΟΥΝ -->
-<button class="btn-card-inspect" onclick="openInspect('${pc.id}')">INSPECT SYSTEM</button>
-<button class="btn-card-compare" onclick="toggleCompare('${pc.id}', this)">COMPARE</button>
-    `; 
+            <button class="btn-card-inspect" onclick="openGallery()">INSPECT SYSTEM</button>
+            <button class="btn-card-compare ${inCompare ? 'selected' : ''}" onclick="toggleCompare('${pc._id || pc.id}', this)">
+                ${inCompare ? 'ADDED TO VS' : 'COMPARE'}
+            </button>
+        </div>
+    `;
     
     setTimeout(()=> {
         document.querySelectorAll('.bar-fill').forEach(b=>b.style.width=b.getAttribute('data-width'));
@@ -873,22 +876,37 @@ function changeGalleryImage(d) {
     updateGalleryImage(); 
 }
 
-function toggleCompare(id) { 
+function toggleCompare(id, btnElement) { 
     const pc = filtered[index]; 
-    if(compareList.find(p=>p._id===id)) {
-        compareList = compareList.filter(p=>p._id!==id); 
+    const alreadyInList = compareList.find(p => (p._id || p.id) === id);
+
+    if (alreadyInList) {
+        // Αν είναι ήδη μέσα, το αφαιρούμε
+        compareList = compareList.filter(p => (p._id || p.id) !== id); 
+        if (btnElement) {
+            btnElement.classList.remove('selected');
+            btnElement.innerText = 'COMPARE';
+        }
     } else { 
-        if(compareList.length<2) compareList.push(pc); 
-        else alert("MAX 2 ITEMS ALLOWED IN VS MODE"); 
+        if (compareList.length < 2) {
+            // Το προσθέτουμε
+            compareList.push(pc); 
+            if (btnElement) {
+                btnElement.classList.add('selected');
+                btnElement.innerText = 'ADDED TO VS';
+            }
+        } else { 
+            alert("MAX 2 ITEMS ALLOWED IN VS MODE"); 
+        } 
     } 
-    renderCard(); 
+    
+    // Ανανεώνουμε το πλωτό κουμπί (float button) του Compare
     const b = document.getElementById('compare-float'); 
     if(b) {
-        if(compareList.length===2) b.classList.add('active'); 
+        if(compareList.length === 2) b.classList.add('active'); 
         else b.classList.remove('active'); 
     }
 }
-
 function openCompareModal() { 
     if(compareList.length!==2) return; 
     const c1=compareList[0], c2=compareList[1]; 
