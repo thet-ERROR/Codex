@@ -71,7 +71,9 @@
 
     function edit(id) {
         const pc = inventory.find(i=>i._id===id); if(!pc) return;
-        ['name','price','stock','description','multitasking','status','category'].forEach(k => document.getElementById(k).value = pc[k]||'');
+       ['name','price','stock','description','lore','multitasking','status','category'].forEach(k => {
+    if(document.getElementById(k)) document.getElementById(k).value = pc[k]||'';
+});
         ['cpu','gpu','ram','ssd','mobo','psu','case'].forEach(k => document.getElementById(k).value = pc.specs[k]||'');
         
         // Load the image URL into the text box
@@ -96,15 +98,28 @@
         const imgInput = document.getElementById('imageUrl').value.trim();
         const imgs = imgInput ? [imgInput] : [];
         
-        const data = {
-            name: document.getElementById('name').value, price: document.getElementById('price').value,
-            stock: document.getElementById('stock').value, category: document.getElementById('category').value,
-            status: document.getElementById('status').value, description: document.getElementById('description').value, 
-            multitasking: document.getElementById('multitasking').value, images: imgs,
-            specs: { cpu:document.getElementById('cpu').value, gpu:document.getElementById('gpu').value, ram:document.getElementById('ram').value, ssd:document.getElementById('ssd').value, mobo:document.getElementById('mobo').value, psu:document.getElementById('psu').value, case:document.getElementById('case').value },
-            fps: currentFPS, reviews: currentReviews
+const data = {
+            name: document.getElementById('name').value, 
+            price: document.getElementById('price').value,
+            stock: document.getElementById('stock').value, 
+            category: document.getElementById('category').value,
+            status: document.getElementById('status').value, 
+            description: document.getElementById('description').value, 
+            lore: document.getElementById('lore') ? document.getElementById('lore').value : "", // Προσθήκη Lore
+            multitasking: document.getElementById('multitasking').value, 
+            images: imgs,
+            specs: { 
+                cpu:document.getElementById('cpu').value, 
+                gpu:document.getElementById('gpu').value, 
+                ram:document.getElementById('ram').value, 
+                ssd:document.getElementById('ssd').value, 
+                mobo:document.getElementById('mobo').value, 
+                psu:document.getElementById('psu').value, 
+                case:document.getElementById('case').value 
+            },
+            fps: currentFPS, 
+            reviews: currentReviews
         };
-
         const url = editId ? `${API}/drops/${editId}` : `${API}/drops`;
         const method = editId ? 'PUT' : 'POST';
         
