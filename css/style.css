@@ -1730,3 +1730,23 @@ body.ui-locked .stage {
 #dossier-achievements .ach-card.unlocked .ach-status {
     color: var(--neon-green);
 }
+/* =========================================
+   BUG FIX: MOBILE OVERLAY Z-INDEX & BLEEDING
+   ========================================= */
+
+/* Κάνουμε το Inspect Overlay τον απόλυτο κυρίαρχο (z-index) και πιο σκούρο */
+.gallery-overlay {
+    z-index: 999999 !important; 
+    background: rgba(5, 5, 8, 0.95) !important; /* Σχεδόν μαύρο φόντο */
+    backdrop-filter: blur(15px) !important;
+}
+
+/* Κάνουμε την ίδια την κάρτα λιγότερο διάφανη για να μην "φεγγίζουν" τα γράμματα από πίσω */
+.yg-card {
+    background: rgba(15, 15, 20, 0.98) !important;
+}
+
+/* Περιορίζουμε το z-index των reviews ώστε να μένουν ΠΑΝΤΑ κάτω από τα αναδυόμενα παράθυρα */
+.right-sidebar {
+    z-index: 9990 !important; 
+}
