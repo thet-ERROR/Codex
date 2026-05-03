@@ -1810,40 +1810,36 @@ body.ui-locked .stage {
     background: rgba(10, 10, 12, 0.99) !important; /* Σχεδόν 100% μαύρο και συμπαγές */
     backdrop-filter: none !important; /* Αφαίρεση του blur effect που προκαλούσε το bug */
 }
-
-
 /* =========================================
-   MOBILE LAYOUT (ULTIMATE CLEANUP)
+   MOBILE LAYOUT (FINAL POLISH)
    ========================================= */
 @media (max-width: 768px) {
     
-    /* --- 1. ΚΑΤΩ ΜΠΑΡΑ (LIVE DROPS, VAULT κτλ) --- */
+    /* --- 1. ΚΑΤΩ ΜΠΑΡΑ (Λεπτή, Flat & Cyberpunk) --- */
     header .nav-bar {
         position: fixed !important;
-        bottom: 30px !important; /* Ακριβώς πάνω από το Ticker (30px) */
+        bottom: 30px !important; /* Ακριβώς πάνω από το Ticker */
         left: 0 !important;
         width: 100% !important;
-        height: 60px !important; /* Σταθερό ύψος */
-        background: rgba(10, 10, 12, 1) !important;
+        height: 60px !important;
+        background: rgba(10, 10, 12, 0.98) !important;
         border-top: 1px solid var(--neon-purple) !important;
         border-bottom: none !important;
         border-left: none !important;
         border-right: none !important;
-        border-radius: 0 !important; /* Τέλος το σχήμα "χαπιού", γίνεται φλατ μπάρα */
+        border-radius: 0 !important;
         margin: 0 !important;
         padding: 0 !important;
         display: flex !important;
         flex-direction: row !important;
-        justify-content: space-evenly !important;
+        justify-content: space-between !important;
         align-items: center !important;
         z-index: 9998 !important;
     }
 
-    /* Στήσιμο των γραμμάτων στην κάτω μπάρα */
     header .nav-bar .nav-btn {
         writing-mode: horizontal-tb !important;
-        transform: none !important;
-        font-size: 0.65rem !important; /* Πιο μικρά για να χωράνε άνετα δίπλα-δίπλα */
+        font-size: 0.65rem !important; 
         font-weight: 800 !important;
         padding: 5px !important;
         margin: 0 !important;
@@ -1854,22 +1850,33 @@ body.ui-locked .stage {
         display: flex !important;
         flex-direction: column !important;
         justify-content: center !important;
+        border-radius: 0 !important; /* Σβήνει το σχήμα "χαπιού" */
+        background: transparent !important; /* Καθαρίζει το τεράστιο φόντο */
+        color: #888 !important;
+    }
+
+    /* Το Ενεργό Tab γίνεται διακριτικό με μια υπογράμμιση */
+    header .nav-bar .nav-btn[style*="background"], 
+    header .nav-bar .nav-btn.active-live {
+        background: rgba(168, 85, 247, 0.15) !important;
+        border-bottom: 3px solid var(--neon-purple) !important;
+        color: var(--neon-purple) !important;
     }
 
     header .nav-bar .cart-btn .cart-count {
         transform: none !important;
-        margin-top: 2px !important;
+        margin-top: 3px !important;
         display: inline-block !important;
     }
 
-    /* --- 2. ΑΡΙΣΤΕΡΗ ΜΠΑΡΑ (ΕΡΓΑΛΕΙΑ & CHAT) --- */
+    /* --- 2. ΑΡΙΣΤΕΡΗ ΜΠΑΡΑ (Ευθυγράμμιση Εργαλείων & Chat) --- */
     .left-sidebar {
         position: fixed !important;
         top: 0 !important;
         left: 0 !important;
-        bottom: 90px !important; /* Σταματάει ακριβώς πάνω από την κάτω μπάρα (60+30) */
+        bottom: 90px !important; 
         width: 50px !important;
-        background: rgba(10, 10, 12, 1) !important;
+        background: rgba(10, 10, 12, 0.95) !important;
         border-right: 1px solid var(--neon-purple) !important;
         border-top: none !important;
         border-bottom: none !important;
@@ -1879,24 +1886,32 @@ body.ui-locked .stage {
         align-items: center !important;
         justify-content: center !important;
         z-index: 9997 !important;
-        padding: 10px 0 !important;
+        padding: 0 !important;
+    }
+
+    /* ΑΥΤΟ έφταιγε που τα εικονίδια έβγαιναν οριζόντια! */
+    .left-sidebar .side-group {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        gap: 15px !important;
+        width: 100% !important;
     }
 
     .left-sidebar .side-btn {
-        margin: 10px 0 !important;
+        margin: 0 !important;
         width: 35px !important;
         height: 35px !important;
     }
 
-    /* FIX: Αναγκάζουμε το Chat να μπει στη γραμμή με τα υπόλοιπα */
+    /* Βάζουμε το Chat στη θέση του, κάτω από τα άλλα εικονίδια */
     .chat-toggle {
-        position: relative !important;
-        right: auto !important;
-        bottom: auto !important;
+        position: static !important; 
+        margin-top: 20px !important;
         transform: none !important;
     }
 
-    /* --- 3. TICKER (ΤΕΡΜΑ ΚΑΤΩ) --- */
+    /* --- 3. TICKER & BODY ALIGNMENT --- */
     .delivery-ticker {
         position: fixed !important;
         bottom: 0 !important;
@@ -1906,15 +1921,14 @@ body.ui-locked .stage {
         z-index: 9999 !important;
     }
 
-    /* --- 4. ΣΤΗΣΙΜΟ ΚΕΝΤΡΙΚΟΥ ΧΩΡΟΥ (BODY) --- */
     body {
         padding-left: 50px !important; /* Αφήνει χώρο για την αριστερή μπάρα */
-        padding-bottom: 90px !important; /* Αφήνει χώρο για Nav (60) + Ticker (30) */
+        padding-bottom: 110px !important; /* Αφήνει χώρο κάτω για να μην κρύβεται η κάρτα PC */
     }
     
-    /* --- 5. TOP HEADER (LOGO & ICONS) --- */
     header {
         padding-top: 15px !important;
+        margin-left: 50px !important; /* Σπρώχνει το λογότυπο PHOENIX CODEX δεξιά για να μην πέφτει πάνω στη μπάρα */
     }
     
     header .right-header-group {
