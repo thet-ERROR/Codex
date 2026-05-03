@@ -1661,3 +1661,53 @@ body.ui-locked .stage {
     font-size: 0.85rem;
     text-align: center;
 }
+/* =========================================
+   DASHBOARD ACHIEVEMENTS STYLING
+   ========================================= */
+#dossier-achievements .ach-card {
+    background: rgba(0, 0, 0, 0.5);
+    border: 1px solid #333;
+    border-radius: 6px;
+    padding: 12px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    transition: all 0.3s ease;
+}
+
+/* Όταν είναι Ξεκλειδωμένο (Πράσινο Glow) */
+#dossier-achievements .ach-card.unlocked {
+    border-color: var(--neon-green);
+    box-shadow: inset 0 0 10px rgba(0, 255, 0, 0.05);
+}
+
+#dossier-achievements .ach-icon {
+    font-size: 1.8rem;
+    color: #444; /* Γκρι όταν είναι κλειδωμένο */
+}
+
+#dossier-achievements .ach-card.unlocked .ach-icon {
+    color: var(--neon-green);
+}
+
+#dossier-achievements .ach-info h4 {
+    margin: 0 0 4px 0;
+    color: #666;
+    font-family: var(--font-ui);
+    font-size: 0.85rem;
+}
+
+#dossier-achievements .ach-card.unlocked .ach-info h4 {
+    color: var(--neon-green);
+}
+
+#dossier-achievements .ach-status {
+    margin-left: auto;
+    font-family: monospace;
+    font-weight: bold;
+    color: #444;
+}
+
+#dossier-achievements .ach-card.unlocked .ach-status {
+    color: var(--neon-green);
+}
