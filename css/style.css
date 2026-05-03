@@ -1512,16 +1512,16 @@ body.ui-locked .stage {
     line-height: 1.5;
 }
 /* =========================================
-   AGENT DOSSIER / DASHBOARD STYLES (FUNKY & CLEAN)
+   AGENT PROFILE STYLES (GREEN & CLEAN)
    ========================================= */
 
 .dossier-box {
     background: rgba(15, 15, 20, 0.95);
-    border: 2px solid var(--neon-purple);
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8), 0 0 20px rgba(168, 85, 247, 0.15);
+    border: 2px solid var(--neon-green); /* Έγινε Πράσινο! */
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8), 0 0 20px rgba(0, 255, 0, 0.15); /* Πράσινη Λάμψη */
     width: 90%;
     max-width: 850px;
-    border-radius: 12px; /* Πιο funky στρογγυλεμένες γωνίες */
+    border-radius: 12px;
     padding: 30px;
     position: relative;
     display: flex;
@@ -1531,7 +1531,6 @@ body.ui-locked .stage {
     animation: dossierGlitch 0.4s ease-out forwards;
 }
 
-/* Διόρθωση του κουμπιού X που έπιανε όλη την οθόνη */
 .dossier-box .modal-close {
     position: absolute;
     top: 15px;
@@ -1548,7 +1547,7 @@ body.ui-locked .stage {
 }
 
 .dossier-box .modal-close:hover {
-    color: var(--neon-purple);
+    color: var(--neon-green); /* Γίνεται πράσινο στο hover */
     transform: scale(1.1) rotate(90deg);
 }
 
@@ -1557,12 +1556,12 @@ body.ui-locked .stage {
     100% { opacity: 1; transform: scale(1) translateY(0); }
 }
 
-/* Header - Τέλεια ευθυγράμμιση */
+/* Header */
 .dossier-header {
-    background: linear-gradient(90deg, rgba(168, 85, 247, 0.1) 0%, transparent 100%);
+    background: linear-gradient(90deg, rgba(0, 255, 0, 0.05) 0%, transparent 100%);
     padding: 20px;
     border-radius: 8px;
-    border-left: 3px solid var(--neon-purple);
+    border-left: 3px solid var(--neon-green); /* Πράσινη Γραμμή */
 }
 
 .dossier-title {
@@ -1575,7 +1574,7 @@ body.ui-locked .stage {
 
 .agent-handle-box {
     display: flex;
-    align-items: center; /* Ευθυγραμμίζει το //AGENT με το όνομα */
+    align-items: center;
     gap: 12px;
     font-size: 1.8rem;
     font-weight: 800;
@@ -1585,7 +1584,7 @@ body.ui-locked .stage {
 }
 
 .dossier-label {
-    color: var(--neon-purple);
+    color: var(--neon-green);
 }
 
 /* Typing Effect */
@@ -1607,9 +1606,9 @@ body.ui-locked .stage {
 }
 
 .neon-purple-text { color: var(--neon-purple); font-weight: bold; }
-.neon-green-text { color: var(--neon-green); font-weight: bold; }
+.neon-green-text { color: var(--neon-green); font-weight: bold; text-shadow: 0 0 5px rgba(0,255,0,0.5); }
 
-/* Grid & Κουτάκια (Funky & Clean) */
+/* Grid & Κουτάκια */
 .dossier-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -1623,8 +1622,8 @@ body.ui-locked .stage {
 .dossier-heading {
     font-family: var(--font-ui);
     font-size: 0.85rem;
-    color: #fff;
-    background: rgba(255, 255, 255, 0.05);
+    color: var(--neon-green); /* Πράσινα Γράμματα */
+    background: rgba(0, 255, 0, 0.1); /* Πράσινο Φόντο */
     display: inline-block;
     padding: 6px 12px;
     border-radius: 4px;
@@ -1637,7 +1636,7 @@ body.ui-locked .stage {
     background: rgba(168, 85, 247, 0.1);
 }
 
-/* Εσωτερικά Κουτιά - Πιο ομοιόμορφα */
+/* Εσωτερικά Κουτιά */
 .dossier-list, .wishlist-grid {
     background: rgba(0, 0, 0, 0.4);
     border: 1px solid rgba(255, 255, 255, 0.05);
@@ -1648,11 +1647,12 @@ body.ui-locked .stage {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    transition: border 0.3s ease;
+    transition: border 0.3s ease, box-shadow 0.3s ease;
 }
 
 .dossier-list:hover, .wishlist-grid:hover {
-    border-color: rgba(168, 85, 247, 0.3);
+    border-color: var(--neon-green); /* Πράσινο περίγραμμα όταν περνάς το ποντίκι! */
+    box-shadow: inset 0 0 10px rgba(0, 255, 0, 0.05);
 }
 
 .dossier-empty {
