@@ -1825,7 +1825,7 @@ body.ui-locked .stage {
 }
 
 body {
-    padding-bottom: 40px !important; /* Αφήνει χώρο κάτω-κάτω για το Ticker */
+    padding-bottom: 40px !important; /* Χώρος για το Ticker */
 }
 
 /* =========================================
@@ -1833,14 +1833,26 @@ body {
    ========================================= */
 @media (max-width: 768px) {
     
-    /* 2. ΚΕΝΤΡΙΚΗ ΜΠΑΡΑ: Πάντα ΠΑΝΩ, κάτω από το Λογότυπο */
+    /* --- 2. HEADER & LOGO (Διορθώνει το Overlap) --- */
     header {
         flex-direction: column !important;
         align-items: center !important;
         padding-top: 15px !important;
-        padding-bottom: 15px !important;
+        padding-bottom: 10px !important;
     }
 
+    /* Φέρνουμε τα Profile/Terminal κάτω από το Λογότυπο για να μην πέφτουν πάνω του */
+    header .right-header-group {
+        position: relative !important;
+        top: auto !important;
+        right: auto !important;
+        margin-top: 15px !important;
+        justify-content: center !important;
+        display: flex !important;
+        gap: 15px !important;
+    }
+
+    /* --- 3. HORIZONTAL SCROLLING NAV BAR (Swipe για κινητά!) --- */
     header .nav-bar {
         position: relative !important;
         bottom: auto !important;
@@ -1850,26 +1862,37 @@ body {
         background: transparent !important;
         border: none !important;
         margin-top: 15px !important;
+        
+        /* Η μαγεία του Swipe Scroll */
         display: flex !important;
         flex-direction: row !important;
-        flex-wrap: wrap !important; /* Αν δεν χωράνε, πάνε σε 2η γραμμή */
-        justify-content: center !important;
+        flex-wrap: nowrap !important; /* ΑΠΑΓΟΡΕΥΟΥΜΕ να πέσουν σε 2η γραμμή */
+        justify-content: flex-start !important;
         align-items: center !important;
+        overflow-x: auto !important;
+        overflow-y: hidden !important;
+        -webkit-overflow-scrolling: touch !important; /* Ομαλό scroll στο iOS */
         gap: 10px !important;
+        padding: 5px 20px !important; /* Κενό δεξιά-αριστερά για να μην κολλάνε στην οθόνη */
         z-index: 9998 !important;
     }
 
-    /* Επαναφορά των κουμπιών της πάνω μπάρας σε κανονική μορφή */
+    /* Κρύβουμε τη γραμμή του scroll για να φαίνεται clean app */
+    header .nav-bar::-webkit-scrollbar {
+        display: none !important;
+    }
+
     header .nav-bar .nav-btn {
         writing-mode: horizontal-tb !important;
         font-size: 0.75rem !important; 
-        padding: 8px 12px !important;
-        border-radius: 4px !important; 
+        padding: 10px 18px !important;
+        border-radius: 6px !important; 
         background: rgba(255, 255, 255, 0.05) !important;
         border: 1px solid rgba(255, 255, 255, 0.05) !important;
         color: #aaa !important;
-        flex: 0 1 auto !important;
+        flex: 0 0 auto !important; /* Απαγορεύουμε να μικρύνουν (ΚΡΙΣΙΜΟ ΓΙΑ SCROLL) */
         height: auto !important;
+        white-space: nowrap !important; /* Δεν σπάει το κείμενο του κουμπιού */
     }
 
     header .nav-bar .nav-btn.active-live {
@@ -1884,45 +1907,46 @@ body {
         display: inline-block !important;
     }
 
-    /* 3. ΑΡΙΣΤΕΡΗ ΜΠΑΡΑ: Πάντα στα ΑΡΙΣΤΕΡΑ! */
+    /* --- 4. ΑΡΙΣΤΕΡΗ ΜΠΑΡΑ (Χαμηλωμένα Κουμπιά & Chat Τέρμα Κάτω) --- */
     .left-sidebar {
         position: fixed !important;
         top: 0 !important;
         left: 0 !important;
-        bottom: 30px !important; /* Σταματάει ακριβώς πάνω από το Ticker */
+        bottom: 30px !important; /* Πάνω από το Ticker */
         width: 50px !important;
         background: rgba(10, 10, 12, 0.95) !important;
         border-right: 1px solid var(--neon-purple) !important;
         display: flex !important;
         flex-direction: column !important;
+        justify-content: flex-end !important; /* Σπρώχνει τα ΠΑΝΤΑ προς τα κάτω! */
         align-items: center !important;
-        justify-content: center !important;
         z-index: 9997 !important;
-        padding: 0 !important;
+        padding-bottom: 20px !important; /* Απόσταση από τον πάτο */
     }
 
     .left-sidebar .side-group {
         display: flex !important;
         flex-direction: column !important;
         gap: 15px !important;
+        margin-bottom: 20px !important; /* Κενό ανάμεσα στα εικονίδια και το Chat */
     }
 
+    /* Το κουμπί του Chat */
     .chat-toggle {
-        position: static !important;
-        margin-top: 20px !important;
+        position: relative !important;
         transform: none !important;
+        margin-top: 0 !important;
     }
 
-    /* 4. Σπρώχνουμε το περιεχόμενο για να μην το κρύβει η αριστερή μπάρα */
+    /* --- 5. ΤΟ ΠΑΡΑΘΥΡΟ ΤΟΥ CHAT --- */
+    .chat-widget {
+        bottom: 50px !important; /* Πάνω από το Ticker */
+        left: 65px !important; /* Κολλάει δίπλα στην αριστερή μπάρα */
+        right: auto !important; /* Ακυρώνει τη δεξιά μεριά */
+    }
+
+    /* Αφήνουμε χώρο αριστερά για τη μπάρα */
     body {
         padding-left: 50px !important;
-    }
-    
-    /* 5. Το Προφίλ και το Τερματικό πάνε πάνω-δεξιά */
-    header .right-header-group {
-        position: absolute !important;
-        top: 15px !important;
-        right: 15px !important;
-        margin: 0 !important;
     }
 }
