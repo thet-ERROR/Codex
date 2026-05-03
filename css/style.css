@@ -1511,43 +1511,46 @@ body.ui-locked .stage {
     font-style: italic;
     line-height: 1.5;
 }
-/* =========================================
-   AGENT PROFILE STYLES (GREEN & CLEAN)
+//* =========================================
+   AGENT PROFILE STYLES (COMPACT & MOBILE FRIENDLY)
    ========================================= */
 
 .dossier-box {
     background: rgba(15, 15, 20, 0.95);
-    border: 2px solid var(--neon-green); /* Έγινε Πράσινο! */
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8), 0 0 20px rgba(0, 255, 0, 0.15); /* Πράσινη Λάμψη */
-    width: 90%;
-    max-width: 850px;
+    border: 2px solid var(--neon-green);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8), 0 0 20px rgba(0, 255, 0, 0.15);
+    width: 95%; /* Καλύτερο πλάτος για κινητά */
+    max-width: 650px; /* Αρκετά πιο μαζεμένο από τα 850px */
     border-radius: 12px;
-    padding: 30px;
+    padding: 20px; /* Μειώσαμε τα τεράστια εσωτερικά κενά */
     position: relative;
     display: flex;
     flex-direction: column;
-    gap: 25px;
+    gap: 15px; /* Πιο σφιχτά τα στοιχεία μεταξύ τους */
     backdrop-filter: blur(10px);
     animation: dossierGlitch 0.4s ease-out forwards;
+    max-height: 90vh; /* Απαγορεύουμε να βγει εκτός οθόνης στο κινητό */
+    overflow-y: auto; /* Αν η οθόνη είναι πολύ μικρή, όλη η καρτέλα κάνει scroll */
 }
 
 .dossier-box .modal-close {
     position: absolute;
     top: 15px;
-    right: 20px;
+    right: 15px;
     background: transparent;
     color: #666;
     border: none;
-    font-size: 1.5rem;
+    font-size: 1.3rem; /* Λίγο πιο διακριτικό */
     font-family: var(--font-ui);
     cursor: pointer;
     transition: all 0.2s ease;
     width: auto;
     padding: 0;
+    z-index: 10;
 }
 
 .dossier-box .modal-close:hover {
-    color: var(--neon-green); /* Γίνεται πράσινο στο hover */
+    color: var(--neon-green);
     transform: scale(1.1) rotate(90deg);
 }
 
@@ -1559,9 +1562,9 @@ body.ui-locked .stage {
 /* Header */
 .dossier-header {
     background: linear-gradient(90deg, rgba(0, 255, 0, 0.05) 0%, transparent 100%);
-    padding: 20px;
+    padding: 15px; /* Πιο μαζεμένο */
     border-radius: 8px;
-    border-left: 3px solid var(--neon-green); /* Πράσινη Γραμμή */
+    border-left: 3px solid var(--neon-green);
 }
 
 .dossier-title {
@@ -1569,17 +1572,17 @@ body.ui-locked .stage {
     font-family: var(--font-ui);
     font-size: 0.75rem;
     letter-spacing: 2px;
-    margin-bottom: 10px;
+    margin-bottom: 5px;
 }
 
 .agent-handle-box {
     display: flex;
     align-items: center;
-    gap: 12px;
-    font-size: 1.8rem;
+    gap: 10px;
+    font-size: 1.4rem; /* Λίγο μικρότερα γράμματα για αρμονία */
     font-weight: 800;
     color: #fff;
-    margin-bottom: 8px;
+    margin-bottom: 5px;
     font-family: var(--font-ui);
 }
 
@@ -1601,7 +1604,7 @@ body.ui-locked .stage {
 
 .agent-rank, .network-status {
     font-family: monospace;
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     color: #aaa;
 }
 
@@ -1612,22 +1615,23 @@ body.ui-locked .stage {
 .dossier-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 20px;
+    gap: 15px; /* Μικρότερο κενό ανάμεσα στις στήλες */
 }
 
 @media (max-width: 768px) {
     .dossier-grid { grid-template-columns: 1fr; }
+    .dossier-box { padding: 15px; gap: 12px; } /* Ακόμα πιο μαζεμένο στο κινητό */
 }
 
 .dossier-heading {
     font-family: var(--font-ui);
-    font-size: 0.85rem;
-    color: var(--neon-green); /* Πράσινα Γράμματα */
-    background: rgba(0, 255, 0, 0.1); /* Πράσινο Φόντο */
+    font-size: 0.8rem;
+    color: var(--neon-green);
+    background: rgba(0, 255, 0, 0.1);
     display: inline-block;
-    padding: 6px 12px;
+    padding: 4px 10px;
     border-radius: 4px;
-    margin-bottom: 12px;
+    margin-bottom: 8px;
     letter-spacing: 1px;
 }
 
@@ -1636,30 +1640,45 @@ body.ui-locked .stage {
     background: rgba(168, 85, 247, 0.1);
 }
 
-/* Εσωτερικά Κουτιά */
+/* Εσωτερικά Κουτιά - ΕΔΩ ΕΞΑΦΑΝΙΖΕΤΑΙ Ο ΤΖΑΜΠΑ ΧΩΡΟΣ */
 .dossier-list, .wishlist-grid {
     background: rgba(0, 0, 0, 0.4);
     border: 1px solid rgba(255, 255, 255, 0.05);
-    padding: 20px;
-    min-height: 140px;
+    padding: 12px;
+    min-height: 80px; /* Από 140px, τώρα είναι 80px όταν είναι άδειο! */
+    max-height: 200px; /* Αν έχει πολλά αντικείμενα, μένει στα 200px και σκρολάρει εσωτερικά */
+    overflow-y: auto;
     border-radius: 8px;
     display: flex;
     flex-direction: column;
-    align-items: center;
-    justify-content: center;
+    align-items: flex-start; /* Ξεκινούν από πάνω, όχι από τη μέση */
+    justify-content: flex-start;
+    gap: 8px;
     transition: border 0.3s ease, box-shadow 0.3s ease;
 }
 
+/* Αν το κουτί είναι άδειο, κεντράρει το "NO ORDERS YET" στη μέση */
+.dossier-list:empty, .wishlist-grid:empty,
+.dossier-list:has(.dossier-empty), .wishlist-grid:has(.dossier-empty) {
+    align-items: center;
+    justify-content: center;
+}
+
 .dossier-list:hover, .wishlist-grid:hover {
-    border-color: var(--neon-green); /* Πράσινο περίγραμμα όταν περνάς το ποντίκι! */
+    border-color: var(--neon-green);
     box-shadow: inset 0 0 10px rgba(0, 255, 0, 0.05);
 }
+
+/* Ομορφες λεπτές μπάρες scroll για τις λίστες */
+.dossier-list::-webkit-scrollbar, .wishlist-grid::-webkit-scrollbar { width: 4px; }
+.dossier-list::-webkit-scrollbar-thumb, .wishlist-grid::-webkit-scrollbar-thumb { background: var(--neon-green); border-radius: 4px; }
 
 .dossier-empty {
     font-family: monospace;
     color: #666;
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     text-align: center;
+    width: 100%;
 }
 /* =========================================
    DASHBOARD ACHIEVEMENTS STYLING
@@ -1710,4 +1729,24 @@ body.ui-locked .stage {
 
 #dossier-achievements .ach-card.unlocked .ach-status {
     color: var(--neon-green);
+}
+/* =========================================
+   BUG FIX: MOBILE OVERLAY Z-INDEX & BLEEDING
+   ========================================= */
+
+/* Κάνουμε το Inspect Overlay τον απόλυτο κυρίαρχο (z-index) και πιο σκούρο */
+.gallery-overlay {
+    z-index: 999999 !important; 
+    background: rgba(5, 5, 8, 0.95) !important; /* Σχεδόν μαύρο φόντο */
+    backdrop-filter: blur(15px) !important;
+}
+
+/* Κάνουμε την ίδια την κάρτα λιγότερο διάφανη για να μην "φεγγίζουν" τα γράμματα από πίσω */
+.yg-card {
+    background: rgba(15, 15, 20, 0.98) !important;
+}
+
+/* Περιορίζουμε το z-index των reviews ώστε να μένουν ΠΑΝΤΑ κάτω από τα αναδυόμενα παράθυρα */
+.right-sidebar {
+    z-index: 9990 !important; 
 }
