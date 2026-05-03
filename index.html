@@ -389,25 +389,36 @@ Type 'help' for a list of commands.
     <div class="dossier-box">
         <button class="modal-close" onclick="closeModal('agent-dashboard-modal')">X</button>
         
-        <!-- HEADER: Agent Info -->
+        <!-- HEADER: Terminal Agent Info -->
         <div class="dossier-header">
             <div class="dossier-title">[AGENT PROFILE]</div>
             <div class="agent-handle-box">
-                <span class="dossier-label">>// AGENT:</span> 
-                <span class="typewriter-text" id="dossier-username">UNKNOWN_USER</span>
+                <span class="dossier-label">> </span> 
+                <span class="typewriter-text terminal-name" id="dossier-username">UNKNOWN_USER</span>
             </div>
             <div class="agent-rank">RANK: <span id="dossier-rank" class="neon-purple-text">RECRUIT</span></div>
             <div class="network-status">STATUS: <span class="neon-green-text">ONLINE</span></div>
         </div>
 
-        <!-- BODY: 2 Columns Grid -->
+        <!-- BODY: 2 Columns Grid (Τώρα η Wishlist είναι αριστερά!) -->
         <div class="dossier-grid">
             
-            <!-- LEFT COLUMN: Orders -->
+            <!-- LEFT COLUMN: Orders & Wishlist -->
             <div class="dossier-col dossier-left">
-                <h3 class="dossier-heading">>// MY ORDERS</h3>
-                <div class="dossier-list" id="dossier-orders">
-                    <div class="dossier-empty">> NO ORDERS YET.</div>
+                <!-- Orders Block -->
+                <div style="margin-bottom: 20px;">
+                    <h3 class="dossier-heading">>// MY ORDERS</h3>
+                    <div class="dossier-list" id="dossier-orders">
+                        <div class="dossier-empty">> NO ORDERS YET.</div>
+                    </div>
+                </div>
+
+                <!-- Wishlist Block (Μεταφέρθηκε εδώ!) -->
+                <div>
+                    <h3 class="dossier-heading">>// WISHLIST <span style="font-size: 0.6em; color: #888;">(SAVED SYSTEMS)</span></h3>
+                    <div class="wishlist-grid" id="dossier-wishlist">
+                         <div class="dossier-empty">> NO SAVED SYSTEMS.</div>
+                    </div>
                 </div>
             </div>
 
@@ -419,14 +430,6 @@ Type 'help' for a list of commands.
                 </div>
             </div>
 
-        </div>
-
-        <!-- BOTTOM: Wishlist -->
-        <div class="dossier-bottom">
-            <h3 class="dossier-heading">>// WISHLIST <span style="font-size: 0.6em; color: #888;">(SAVED SYSTEMS)</span></h3>
-            <div class="wishlist-grid" id="dossier-wishlist">
-                 <div class="dossier-empty">> NO SAVED SYSTEMS.</div>
-            </div>
         </div>
         
     </div>
@@ -557,5 +560,17 @@ Type 'help' for a list of commands.
         }
     }, 200); // Σαρώνει την οθόνη κάθε 200ms
     </script>
+    <!-- =========================================
+         24H DELIVERY TICKER (NEWS LOOP)
+         ========================================= -->
+    <div class="delivery-ticker">
+        <div class="ticker-track">
+            <!-- Βάζουμε τα μηνύματα 2 φορές για να κάνει ατελείωτη λούπα χωρίς κενό -->
+            <span>⚡ 24H SECURE DELIVERY ACROSS GREECE ⚡</span>
+            <span>SYSTEMS FULLY ASSEMBLED & TESTED</span>
+            <span>⚡ 24H SECURE DELIVERY ACROSS GREECE ⚡</span>
+            <span>SYSTEMS FULLY ASSEMBLED & TESTED</span>
+        </div>
+    </div>
 </body>
 </html>

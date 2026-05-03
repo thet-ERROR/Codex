@@ -1511,7 +1511,7 @@ body.ui-locked .stage {
     font-style: italic;
     line-height: 1.5;
 }
-//* =========================================
+/* =========================================
    AGENT PROFILE STYLES (COMPACT & MOBILE FRIENDLY)
    ========================================= */
 
@@ -1749,4 +1749,105 @@ body.ui-locked .stage {
 /* Περιορίζουμε το z-index των reviews ώστε να μένουν ΠΑΝΤΑ κάτω από τα αναδυόμενα παράθυρα */
 .right-sidebar {
     z-index: 9990 !important; 
+}
+/* =========================================
+   24H DELIVERY TICKER (NEWS LOOP)
+   ========================================= */
+.delivery-ticker {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 30px;
+    background: var(--neon-green);
+    color: #000;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    z-index: 99999;
+    font-family: var(--font-ui), monospace;
+    font-weight: 800;
+    font-size: 0.8rem;
+    letter-spacing: 2px;
+    box-shadow: 0 -2px 15px rgba(0, 255, 0, 0.3);
+}
+
+.ticker-track {
+    display: flex;
+    white-space: nowrap;
+    animation: scrollTicker 15s linear infinite;
+}
+
+.ticker-track span {
+    padding: 0 40px; /* Κενό ανάμεσα στα μηνύματα */
+}
+
+@keyframes scrollTicker {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); } /* Συνεχόμενη λούπα */
+}
+
+/* =========================================
+   MOBILE NAV BAR -> MOVED TO LEFT EDGE
+   ========================================= */
+@media (max-width: 768px) {
+    /* Η κεντρική μπάρα πάει αριστερά */
+    header .nav-bar {
+        position: fixed !important;
+        top: 0;
+        left: 0;
+        bottom: 30px; /* Σταματάει ακριβώς πάνω από το Ticker! */
+        width: 50px;  /* Πολύ λεπτή, Cyberpunk μπάρα */
+        flex-direction: column !important;
+        justify-content: center;
+        background: rgba(10, 10, 12, 0.98);
+        border-right: 1px solid var(--neon-green);
+        border-top: none !important;
+        z-index: 9998;
+        padding: 10px 0;
+        gap: 10px;
+    }
+
+    /* CYBERPUNK TRICK: Κάθετα γράμματα για να χωράνε */
+    header .nav-bar .nav-btn {
+        writing-mode: vertical-rl;
+        transform: rotate(180deg);
+        width: 100%;
+        height: auto;
+        padding: 20px 0;
+        font-size: 0.75rem;
+        letter-spacing: 2px;
+        border: none;
+        border-left: 2px solid transparent; 
+        color: #888;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    /* Όταν ένα Tab είναι ενεργό */
+    header .nav-bar .nav-btn.active-live {
+        border-left: 2px solid var(--neon-green);
+        border-bottom: none;
+        color: var(--neon-green);
+        background: rgba(0, 255, 0, 0.05);
+    }
+
+    /* Προσαρμογή του Cart μετρητή στα κάθετα γράμματα */
+    header .nav-bar .cart-btn .cart-count {
+        transform: rotate(90deg); /* Διορθώνει τον αριθμό να διαβάζεται σωστά */
+        margin-top: 10px;
+    }
+
+    /* Κάνουμε χώρο στο κυρίως body ώστε να μην κρύβονται πράγματα κάτω από τη μπάρα */
+    body {
+        padding-left: 50px;
+        padding-bottom: 30px;
+    }
+
+    /* Το Ticker στα κινητά πάει δίπλα από την αριστερή μπάρα */
+    .delivery-ticker {
+        left: 50px;
+        width: calc(100% - 50px);
+    }
 }
