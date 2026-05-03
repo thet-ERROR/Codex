@@ -1813,65 +1813,112 @@ body.ui-locked .stage {
 
 
 /* =========================================
-   MOBILE LAYOUT (TOOLS ON LEFT, NAV ON BOTTOM)
+   MOBILE LAYOUT (ULTIMATE CLEANUP)
    ========================================= */
 @media (max-width: 768px) {
     
-    /* 1. Επαναφορά της κεντρικής μπάρας (Live, Vault κτλ) κάτω-κάτω */
+    /* --- 1. ΚΑΤΩ ΜΠΑΡΑ (LIVE DROPS, VAULT κτλ) --- */
     header .nav-bar {
         position: fixed !important;
-        bottom: 30px !important; /* Ακριβώς πάνω από το Ticker */
+        bottom: 30px !important; /* Ακριβώς πάνω από το Ticker (30px) */
         left: 0 !important;
         width: 100% !important;
-        flex-direction: row !important; /* Ξανά σε οριζόντια διάταξη */
-        height: auto !important;
-        border-top: 1px solid var(--neon-green) !important;
+        height: 60px !important; /* Σταθερό ύψος */
+        background: rgba(10, 10, 12, 1) !important;
+        border-top: 1px solid var(--neon-purple) !important;
+        border-bottom: none !important;
+        border-left: none !important;
         border-right: none !important;
-        background: rgba(10, 10, 12, 0.98) !important;
-        padding: 5px 0 !important;
+        border-radius: 0 !important; /* Τέλος το σχήμα "χαπιού", γίνεται φλατ μπάρα */
+        margin: 0 !important;
+        padding: 0 !important;
+        display: flex !important;
+        flex-direction: row !important;
+        justify-content: space-evenly !important;
+        align-items: center !important;
         z-index: 9998 !important;
     }
 
-    /* Επαναφορά των γραμμάτων σε οριζόντια μορφή */
+    /* Στήσιμο των γραμμάτων στην κάτω μπάρα */
     header .nav-bar .nav-btn {
         writing-mode: horizontal-tb !important;
         transform: none !important;
-        padding: 10px 2px !important;
-        border-left: none !important;
-        font-size: 0.7rem !important; /* Λίγο μικρότερα για να χωράνε τέλεια */
+        font-size: 0.65rem !important; /* Πιο μικρά για να χωράνε άνετα δίπλα-δίπλα */
+        font-weight: 800 !important;
+        padding: 5px !important;
+        margin: 0 !important;
+        flex: 1 !important; 
+        text-align: center !important;
+        border: none !important;
+        height: 100% !important;
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: center !important;
     }
 
     header .nav-bar .cart-btn .cart-count {
         transform: none !important;
-        margin-top: 0 !important;
+        margin-top: 2px !important;
+        display: inline-block !important;
     }
 
-    /* 2. Η Μπάρα των Εργαλείων (Help, Reviews, Socials) πάει Αριστερά! */
+    /* --- 2. ΑΡΙΣΤΕΡΗ ΜΠΑΡΑ (ΕΡΓΑΛΕΙΑ & CHAT) --- */
     .left-sidebar {
         position: fixed !important;
         top: 0 !important;
         left: 0 !important;
-        bottom: 90px !important; /* Σταματάει πάνω από το nav-bar και το ticker */
+        bottom: 90px !important; /* Σταματάει ακριβώς πάνω από την κάτω μπάρα (60+30) */
         width: 50px !important;
-        height: auto !important;
-        flex-direction: column !important;
-        justify-content: center !important;
-        background: rgba(10, 10, 12, 0.95) !important;
-        border-right: 1px solid var(--neon-green) !important;
+        background: rgba(10, 10, 12, 1) !important;
+        border-right: 1px solid var(--neon-purple) !important;
         border-top: none !important;
+        border-bottom: none !important;
+        border-left: none !important;
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        justify-content: center !important;
         z-index: 9997 !important;
         padding: 10px 0 !important;
     }
 
-    /* 3. Προσαρμογή του χώρου της σελίδας για να μην κρύβονται στοιχεία */
-    body {
-        padding-left: 50px !important;
-        padding-bottom: 100px !important;
+    .left-sidebar .side-btn {
+        margin: 10px 0 !important;
+        width: 35px !important;
+        height: 35px !important;
     }
 
-    /* 4. Το Ticker παραμένει τέρμα κάτω σε όλο το πλάτος */
+    /* FIX: Αναγκάζουμε το Chat να μπει στη γραμμή με τα υπόλοιπα */
+    .chat-toggle {
+        position: relative !important;
+        right: auto !important;
+        bottom: auto !important;
+        transform: none !important;
+    }
+
+    /* --- 3. TICKER (ΤΕΡΜΑ ΚΑΤΩ) --- */
     .delivery-ticker {
+        position: fixed !important;
+        bottom: 0 !important;
         left: 0 !important;
         width: 100% !important;
+        height: 30px !important;
+        z-index: 9999 !important;
+    }
+
+    /* --- 4. ΣΤΗΣΙΜΟ ΚΕΝΤΡΙΚΟΥ ΧΩΡΟΥ (BODY) --- */
+    body {
+        padding-left: 50px !important; /* Αφήνει χώρο για την αριστερή μπάρα */
+        padding-bottom: 90px !important; /* Αφήνει χώρο για Nav (60) + Ticker (30) */
+    }
+    
+    /* --- 5. TOP HEADER (LOGO & ICONS) --- */
+    header {
+        padding-top: 15px !important;
+    }
+    
+    header .right-header-group {
+        margin-top: 10px !important;
+        justify-content: center !important;
     }
 }
