@@ -377,7 +377,58 @@ Type 'help' for a list of commands.
             </div>
         </div>
     </div>
+<!-- =========================================
+     AGENT DOSSIER / DASHBOARD MODAL
+     ========================================= -->
+<div class="modal-overlay" id="agent-dashboard-modal">
+    <div class="dossier-box">
+        <button class="modal-close" onclick="closeModal('agent-dashboard-modal')">X</button>
+        
+        <!-- HEADER: Agent Info -->
+        <div class="dossier-header">
+            <div class="dossier-title">[CLASSIFIED DOSSIER]</div>
+            <div class="agent-handle-box">
+                <span class="dossier-label">>// AGENT:</span> 
+                <span class="typewriter-text" id="dossier-username">UNKNOWN_USER</span>
+            </div>
+            <div class="agent-rank">CLEARANCE LEVEL: <span id="dossier-rank" class="neon-purple-text">RECRUIT</span></div>
+            <div class="network-status">ENCRYPTION: AES-256 | UPLINK: <span class="neon-green-text">STABLE</span></div>
+        </div>
 
+        <!-- BODY: 2 Columns Grid -->
+        <div class="dossier-grid">
+            
+            <!-- LEFT COLUMN: Orders / Secured Assets -->
+            <div class="dossier-col dossier-left">
+                <h3 class="dossier-heading">>// SECURED ASSETS</h3>
+                <div class="dossier-list" id="dossier-orders">
+                    <!-- Εδώ θα μπαίνουν οι αγορές (Προσωρινό κενό μήνυμα) -->
+                    <div class="dossier-empty">> NO HARDWARE SECURED YET. THE GRID WAITS.</div>
+                </div>
+            </div>
+
+            <!-- RIGHT COLUMN: Achievements / Decrypted Data -->
+            <div class="dossier-col dossier-right">
+                <h3 class="dossier-heading purple-heading">>// DECRYPTED DATA</h3>
+                <div class="dossier-list" id="dossier-achievements">
+                    <!-- Εδώ θα μπαίνουν τα achievements (Προσωρινό κενό μήνυμα) -->
+                    <div class="dossier-empty">> NO FILES DECRYPTED.</div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- BOTTOM: Wishlist / Targets -->
+        <div class="dossier-bottom">
+            <h3 class="dossier-heading">>// ACTIVE DIRECTIVES <span style="font-size: 0.6em; color: #888;">(TARGETS LOCKED)</span></h3>
+            <div class="wishlist-grid" id="dossier-wishlist">
+                 <!-- Προσωρινό κενό μήνυμα -->
+                 <div class="dossier-empty">> NO TARGETS LOCKED.</div>
+            </div>
+        </div>
+        
+    </div>
+</div>
     <div class="modal-overlay" id="signup-modal">
         <div class="modal-content" style="width:400px;">
             <span class="close-modal" onclick="closeModal('signup-modal')">X</span>
