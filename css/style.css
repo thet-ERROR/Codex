@@ -1797,66 +1797,81 @@ body.ui-locked .stage {
 }
 
 /* =========================================
-   MOBILE NAV BAR -> MOVED TO LEFT EDGE
+   BUG FIXES: SIGN OUT & INSPECT BLUR (MOBILE)
+   ========================================= */
+
+/* Fix 1: Το Sign Out πατιέται κανονικά τώρα */
+.profile-container, .profile-menu {
+    z-index: 999999 !important;
+}
+
+/* Fix 2: Βγάζουμε το blur από το φόντο για να μην θολώνει η κάρτα στα κινητά */
+.gallery-overlay {
+    background: rgba(10, 10, 12, 0.99) !important; /* Σχεδόν 100% μαύρο και συμπαγές */
+    backdrop-filter: none !important; /* Αφαίρεση του blur effect που προκαλούσε το bug */
+}
+
+
+/* =========================================
+   MOBILE LAYOUT (TOOLS ON LEFT, NAV ON BOTTOM)
    ========================================= */
 @media (max-width: 768px) {
-    /* Η κεντρική μπάρα πάει αριστερά */
+    
+    /* 1. Επαναφορά της κεντρικής μπάρας (Live, Vault κτλ) κάτω-κάτω */
     header .nav-bar {
         position: fixed !important;
-        top: 0;
-        left: 0;
-        bottom: 30px; /* Σταματάει ακριβώς πάνω από το Ticker! */
-        width: 50px;  /* Πολύ λεπτή, Cyberpunk μπάρα */
-        flex-direction: column !important;
-        justify-content: center;
-        background: rgba(10, 10, 12, 0.98);
-        border-right: 1px solid var(--neon-green);
-        border-top: none !important;
-        z-index: 9998;
-        padding: 10px 0;
-        gap: 10px;
+        bottom: 30px !important; /* Ακριβώς πάνω από το Ticker */
+        left: 0 !important;
+        width: 100% !important;
+        flex-direction: row !important; /* Ξανά σε οριζόντια διάταξη */
+        height: auto !important;
+        border-top: 1px solid var(--neon-green) !important;
+        border-right: none !important;
+        background: rgba(10, 10, 12, 0.98) !important;
+        padding: 5px 0 !important;
+        z-index: 9998 !important;
     }
 
-    /* CYBERPUNK TRICK: Κάθετα γράμματα για να χωράνε */
+    /* Επαναφορά των γραμμάτων σε οριζόντια μορφή */
     header .nav-bar .nav-btn {
-        writing-mode: vertical-rl;
-        transform: rotate(180deg);
-        width: 100%;
-        height: auto;
-        padding: 20px 0;
-        font-size: 0.75rem;
-        letter-spacing: 2px;
-        border: none;
-        border-left: 2px solid transparent; 
-        color: #888;
-        display: flex;
-        align-items: center;
-        justify-content: center;
+        writing-mode: horizontal-tb !important;
+        transform: none !important;
+        padding: 10px 2px !important;
+        border-left: none !important;
+        font-size: 0.7rem !important; /* Λίγο μικρότερα για να χωράνε τέλεια */
     }
 
-    /* Όταν ένα Tab είναι ενεργό */
-    header .nav-bar .nav-btn.active-live {
-        border-left: 2px solid var(--neon-green);
-        border-bottom: none;
-        color: var(--neon-green);
-        background: rgba(0, 255, 0, 0.05);
-    }
-
-    /* Προσαρμογή του Cart μετρητή στα κάθετα γράμματα */
     header .nav-bar .cart-btn .cart-count {
-        transform: rotate(90deg); /* Διορθώνει τον αριθμό να διαβάζεται σωστά */
-        margin-top: 10px;
+        transform: none !important;
+        margin-top: 0 !important;
     }
 
-    /* Κάνουμε χώρο στο κυρίως body ώστε να μην κρύβονται πράγματα κάτω από τη μπάρα */
+    /* 2. Η Μπάρα των Εργαλείων (Help, Reviews, Socials) πάει Αριστερά! */
+    .left-sidebar {
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        bottom: 90px !important; /* Σταματάει πάνω από το nav-bar και το ticker */
+        width: 50px !important;
+        height: auto !important;
+        flex-direction: column !important;
+        justify-content: center !important;
+        background: rgba(10, 10, 12, 0.95) !important;
+        border-right: 1px solid var(--neon-green) !important;
+        border-top: none !important;
+        z-index: 9997 !important;
+        padding: 10px 0 !important;
+    }
+
+    /* 3. Προσαρμογή του χώρου της σελίδας για να μην κρύβονται στοιχεία */
     body {
-        padding-left: 50px;
-        padding-bottom: 30px;
+        padding-left: 50px !important;
+        padding-bottom: 100px !important;
     }
 
-    /* Το Ticker στα κινητά πάει δίπλα από την αριστερή μπάρα */
+    /* 4. Το Ticker παραμένει τέρμα κάτω σε όλο το πλάτος */
     .delivery-ticker {
-        left: 50px;
-        width: calc(100% - 50px);
+        left: 0 !important;
+        width: 100% !important;
     }
 }
