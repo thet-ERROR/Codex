@@ -1511,3 +1511,119 @@ body.ui-locked .stage {
     font-style: italic;
     line-height: 1.5;
 }
+/* =========================================
+   AGENT DOSSIER / DASHBOARD STYLES
+   ========================================= */
+
+.dossier-box {
+    background: rgba(10, 10, 12, 0.95);
+    border: 1px solid var(--neon-green);
+    box-shadow: 0 0 30px rgba(0, 255, 0, 0.1), inset 0 0 20px rgba(0, 255, 0, 0.05);
+    width: 90%;
+    max-width: 900px;
+    border-radius: 4px;
+    padding: 25px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    /* Glitch animation στο άνοιγμα */
+    animation: dossierGlitch 0.4s ease-out forwards;
+}
+
+@keyframes dossierGlitch {
+    0% { opacity: 0; transform: scale(0.9) skewX(5deg); filter: hue-rotate(90deg); }
+    20% { opacity: 1; transform: scale(1.02) skewX(-5deg); filter: blur(2px); }
+    40% { transform: scale(0.98) skewX(2deg); filter: blur(0px); }
+    100% { opacity: 1; transform: scale(1) skewX(0); }
+}
+
+/* Header */
+.dossier-header {
+    border-bottom: 1px dashed #333;
+    padding-bottom: 15px;
+}
+
+.dossier-title {
+    color: #555;
+    font-family: var(--font-ui);
+    font-size: 0.8rem;
+    letter-spacing: 3px;
+    margin-bottom: 10px;
+}
+
+.agent-handle-box {
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: #fff;
+    margin-bottom: 5px;
+    font-family: var(--font-ui);
+}
+
+.dossier-label {
+    color: var(--neon-green);
+}
+
+/* Typing Effect για το Username */
+.typewriter-text {
+    display: inline-block;
+    overflow: hidden;
+    white-space: nowrap;
+    border-right: 2px solid var(--neon-green);
+    animation: typing 1.5s steps(20, end), blink-caret 0.75s step-end infinite;
+}
+
+@keyframes typing { from { width: 0 } to { width: 100% } }
+@keyframes blink-caret { from, to { border-color: transparent } 50% { border-color: var(--neon-green); } }
+
+.agent-rank, .network-status {
+    font-family: monospace;
+    font-size: 0.85rem;
+    color: #aaa;
+    margin-top: 5px;
+}
+
+.neon-purple-text { color: var(--neon-purple); text-shadow: 0 0 5px var(--neon-purple); font-weight: bold; }
+.neon-green-text { color: var(--neon-green); text-shadow: 0 0 5px var(--neon-green); font-weight: bold; }
+
+/* Grid για τις 2 Στήλες */
+.dossier-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+@media (max-width: 768px) {
+    .dossier-grid { grid-template-columns: 1fr; }
+}
+
+.dossier-heading {
+    font-family: var(--font-ui);
+    font-size: 0.9rem;
+    color: var(--neon-green);
+    border-bottom: 1px solid rgba(0, 255, 0, 0.2);
+    padding-bottom: 5px;
+    margin-bottom: 15px;
+}
+
+.purple-heading {
+    color: var(--neon-purple);
+    border-bottom-color: rgba(168, 85, 247, 0.2);
+}
+
+/* Λίστες & Κενά Μηνύματα */
+.dossier-list, .wishlist-grid {
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid #222;
+    padding: 15px;
+    min-height: 150px;
+    border-radius: 4px;
+}
+
+.dossier-empty {
+    font-family: monospace;
+    color: #555;
+    font-size: 0.8rem;
+    text-align: center;
+    margin-top: 50px;
+}
