@@ -6,7 +6,7 @@ let activeEvent = null;
 let isLoggedIn = false;
 let currentTicketCode = "";
 let achievements = JSON.parse(localStorage.getItem('codex_achievements')) || { 'login': false, 'cart': false, 'vote': false };
-
+let wishlist = JSON.parse(localStorage.getItem('codex_wishlist')) || [];
 const achList = [
     { id: 'login', title: 'AGENT RECRUITED', desc: 'Logged in for the first time.', icon: 'ph-identification-card' },
     { id: 'cart', title: 'FIRST LOOT', desc: 'Added an item to the cart.', icon: 'ph-shopping-cart' },
@@ -27,7 +27,22 @@ bgMusic.loop = true;
 
 let savedVol = localStorage.getItem('codex_volume');
 bgMusic.volume = savedVol ? parseFloat(savedVol) : 0.1;
+function toggleWishlist(id) {
+    const pc = inventory.find(p => (p._id || p.id) === id);
+    if(!pc) return;
 
+    const index = wishlist.findIndex(p => (p._id || p.id) === id);
+    if(index > -1) {
+        wishlist.splice(index, 1);
+        showToast("TARGET REMOVED FROM WISHLIST", "normal");
+    } else {
+        wishlist.push(pc);
+        showToast("TARGET LOCKED: SAVED TO PROFILE", "achievement");
+    }
+    
+    localStorage.setItem('codex_wishlist', JSON.stringify(wishlist));
+    renderCard(); // Ανανεώνει την κάρτα για να αλλάξει χρώμα το εικονίδιο
+}
 function playClick() { if(audioEnabled) { audioClick.currentTime=0; audioClick.play().catch(()=>{}); } }
 function playHover() { if(audioEnabled) { audioHover.currentTime=0; audioHover.play().catch(()=>{}); } }
 
@@ -466,6 +481,26 @@ function openAgentDashboard() {
     }
 
     // 5. Άνοιγμα του παραθύρου!
+    // Ενημέρωση Wishlist μέσα στο Dashboard
+    const wishlistContainer = document.getElementById('dossier-wishlist');
+    if(wishlistContainer) {
+        if(wishlist.length === 0) {
+            wishlistContainer.innerHTML = '<div class="dossier-empty">> NO TARGETS LOCKED.</div>';
+        } else {
+            wishlistContainer.innerHTML = wishlist.map(pc => `
+                <div style="display:flex; align-items:center; gap:15px; background:rgba(0,0,0,0.5); padding:10px; border:1px solid #333; border-radius:6px; width:100%; box-sizing:border-box; margin-bottom:10px;">
+                    <img src="${pc.images[0]}" style="width:50px; height:50px; object-fit:cover; border-radius:4px; border:1px solid var(--neon-purple);">
+                    <div>
+                        <div style="color:#fff; font-family:var(--font-ui); font-size:0.9rem;">${pc.name}</div>
+                        <div style="color:var(--neon-green); font-size:0.8rem; font-family:monospace;">${pc.price}</div>
+                    </div>
+                    <button onclick="toggleWishlist('${pc._id || pc.id}'); openAgentDashboard();" style="margin-left:auto; background:transparent; border:none; color:#ff3333; cursor:pointer; font-size:1.2rem; transition:0.2s;">
+                        <i class="ph-bold ph-trash"></i>
+                    </button>
+                </div>
+            `).join('');
+        }
+    }
     openModal('agent-dashboard-modal');
 }
 
@@ -707,10 +742,14 @@ function renderCard() {
     }
 // Αν το PC δεν έχει lore από τη βάση, βάζουμε ένα default μήνυμα
     const pcLore = pc.lore || "Σύστημα τακτικών επιχειρήσεων. Οι πλήρεις προδιαγραφές βρίσκονται στον φάκελο INSPECT. Απαιτείται εξουσιοδότηση.";
-
+    const inWishlist = wishlist.find(p => (p._id || p.id) === (pc._id || pc.id));
+    const wishColor = inWishlist ? "var(--neon-green)" : "#555";
     c.innerHTML = `
         <div class="holo-card-inner">
             <img src="${pc.images[0]||'assets/images/bg.jpg'}" class="hero-img">
+            <button onclick="toggleWishlist('${pc._id || pc.id}')" style="position:absolute; top:15px; right:15px; background:rgba(0,0,0,0.7); border:1px solid ${wishColor}; color:${wishColor}; border-radius:50%; width:40px; height:40px; display:flex; justify-content:center; align-items:center; cursor:pointer; z-index:10; transition:all 0.3s;">
+    <i class="ph-bold ph-crosshair" style="font-size:1.3rem;"></i>
+</button>
             ${stockHTML}
             <div class="pc-title">${pc.name}</div>
             <div class="card-price-row">
