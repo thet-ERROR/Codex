@@ -427,6 +427,47 @@ function openAchievements() {
     }
     openModal('achievements-modal'); 
 }
+function openAgentDashboard() {
+    // 1. Έλεγχος αν είναι συνδεδεμένος
+    if(!isLoggedIn) { 
+        showToast("ACCESS DENIED. LOGIN REQUIRED.", "error"); 
+        openModal('login-modal'); 
+        return; 
+    }
+
+    // 2. Ενημέρωση Ονόματος
+    const userName = document.getElementById('user-display').innerText || 'UNKNOWN_AGENT';
+    const dossierNameEl = document.getElementById('dossier-username');
+    if(dossierNameEl) dossierNameEl.innerText = userName;
+
+    // 3. Υπολογισμός Rank (βάσει ξεκλειδωμένων achievements)
+    let unlockedCount = Object.values(achievements).filter(val => val === true).length;
+    let rank = "RECRUIT";
+    if (unlockedCount >= 1) rank = "OPERATIVE";
+    if (unlockedCount >= 3) rank = "ELITE AGENT";
+    
+    const rankEl = document.getElementById('dossier-rank');
+    if(rankEl) rankEl.innerText = rank;
+
+    // 4. Ενημέρωση Achievements μέσα στο Dashboard
+    const achListContainer = document.getElementById('dossier-achievements');
+    if(achListContainer) {
+        achListContainer.innerHTML = achList.map(a => { 
+            const unlocked = achievements[a.id]; 
+            return `<div class="ach-card ${unlocked ? 'unlocked' : ''}" style="margin-bottom:10px; width:100%; box-sizing:border-box;">
+                        <i class="ph-fill ${a.icon} ach-icon"></i>
+                        <div class="ach-info">
+                            <h4>${a.title}</h4>
+                            <p style="font-size:0.7rem; color:#888;">${a.desc}</p>
+                        </div>
+                        <div class="ach-status" style="font-size:0.7rem;">${unlocked ? 'UNLOCKED' : 'LOCKED'}</div>
+                    </div>`; 
+        }).join(''); 
+    }
+
+    // 5. Άνοιγμα του παραθύρου!
+    openModal('agent-dashboard-modal');
+}
 
 function switchTab(mode) { 
     currentTab = mode; 
