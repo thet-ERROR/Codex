@@ -378,7 +378,7 @@ Type 'help' for a list of commands.
         </div>
     </div>
 <!-- =========================================
-     AGENT DOSSIER / DASHBOARD MODAL
+     AGENT PROFILE / DASHBOARD MODAL
      ========================================= -->
 <div class="modal-overlay" id="agent-dashboard-modal">
     <div class="dossier-box">
@@ -386,44 +386,41 @@ Type 'help' for a list of commands.
         
         <!-- HEADER: Agent Info -->
         <div class="dossier-header">
-            <div class="dossier-title">[CLASSIFIED DOSSIER]</div>
+            <div class="dossier-title">[AGENT PROFILE]</div>
             <div class="agent-handle-box">
                 <span class="dossier-label">>// AGENT:</span> 
                 <span class="typewriter-text" id="dossier-username">UNKNOWN_USER</span>
             </div>
-            <div class="agent-rank">CLEARANCE LEVEL: <span id="dossier-rank" class="neon-purple-text">RECRUIT</span></div>
-            <div class="network-status">ENCRYPTION: AES-256 | UPLINK: <span class="neon-green-text">STABLE</span></div>
+            <div class="agent-rank">RANK: <span id="dossier-rank" class="neon-purple-text">RECRUIT</span></div>
+            <div class="network-status">STATUS: <span class="neon-green-text">ONLINE</span></div>
         </div>
 
         <!-- BODY: 2 Columns Grid -->
         <div class="dossier-grid">
             
-            <!-- LEFT COLUMN: Orders / Secured Assets -->
+            <!-- LEFT COLUMN: Orders -->
             <div class="dossier-col dossier-left">
-                <h3 class="dossier-heading">>// SECURED ASSETS</h3>
+                <h3 class="dossier-heading">>// MY ORDERS</h3>
                 <div class="dossier-list" id="dossier-orders">
-                    <!-- Εδώ θα μπαίνουν οι αγορές (Προσωρινό κενό μήνυμα) -->
-                    <div class="dossier-empty">> NO HARDWARE SECURED YET. THE GRID WAITS.</div>
+                    <div class="dossier-empty">> NO ORDERS YET.</div>
                 </div>
             </div>
 
-            <!-- RIGHT COLUMN: Achievements / Decrypted Data -->
+            <!-- RIGHT COLUMN: Achievements -->
             <div class="dossier-col dossier-right">
-                <h3 class="dossier-heading purple-heading">>// DECRYPTED DATA</h3>
+                <h3 class="dossier-heading purple-heading">>// ACHIEVEMENTS</h3>
                 <div class="dossier-list" id="dossier-achievements">
-                    <!-- Εδώ θα μπαίνουν τα achievements (Προσωρινό κενό μήνυμα) -->
-                    <div class="dossier-empty">> NO FILES DECRYPTED.</div>
+                    <div class="dossier-empty">> NO ACHIEVEMENTS UNLOCKED.</div>
                 </div>
             </div>
 
         </div>
 
-        <!-- BOTTOM: Wishlist / Targets -->
+        <!-- BOTTOM: Wishlist -->
         <div class="dossier-bottom">
-            <h3 class="dossier-heading">>// ACTIVE DIRECTIVES <span style="font-size: 0.6em; color: #888;">(TARGETS LOCKED)</span></h3>
+            <h3 class="dossier-heading">>// WISHLIST <span style="font-size: 0.6em; color: #888;">(SAVED SYSTEMS)</span></h3>
             <div class="wishlist-grid" id="dossier-wishlist">
-                 <!-- Προσωρινό κενό μήνυμα -->
-                 <div class="dossier-empty">> NO TARGETS LOCKED.</div>
+                 <div class="dossier-empty">> NO SAVED SYSTEMS.</div>
             </div>
         </div>
         
