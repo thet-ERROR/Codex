@@ -2115,3 +2115,83 @@ body {
     .vote-btn { padding: 12px !important; font-size: 0.95rem !important; }
     .dossier-grid { grid-template-columns: 1fr !important; }
 }
+/* =========================================
+   14. MOBILE SURGERY: FINAL POLISH & BUG FIXES
+   ========================================= */
+
+/* --- 1. ΑΠΕΓΚΛΩΒΙΣΜΟΣ ΚΛΙΚ (SIGN IN / SIGN OUT) --- */
+.profile-container, .profile-menu, .profile-menu * {
+    z-index: 9999999 !important;
+    pointer-events: auto !important;
+}
+
+/* --- 2. ΕΠΙΔΙΟΡΘΩΣΗ SCROLL ΓΙΑ DASHBOARD (AGENT PROFILE) --- */
+.dossier-box {
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch !important; /* Το μυστικό για να σκρολάρει στα iPhone */
+    pointer-events: auto !important;
+    max-height: 85vh !important;
+    padding-bottom: 20px !important;
+}
+
+/* --- 3. ΕΠΙΔΙΟΡΘΩΣΗ SCROLL ΣΤΑ BENCHMARKS ΚΑΙ ΣΤΗΝ ΚΑΡΤΑ --- */
+.gallery-overlay .yg-card-back, 
+.gallery-overlay .yg-card-front {
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    pointer-events: auto !important; /* Ελευθερώνει την οθόνη για scroll */
+    padding-bottom: 40px !important; /* Δίνει αέρα στο τέλος */
+}
+
+/* --- 4. TARGET LOCK ΚΟΥΜΠΙ (WISH-LIST) --- */
+.yg-target-lock {
+    position: absolute;
+    top: 60px; /* Μπαίνει ακριβώς κάτω από το X */
+    right: 15px;
+    background: rgba(204, 255, 0, 0.05);
+    border: 1px solid var(--neon-green);
+    color: var(--neon-green);
+    width: 35px;
+    height: 35px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    cursor: pointer;
+    z-index: 20;
+    font-size: 1.2rem;
+    transition: 0.3s;
+}
+.yg-target-lock:hover, .yg-target-lock.active {
+    background: var(--neon-green);
+    color: #000;
+    box-shadow: 0 0 15px rgba(204, 255, 0, 0.5);
+}
+
+@media (max-width: 768px) {
+    /* --- 5. ΓΕΜΙΣΜΑ ΚΕΝΟΥ ΚΑΡΤΑΣ: Κουμπιά τέρμα κάτω --- */
+    .gallery-overlay .yg-card-front {
+        display: flex !important;
+        flex-direction: column !important;
+    }
+    .gallery-overlay .yg-card-content {
+        display: flex !important;
+        flex-direction: column !important;
+        flex-grow: 1 !important; /* Λέμε στο container να απλωθεί σε όλο το ύψος */
+        min-height: min-content !important;
+    }
+    .gallery-overlay .yg-buttons-section {
+        margin-top: auto !important; /* Η "μαγεία" που σπρώχνει τα 2 κουμπιά τέρμα κάτω */
+        padding-top: 20px !important;
+    }
+
+    /* --- 6. ΕΙΚΟΝΑ ΥΠΟΛΟΓΙΣΤΗ: Μεγαλύτερη & Λίγο πιο κάτω --- */
+    .gallery-overlay .yg-image-section {
+        /* Αντί για το παλιό background, εστιάζουμε μόνο στην εικόνα εδώ */
+    }
+    .gallery-overlay .yg-pc-image {
+        height: 190px !important; /* Πιο μεγάλη (από 130px) */
+        max-width: 190px !important;
+        transform: translateY(20px) !important; /* Την κατεβάζουμε πιο κάτω */
+    }
+}
