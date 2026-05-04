@@ -1956,12 +1956,11 @@ body {
 @media (max-width: 768px) {
     /* Σπρώχνουμε το site δεξιά για να μην το κρύβει η μπάρα */
     body { 
-        padding-left: 60px !important; 
-        padding-bottom: 50px !important; 
-        overflow-x: hidden !important; 
+        padding-left: 50px !important; 
+        padding-bottom: 40px !important; 
     }
 
-    /* --- 1. HEADER & ΛΟΓΟΤΥΠΟ (Χωρίς Overlap) --- */
+    /* --- 1. HEADER & ΛΟΓΟΤΥΠΟ --- */
     header { 
         flex-direction: column !important; 
         align-items: center !important; 
@@ -1976,7 +1975,6 @@ body {
         white-space: nowrap !important;
     }
     
-    /* Τα εικονίδια μπαίνουν ΟΜΟΡΦΑ κάτω από το λογότυπο */
     header .right-header-group { 
         position: relative !important; 
         top: auto !important; 
@@ -1994,19 +1992,21 @@ body {
         top: auto !important; 
         left: 0 !important; 
         transform: none !important; 
-        width: calc(100vw - 60px) !important; /* Πιάνει όλο το χώρο εκτός της μπάρας */
+        width: calc(100vw - 50px) !important; /* Πιάνει τον χώρο δίπλα από τη μπάρα */
+        max-width: 100vw !important;
         background: transparent !important; 
         border: none !important; 
         border-radius: 0 !important;
         margin-top: 15px !important; 
+        
         display: flex !important; 
         flex-direction: row !important; 
-        flex-wrap: nowrap !important; /* ΑΠΑΓΟΡΕΥΕΙ στα κουμπιά να σπάσουν γραμμή */
+        flex-wrap: nowrap !important; /* ΑΠΑΓΟΡΕΥΕΙ στα κουμπιά να πάνε από κάτω */
         justify-content: flex-start !important; 
-        overflow-x: auto !important; /* Ενεργοποιεί το Scroll! */
+        overflow-x: scroll !important; /* ΕΞΑΝΑΓΚΑΖΕΙ το Scroll! */
         overflow-y: hidden !important; 
         -webkit-overflow-scrolling: touch !important; 
-        padding: 5px 15px !important; 
+        padding: 5px 10px 15px 10px !important; /* Χώρος κάτω για να πιάνει το δάχτυλο */
         gap: 10px !important; 
         scrollbar-width: none !important; 
     }
@@ -2014,7 +2014,7 @@ body {
     
     .nav-btn { 
         flex: 0 0 auto !important; /* ΑΠΑΓΟΡΕΥΕΙ ΣΤΑ ΚΟΥΜΠΙΑ ΝΑ ΣΥΜΠΙΕΣΤΟΥΝ */
-        min-width: max-content !important; 
+        min-width: max-content !important; /* Παίρνουν αυστηρά το πλάτος των λέξεών τους */
         white-space: nowrap !important; 
         font-size: 0.8rem !important; 
         padding: 10px 15px !important; 
@@ -2027,59 +2027,58 @@ body {
         color: var(--neon-purple) !important;
     }
 
-    /* --- 3. ΑΡΙΣΤΕΡΗ ΜΠΑΡΑ & CHAT (Σωστά κλειδωμένα) --- */
+    /* --- 3. ΑΡΙΣΤΕΡΗ ΜΠΑΡΑ & CHAT (Τέλεια Στοίχιση) --- */
     .left-sidebar { 
         position: fixed !important; 
         top: 0 !important; 
         left: 0 !important; 
         bottom: 30px !important; /* Πάνω από το Ticker */
-        width: 60px !important; 
+        width: 50px !important; 
         height: auto !important;
         background: rgba(10, 10, 12, 0.98) !important; 
         border-right: 1px solid var(--neon-purple) !important; 
-        border-top: none !important; /* Ακυρώνει τον κανόνα των Tablets */
+        border-top: none !important;
+        
         display: flex !important; 
         flex-direction: column !important; 
-        justify-content: flex-end !important; /* Σπρώχνει τα πάντα κάτω */
+        justify-content: flex-start !important; /* Ξεκινούν από πάνω! */
         align-items: center !important; 
+        padding-top: 100px !important; /* Τα κατεβάζει κάτω από το ύψος του Logo */
         padding-bottom: 20px !important; 
         z-index: 9000 !important; 
     }
     .left-sidebar .side-group { 
         display: flex !important; 
-        flex-direction: column !important; /* Ακυρώνει το οριζόντιο των Tablets */
+        flex-direction: column !important; 
         gap: 15px !important; 
-        margin-bottom: 20px !important; 
         width: 100% !important; 
         align-items: center !important;
     }
-    .left-sidebar .side-divider { display: block !important; width: 60% !important; margin: 5px auto !important; }
-    .side-btn { width: 40px !important; height: 40px !important; font-size: 1.2rem !important; margin: 0 !important; }
+    .side-btn { width: 35px !important; height: 35px !important; font-size: 1.2rem !important; margin: 0 !important; }
     
-    .chat-toggle { position: relative !important; margin: 0 !important; }
-    .chat-widget { bottom: 50px !important; left: 75px !important; right: auto !important; width: 280px !important; }
+    /* Το Chat πάει ΤΕΡΜΑ ΚΑΤΩ αυτόματα! */
+    .chat-toggle { margin-top: auto !important; margin-bottom: 0 !important; position: relative !important; }
+    .chat-widget { bottom: 50px !important; left: 65px !important; right: auto !important; width: 280px !important; }
 
-    /* --- 4. CARDS & MENUS --- */
+    /* --- 4. ΤΟ TERMINAL ΣΤΑ ΚΙΝΗΤΑ (Τέλειο Μέγεθος & Κεντράρισμα) --- */
+    #cli-overlay {
+        width: calc(100vw - 80px) !important; /* Αφήνει χώρο για την αριστερή μπάρα */
+        max-width: none !important;
+        height: 60vh !important; /* Πιο κοντό για να μην πιάνει όλη την οθόνη */
+        left: calc(50% + 25px) !important; /* Σπρώχνεται δεξιά για να κεντραριστεί στον ΕΛΕΥΘΕΡΟ χώρο */
+        transform: translate(-50%, -50%) !important;
+        padding: 15px !important;
+    }
+    .cli-close { top: 10px !important; right: 10px !important; }
+
+    /* --- 5. CARDS & YUGIOH --- */
     #carousel-wrapper { transform: scale(0.85) !important; transform-origin: top center !important; margin-bottom: -60px !important; margin-top: 20px !important; }
-    .social-menu { left: 70px !important; bottom: 70px !important; top: auto !important; flex-direction: column !important; }
-    #cart-dropdown { top: 50% !important; left: 50% !important; right: auto !important; transform: translate(-50%, -50%) !important; width: 90vw !important; max-width: 380px !important; max-height: 80vh !important; }
-    .dossier-grid { grid-template-columns: 1fr !important; }
+    .social-menu { left: 60px !important; bottom: 70px !important; top: auto !important; flex-direction: column !important; }
+    #cart-dropdown { top: 50% !important; left: calc(50% + 25px) !important; right: auto !important; transform: translate(-50%, -50%) !important; width: 85vw !important; max-width: 380px !important; max-height: 80vh !important; }
 
-    /* --- 5. YU-GI-OH CARD (Fix Blur & Scroll) --- */
-    .gallery-overlay { 
-        background: rgba(8, 8, 10, 0.99) !important; /* Συμπαγές Μαύρο = ΤΕΛΟΣ ΤΟ BLUR BUG */
-        backdrop-filter: none !important; 
-        -webkit-backdrop-filter: none !important;
-        display: flex !important; 
-        align-items: center !important; 
-        justify-content: center !important;
-    }
+    .gallery-overlay { background: rgba(8, 8, 10, 0.99) !important; backdrop-filter: none !important; -webkit-backdrop-filter: none !important; display: flex !important; align-items: center !important; justify-content: center !important; }
     .gallery-overlay:not([style*="display: flex"]) { display: none !important; }
-    
-    .yg-card-container { 
-        position: relative !important; top: auto !important; left: auto !important; transform: none !important; 
-        width: 90vw !important; height: 80vh !important; 
-    }
+    .yg-card-container { position: relative !important; top: auto !important; left: auto !important; transform: none !important; width: 90vw !important; height: 80vh !important; }
     .gallery-overlay .yg-card { width: 100% !important; height: 100% !important; background: rgba(15, 15, 20, 0.98) !important; }
     .gallery-overlay .yg-card-front, .gallery-overlay .yg-card-back { height: 100% !important; overflow-y: auto !important; padding: 15px !important; }
     .gallery-overlay .yg-card-content { padding: 15px !important; padding-top: 20px !important; justify-content: flex-start !important; }
