@@ -361,7 +361,9 @@ header {
 .profile-container { position: relative; }
 .profile-btn { width: 45px; height: 45px; border-radius: 50%; background: rgba(255,255,255,0.05); border: 1px solid var(--neon-green); color: var(--neon-green); font-size: 1.5rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.3s; }
 .profile-btn:hover { background: var(--neon-green); color: #000; box-shadow: 0 0 15px var(--neon-green); }
-.profile-menu { position: absolute; top: 60px; right: 0; width: 180px; background: #0a0a0c; border: 1px solid #333; border-radius: 10px; padding: 10px; display: none; flex-direction: column; gap: 5px; box-shadow: 0 10px 30px rgba(0,0,0,0.8); backdrop-filter: blur(10px); z-index: 9999; }
+/* FIX PROFILE MENU (SIGN IN / SIGN OUT) */
+.profile-container { position: relative; z-index: 999999 !important; }
+.profile-menu { position: absolute; top: 60px; right: 0; width: 180px; background: rgba(10, 10, 15, 1) !important; border: 1px solid var(--neon-purple) !important; border-radius: 10px; padding: 10px; display: none; flex-direction: column; gap: 5px; box-shadow: 0 10px 50px rgba(0,0,0,0.9); z-index: 999999 !important; }
 .profile-menu.show { display: flex; animation: fadeIn 0.2s; }
 .p-item { padding: 10px; text-align: center; cursor: pointer; font-family: var(--font-ui); font-weight: bold; color: #aaa; border-radius: 6px; transition: 0.2s; font-size: 0.9rem; }
 .p-item:hover { background: rgba(255,255,255,0.1); color: #fff; }
@@ -1015,6 +1017,7 @@ header {
     /* Ενεργοποίηση εσωτερικού scroll και μείωση περιθωρίων */
     .gallery-overlay .yg-card-front,
     .gallery-overlay .yg-card-back {
+        padding: 20px 15px 40px 15px !important; display: flex !important; flex-direction: column !important; overflow-y: auto !important; overflow-x: hidden !important; -webkit-overflow-scrolling: touch !important; 
         height: 100% !important;
         max-height: none !important;
         overflow-y: auto !important;
@@ -1022,10 +1025,10 @@ header {
     }
 
     /* Μικρότερα padding στο περιεχόμενο */
-    .gallery-overlay .yg-card-content {
-        padding: 15px !important;
-        padding-top: 20px !important;
-    }
+/* Η κάρτα πλέον γεμίζει ομοιόμορφα μέχρι κάτω */
+    .gallery-overlay .yg-card-content { padding: 15px !important; padding-top: 20px !important; justify-content: space-between !important; flex-grow: 1 !important; }
+
+    .gallery-overlay .yg-card-front { overflow-y: auto !important; overflow-x: hidden !important; -webkit-overflow-scrolling: touch !important; padding-bottom: 20px !important; }
 
     /* Πιο μαζεμένη περιοχή για τη φωτογραφία */
     .gallery-overlay .yg-image-section {
