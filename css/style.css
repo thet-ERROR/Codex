@@ -1958,6 +1958,7 @@ body {
     body { 
         padding-left: 50px !important; 
         padding-bottom: 40px !important; 
+        overflow-x: hidden !important; 
     }
 
     /* --- 1. HEADER & ΛΟΓΟΤΥΠΟ --- */
@@ -1971,50 +1972,45 @@ body {
     header .logo { 
         font-size: 2rem !important; 
         margin-bottom: 15px !important; 
-        position: relative !important; 
         white-space: nowrap !important;
     }
-    
     header .right-header-group { 
         position: relative !important; 
-        top: auto !important; 
-        right: auto !important; 
         display: flex !important; 
         flex-direction: row !important; 
         justify-content: center !important; 
         gap: 15px !important; 
         margin: 0 !important; 
+        top: auto !important; right: auto !important;
     }
 
     /* --- 2. TABS: ΤΟ ΑΠΟΛΥΤΟ HORIZONTAL SWIPE --- */
     .nav-bar { 
         position: relative !important; 
-        top: auto !important; 
-        left: 0 !important; 
-        transform: none !important; 
-        width: calc(100vw - 50px) !important; /* Πιάνει τον χώρο δίπλα από τη μπάρα */
+        width: calc(100vw - 50px) !important; /* Ακριβώς όσο μένει δίπλα από τη μπάρα */
         max-width: 100vw !important;
         background: transparent !important; 
         border: none !important; 
         border-radius: 0 !important;
         margin-top: 15px !important; 
+        left: 0 !important; transform: none !important;
         
         display: flex !important; 
         flex-direction: row !important; 
-        flex-wrap: nowrap !important; /* ΑΠΑΓΟΡΕΥΕΙ στα κουμπιά να πάνε από κάτω */
+        flex-wrap: nowrap !important; 
         justify-content: flex-start !important; 
-        overflow-x: scroll !important; /* ΕΞΑΝΑΓΚΑΖΕΙ το Scroll! */
+        overflow-x: auto !important; 
         overflow-y: hidden !important; 
         -webkit-overflow-scrolling: touch !important; 
-        padding: 5px 10px 15px 10px !important; /* Χώρος κάτω για να πιάνει το δάχτυλο */
+        padding: 5px 15px 15px 15px !important; 
         gap: 10px !important; 
-        scrollbar-width: none !important; 
     }
     .nav-bar::-webkit-scrollbar { display: none !important; }
     
     .nav-btn { 
-        flex: 0 0 auto !important; /* ΑΠΑΓΟΡΕΥΕΙ ΣΤΑ ΚΟΥΜΠΙΑ ΝΑ ΣΥΜΠΙΕΣΤΟΥΝ */
-        min-width: max-content !important; /* Παίρνουν αυστηρά το πλάτος των λέξεών τους */
+        flex: 0 0 auto !important; 
+        flex-shrink: 0 !important; /* ΤΟ ΜΥΣΤΙΚΟ ΓΙΑ ΝΑ ΜΗΝ ΣΥΜΠΙΕΖΟΝΤΑΙ ΠΟΤΕ! */
+        min-width: max-content !important; 
         white-space: nowrap !important; 
         font-size: 0.8rem !important; 
         padding: 10px 15px !important; 
@@ -2027,12 +2023,12 @@ body {
         color: var(--neon-purple) !important;
     }
 
-    /* --- 3. ΑΡΙΣΤΕΡΗ ΜΠΑΡΑ & CHAT (Τέλεια Στοίχιση) --- */
+    /* --- 3. ΑΡΙΣΤΕΡΗ ΜΠΑΡΑ & CHAT --- */
     .left-sidebar { 
         position: fixed !important; 
         top: 0 !important; 
         left: 0 !important; 
-        bottom: 30px !important; /* Πάνω από το Ticker */
+        bottom: 30px !important; 
         width: 50px !important; 
         height: auto !important;
         background: rgba(10, 10, 12, 0.98) !important; 
@@ -2041,9 +2037,9 @@ body {
         
         display: flex !important; 
         flex-direction: column !important; 
-        justify-content: flex-start !important; /* Ξεκινούν από πάνω! */
+        justify-content: flex-start !important; 
         align-items: center !important; 
-        padding-top: 100px !important; /* Τα κατεβάζει κάτω από το ύψος του Logo */
+        padding-top: 150px !important; /* <--- Τα κατεβάσαμε "ένα κλικ" κάτω (από 100px σε 150px) */
         padding-bottom: 20px !important; 
         z-index: 9000 !important; 
     }
@@ -2056,29 +2052,42 @@ body {
     }
     .side-btn { width: 35px !important; height: 35px !important; font-size: 1.2rem !important; margin: 0 !important; }
     
-    /* Το Chat πάει ΤΕΡΜΑ ΚΑΤΩ αυτόματα! */
     .chat-toggle { margin-top: auto !important; margin-bottom: 0 !important; position: relative !important; }
     .chat-widget { bottom: 50px !important; left: 65px !important; right: auto !important; width: 280px !important; }
 
-    /* --- 4. ΤΟ TERMINAL ΣΤΑ ΚΙΝΗΤΑ (Τέλειο Μέγεθος & Κεντράρισμα) --- */
+    /* --- 4. TERMINAL --- */
     #cli-overlay {
-        width: calc(100vw - 80px) !important; /* Αφήνει χώρο για την αριστερή μπάρα */
+        width: calc(100vw - 80px) !important; 
         max-width: none !important;
-        height: 60vh !important; /* Πιο κοντό για να μην πιάνει όλη την οθόνη */
-        left: calc(50% + 25px) !important; /* Σπρώχνεται δεξιά για να κεντραριστεί στον ΕΛΕΥΘΕΡΟ χώρο */
+        height: 60vh !important; 
+        left: calc(50% + 25px) !important; 
         transform: translate(-50%, -50%) !important;
         padding: 15px !important;
     }
     .cli-close { top: 10px !important; right: 10px !important; }
 
-    /* --- 5. CARDS & YUGIOH --- */
+    /* --- 5. CARDS & YUGIOH (Το απόλυτο Center Fix) --- */
     #carousel-wrapper { transform: scale(0.85) !important; transform-origin: top center !important; margin-bottom: -60px !important; margin-top: 20px !important; }
     .social-menu { left: 60px !important; bottom: 70px !important; top: auto !important; flex-direction: column !important; }
     #cart-dropdown { top: 50% !important; left: calc(50% + 25px) !important; right: auto !important; transform: translate(-50%, -50%) !important; width: 85vw !important; max-width: 380px !important; max-height: 80vh !important; }
 
-    .gallery-overlay { background: rgba(8, 8, 10, 0.99) !important; backdrop-filter: none !important; -webkit-backdrop-filter: none !important; display: flex !important; align-items: center !important; justify-content: center !important; }
+    /* ΜΑΓΕΙΑ: Καταργούμε το Flex στο background για να μην συνθλίβει την κάρτα */
+    .gallery-overlay { 
+        background: rgba(8, 8, 10, 0.99) !important; 
+        backdrop-filter: none !important; -webkit-backdrop-filter: none !important; 
+        display: block !important; /* Όχι flex, για να δουλέψει το absolute */
+    }
     .gallery-overlay:not([style*="display: flex"]) { display: none !important; }
-    .yg-card-container { position: relative !important; top: auto !important; left: auto !important; transform: none !important; width: 90vw !important; height: 80vh !important; }
+    
+    .yg-card-container { 
+        position: absolute !important; 
+        top: 50% !important; 
+        left: calc(50% + 25px) !important; /* Κεντράρισμα συνυπολογίζοντας τα 50px της μπάρας */
+        transform: translate(-50%, -50%) !important; 
+        width: 85vw !important; 
+        height: 80vh !important; 
+        margin: 0 !important;
+    }
     .gallery-overlay .yg-card { width: 100% !important; height: 100% !important; background: rgba(15, 15, 20, 0.98) !important; }
     .gallery-overlay .yg-card-front, .gallery-overlay .yg-card-back { height: 100% !important; overflow-y: auto !important; padding: 15px !important; }
     .gallery-overlay .yg-card-content { padding: 15px !important; padding-top: 20px !important; justify-content: flex-start !important; }
@@ -2095,7 +2104,7 @@ body {
     .yg-benchmark-grid > div > span:first-child { font-size: 0.75rem !important; margin-bottom: 4px !important; }
     .yg-benchmark-grid > div > span:last-child { font-size: 1rem !important; font-weight: 800 !important; }
 
-    /* VOTE TAB */
+    /* VOTE TAB & DOSSIER */
     .vote-container { padding: 15px !important; max-width: 90vw !important; margin: 10px auto !important; }
     .mystery-img-wrap { height: 180px !important; margin-bottom: 15px !important; }
     .mystery-img { max-height: 100% !important; object-fit: contain !important; }
@@ -2103,4 +2112,5 @@ body {
     #v-price-display { font-size: 1.2rem !important; margin-bottom: 15px !important; }
     .vote-progress-wrap { height: 15px !important; margin-bottom: 12px !important; }
     .vote-btn { padding: 12px !important; font-size: 0.95rem !important; }
+    .dossier-grid { grid-template-columns: 1fr !important; }
 }
