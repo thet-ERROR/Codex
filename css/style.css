@@ -2195,3 +2195,93 @@ body {
         transform: translateY(20px) !important; /* Την κατεβάζουμε πιο κάτω */
     }
 }
+/* =========================================
+   15. ULTIMATE INTERACTION & SCROLL FIXES
+   ========================================= */
+
+/* --- 1. TARGET LOCK ANIMATION --- */
+.yg-target-lock {
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+}
+.yg-target-lock:active {
+    transform: scale(0.6) !important; /* Πατιέται μέσα σαν αληθινό κουμπί */
+}
+.yg-target-lock.locked {
+    background: var(--neon-green) !important;
+    color: #000 !important;
+    border-color: var(--neon-green) !important;
+    box-shadow: 0 0 20px var(--neon-green) !important;
+    transform: rotate(90deg) !important; /* Γυρνάει 90 μοίρες όταν κλειδώνει! */
+}
+
+/* --- 2. SIGN IN / SIGN OUT UNBLOCKER --- */
+/* Ξεκλειδώνουμε το κεντρικό Header για να πιάνονται τα κλικ */
+body.ui-locked header {
+    pointer-events: auto !important; 
+    filter: none !important;
+    opacity: 1 !important;
+}
+/* Ξανακλειδώνουμε και θολώνουμε ΟΛΑ τα υπόλοιπα, ΕΚΤΟΣ από το Προφίλ */
+body.ui-locked header .nav-bar,
+body.ui-locked header .logo,
+body.ui-locked header .cli-btn,
+body.ui-locked header .achievements-btn {
+    pointer-events: none !important; 
+    filter: blur(3px) !important;
+    opacity: 0.5 !important;
+}
+.profile-menu, .profile-container {
+    pointer-events: auto !important;
+    z-index: 9999999 !important;
+}
+
+/* --- 3. BENCHMARKS & CARD SCROLL FIX (Mobile Magic) --- */
+.gallery-overlay .yg-card-back,
+.gallery-overlay .yg-card-front {
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch !important; /* Ξεμπλοκάρει το iPhone */
+    touch-action: pan-y !important; /* Εξαναγκάζει τον browser να επιτρέψει το κάθετο Swipe */
+    overscroll-behavior: contain !important; /* Απαγορεύει στο site από πίσω να κουνηθεί */
+    padding-bottom: 50px !important;
+}
+
+/* --- 4. DASHBOARD: ΣΤΑΘΕΡΗ ΚΑΡΤΕΛΑ, SCROLL ΜΟΝΟ ΣΤΑ ACHIEVEMENTS --- */
+@media (max-width: 768px) {
+    .dossier-box {
+        overflow: hidden !important; /* ΤΕΛΟΣ το scroll σε όλη την κάρτα */
+        max-height: 85vh !important;
+        padding-bottom: 15px !important;
+    }
+    .dossier-grid {
+        flex: 1 !important;
+        display: flex !important;
+        flex-direction: column !important;
+        overflow: hidden !important;
+    }
+    .dossier-col.dossier-left {
+        flex-shrink: 0 !important; /* Orders & Wishlist παραμένουν σταθερά */
+    }
+    .dossier-col.dossier-right {
+        flex: 1 !important;
+        display: flex !important;
+        flex-direction: column !important;
+        overflow: hidden !important; /* Εγκλωβίζει τα Achievements */
+        min-height: 0 !important;
+    }
+    
+    /* Η μαγεία: Το ΜΟΝΟ πράγμα που κάνει scroll πλέον είναι τα Achievements! */
+    #dossier-achievements {
+        flex: 1 !important;
+        overflow-y: auto !important; 
+        -webkit-overflow-scrolling: touch !important;
+        touch-action: pan-y !important;
+        max-height: none !important;
+        padding-right: 5px !important;
+    }
+    
+    /* Περιορίζουμε ελαφρώς το ύψος σε Orders/Wishlist για να δώσουμε χώρο στα Achievements */
+    #dossier-orders, #dossier-wishlist {
+        max-height: 100px !important;
+        min-height: 60px !important;
+    }
+}
