@@ -98,13 +98,13 @@ Type 'help' for a list of commands.
                 <i class="ph-bold ph-user-focus"></i>
             </button>
 
-            <div class="profile-container">
-                <div class="profile-btn" onclick="playClick(); toggleProfileMenu()"><i class="ph-fill ph-user-circle"></i></div>
-                <div class="profile-menu" id="profile-menu">
-                    <div id="guest-options">
-                        <div class="p-item action" onclick="playClick(); openModal('login-modal')">SIGN IN</div>
-                        <div class="p-item" onclick="playClick(); openModal('signup-modal')">SIGN UP</div>
-                    </div>
+<!-- PROFILE / DASHBOARD BUTTON (ΕΝΟΠΟΙΗΜΕΝΟ) -->
+<div class="profile-container">
+    <button class="profile-btn" onclick="playClick(); openModal('agent-dashboard-modal')">
+        <i class="ph-bold ph-user"></i>
+    </button>
+</div>
+<!-- ΤΟ ΠΑΛΙΟ PROFILE MENU ΔΙΑΓΡΑΦΤΗΚΕ ΕΝΤΕΛΩΣ -->
                     <div id="user-options" class="hidden">
                         <div style="text-align:center; color:#fff; margin-bottom:5px;" id="user-display">AGENT_01</div>
                         <div class="p-item" onclick="playClick(); logout()">SIGN OUT</div>
@@ -435,6 +435,15 @@ Type 'help' for a list of commands.
         </div>
         
     </div>
+    <!-- ACCOUNT ACTIONS (SIGN IN / SIGN OUT) -->
+        <div class="dossier-auth-actions">
+            <button class="yg-btn yg-btn-specs" onclick="playClick(); closeModal('agent-dashboard-modal'); openModal('auth-modal')">
+                > SIGN IN
+            </button>
+            <button class="yg-btn yg-btn-specs dossier-btn-logout" onclick="playClick(); showToast('AGENT DISCONNECTED', 'error'); closeModal('agent-dashboard-modal')">
+                > SIGN OUT
+            </button>
+        </div>
 </div>
     <div class="modal-overlay" id="signup-modal">
         <div class="modal-content" style="width:400px;">
@@ -568,9 +577,9 @@ Type 'help' for a list of commands.
     <div class="delivery-ticker">
         <div class="ticker-track">
             <!-- Βάζουμε τα μηνύματα 2 φορές για να κάνει ατελείωτη λούπα χωρίς κενό -->
-            <span>⚡ 24H SECURE DELIVERY ACROSS GREECE ⚡</span>
+            <span>⚡ 24H SECURE DELIVERY ACROSS SKG ⚡</span>
             <span>SYSTEMS FULLY ASSEMBLED & TESTED</span>
-            <span>⚡ 24H SECURE DELIVERY ACROSS GREECE ⚡</span>
+            <span>⚡ 24H SECURE DELIVERY ACROSS SKG ⚡</span>
             <span>SYSTEMS FULLY ASSEMBLED & TESTED</span>
         </div>
     </div>

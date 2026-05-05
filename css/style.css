@@ -2285,3 +2285,66 @@ body.ui-locked header .achievements-btn {
         min-height: 60px !important;
     }
 }
+/* =========================================
+   16. DASHBOARD MERGE & iOS SCROLL FIX
+   ========================================= */
+
+/* --- 1. ΚΟΥΜΠΙΑ SIGN IN / SIGN OUT ΣΤΟ DASHBOARD --- */
+.dossier-auth-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px; /* Κενό από τα από πάνω στοιχεία */
+    padding-top: 15px;
+    border-top: 1px dashed rgba(204, 255, 0, 0.2);
+}
+
+.dossier-auth-actions .yg-btn {
+    flex: 1;
+    padding: 12px;
+    font-size: 0.85rem;
+    font-family: monospace; /* Terminal style */
+}
+
+/* Κόκκινο στυλ για το Sign Out */
+.dossier-btn-logout {
+    border-color: rgba(255, 51, 51, 0.5) !important;
+    color: var(--retro-red) !important;
+    background: rgba(255, 51, 51, 0.05) !important;
+}
+.dossier-btn-logout:hover {
+    background: rgba(255, 51, 51, 0.15) !important;
+    box-shadow: 0 0 15px rgba(255, 51, 51, 0.4) !important;
+    color: #fff !important;
+}
+
+/* --- 2. ΤΟ ΑΠΟΛΥΤΟ FIX ΓΙΑ ΤΟ ΠΑΓΩΜΕΝΟ SCROLL ΣΤΗΝ 3D ΚΑΡΤΑ (iOS & Android) --- */
+.gallery-overlay .yg-card-back {
+    display: block !important; /* Το flex μερικές φορές καταστρέφει το scroll σε 3D */
+    height: 100% !important;
+    overflow-y: scroll !important; /* Εξαναγκασμός scroll */
+    -webkit-overflow-scrolling: touch !important; /* Ενεργοποιεί το hardware scroll στο iPhone */
+    
+    /* ΤΟ ΜΥΣΤΙΚΟ: Δίνει βάθος 1px για να αναγκάσει τον browser να το ρεντάρει σωστά! */
+    transform: rotateY(180deg) translateZ(1px) !important; 
+    padding-bottom: 50px !important;
+}
+
+/* Εξασφαλίζουμε ότι τα παιδιά του card-back δεν μπλοκάρουν την αφή */
+.gallery-overlay .yg-card-back * {
+    transform: translateZ(0); 
+    pointer-events: auto !important;
+}
+
+/* --- 3. ΔΙΟΡΘΩΣΗ SCROLL ΓΙΑ ΤΟ ΥΠΟΛΟΙΠΟ DASHBOARD --- */
+/* (Σε περίπτωση που χάλασε με την ενοποίηση) */
+.dossier-box {
+    max-height: 85vh !important;
+    overflow: hidden !important; 
+    display: flex !important;
+    flex-direction: column !important;
+}
+#dossier-achievements {
+    flex: 1 !important;
+    overflow-y: scroll !important;
+    -webkit-overflow-scrolling: touch !important;
+}
