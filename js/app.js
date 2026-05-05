@@ -186,11 +186,25 @@ async function handleSignup() {
 }
 
 async function handleLogin() {
-    const user = document.getElementById('login-user').value;
-    const pass = document.getElementById('login-pass').value;
-    const res = await fetch(`${API}/user-login`, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ username: user, password: pass }) });
-    const d = await res.json();
-    if(d.success) { showToast("ACCESS GRANTED: " + d.username, "normal"); closeModal('login-modal'); isLoggedIn = true; document.getElementById('user-display').innerText = d.username; document.getElementById('guest-options').classList.add('hidden'); document.getElementById('user-options').classList.remove('hidden'); checkAchievement('login'); } else { alert(d.error); }
+    const username = document.getElementById('login-user').value;
+    // ... (ο υπόλοιπος κώδικας του login σου)
+
+    if (username) {
+        // Ενημερώνει το όνομα στο Dashboard
+        const dossierName = document.getElementById('dossier-username');
+        if (dossierName) {
+            dossierName.innerText = username.toUpperCase();
+        }
+        
+        // Ενημερώνει και το παλιό user-display αν υπάρχει ακόμα
+        const userDisplay = document.getElementById('user-display');
+        if (userDisplay) {
+            userDisplay.innerText = username.toUpperCase();
+        }
+
+        showToast('WELCOME BACK, AGENT ' + username.toUpperCase(), 'normal');
+        closeModal('login-modal');
+    }
 }
 
 function logout() { 
