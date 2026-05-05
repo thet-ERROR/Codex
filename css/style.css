@@ -2430,3 +2430,19 @@ body.ui-locked header .achievements-btn {
     color: var(--retro-red) !important;
     box-shadow: 0 0 15px rgba(255, 51, 51, 0.3) !important;
 }
+/* Αφαίρεση κενού στο Desktop Inspect Card */
+@media (min-width: 1025px) {
+    .gallery-overlay .yg-card-front {
+        justify-content: center !important; /* Κεντράρει το περιεχόμενο */
+    }
+    .gallery-overlay .yg-card-content {
+        flex-grow: 0 !important; /* Απαγορεύει το υπερβολικό τέντωμα */
+        padding-bottom: 20px !important; /* Μαζεύει το κενό κάτω */
+    }
+    .gallery-overlay .yg-buttons-section {
+        margin-top: 20px !important; /* Σταθερή απόσταση αντί για αυτόματη */
+    }
+}
+#agent-dashboard-modal {
+    z-index: 999999 !important;
+}
