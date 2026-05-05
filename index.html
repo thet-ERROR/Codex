@@ -84,14 +84,24 @@ Type 'help' for a list of commands.
             <button class="nav-btn" id="tab-starter" onclick="playClick(); switchTab('starter')">STARTER PACKS</button>
             <button class="nav-btn" id="tab-vote" onclick="playClick(); switchTab('vote')">VOTE</button>
             
-            <!-- Κουμπί Καλαθιού στο σωστό σημείο -->
             <button class="nav-btn cart-btn" onclick="toggleCartDropdown()">
                 <i class="ph-bold ph-shopping-cart"></i> CART <span class="cart-count" id="cart-count">0</span>
             </button>
         </div>
         
+        <!-- RESTORED: Το δεξί γκρουπ με τα κουμπιά που είχε χαθεί -->
+        <div class="right-header-group">
+            <button class="cli-btn" onclick="toggleCLI()" title="Terminal">
+                <i class="ph-bold ph-terminal-window"></i>
+            </button>
+            
+            <div class="profile-container">
+                <button class="profile-btn" onclick="playClick(); openModal('agent-dashboard-modal')">
+                    <i class="ph-bold ph-user"></i>
+                </button>
+            </div>
+        </div>
     </header>
-
 
     <div class="stage">
         <div class="system-select-label" id="stage-label">// SYSTEM SELECT //</div>
@@ -170,10 +180,10 @@ Type 'help' for a list of commands.
                     <div class="yg-tier-badge" id="yg-tier-badge">S-TIER</div>
                     <div class="yg-close-btn" onclick="playClick(); closeModal('gallery-overlay')"></div>
 
-<!-- ΠΡΟΣΘΕΣΕ ΑΥΤΗ ΤΗ ΓΡΑΜΜΗ ΕΔΩ ΓΙΑ ΤΟ TARGET LOCK -->
+                    <!-- TARGET LOCK -->
                     <div class="yg-target-lock" title="Save to Wishlist" onclick="playClick(); this.classList.toggle('locked'); showToast('SYSTEM TARGETED', 'normal')"><i class="ph-bold ph-crosshair"></i></div>
+                    
                     <div class="yg-card-content" style="padding: 25px; padding-top: 35px; display: flex; flex-direction: column; flex-grow: 1;">
-                        
                         <h1 class="yg-project-name" id="yg-title" style="margin-bottom: 15px;">Project Cali</h1>
 
                         <div style="display: flex; align-items: center; justify-content: center; gap: 20px; width: 100%; margin-bottom: 15px;">
@@ -236,6 +246,13 @@ Type 'help' for a list of commands.
                         </div>
                     </div>
                 </div>
+            
+            <!-- RESTORED: Τα 3 div που έλειπαν και διέλυαν το layout! -->
+            </div>
+        </div>
+    </div>
+
+    <!-- MODALS -->
     <div class="modal-overlay" id="trust-modal">
         <div class="modal-content" style="width:750px; text-align:center;">
             <span class="close-modal" onclick="closeModal('trust-modal')">X</span>
@@ -297,7 +314,7 @@ Type 'help' for a list of commands.
                     <div class="color-btn" style="background:#b026ff;" onclick="setTheme('#b026ff')"></div>
                 </div>
             </div>
-        </div>
+        </div>    
     </div>
 
     <div class="modal-overlay" id="newsletter-modal">
@@ -362,67 +379,58 @@ Type 'help' for a list of commands.
             </div>
         </div>
     </div>
-<!-- =========================================
-     AGENT PROFILE / DASHBOARD MODAL
-     ========================================= -->
-<div class="modal-overlay" id="agent-dashboard-modal">
-    <div class="dossier-box">
-        <button class="modal-close" onclick="closeModal('agent-dashboard-modal')">X</button>
-        
-        <!-- HEADER: Terminal Agent Info -->
-        <div class="dossier-header">
-            <div class="dossier-title">[AGENT PROFILE]</div>
-            <div class="agent-handle-box">
-                <span class="dossier-label">> </span> 
-                <span class="typewriter-text terminal-name" id="dossier-username">UNKNOWN_USER</span>
-            </div>
-            <div class="agent-rank">RANK: <span id="dossier-rank" class="neon-purple-text">RECRUIT</span></div>
-            <div class="network-status">STATUS: <span class="neon-green-text">ONLINE</span></div>
-        </div>
 
-        <!-- BODY: 2 Columns Grid (Τώρα η Wishlist είναι αριστερά!) -->
-        <div class="dossier-grid">
+    <div class="modal-overlay" id="agent-dashboard-modal">
+        <div class="dossier-box">
+            <button class="modal-close" onclick="closeModal('agent-dashboard-modal')">X</button>
             
-            <!-- LEFT COLUMN: Orders & Wishlist -->
-            <div class="dossier-col dossier-left">
-                <!-- Orders Block -->
-                <div style="margin-bottom: 20px;">
-                    <h3 class="dossier-heading">>// MY ORDERS</h3>
-                    <div class="dossier-list" id="dossier-orders">
-                        <div class="dossier-empty">> NO ORDERS YET.</div>
+            <div class="dossier-header">
+                <div class="dossier-title">[AGENT PROFILE]</div>
+                <div class="agent-handle-box">
+                    <span class="dossier-label">> </span> 
+                    <span class="typewriter-text terminal-name" id="dossier-username">UNKNOWN_USER</span>
+                </div>
+                <div class="agent-rank">RANK: <span id="dossier-rank" class="neon-purple-text">RECRUIT</span></div>
+                <div class="network-status">STATUS: <span class="neon-green-text">ONLINE</span></div>
+            </div>
+
+            <div class="dossier-grid">
+                <div class="dossier-col dossier-left">
+                    <div style="margin-bottom: 20px;">
+                        <h3 class="dossier-heading">>// MY ORDERS</h3>
+                        <div class="dossier-list" id="dossier-orders">
+                            <div class="dossier-empty">> NO ORDERS YET.</div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h3 class="dossier-heading">>// WISHLIST <span style="font-size: 0.6em; color: #888;">(SAVED SYSTEMS)</span></h3>
+                        <div class="wishlist-grid" id="dossier-wishlist">
+                             <div class="dossier-empty">> NO SAVED SYSTEMS.</div>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Wishlist Block (Μεταφέρθηκε εδώ!) -->
-                <div>
-                    <h3 class="dossier-heading">>// WISHLIST <span style="font-size: 0.6em; color: #888;">(SAVED SYSTEMS)</span></h3>
-                    <div class="wishlist-grid" id="dossier-wishlist">
-                         <div class="dossier-empty">> NO SAVED SYSTEMS.</div>
+                <div class="dossier-col dossier-right">
+                    <h3 class="dossier-heading purple-heading">>// ACHIEVEMENTS</h3>
+                    <div class="dossier-list" id="dossier-achievements">
+                        <div class="dossier-empty">> NO ACHIEVEMENTS UNLOCKED.</div>
                     </div>
                 </div>
             </div>
-
-            <!-- RIGHT COLUMN: Achievements -->
-            <div class="dossier-col dossier-right">
-                <h3 class="dossier-heading purple-heading">>// ACHIEVEMENTS</h3>
-                <div class="dossier-list" id="dossier-achievements">
-                    <div class="dossier-empty">> NO ACHIEVEMENTS UNLOCKED.</div>
-                </div>
+            
+            <!-- ΤΩΡΑ ΕΙΝΑΙ ΣΩΣΤΑ ΜΕΣΑ ΣΤΟ ΚΟΥΤΙ ΤΟΥ DASHBOARD! -->
+            <div class="dossier-auth-actions">
+                <button class="yg-btn yg-btn-specs" onclick="playClick(); closeModal('agent-dashboard-modal'); openModal('login-modal')">
+                    > SIGN IN
+                </button>
+                <button class="yg-btn yg-btn-specs dossier-btn-logout" onclick="playClick(); showToast('AGENT DISCONNECTED', 'error'); closeModal('agent-dashboard-modal')">
+                    > SIGN OUT
+                </button>
             </div>
-
         </div>
-        
     </div>
-    <!-- ACCOUNT ACTIONS (SIGN IN / SIGN OUT) -->
-        <div class="dossier-auth-actions">
-            <button class="yg-btn yg-btn-specs" onclick="playClick(); closeModal('agent-dashboard-modal'); openModal('auth-modal')">
-                > SIGN IN
-            </button>
-            <button class="yg-btn yg-btn-specs dossier-btn-logout" onclick="playClick(); showToast('AGENT DISCONNECTED', 'error'); closeModal('agent-dashboard-modal')">
-                > SIGN OUT
-            </button>
-        </div>
-</div>
+
     <div class="modal-overlay" id="signup-modal">
         <div class="modal-content" style="width:400px;">
             <span class="close-modal" onclick="closeModal('signup-modal')">X</span>
@@ -499,7 +507,6 @@ Type 'help' for a list of commands.
         </div>
     </div>
     
-    <!-- Ελεύθερο Dropdown Καλαθιού (Εκτός Menu) -->
     <div class="cart-dropdown" id="cart-dropdown">
         <div class="mini-cart-header"><span>YOUR LOOT</span><span onclick="toggleCartDropdown()" style="cursor:pointer;">X</span></div>
         <div class="mini-cart-list" id="mini-cart-items"><div style="color:#666; text-align:center; padding:20px;">CART IS EMPTY</div></div>
@@ -511,17 +518,14 @@ Type 'help' for a list of commands.
 
     <script src="js/app.js"></script>
     <script>
-    // 1. Εμφάνιση / Απόκρυψη Socials
     function toggleSocials() {
         document.getElementById('social-menu').classList.toggle('active');
     }
 
-    // 2. Εμφάνιση Reviews στο Κινητό + Κουμπί Κλεισίματος
     function toggleMobileReviews() {
         const sidebar = document.querySelector('.right-sidebar');
         sidebar.classList.toggle('mobile-active');
         
-        // Αν άνοιξαν τα reviews, προσθέτει ένα "Χ" στο κάτω μέρος για να μπορεί ο χρήστης να τα κλείσει
         if(sidebar.classList.contains('mobile-active') && !document.getElementById('close-mobile-reviews')) {
             const closeBtn = document.createElement('button');
             closeBtn.id = 'close-mobile-reviews';
@@ -532,29 +536,23 @@ Type 'help' for a list of commands.
         }
     }
 
-    // 3. Ο ΑΥΤΟΜΑΤΟΣ ΚΛΕΙΔΑΡΑΣ (UI Locker)
     setInterval(() => {
-        // Ελέγχει τι είναι ανοιχτό
         const isTerminalOpen = document.getElementById('cli-overlay') && (document.getElementById('cli-overlay').style.display === 'flex' || document.getElementById('cli-overlay').style.display === 'block');
         const isReviewsOpen = document.querySelector('.right-sidebar') && document.querySelector('.right-sidebar').classList.contains('mobile-active');
         const isGalleryOpen = document.getElementById('gallery-overlay') && document.getElementById('gallery-overlay').style.display === 'flex';
         const isAnyModalOpen = document.querySelector('.modal[style*="display: flex"]') || document.querySelector('.modal[style*="display: block"]');
         
-        // Αν βρει κάτι ανοιχτό, εφαρμόζει την κλάση ui-locked στο body
         if (isTerminalOpen || isReviewsOpen || isGalleryOpen || isAnyModalOpen) {
             document.body.classList.add('ui-locked');
-            document.getElementById('social-menu').classList.remove('active'); // Κρύβει τα socials αν ήταν ανοιχτά
+            document.getElementById('social-menu').classList.remove('active'); 
         } else {
             document.body.classList.remove('ui-locked');
         }
-    }, 200); // Σαρώνει την οθόνη κάθε 200ms
+    }, 200);
     </script>
-    <!-- =========================================
-         24H DELIVERY TICKER (NEWS LOOP)
-         ========================================= -->
+    
     <div class="delivery-ticker">
         <div class="ticker-track">
-            <!-- Βάζουμε τα μηνύματα 2 φορές για να κάνει ατελείωτη λούπα χωρίς κενό -->
             <span>⚡ 24H SECURE DELIVERY ACROSS SKG ⚡</span>
             <span>SYSTEMS FULLY ASSEMBLED & TESTED</span>
             <span>⚡ 24H SECURE DELIVERY ACROSS SKG ⚡</span>
