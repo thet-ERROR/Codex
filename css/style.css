@@ -2446,3 +2446,18 @@ body.ui-locked header .achievements-btn {
 #agent-dashboard-modal {
     z-index: 999999 !important;
 }
+/* Απόκρυψη των μωβ scrollbars ειδικά στην κάρτα Inspect */
+.yg-card-face::-webkit-scrollbar,
+.yg-card::-webkit-scrollbar,
+.scroll-fix-wrapper::-webkit-scrollbar,
+.gallery-overlay::-webkit-scrollbar {
+    display: none !important;
+}
+
+.yg-card-face,
+.yg-card,
+.scroll-fix-wrapper,
+.gallery-overlay {
+    -ms-overflow-style: none !important; /* Για Internet Explorer / Edge */
+    scrollbar-width: none !important; /* Για Firefox */
+}
