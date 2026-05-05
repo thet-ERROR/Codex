@@ -2348,3 +2348,34 @@ body.ui-locked header .achievements-btn {
     overflow-y: scroll !important;
     -webkit-overflow-scrolling: touch !important;
 }
+/* =========================================
+   17. NUCLEAR SCROLL FIX ΓΙΑ iOS / MOBILE
+   ========================================= */
+
+/* Κλειδώνουμε την πίσω κάρτα για να μην κάνει scroll αυτή... */
+.gallery-overlay .yg-card-back {
+    padding: 0 !important; 
+    overflow: hidden !important; 
+    display: block !important;
+}
+
+/* ...και δίνουμε ΟΛΗ τη δύναμη του scroll στο νέο, απομονωμένο κουτί! */
+.scroll-fix-wrapper {
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    padding: 25px !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    /* ΑΥΤΟ ΤΟ ΜΥΣΤΙΚΟ ξεκόβει το scroll από το 3D της κάρτας: */
+    transform: translateZ(0) !important; 
+}
+
+@media (max-width: 768px) {
+    .scroll-fix-wrapper {
+        padding: 15px !important;
+        padding-bottom: 50px !important; /* Αέρας για το κάτω μέρος */
+    }
+}
