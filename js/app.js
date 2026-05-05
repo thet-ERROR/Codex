@@ -1019,6 +1019,20 @@ let codexAiState = 'idle';
 function removeAccents(str) {
     return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 }
+function toggleBenchmarksView() {
+    const cardBack = document.querySelector('.yg-card-back');
+    const btn = document.getElementById('bench-toggle-btn');
+    const isShowing = cardBack.classList.toggle('benchmarks-active');
+
+    if (isShowing) {
+        btn.innerHTML = '<i class="ph-bold ph-arrow-down"></i> HIDE BENCHMARKS';
+        btn.classList.add('bench-active-btn');
+        showToast('LOADING BENCHMARK DATA...', 'normal');
+    } else {
+        btn.innerHTML = '<i class="ph-bold ph-crosshair"></i> SHOW BENCHMARKS';
+        btn.classList.remove('bench-active-btn');
+    }
+}
 
 function sendChat(inputElement) { 
     const text = inputElement.value.trim();
