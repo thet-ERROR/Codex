@@ -2380,17 +2380,29 @@ body.ui-locked header .achievements-btn {
     }
 }
 /* =========================================
-   18. BENCHMARKS OVERRIDE SYSTEM
+   18. GLOBAL BENCHMARKS OVERRIDE (DESKTOP & MOBILE)
    ========================================= */
 
-/* Κρύβουμε τα benchmarks αρχικά */
+/* 1. Εμφανίζουμε το κουμπί σε ΟΛΕΣ τις οθόνες */
+.mobile-bench-btn {
+    display: block !important; /* Πλέον δεν είναι μόνο mobile */
+    width: 100% !important;
+    margin-top: 20px !important;
+    background: rgba(204, 255, 0, 0.05) !important;
+    border: 1px solid var(--neon-green, #ccff00) !important;
+    color: var(--neon-green, #ccff00) !important;
+    cursor: pointer;
+    z-index: 10;
+}
+
+/* 2. Κρύβουμε τα benchmarks παντού αρχικά */
 #bench-section {
-    display: none;
+    display: none !important;
     opacity: 0;
     transition: opacity 0.3s ease;
 }
 
-/* Όταν ενεργοποιείται το "Override" mode */
+/* 3. Όταν ενεργοποιείται το mode εμφάνισης */
 .benchmarks-active #specs-container-wrapper {
     display: none !important; /* Εξαφανίζει τα Specs */
 }
@@ -2398,19 +2410,23 @@ body.ui-locked header .achievements-btn {
 .benchmarks-active #bench-section {
     display: block !important;
     opacity: 1;
-    margin-top: 20px; /* Απόσταση από το κουμπί κλεισίματος */
+    margin-top: 20px !important;
 }
 
-/* Στυλ για το κουμπί όταν είναι σε κατάσταση "Hide" */
+/* 4. Ακύρωση παλιών κανόνων που έδειχναν τα benchmarks αυτόματα στο desktop */
+@media (min-width: 1025px) {
+    #bench-section {
+        display: none !important; /* Επιβολή απόκρυψης και στο desktop */
+    }
+    .benchmarks-active #bench-section {
+        display: block !important;
+    }
+}
+
+/* Στυλ για το κουμπί όταν είναι "HIDE" */
 .bench-active-btn {
     background: rgba(255, 51, 51, 0.1) !important;
     border-color: var(--retro-red) !important;
     color: var(--retro-red) !important;
     box-shadow: 0 0 15px rgba(255, 51, 51, 0.3) !important;
-}
-
-/* Διασφάλιση ότι το κουμπί επιστροφής (back) μένει ΠΑΝΤΑ πάνω */
-.yg-close-back {
-    position: relative;
-    z-index: 100;
 }
