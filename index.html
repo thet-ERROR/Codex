@@ -90,29 +90,8 @@ Type 'help' for a list of commands.
             </button>
         </div>
         
-        <div class="right-header-group">
-            <button class="cli-btn" onclick="toggleCLI()" title="Terminal"><i class="ph-bold ph-terminal-window"></i></button>
-            
-            <!-- ΔΙΟΡΘΩΜΕΝΟ ΚΟΥΜΠΙ AGENT PROFILE -->
-            <button class="nav-btn" onclick="openAgentDashboard()" title="AGENT PROFILE">
-                <i class="ph-bold ph-user-focus"></i>
-            </button>
-
-<!-- PROFILE / DASHBOARD BUTTON (ΕΝΟΠΟΙΗΜΕΝΟ) -->
-<div class="profile-container">
-    <button class="profile-btn" onclick="playClick(); openModal('agent-dashboard-modal')">
-        <i class="ph-bold ph-user"></i>
-    </button>
-</div>
-<!-- ΤΟ ΠΑΛΙΟ PROFILE MENU ΔΙΑΓΡΑΦΤΗΚΕ ΕΝΤΕΛΩΣ -->
-                    <div id="user-options" class="hidden">
-                        <div style="text-align:center; color:#fff; margin-bottom:5px;" id="user-display">AGENT_01</div>
-                        <div class="p-item" onclick="playClick(); logout()">SIGN OUT</div>
-                    </div>
-                </div>
-            </div>
-        </div>
     </header>
+
 
     <div class="stage">
         <div class="system-select-label" id="stage-label">// SYSTEM SELECT //</div>
@@ -231,33 +210,32 @@ Type 'help' for a list of commands.
                 </div>
 
                 <div class="yg-card-face yg-card-back">
-                    <div class="yg-close-back" onclick="playClick(); toggleCardFlip()"><i class="ph-bold ph-arrow-u-up-left"></i></div>
+                    <!-- Η ΠΥΡΗΝΙΚΗ ΛΥΣΗ ΓΙΑ ΤΟ IPHONE SCROLL: Ένα ειδικό wrapper -->
+                    <div class="scroll-fix-wrapper">
+                        <div class="yg-close-back" onclick="playClick(); toggleCardFlip()"><i class="ph-bold ph-arrow-u-up-left"></i></div>
 
-                    <div class="yg-rarity-badge mobile-hide">CLASSIFIED HARDWARE</div>
+                        <div class="yg-rarity-badge mobile-hide">CLASSIFIED HARDWARE</div>
 
-                    <div class="yg-sys-header">
-                        <div class="yg-sys-data-title">
-                            <span class="yg-sys-icon"><i class="ph-fill ph-cpu"></i></span>
-                            SYS_DATA
+                        <div class="yg-sys-header">
+                            <div class="yg-sys-data-title">
+                                <span class="yg-sys-icon"><i class="ph-fill ph-cpu"></i></span>
+                                SYS_DATA
+                            </div>
+                            <div class="yg-sys-subtitle mobile-hide" id="yg-desc">Detailed specifications for this system.</div>
                         </div>
-                        <div class="yg-sys-subtitle mobile-hide" id="yg-desc">Detailed specifications for this system.</div>
-                    </div>
 
-                    <div class="yg-specs-list" id="yg-specs-back"></div>
+                        <div class="yg-specs-list" id="yg-specs-back"></div>
 
-                    <button class="yg-btn yg-btn-breathe mobile-bench-btn" onclick="playClick(); document.getElementById('bench-section').classList.toggle('show-bench')">
-                        <i class="ph-bold ph-crosshair"></i> SHOW BENCHMARKS
-                    </button>
+                        <button class="yg-btn yg-btn-breathe mobile-bench-btn" onclick="playClick(); document.getElementById('bench-section').classList.toggle('show-bench')">
+                            <i class="ph-bold ph-crosshair"></i> SHOW BENCHMARKS
+                        </button>
 
-                    <div class="yg-benchmarks" id="bench-section">
-                        <div class="yg-benchmarks-title">GAME BENCHMARKS (1080p)</div>
-                        <div class="yg-benchmark-grid" id="yg-benchmarks"></div>
+                        <div class="yg-benchmarks" id="bench-section">
+                            <div class="yg-benchmarks-title">GAME BENCHMARKS (1080p)</div>
+                            <div class="yg-benchmark-grid" id="yg-benchmarks"></div>
+                        </div>
                     </div>
                 </div>
-                
-            </div>
-        </div>
-    </div>
     <div class="modal-overlay" id="trust-modal">
         <div class="modal-content" style="width:750px; text-align:center;">
             <span class="close-modal" onclick="closeModal('trust-modal')">X</span>
