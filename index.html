@@ -219,33 +219,34 @@ Type 'help' for a list of commands.
                     </div>
                 </div>
 
-                <div class="yg-card-face yg-card-back">
-                    <!-- Η ΠΥΡΗΝΙΚΗ ΛΥΣΗ ΓΙΑ ΤΟ IPHONE SCROLL: Ένα ειδικό wrapper -->
-                    <div class="scroll-fix-wrapper">
-                        <div class="yg-close-back" onclick="playClick(); toggleCardFlip()"><i class="ph-bold ph-arrow-u-up-left"></i></div>
+<div class="yg-card-face yg-card-back">
+    <div class="scroll-fix-wrapper">
+        <div class="yg-close-back" onclick="playClick(); toggleCardFlip()"><i class="ph-bold ph-arrow-u-up-left"></i></div>
 
-                        <div class="yg-rarity-badge mobile-hide">CLASSIFIED HARDWARE</div>
-
-                        <div class="yg-sys-header">
-                            <div class="yg-sys-data-title">
-                                <span class="yg-sys-icon"><i class="ph-fill ph-cpu"></i></span>
-                                SYS_DATA
-                            </div>
-                            <div class="yg-sys-subtitle mobile-hide" id="yg-desc">Detailed specifications for this system.</div>
-                        </div>
-
-                        <div class="yg-specs-list" id="yg-specs-back"></div>
-
-                        <button class="yg-btn yg-btn-breathe mobile-bench-btn" onclick="playClick(); document.getElementById('bench-section').classList.toggle('show-bench')">
-                            <i class="ph-bold ph-crosshair"></i> SHOW BENCHMARKS
-                        </button>
-
-                        <div class="yg-benchmarks" id="bench-section">
-                            <div class="yg-benchmarks-title">GAME BENCHMARKS (1080p)</div>
-                            <div class="yg-benchmark-grid" id="yg-benchmarks"></div>
-                        </div>
-                    </div>
+        <!-- 1. Προσθέτουμε ID στα Specs για να τα κρύβουμε -->
+        <div id="specs-container-wrapper">
+            <div class="yg-rarity-badge mobile-hide">CLASSIFIED HARDWARE</div>
+            <div class="yg-sys-header">
+                <div class="yg-sys-data-title">
+                    <span class="yg-sys-icon"><i class="ph-fill ph-cpu"></i></span>
+                    SYS_DATA
                 </div>
+                <div class="yg-sys-subtitle mobile-hide">Detailed specifications for this system.</div>
+            </div>
+            <div class="yg-specs-list" id="yg-specs-back"></div>
+        </div>
+
+        <!-- 2. Προσθέτουμε ID στο κουμπί για να αλλάζουμε το κείμενο -->
+        <button id="bench-toggle-btn" class="yg-btn yg-btn-breathe mobile-bench-btn" onclick="playClick(); toggleBenchmarksView()">
+            <i class="ph-bold ph-crosshair"></i> SHOW BENCHMARKS
+        </button>
+
+        <div class="yg-benchmarks" id="bench-section">
+            <div class="yg-benchmarks-title">GAME BENCHMARKS (1080p)</div>
+            <div class="yg-benchmark-grid" id="yg-benchmarks"></div>
+        </div>
+    </div>
+</div>
             
             <!-- RESTORED: Τα 3 div που έλειπαν και διέλυαν το layout! -->
             </div>

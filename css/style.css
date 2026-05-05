@@ -2379,3 +2379,38 @@ body.ui-locked header .achievements-btn {
         padding-bottom: 50px !important; /* Αέρας για το κάτω μέρος */
     }
 }
+/* =========================================
+   18. BENCHMARKS OVERRIDE SYSTEM
+   ========================================= */
+
+/* Κρύβουμε τα benchmarks αρχικά */
+#bench-section {
+    display: none;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+/* Όταν ενεργοποιείται το "Override" mode */
+.benchmarks-active #specs-container-wrapper {
+    display: none !important; /* Εξαφανίζει τα Specs */
+}
+
+.benchmarks-active #bench-section {
+    display: block !important;
+    opacity: 1;
+    margin-top: 20px; /* Απόσταση από το κουμπί κλεισίματος */
+}
+
+/* Στυλ για το κουμπί όταν είναι σε κατάσταση "Hide" */
+.bench-active-btn {
+    background: rgba(255, 51, 51, 0.1) !important;
+    border-color: var(--retro-red) !important;
+    color: var(--retro-red) !important;
+    box-shadow: 0 0 15px rgba(255, 51, 51, 0.3) !important;
+}
+
+/* Διασφάλιση ότι το κουμπί επιστροφής (back) μένει ΠΑΝΤΑ πάνω */
+.yg-close-back {
+    position: relative;
+    z-index: 100;
+}
