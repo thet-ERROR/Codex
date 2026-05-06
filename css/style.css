@@ -2430,121 +2430,49 @@ body.ui-locked header .achievements-btn {
     color: var(--retro-red) !important;
     box-shadow: 0 0 15px rgba(255, 51, 51, 0.3) !important;
 }
-/* Αφαίρεση κενού στο Desktop Inspect Card */
-@media (min-width: 1025px) {
-    .gallery-overlay .yg-card-front {
-        justify-content: center !important; /* Κεντράρει το περιεχόμενο */
-    }
-    .gallery-overlay .yg-card-content {
-        flex-grow: 0 !important; /* Απαγορεύει το υπερβολικό τέντωμα */
-        padding-bottom: 20px !important; /* Μαζεύει το κενό κάτω */
-    }
-    .gallery-overlay .yg-buttons-section {
-        margin-top: 20px !important; /* Σταθερή απόσταση αντί για αυτόματη */
-    }
-}
-#agent-dashboard-modal {
-    z-index: 999999 !important;
-}
-/* Απόκρυψη των μωβ scrollbars ειδικά στην κάρτα Inspect */
-.yg-card-face::-webkit-scrollbar,
-.yg-card::-webkit-scrollbar,
-.scroll-fix-wrapper::-webkit-scrollbar,
-.gallery-overlay::-webkit-scrollbar {
-    display: none !important;
-}
-
-.yg-card-face,
-.yg-card,
-.scroll-fix-wrapper,
-.gallery-overlay {
-    -ms-overflow-style: none !important; /* Για Internet Explorer / Edge */
-    scrollbar-width: none !important; /* Για Firefox */
-}
-/* 1. Προσαρμογή ύψους για την αφαίρεση του κενού (Desktop) */
-@media (min-width: 1025px) {
-    .yg-card-container {
-        height: 650px !important; /* Μειώνουμε το ύψος για να "κουμπώσει" στο περιεχόμενο */
-    }
-}
-
-/* 2. Οριστική εξαφάνιση των scrollbars (γραμμών) από την κάρτα */
-.yg-card-face::-webkit-scrollbar,
-.yg-card::-webkit-scrollbar,
-.scroll-fix-wrapper::-webkit-scrollbar,
-.gallery-overlay::-webkit-scrollbar,
-.yg-card-content::-webkit-scrollbar {
-    display: none !important;
-}
-
-.yg-card-face,
-.yg-card,
-.scroll-fix-wrapper,
-.gallery-overlay,
-.yg-card-content {
-    -ms-overflow-style: none !important; /* Για Edge */
-    scrollbar-width: none !important; /* Για Firefox */
-}
-
-/* 3. Διόρθωση εσωτερικού stretch */
-.yg-card-content {
-    flex-grow: 0 !important; /* Εμποδίζει το περιεχόμενο να τεντώνεται τεχνητά */
-}
 /* =========================================
-   ULTIMATE DESKTOP CARD FIT (AUTO-HEIGHT)
+   ULTIMATE DESKTOP CARD FIT (FIXED HEIGHT)
    ========================================= */
 @media (min-width: 1025px) {
-    /* 1. Η κάρτα παίρνει αυτόματα το ύψος των περιεχομένων της! */
+    /* Αντί για auto που εξαφανίζει την κάρτα, βάζουμε το ΑΚΡΙΒΕΣ ύψος! */
     .yg-card-container {
-        height: auto !important;
-        max-height: 90vh !important; /* Δεν θα ξεπερνάει ποτέ το μέγεθος της οθόνης */
-        margin-top: 2vh !important;
+        height: 520px !important; /* Μαζεύει τη μαύρη τρύπα κάτω από τα κουμπιά */
+        margin-top: 5vh !important;
     }
 
-    .gallery-overlay .yg-card,
-    .gallery-overlay .yg-card-front,
-    .gallery-overlay .yg-card-back {
-        height: auto !important;
-        max-height: 90vh !important;
-        overflow-y: auto !important; /* Κρατάει το scroll στο παρασκήνιο ΑΝ χρειαστεί */
-    }
-
-    /* 2. Σταματάμε το "τέντωμα" του περιεχομένου */
     .gallery-overlay .yg-card-content {
-        height: auto !important;
-        flex-grow: 0 !important; 
-        padding: 20px 25px 25px 25px !important;
         justify-content: flex-start !important;
+        padding: 20px 25px !important;
+        flex-grow: 0 !important;
     }
 
-    /* 3. Πιο συμπαγή (compact) Κουμπιά */
+    /* Κάνουμε τα κουμπιά πιο compact και τα φέρνουμε πιο ψηλά */
     .gallery-overlay .yg-buttons-section {
-        margin-top: 15px !important; /* Φέρνει τα κουμπιά πιο κοντά στο dropdown */
+        margin-top: 15px !important; 
         gap: 10px !important;
     }
 
     .gallery-overlay .yg-btn {
-        padding: 12px !important; /* Λεπταίνει τα κουμπιά */
+        padding: 12px !important;
         font-size: 0.9rem !important;
     }
 
-    /* 4. Μαζεύουμε λίγο την περιοχή της εικόνας */
     .gallery-overlay .yg-image-section {
         height: 230px !important;
-        padding: 10px !important;
         margin-bottom: 10px !important;
     }
 }
 
-/* Οριστική απόκρυψη των Scrollbars παντού (κρατώντας τη λειτουργία του scroll) */
+/* Οριστική απόκρυψη των Scrollbars (κρατώντας τη λειτουργία του scroll ενεργή) */
 .yg-card-content, .yg-card-face, .scroll-fix-wrapper, .yg-card, .gallery-overlay {
     scrollbar-width: none !important; /* Για Firefox */
-    -ms-overflow-style: none !important; /* Για Edge */
+    -ms-overflow-style: none !important; /* Για Edge/IE */
 }
+
 .yg-card-content::-webkit-scrollbar, 
 .yg-card-face::-webkit-scrollbar,
 .scroll-fix-wrapper::-webkit-scrollbar,
 .yg-card::-webkit-scrollbar,
 .gallery-overlay::-webkit-scrollbar {
-    display: none !important; /* Για Chrome/Safari/Opera */
+    display: none !important; /* Για Chrome/Safari */
 }
