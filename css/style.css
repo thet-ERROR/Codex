@@ -2431,17 +2431,17 @@ body.ui-locked header .achievements-btn {
     box-shadow: 0 0 15px rgba(255, 51, 51, 0.3) !important;
 }
 /* =========================================
-   SAFE DESKTOP FIT & SCROLLBAR REMOVAL
+   SAFE & ORIGINAL CARD LAYOUT FIX
    ========================================= */
 
-/* 1. Επαναφορά της 3D δομής για να μην εξαφανίζεται στο κινητό! */
+/* Η κάρτα κρατάει το αρχικό της 3D setup */
 .gallery-overlay .yg-card-front,
 .gallery-overlay .yg-card-back {
     position: absolute !important;
     height: 100% !important;
 }
 
-/* 2. Σταθερό, ασφαλές ύψος για υπολογιστή ώστε να μην αφήνει μαύρο κενό */
+/* 1. Ρύθμιση για τον Υπολογιστή (Desktop) */
 @media (min-width: 1025px) {
     .yg-card-container {
         height: 650px !important; 
@@ -2452,7 +2452,22 @@ body.ui-locked header .achievements-btn {
     }
 }
 
-/* 3. ΑΠΟΛΥΤΗ ΕΞΑΦΑΝΙΣΗ ΤΩΝ SCROLLBARS ΠΑΝΤΟΥ */
+/* 2. Ρύθμιση για το Κινητό (Mobile) */
+@media (max-width: 768px) {
+    /* Δίνουμε χώρο στην κάρτα να "απλωθεί" και να μην κόβει το περιεχόμενο */
+    .gallery-overlay .yg-card-container {
+        height: 85vh !important; /* Λίγο πιο κοντή για να μην χτυπάει στην μπάρα */
+        margin-top: 0 !important;
+    }
+    /* Το περιεχόμενο επιτρέπεται να κάνει scroll αν χρειαστεί, κρατώντας τα κουμπιά ορατά */
+    .gallery-overlay .yg-card-content {
+        overflow-y: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+        padding-bottom: 25px !important;
+    }
+}
+
+/* 3. ΕΞΑΦΑΝΙΣΗ ΤΩΝ ΜΩΒ SCROLLBARS ΠΑΝΤΟΥ! */
 .yg-card-content, .yg-card-face, .scroll-fix-wrapper, .yg-card, .gallery-overlay {
     scrollbar-width: none !important; 
     -ms-overflow-style: none !important; 
@@ -2464,21 +2479,32 @@ body.ui-locked header .achievements-btn {
 .gallery-overlay::-webkit-scrollbar {
     display: none !important; 
 }
-/* --- ENHANCED TARGET LOCK BUTTON --- */
+
+/* =========================================
+   CLEAN TARGET LOCK & GLITCH FIX
+   ========================================= */
+
+/* Κρύβουμε το Target Lock όταν ΔΕΝ είμαστε μέσα σε κάρτα */
+/* Σημείωση: Είναι ήδη μέσα στην κάρτα, οπότε δεν χρειάζεται κάτι παραπάνω */
+
 .yg-target-lock {
     transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
     z-index: 100 !important;
+    cursor: pointer !important;
 }
 .yg-target-lock:active {
-    transform: scale(0.5) !important; /* Εφέ "πατήματος" προς τα μέσα */
+    transform: scale(0.6) !important; 
 }
-/* Όταν είναι ενεργό, κάνει εντυπωσιακό pop, περιστρέφεται και ανάβει πράσινο */
 .yg-target-lock.locked {
     background: var(--neon-green) !important;
     color: #000 !important;
     border-color: var(--neon-green) !important;
-    transform: rotate(360deg) scale(1.15) !important;
-    box-shadow: 0 0 20px var(--neon-green), inset 0 0 10px rgba(0,0,0,0.5) !important;
+    transform: rotate(360deg) scale(1.1) !important;
+    box-shadow: 0 0 20px var(--neon-green) !important;
+}
+
+body header, body .stage, body .left-sidebar {
+    transition: filter 0.3s ease, opacity 0.3s ease !important;
 }
 /* =========================================
    FINAL FIXES: SCROLLBARS & TARGET LOCK FX
