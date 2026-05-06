@@ -182,7 +182,7 @@ Type 'help' for a list of commands.
 
                     <!-- TARGET LOCK -->
                     <!-- TARGET LOCK -->
-<                   <div class="yg-target-lock" title="Save to Wishlist" onclick="toggleWishlist(this)">
+<                   <div class="yg-target-lock" title="Save to Wishlist" onclick="toggleWishlist(this)"><i class="ph-bold ph-crosshair"></i></div>
                         <i class="ph-bold ph-crosshair"></i>
                     </div>
                     
@@ -554,6 +554,87 @@ Type 'help' for a list of commands.
         }
     }, 200);
     </script>
+    <script>
+    // 1. FIX ΓΙΑ ΤΟ GLITCH: Ελέγχει την οθόνη κάθε 50ms (Αστραπιαία!)
+    setInterval(() => {
+        const isTerminalOpen = document.getElementById('cli-overlay') && (document.getElementById('cli-overlay').style.display === 'flex' || document.getElementById('cli-overlay').style.display === 'block');
+        const isReviewsOpen = document.querySelector('.right-sidebar') && document.querySelector('.right-sidebar').classList.contains('mobile-active');
+        const isGalleryOpen = document.getElementById('gallery-overlay') && document.getElementById('gallery-overlay').style.display === 'flex';
+        const isAnyModalOpen = document.querySelector('.modal-overlay[style*="display: flex"]') || document.querySelector('.modal-overlay[style*="display: block"]');
+        
+        if (isTerminalOpen || isReviewsOpen || isGalleryOpen || isAnyModalOpen) {
+            document.body.classList.add('ui-locked');
+        } else {
+            document.body.classList.remove('ui-locked');
+        }
+    }, 50);
+
+    // 2. ΛΟΓΙΚΗ ΓΙΑ ΤΟ TARGET LOCK (WISHLIST)
+    function toggleWishlist(btn) {
+        if(typeof playClick === 'function') playClick(); // Ήχος κλικ
+        
+        btn.classList.toggle('locked');
+        const isLocked = btn.classList.contains('locked');
+        
+        const pcNameElement = document.getElementById('yg-title');
+        const pcName = pcNameElement ? pcNameElement.innerText : 'UNKNOWN SYSTEM';
+        
+        const wishlistContainer = document.getElementById('dossier-wishlist');
+        const safeId = 'wish-' + pcName.replace(/\s+/g, '-').toLowerCase();
+        
+        if (isLocked) {
+            if(typeof showToast === 'function') showToast('TARGET ACQUIRED: ' + pcName, 'normal');
+            
+            const emptyMsg = wishlistContainer.querySelector('.dossier-empty');
+            if (emptyMsg) emptyMsg.remove();
+            
+            if (!document.getElementById(safeId)) {
+                const item = document.createElement('div');
+                item.id = safeId;
+                // Εμφάνιση του υπολογιστή στο Dashboard
+                item.style.cssText = 'color: var(--neon-green); font-family: monospace; font-size: 0.85rem; padding: 10px; border-bottom: 1px dashed rgba(204,255,0,0.2); width: 100%; display: flex; justify-content: space-between; align-items: center; background: rgba(0,255,0,0.05); border-radius: 4px; margin-bottom: 5px;';
+                item.innerHTML = `<span>> ${pcName}</span> <i class="ph-bold ph-crosshair"></i>`;
+                wishlistContainer.appendChild(item);
+                
+                // Μόλις κάνεις το πρώτο Target Lock, ξεκλειδώνει Achievement!
+                unlockAchievement('first-target', 'FIRST BLOOD (TARGET LOCKED)');
+            }
+        } else {
+            if(typeof showToast === 'function') showToast('TARGET REMOVED', 'error');
+            const itemToRemove = document.getElementById(safeId);
+            if (itemToRemove) itemToRemove.remove();
+            
+            if (wishlistContainer.children.length === 0) {
+                wishlistContainer.innerHTML = '<div class="dossier-empty">> NO SAVED SYSTEMS.</div>';
+            }
+        }
+    }
+
+    // 3. ΛΟΓΙΚΗ ΓΙΑ ΤΑ ACHIEVEMENTS
+    function unlockAchievement(id, title) {
+        const achContainer = document.getElementById('dossier-achievements');
+        if (!achContainer) return;
+
+        const emptyMsg = achContainer.querySelector('.dossier-empty');
+        if (emptyMsg) emptyMsg.remove(); 
+        
+        const safeId = 'ach-' + id;
+        if(document.getElementById(safeId)) return; 
+        
+        const ach = document.createElement('div');
+        ach.className = 'ach-card unlocked';
+        ach.id = safeId;
+        ach.style.cssText = 'background: rgba(0,0,0,0.5); border: 1px solid var(--neon-green); border-radius: 6px; padding: 12px; display: flex; align-items: center; gap: 15px; margin-bottom: 10px; box-shadow: inset 0 0 10px rgba(0,255,0,0.05);';
+        ach.innerHTML = `
+            <div style="font-size: 1.8rem; color: var(--neon-green);"><i class="ph-fill ph-trophy"></i></div>
+            <div>
+                <h4 style="margin: 0 0 4px 0; color: var(--neon-green); font-family: var(--font-ui); font-size: 0.85rem;">${title}</h4>
+                <div style="font-family: monospace; font-weight: bold; color: var(--neon-green); font-size: 0.7rem;">UNLOCKED</div>
+            </div>
+        `;
+        achContainer.appendChild(ach);
+    }
+</script>
     
     <div class="delivery-ticker">
         <div class="ticker-track">
@@ -563,99 +644,6 @@ Type 'help' for a list of commands.
             <span>SYSTEMS FULLY ASSEMBLED & TESTED</span>
         </div>
     </div>
-    <script>
-    /* =========================================
-       1. NANOSECOND BUG FIX (Ακαριαίο Ξεκλείδωμα)
-       ========================================= */
-    // Βρίσκει όλα τα κουμπιά που κλείνουν παράθυρα (X)
-    document.querySelectorAll('.yg-close-btn, .close-modal, .modal-close, .yg-close-back').forEach(btn => {
-        btn.addEventListener('click', () => {
-            // Αφαιρεί το θόλωμα και το κλείδωμα ΑΚΑΡΙΑΙΑ την ίδια στιγμή που κλείνει η κάρτα!
-            document.body.classList.remove('ui-locked');
-            document.getElementById('social-menu').classList.remove('active');
-        });
-    });
-
-    /* =========================================
-       2. WISHLIST & TARGET LOCK SYSTEM
-       ========================================= */
-    window.toggleWishlist = function(btn) {
-        if(typeof playClick === 'function') playClick(); // Ήχος κλικ (αν υπάρχει)
-        
-        // Αλλάζει την εμφάνιση του κουμπιού
-        btn.classList.toggle('locked');
-        const isLocked = btn.classList.contains('locked');
-        
-        // Διαβάζει το όνομα του PC από τον τίτλο της κάρτας
-        const pcNameElement = document.getElementById('yg-title');
-        const pcName = pcNameElement ? pcNameElement.innerText : 'UNKNOWN SYSTEM';
-        
-        const wishlistContainer = document.getElementById('dossier-wishlist');
-        const safeId = 'wish-' + pcName.replace(/\s+/g, '-').toLowerCase();
-        
-        if (isLocked) {
-            // Ενημέρωση / Toast
-            if(typeof showToast === 'function') showToast('TARGET ACQUIRED: ' + pcName, 'normal');
-            
-            // Καθαρισμός του μηνύματος "NO SAVED SYSTEMS" (αν υπάρχει)
-            const emptyMsg = wishlistContainer.querySelector('.dossier-empty');
-            if (emptyMsg) emptyMsg.remove();
-            
-            // Δημιουργία & Προσθήκη του υπολογιστή στο Dashboard
-            if (!document.getElementById(safeId)) {
-                const item = document.createElement('div');
-                item.id = safeId;
-                item.style.cssText = 'color: var(--neon-green); font-family: monospace; font-size: 0.9rem; padding: 10px; border-bottom: 1px dashed rgba(204,255,0,0.2); width: 100%; display: flex; justify-content: space-between; align-items: center; background: rgba(0,255,0,0.05); border-radius: 6px; margin-bottom: 5px;';
-                item.innerHTML = `<span>> ${pcName}</span> <i class="ph-bold ph-crosshair"></i>`;
-                wishlistContainer.appendChild(item);
-                
-                // ΜΑΓΕΙΑ: Ξεκλειδώνει αυτόματα το πρώτο Achievement!
-                window.unlockAchievement('first-target', 'FIRST BLOOD (TARGET LOCKED)');
-            }
-        } else {
-            // Αφαίρεση από τη Wishlist
-            if(typeof showToast === 'function') showToast('TARGET REMOVED', 'error');
-            
-            const itemToRemove = document.getElementById(safeId);
-            if (itemToRemove) itemToRemove.remove();
-            
-            // Αν άδειασε η λίστα, εμφανίζει ξανά το μήνυμα
-            if (wishlistContainer.children.length === 0) {
-                wishlistContainer.innerHTML = '<div class="dossier-empty">> NO SAVED SYSTEMS.</div>';
-            }
-        }
-    };
-
-    /* =========================================
-       3. ACHIEVEMENTS UNLOCK SYSTEM
-       ========================================= */
-    window.unlockAchievement = function(id, title) {
-        const achContainer = document.getElementById('dossier-achievements');
-        if (!achContainer) return;
-
-        // Καθαρισμός του μηνύματος "NO ACHIEVEMENTS"
-        const emptyMsg = achContainer.querySelector('.dossier-empty');
-        if (emptyMsg) emptyMsg.remove(); 
-        
-        const safeId = 'ach-' + id;
-        if(document.getElementById(safeId)) return; // Αν το έχει πάρει ήδη, αγνόησέ το
-        
-        // Δημιουργία της κάρτας Achievement
-        const ach = document.createElement('div');
-        ach.className = 'ach-card unlocked';
-        ach.id = safeId;
-        ach.innerHTML = `
-            <div class="ach-icon"><i class="ph-fill ph-trophy"></i></div>
-            <div class="ach-info">
-                <h4>${title}</h4>
-            </div>
-            <div class="ach-status">UNLOCKED</div>
-        `;
-        achContainer.appendChild(ach);
-        
-        // Εμφάνιση ειδοποίησης (Toast) με πορτοκαλί (Legendary) χρώμα
-        if(typeof showToast === 'function') showToast('ACHIEVEMENT UNLOCKED: ' + title, 'achievement');
-    };
-</script>
+    
 </body>
 </html>

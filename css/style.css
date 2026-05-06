@@ -2475,3 +2475,43 @@ body.ui-locked header .achievements-btn {
     transform: rotate(360deg) scale(1.15) !important;
     box-shadow: 0 0 20px var(--neon-green), inset 0 0 10px rgba(0,0,0,0.5) !important;
 }
+/* =========================================
+   FINAL FIXES: SCROLLBARS & TARGET LOCK FX
+   ========================================= */
+
+/* 1. ΕΞΑΦΑΝΙΣΗ SCROLLBARS ΠΑΝΤΟΥ (ΧΩΡΙΣ ΝΑ ΣΠΑΣΕΙ Η ΚΑΡΤΑ) */
+.yg-card-face::-webkit-scrollbar,
+.yg-card-content::-webkit-scrollbar,
+.scroll-fix-wrapper::-webkit-scrollbar,
+.gallery-overlay::-webkit-scrollbar {
+    display: none !important;
+}
+.yg-card-face,
+.yg-card-content,
+.scroll-fix-wrapper,
+.gallery-overlay {
+    -ms-overflow-style: none !important;
+    scrollbar-width: none !important;
+}
+
+/* 2. TARGET LOCK BUTTON FX (Ομαλό, περιστρέφεται και ανάβει) */
+.yg-target-lock {
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+    z-index: 100 !important;
+    cursor: pointer !important;
+}
+.yg-target-lock:active {
+    transform: scale(0.6) !important; /* Βυθίζεται όταν το πατάς */
+}
+.yg-target-lock.locked {
+    background: var(--neon-green) !important;
+    color: #000 !important;
+    border-color: var(--neon-green) !important;
+    transform: rotate(360deg) scale(1.1) !important;
+    box-shadow: 0 0 20px var(--neon-green) !important;
+}
+
+/* 3. ΔΙΟΡΘΩΣΗ NANOSECOND BUG (Ομαλό ξεθόλωμα του φόντου) */
+body header, body .stage, body .left-sidebar {
+    transition: filter 0.3s ease, opacity 0.3s ease !important;
+}
