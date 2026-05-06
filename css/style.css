@@ -2431,34 +2431,39 @@ body.ui-locked header .achievements-btn {
     box-shadow: 0 0 15px rgba(255, 51, 51, 0.3) !important;
 }
 /* =========================================
-   ULTIMATE DESKTOP CARD FIT & TARGET LOCK
+   SAFE DESKTOP FIT & SCROLLBAR REMOVAL
    ========================================= */
+
+/* 1. Επαναφορά της 3D δομής για να μην εξαφανίζεται στο κινητό! */
+.gallery-overlay .yg-card-front,
+.gallery-overlay .yg-card-back {
+    position: absolute !important;
+    height: 100% !important;
+}
+
+/* 2. Σταθερό, ασφαλές ύψος για υπολογιστή ώστε να μην αφήνει μαύρο κενό */
 @media (min-width: 1025px) {
-    /* Δίνουμε εντολή στην κάρτα να αγκαλιάζει το περιεχόμενο, ΑΛΛΑ να έχει ελάχιστο ύψος για να χωράνε τα κουμπιά! */
     .yg-card-container {
-        height: max-content !important; 
-        min-height: 600px !important; 
+        height: 650px !important; 
         margin-top: 5vh !important;
     }
-    
-    .gallery-overlay .yg-card-front {
-        position: relative !important;
-        height: 100% !important;
-        min-height: 600px !important;
-        padding-bottom: 25px !important; /* Επαναφέρει τον χώρο για τα κουμπιά */
-    }
-    
-    /* Εξαναγκάζουμε τα κουμπιά να εμφανιστούν ξανά */
-    .gallery-overlay .yg-buttons-section {
-        display: grid !important; 
-        margin-top: 20px !important;
-    }
-
     .gallery-overlay .yg-image-section {
-        height: 280px !important; /* Μεγαλώνει ξανά την εικόνα */
+        height: 280px !important;
     }
 }
 
+/* 3. ΑΠΟΛΥΤΗ ΕΞΑΦΑΝΙΣΗ ΤΩΝ SCROLLBARS ΠΑΝΤΟΥ */
+.yg-card-content, .yg-card-face, .scroll-fix-wrapper, .yg-card, .gallery-overlay {
+    scrollbar-width: none !important; 
+    -ms-overflow-style: none !important; 
+}
+.yg-card-content::-webkit-scrollbar, 
+.yg-card-face::-webkit-scrollbar,
+.scroll-fix-wrapper::-webkit-scrollbar,
+.yg-card::-webkit-scrollbar,
+.gallery-overlay::-webkit-scrollbar {
+    display: none !important; 
+}
 /* --- ENHANCED TARGET LOCK BUTTON --- */
 .yg-target-lock {
     transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
