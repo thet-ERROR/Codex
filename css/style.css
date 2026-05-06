@@ -2431,67 +2431,47 @@ body.ui-locked header .achievements-btn {
     box-shadow: 0 0 15px rgba(255, 51, 51, 0.3) !important;
 }
 /* =========================================
-   ULTIMATE DESKTOP CARD FIT (THE MAGIC FIX)
+   ULTIMATE DESKTOP CARD FIT & TARGET LOCK
    ========================================= */
 @media (min-width: 1025px) {
-    /* 1. Αφήνουμε την κάρτα να αναπνεύσει στο ύψος της (όχι πια συμπιεσμένη) */
+    /* Δίνουμε εντολή στην κάρτα να αγκαλιάζει το περιεχόμενο, ΑΛΛΑ να έχει ελάχιστο ύψος για να χωράνε τα κουμπιά! */
     .yg-card-container {
-        height: auto !important;
-        max-height: 90vh !important;
+        height: max-content !important; 
+        min-height: 600px !important; 
         margin-top: 5vh !important;
     }
-    .yg-card {
-        height: auto !important;
-    }
-
-    /* 2. ΤΟ ΜΥΣΤΙΚΟ ΚΟΛΠΟ: Κάνουμε τη μπροστινή όψη "Relative" αντί για "Absolute". 
-       Έτσι η κάρτα "διαβάζει" το ύψος του περιεχομένου και δεν εξαφανίζεται ποτέ! */
+    
     .gallery-overlay .yg-card-front {
         position: relative !important;
-        height: auto !important;
-        padding-bottom: 0 !important; /* Ακυρώνει τα 40px που δημιουργούσαν τη "μαύρη τρύπα" */
-    }
-
-    /* Η πίσω όψη παραμένει absolute για να μπορεί να κρύβεται πίσω από την μπροστινή */
-    .gallery-overlay .yg-card-back {
-        position: absolute !important;
         height: 100% !important;
+        min-height: 600px !important;
+        padding-bottom: 25px !important; /* Επαναφέρει τον χώρο για τα κουμπιά */
     }
-
-    /* 3. Μαζεύουμε τα κενά στο εσωτερικό */
-    .gallery-overlay .yg-card-content {
-        height: auto !important;
-        flex-grow: 0 !important;
-        padding: 25px !important;
-        justify-content: flex-start !important;
-    }
-
-    /* 4. Μεγαλώνουμε την εικόνα για να φαίνεται η κάρτα πιο επιβλητική (όπως τη θες) */
-    .gallery-overlay .yg-image-section {
-        height: 330px !important; /* Επαναφορά του σωστού μεγέθους! */
-        margin-bottom: 20px !important;
-    }
-
-    /* 5. Compact κουμπιά στο κάτω μέρος που "αγκαλιάζουν" το περιεχόμενο */
+    
+    /* Εξαναγκάζουμε τα κουμπιά να εμφανιστούν ξανά */
     .gallery-overlay .yg-buttons-section {
-        margin-top: 10px !important; 
-        gap: 10px !important;
+        display: grid !important; 
+        margin-top: 20px !important;
     }
-    .gallery-overlay .yg-btn {
-        padding: 12px !important;
-        font-size: 0.95rem !important;
+
+    .gallery-overlay .yg-image-section {
+        height: 280px !important; /* Μεγαλώνει ξανά την εικόνα */
     }
 }
 
-/* 6. Εξαφάνιση Scrollbars ΠΑΝΤΟΥ (Το scroll λειτουργεί κανονικά, οι γραμμές κρύβονται) */
-.yg-card-content, .yg-card-face, .scroll-fix-wrapper, .yg-card, .gallery-overlay {
-    scrollbar-width: none !important; 
-    -ms-overflow-style: none !important; 
+/* --- ENHANCED TARGET LOCK BUTTON --- */
+.yg-target-lock {
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+    z-index: 100 !important;
 }
-.yg-card-content::-webkit-scrollbar, 
-.yg-card-face::-webkit-scrollbar,
-.scroll-fix-wrapper::-webkit-scrollbar,
-.yg-card::-webkit-scrollbar,
-.gallery-overlay::-webkit-scrollbar {
-    display: none !important; 
+.yg-target-lock:active {
+    transform: scale(0.5) !important; /* Εφέ "πατήματος" προς τα μέσα */
+}
+/* Όταν είναι ενεργό, κάνει εντυπωσιακό pop, περιστρέφεται και ανάβει πράσινο */
+.yg-target-lock.locked {
+    background: var(--neon-green) !important;
+    color: #000 !important;
+    border-color: var(--neon-green) !important;
+    transform: rotate(360deg) scale(1.15) !important;
+    box-shadow: 0 0 20px var(--neon-green), inset 0 0 10px rgba(0,0,0,0.5) !important;
 }
