@@ -181,7 +181,10 @@ Type 'help' for a list of commands.
                     <div class="yg-close-btn" onclick="playClick(); closeModal('gallery-overlay')"></div>
 
                     <!-- TARGET LOCK -->
-                    <div class="yg-target-lock" title="Save to Wishlist" onclick="playClick(); this.classList.toggle('locked'); showToast('SYSTEM TARGETED', 'normal')"><i class="ph-bold ph-crosshair"></i></div>
+                    <!-- TARGET LOCK -->
+<                   <div class="yg-target-lock" title="Save to Wishlist" onclick="toggleWishlist(this)">
+                        <i class="ph-bold ph-crosshair"></i>
+                    </div>
                     
                     <div class="yg-card-content" style="padding: 25px; padding-top: 35px; display: flex; flex-direction: column; flex-grow: 1;">
                         <h1 class="yg-project-name" id="yg-title" style="margin-bottom: 15px;">Project Cali</h1>

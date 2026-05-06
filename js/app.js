@@ -1116,3 +1116,74 @@ function sendChat(inputElement) {
 
     }, 600); 
 }
+// ==========================================
+// DASHBOARD LOGIC (WISHLIST & ACHIEVEMENTS)
+// ==========================================
+
+// 1. Λειτουργία για το Target Lock (Wishlist)
+function toggleWishlist(btn) {
+    if(typeof playClick === 'function') playClick();
+    
+    // Εφέ περιστροφής & κλειδώματος στο κουμπί
+    btn.classList.toggle('locked');
+    const isLocked = btn.classList.contains('locked');
+    
+    // Παίρνουμε το όνομα του υπολογιστή από τον τίτλο
+    const pcNameElement = document.getElementById('yg-title');
+    const pcName = pcNameElement ? pcNameElement.innerText : 'UNKNOWN SYSTEM';
+    
+    const wishlistContainer = document.getElementById('dossier-wishlist');
+    const safeId = 'wish-' + pcName.replace(/\s+/g, '-').toLowerCase();
+    
+    if (isLocked) {
+        if(typeof showToast === 'function') showToast('TARGET ACQUIRED: ' + pcName, 'normal');
+        
+        // Αφαίρεση του "NO SAVED SYSTEMS" (αν υπάρχει)
+        const emptyMsg = wishlistContainer.querySelector('.dossier-empty');
+        if (emptyMsg) emptyMsg.remove();
+        
+        // Προσθήκη του υπολογιστή στο Dashboard
+        if (!document.getElementById(safeId)) {
+            const item = document.createElement('div');
+            item.id = safeId;
+            item.style.cssText = 'color: var(--neon-green); font-family: monospace; font-size: 0.9rem; padding: 8px; border-bottom: 1px dashed rgba(204,255,0,0.2); width: 100%; display: flex; justify-content: space-between; align-items: center;';
+            item.innerHTML = `<span>> ${pcName}</span> <i class="ph-bold ph-crosshair"></i>`;
+            wishlistContainer.appendChild(item);
+        }
+    } else {
+        if(typeof showToast === 'function') showToast('TARGET REMOVED', 'error');
+        
+        // Αφαίρεση από το Dashboard
+        const itemToRemove = document.getElementById(safeId);
+        if (itemToRemove) itemToRemove.remove();
+        
+        // Επαναφορά του μηνύματος αν αδειάσει η λίστα
+        if (wishlistContainer.children.length === 0) {
+            wishlistContainer.innerHTML = '<div class="dossier-empty">> NO SAVED SYSTEMS.</div>';
+        }
+    }
+}
+
+// 2. Λειτουργία για Ξεκλείδωμα Achievements
+function unlockAchievement(id, title) {
+    const achContainer = document.getElementById('dossier-achievements');
+    const emptyMsg = achContainer.querySelector('.dossier-empty');
+    if (emptyMsg) emptyMsg.remove(); // Βγάζει το άδειο μήνυμα
+    
+    const safeId = 'ach-' + id;
+    if(document.getElementById(safeId)) return; // Αν υπάρχει ήδη, αγνόησέ το
+    
+    const ach = document.createElement('div');
+    ach.className = 'ach-card unlocked';
+    ach.id = safeId;
+    ach.innerHTML = `
+        <div class="ach-icon"><i class="ph-fill ph-trophy"></i></div>
+        <div class="ach-info">
+            <h4>${title}</h4>
+        </div>
+        <div class="ach-status">UNLOCKED</div>
+    `;
+    achContainer.appendChild(ach);
+    
+    if(typeof showToast === 'function') showToast('ACHIEVEMENT UNLOCKED: ' + title, 'achievement');
+}
