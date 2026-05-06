@@ -2434,36 +2434,39 @@ body.ui-locked header .achievements-btn {
    SAFE & ORIGINAL CARD LAYOUT FIX
    ========================================= */
 
-/* Η κάρτα κρατάει το αρχικό της 3D setup */
+/* Η κάρτα κρατάει το αρχικό της 3D setup - ΔΕΝ πειράζουμε ύψη! */
 .gallery-overlay .yg-card-front,
 .gallery-overlay .yg-card-back {
     position: absolute !important;
-    height: 100% !important;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
 }
 
-/* 1. Ρύθμιση για τον Υπολογιστή (Desktop) */
+/* 1. Ρύθμιση για τον Υπολογιστή (Desktop) - Σταθερό Ύψος */
 @media (min-width: 1025px) {
     .yg-card-container {
         height: 650px !important; 
         margin-top: 5vh !important;
     }
-    .gallery-overlay .yg-image-section {
-        height: 280px !important;
-    }
 }
 
-/* 2. Ρύθμιση για το Κινητό (Mobile) */
+/* 2. Ρύθμιση για το Κινητό (Mobile) - Σταθερό Ύψος */
 @media (max-width: 768px) {
-    /* Δίνουμε χώρο στην κάρτα να "απλωθεί" και να μην κόβει το περιεχόμενο */
     .gallery-overlay .yg-card-container {
-        height: 85vh !important; /* Λίγο πιο κοντή για να μην χτυπάει στην μπάρα */
-        margin-top: 0 !important;
+        height: 85vh !important;
+        max-height: 750px !important;
     }
-    /* Το περιεχόμενο επιτρέπεται να κάνει scroll αν χρειαστεί, κρατώντας τα κουμπιά ορατά */
-    .gallery-overlay .yg-card-content {
-        overflow-y: auto !important;
-        -webkit-overflow-scrolling: touch !important;
-        padding-bottom: 25px !important;
+    
+    /* Μαζεύουμε λίγο την εικόνα για να χωράνε τα κουμπιά! */
+    .gallery-overlay .yg-pc-image {
+        height: 180px !important;
+        max-width: 180px !important;
+    }
+    
+    .gallery-overlay .yg-buttons-section {
+        margin-top: 15px !important;
     }
 }
 
@@ -2483,9 +2486,6 @@ body.ui-locked header .achievements-btn {
 /* =========================================
    CLEAN TARGET LOCK & GLITCH FIX
    ========================================= */
-
-/* Κρύβουμε το Target Lock όταν ΔΕΝ είμαστε μέσα σε κάρτα */
-/* Σημείωση: Είναι ήδη μέσα στην κάρτα, οπότε δεν χρειάζεται κάτι παραπάνω */
 
 .yg-target-lock {
     transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
