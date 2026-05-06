@@ -2490,3 +2490,43 @@ body.ui-locked header .achievements-btn {
 .yg-card-content {
     flex-grow: 0 !important; /* Εμποδίζει το περιεχόμενο να τεντώνεται τεχνητά */
 }
+/* =========================================
+   FINAL DESKTOP GAP & BUTTONS FIX
+   ========================================= */
+@media (min-width: 1025px) {
+    /* 1. Ρυθμίζουμε το ύψος του container ώστε να χωράνε όλα άνετα χωρίς κενό */
+    .yg-card-container {
+        height: 600px !important; 
+        margin-top: 20px !important;
+    }
+
+    /* 2. Διορθώνουμε το περιεχόμενο για να μην "τεντώνει" */
+    .yg-card-content {
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: flex-start !important; /* Τα στοιχεία ξεκινούν από πάνω */
+        padding: 20px !important;
+        height: 100% !important;
+    }
+
+    /* 3. Φέρνουμε τα κουμπιά κοντά στο dropdown, αφαιρώντας το margin-top: auto */
+    .yg-buttons-section {
+        margin-top: 25px !important; /* Σταθερή απόσταση από το Storage Expansion */
+        flex-shrink: 0 !important;
+    }
+
+    /* 4. Μεγαλώνουμε λίγο την εικόνα για να γεμίσει το πάνω μέρος */
+    .yg-image-section {
+        height: 250px !important;
+    }
+}
+
+/* Εξασφάλιση ότι δεν θα φαίνονται ποτέ ξανά οι γραμμές (scrollbars) */
+.yg-card-content, .yg-card-face, .scroll-fix-wrapper {
+    scrollbar-width: none !important;
+    -ms-overflow-style: none !important;
+}
+.yg-card-content::-webkit-scrollbar, 
+.yg-card-face::-webkit-scrollbar {
+    display: none !important;
+}
