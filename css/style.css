@@ -2461,3 +2461,32 @@ body.ui-locked header .achievements-btn {
     -ms-overflow-style: none !important; /* Για Internet Explorer / Edge */
     scrollbar-width: none !important; /* Για Firefox */
 }
+/* 1. Προσαρμογή ύψους για την αφαίρεση του κενού (Desktop) */
+@media (min-width: 1025px) {
+    .yg-card-container {
+        height: 650px !important; /* Μειώνουμε το ύψος για να "κουμπώσει" στο περιεχόμενο */
+    }
+}
+
+/* 2. Οριστική εξαφάνιση των scrollbars (γραμμών) από την κάρτα */
+.yg-card-face::-webkit-scrollbar,
+.yg-card::-webkit-scrollbar,
+.scroll-fix-wrapper::-webkit-scrollbar,
+.gallery-overlay::-webkit-scrollbar,
+.yg-card-content::-webkit-scrollbar {
+    display: none !important;
+}
+
+.yg-card-face,
+.yg-card,
+.scroll-fix-wrapper,
+.gallery-overlay,
+.yg-card-content {
+    -ms-overflow-style: none !important; /* Για Edge */
+    scrollbar-width: none !important; /* Για Firefox */
+}
+
+/* 3. Διόρθωση εσωτερικού stretch */
+.yg-card-content {
+    flex-grow: 0 !important; /* Εμποδίζει το περιεχόμενο να τεντώνεται τεχνητά */
+}
