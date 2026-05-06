@@ -2436,7 +2436,7 @@ body.ui-locked header .achievements-btn {
 @media (min-width: 1025px) {
     /* Αντί για auto που εξαφανίζει την κάρτα, βάζουμε το ΑΚΡΙΒΕΣ ύψος! */
     .yg-card-container {
-        height: 520px !important; /* Μαζεύει τη μαύρη τρύπα κάτω από τα κουμπιά */
+        height: 620px !important; /* Μαζεύει τη μαύρη τρύπα κάτω από τα κουμπιά */
         margin-top: 5vh !important;
     }
 
