@@ -554,17 +554,29 @@ Type 'help' for a list of commands.
         }
     }, 200);
     </script>
-    <script>
-/* =========================================
-       1. NANOSECOND BUG FIX & TARGET LOCK RESET
-       ========================================= */
+<script>
+    // 1. FIX ΓΙΑ ΤΟ GLITCH: Αστραπιαίος Έλεγχος (50ms)
+    setInterval(() => {
+        const isTerminalOpen = document.getElementById('cli-overlay') && (document.getElementById('cli-overlay').style.display === 'flex' || document.getElementById('cli-overlay').style.display === 'block');
+        const isReviewsOpen = document.querySelector('.right-sidebar') && document.querySelector('.right-sidebar').classList.contains('mobile-active');
+        const isGalleryOpen = document.getElementById('gallery-overlay') && document.getElementById('gallery-overlay').style.display === 'flex';
+        const isAnyModalOpen = document.querySelector('.modal-overlay[style*="display: flex"]') || document.querySelector('.modal-overlay[style*="display: block"]');
+        
+        if (isTerminalOpen || isReviewsOpen || isGalleryOpen || isAnyModalOpen) {
+            document.body.classList.add('ui-locked');
+        } else {
+            document.body.classList.remove('ui-locked');
+        }
+    }, 50);
+
+    // 2. ΜΗΔΕΝΙΣΜΟΣ ΤΟΥ ΚΟΥΜΠΙΟΥ OTAN ΚΛΕΙΝΕΙ Η ΚΑΡΤΑ
     document.querySelectorAll('.yg-close-btn, .close-modal, .modal-close, .yg-close-back').forEach(btn => {
         btn.addEventListener('click', () => {
-            // Ξεθολώνει το φόντο ακαριαία (λύνει το glitch)
+            // Ξεθολώνει το φόντο ακαριαία
             document.body.classList.remove('ui-locked');
             document.getElementById('social-menu').classList.remove('active');
             
-            // ΝΕΟ: Γυρνάει το Target Lock στο OFF (default) όταν κλείνεις το Inspect!
+            // Κάνει Reset ΜΟΝΟ το εικαστικό του κουμπιού
             const targetLockBtn = document.querySelector('.yg-target-lock');
             if(targetLockBtn) {
                 targetLockBtn.classList.remove('locked');
@@ -572,9 +584,9 @@ Type 'help' for a list of commands.
         });
     });
 
-    // 2. ΛΟΓΙΚΗ ΓΙΑ ΤΟ TARGET LOCK (WISHLIST)
-    function toggleWishlist(btn) {
-        if(typeof playClick === 'function') playClick(); // Ήχος κλικ
+    // 3. Η ΛΟΓΙΚΗ ΤΟΥ TARGET LOCK ΚΑΙ ΤΗΣ ΑΠΟΘΗΚΕΥΣΗΣ
+    window.toggleWishlist = function(btn) {
+        if(typeof playClick === 'function') playClick(); 
         
         btn.classList.toggle('locked');
         const isLocked = btn.classList.contains('locked');
@@ -586,35 +598,38 @@ Type 'help' for a list of commands.
         const safeId = 'wish-' + pcName.replace(/\s+/g, '-').toLowerCase();
         
         if (isLocked) {
+            // Ο Χρήστης κάνει Lock!
             if(typeof showToast === 'function') showToast('TARGET ACQUIRED: ' + pcName, 'normal');
             
             const emptyMsg = wishlistContainer.querySelector('.dossier-empty');
             if (emptyMsg) emptyMsg.remove();
             
+            // Το προσθέτουμε στο Dashboard αν δεν υπάρχει ήδη!
             if (!document.getElementById(safeId)) {
                 const item = document.createElement('div');
                 item.id = safeId;
-                // Εμφάνιση του υπολογιστή στο Dashboard
                 item.style.cssText = 'color: var(--neon-green); font-family: monospace; font-size: 0.85rem; padding: 10px; border-bottom: 1px dashed rgba(204,255,0,0.2); width: 100%; display: flex; justify-content: space-between; align-items: center; background: rgba(0,255,0,0.05); border-radius: 4px; margin-bottom: 5px;';
                 item.innerHTML = `<span>> ${pcName}</span> <i class="ph-bold ph-crosshair"></i>`;
                 wishlistContainer.appendChild(item);
                 
-                // Μόλις κάνεις το πρώτο Target Lock, ξεκλειδώνει Achievement!
+                // Δίνουμε το Achievement αν είναι η πρώτη φορά!
                 unlockAchievement('first-target', 'FIRST BLOOD (TARGET LOCKED)');
             }
         } else {
+            // Ο Χρήστης κάνει Unlock μέσα από το Inspect! Αφαιρείται από το Profile!
             if(typeof showToast === 'function') showToast('TARGET REMOVED', 'error');
             const itemToRemove = document.getElementById(safeId);
             if (itemToRemove) itemToRemove.remove();
             
+            // Επαναφορά μηνύματος αν αδειάσει το Wishlist
             if (wishlistContainer.children.length === 0) {
                 wishlistContainer.innerHTML = '<div class="dossier-empty">> NO SAVED SYSTEMS.</div>';
             }
         }
-    }
+    };
 
-    // 3. ΛΟΓΙΚΗ ΓΙΑ ΤΑ ACHIEVEMENTS
-    function unlockAchievement(id, title) {
+    // 4. Η ΛΟΓΙΚΗ ΤΩΝ ACHIEVEMENTS
+    window.unlockAchievement = function(id, title) {
         const achContainer = document.getElementById('dossier-achievements');
         if (!achContainer) return;
 
@@ -622,7 +637,7 @@ Type 'help' for a list of commands.
         if (emptyMsg) emptyMsg.remove(); 
         
         const safeId = 'ach-' + id;
-        if(document.getElementById(safeId)) return; 
+        if(document.getElementById(safeId)) return; // Το έχει ήδη
         
         const ach = document.createElement('div');
         ach.className = 'ach-card unlocked';
@@ -636,7 +651,10 @@ Type 'help' for a list of commands.
             </div>
         `;
         achContainer.appendChild(ach);
-    }
+        
+        // Popup Οπτικό
+        if(typeof showToast === 'function') showToast('ACHIEVEMENT UNLOCKED: ' + title, 'achievement');
+    };
 </script>
     
     <div class="delivery-ticker">
