@@ -2491,42 +2491,60 @@ body.ui-locked header .achievements-btn {
     flex-grow: 0 !important; /* Εμποδίζει το περιεχόμενο να τεντώνεται τεχνητά */
 }
 /* =========================================
-   FINAL DESKTOP GAP & BUTTONS FIX
+   ULTIMATE DESKTOP CARD FIT (AUTO-HEIGHT)
    ========================================= */
 @media (min-width: 1025px) {
-    /* 1. Ρυθμίζουμε το ύψος του container ώστε να χωράνε όλα άνετα χωρίς κενό */
+    /* 1. Η κάρτα παίρνει αυτόματα το ύψος των περιεχομένων της! */
     .yg-card-container {
-        height: 600px !important; 
-        margin-top: 20px !important;
+        height: auto !important;
+        max-height: 90vh !important; /* Δεν θα ξεπερνάει ποτέ το μέγεθος της οθόνης */
+        margin-top: 2vh !important;
     }
 
-    /* 2. Διορθώνουμε το περιεχόμενο για να μην "τεντώνει" */
-    .yg-card-content {
-        display: flex !important;
-        flex-direction: column !important;
-        justify-content: flex-start !important; /* Τα στοιχεία ξεκινούν από πάνω */
-        padding: 20px !important;
-        height: 100% !important;
+    .gallery-overlay .yg-card,
+    .gallery-overlay .yg-card-front,
+    .gallery-overlay .yg-card-back {
+        height: auto !important;
+        max-height: 90vh !important;
+        overflow-y: auto !important; /* Κρατάει το scroll στο παρασκήνιο ΑΝ χρειαστεί */
     }
 
-    /* 3. Φέρνουμε τα κουμπιά κοντά στο dropdown, αφαιρώντας το margin-top: auto */
-    .yg-buttons-section {
-        margin-top: 25px !important; /* Σταθερή απόσταση από το Storage Expansion */
-        flex-shrink: 0 !important;
+    /* 2. Σταματάμε το "τέντωμα" του περιεχομένου */
+    .gallery-overlay .yg-card-content {
+        height: auto !important;
+        flex-grow: 0 !important; 
+        padding: 20px 25px 25px 25px !important;
+        justify-content: flex-start !important;
     }
 
-    /* 4. Μεγαλώνουμε λίγο την εικόνα για να γεμίσει το πάνω μέρος */
-    .yg-image-section {
-        height: 250px !important;
+    /* 3. Πιο συμπαγή (compact) Κουμπιά */
+    .gallery-overlay .yg-buttons-section {
+        margin-top: 15px !important; /* Φέρνει τα κουμπιά πιο κοντά στο dropdown */
+        gap: 10px !important;
+    }
+
+    .gallery-overlay .yg-btn {
+        padding: 12px !important; /* Λεπταίνει τα κουμπιά */
+        font-size: 0.9rem !important;
+    }
+
+    /* 4. Μαζεύουμε λίγο την περιοχή της εικόνας */
+    .gallery-overlay .yg-image-section {
+        height: 230px !important;
+        padding: 10px !important;
+        margin-bottom: 10px !important;
     }
 }
 
-/* Εξασφάλιση ότι δεν θα φαίνονται ποτέ ξανά οι γραμμές (scrollbars) */
-.yg-card-content, .yg-card-face, .scroll-fix-wrapper {
-    scrollbar-width: none !important;
-    -ms-overflow-style: none !important;
+/* Οριστική απόκρυψη των Scrollbars παντού (κρατώντας τη λειτουργία του scroll) */
+.yg-card-content, .yg-card-face, .scroll-fix-wrapper, .yg-card, .gallery-overlay {
+    scrollbar-width: none !important; /* Για Firefox */
+    -ms-overflow-style: none !important; /* Για Edge */
 }
 .yg-card-content::-webkit-scrollbar, 
-.yg-card-face::-webkit-scrollbar {
-    display: none !important;
+.yg-card-face::-webkit-scrollbar,
+.scroll-fix-wrapper::-webkit-scrollbar,
+.yg-card::-webkit-scrollbar,
+.gallery-overlay::-webkit-scrollbar {
+    display: none !important; /* Για Chrome/Safari/Opera */
 }
