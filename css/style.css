@@ -2349,11 +2349,20 @@ body.ui-locked header .achievements-btn {
     -webkit-overflow-scrolling: touch !important;
 }
 /* =========================================
-   THE ULTIMATE 3D RESCUE OVERRIDE
+   ABSOLUTE 3D CARD FIX (NO MIRROR EFFECT)
    ========================================= */
 
-/* 1. ΣΠΑΜΕ ΤΟ BUG ΠΟΥ ΚΑΝΕΙ ΤΑ ΓΡΑΜΜΑΤΑ ΑΝΑΠΟΔΑ ΚΑΙ ΔΙΑΦΑΝΑ */
-.yg-card-face,
+/* 1. Η Κάρτα και το 3D Περιβάλλον της */
+.yg-card-container {
+    perspective: 2000px !important; 
+}
+
+.yg-card {
+    transform-style: preserve-3d !important;
+    position: relative !important;
+}
+
+/* 2. ΑΥΣΤΗΡΟΙ ΚΑΝΟΝΕΣ ΓΙΑ ΤΙΣ ΟΨΕΙΣ (Ποτέ ανάποδα γράμματα) */
 .gallery-overlay .yg-card-front,
 .gallery-overlay .yg-card-back {
     position: absolute !important;
@@ -2361,48 +2370,59 @@ body.ui-locked header .achievements-btn {
     width: 100% !important; height: 100% !important;
     backface-visibility: hidden !important;
     -webkit-backface-visibility: hidden !important;
-    overflow: hidden !important; /* ΑΠΑΓΟΡΕΥΕΤΑΙ ΤΟ SCROLL ΣΤΙΣ ΟΨΕΙΣ */
-    background: #0a0a0c !important; /* Συμπαγές φόντο για να μη φεγγίζει */
     border-radius: 16px !important;
+    /* ΑΠΑΓΟΡΕΥΕΤΑΙ ΤΟ SCROLL ΕΔΩ - Αλλιώς σπάει το 3D */
+    overflow: hidden !important; 
 }
 
+/* 3. Μπροστινή Όψη */
 .gallery-overlay .yg-card-front {
     transform: rotateY(0deg) !important;
+    background: #0a0a0c !important; /* Συμπαγές χρώμα για να μη φεγγίζει */
     z-index: 2 !important;
     display: flex !important;
     flex-direction: column !important;
 }
 
+/* 4. Πίσω Όψη (Επιστροφή των Specs) */
 .gallery-overlay .yg-card-back {
     transform: rotateY(180deg) !important;
+    background: #050507 !important;
     z-index: 1 !important;
     display: block !important;
-    padding: 0 !important;
 }
 
-/* ΑΚΥΡΩΣΗ ΤΟΥ ΠΑΛΙΟΥ ΚΑΝΟΝΑ ΠΟΥ ΕΚΑΝΕ ΤΑ ΓΡΑΜΜΑΤΑ ΝΑ ΦΕΓΓΟΥΝ ΑΠΟ ΠΙΣΩ */
-.yg-card-back * {
-    backface-visibility: hidden !important;
-    -webkit-backface-visibility: hidden !important;
-}
-
-/* 2. ΕΔΩ ΜΕΣΑ ΓΙΝΕΤΑΙ ΠΛΕΟΝ ΤΟ SCROLL (Για να μην σπάει το 3D) */
+/* 5. ΤΑ ΕΣΩΤΕΡΙΚΑ ΚΟΥΤΙΑ ΑΝΑΛΑΜΒΑΝΟΥΝ ΤΟ SCROLL */
 .scroll-fix-wrapper {
     position: absolute !important;
     top: 0 !important; left: 0 !important; right: 0 !important; bottom: 0 !important;
     overflow-y: auto !important;
     -webkit-overflow-scrolling: touch !important;
     padding: 25px !important;
+    z-index: 10 !important; /* Εξασφαλίζει ότι τα specs δεν κρύβονται */
 }
 
 .gallery-overlay .yg-card-content {
     flex-grow: 1 !important;
     overflow-y: auto !important;
     -webkit-overflow-scrolling: touch !important;
-    padding-bottom: 20px !important;
+    padding: 20px 25px !important;
+    display: flex !important;
+    flex-direction: column !important;
 }
 
-/* 3. ΔΙΑΣΤΑΣΕΙΣ (Για να μην κόβονται τα κουμπιά) */
+/* 6. ΟΛΙΚΗ ΕΞΑΦΑΝΙΣΗ SCROLLBARS */
+.yg-card-content::-webkit-scrollbar, 
+.scroll-fix-wrapper::-webkit-scrollbar,
+.yg-card-face::-webkit-scrollbar {
+    display: none !important; 
+}
+.yg-card-content, .scroll-fix-wrapper, .yg-card-face {
+    scrollbar-width: none !important; 
+    -ms-overflow-style: none !important; 
+}
+
+/* 7. ΔΙΑΣΤΑΣΕΙΣ (Desktop & Mobile) */
 @media (min-width: 1025px) {
     .yg-card-container { height: 640px !important; margin-top: 5vh !important; }
     .gallery-overlay .yg-image-section { height: 260px !important; margin-bottom: 10px !important; }
@@ -2412,41 +2432,4 @@ body.ui-locked header .achievements-btn {
     .gallery-overlay .yg-pc-image { height: 160px !important; max-width: 160px !important; }
     .gallery-overlay .yg-buttons-section { margin-top: 15px !important; }
     .scroll-fix-wrapper { padding: 15px !important; padding-bottom: 50px !important; }
-}
-
-/* 4. ΚΡΥΒΟΥΜΕ ΟΡΙΣΤΙΚΑ ΤΑ ΜΩΒ SCROLLBARS ΠΑΝΤΟΥ */
-.yg-card-content, .scroll-fix-wrapper, .yg-card-face {
-    scrollbar-width: none !important; 
-    -ms-overflow-style: none !important; 
-}
-.yg-card-content::-webkit-scrollbar, 
-.scroll-fix-wrapper::-webkit-scrollbar,
-.yg-card-face::-webkit-scrollbar {
-    display: none !important; 
-}
-
-/* 5. TARGET LOCK EFE & SHOW BENCHMARKS (Από τα προηγούμενα steps) */
-.yg-target-lock {
-    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
-    z-index: 100 !important; cursor: pointer !important;
-}
-.yg-target-lock:active { transform: scale(0.6) !important; }
-.yg-target-lock.locked {
-    background: var(--neon-green) !important; color: #000 !important;
-    border-color: var(--neon-green) !important; transform: rotate(360deg) scale(1.1) !important;
-    box-shadow: 0 0 20px var(--neon-green) !important;
-}
-
-.mobile-bench-btn {
-    display: block !important; width: 100% !important; margin-top: 20px !important;
-    background: rgba(204, 255, 0, 0.05) !important; border: 1px solid var(--neon-green) !important;
-    color: var(--neon-green) !important; cursor: pointer; z-index: 10;
-}
-#bench-section { display: none !important; margin-top: 15px !important; }
-.benchmarks-active #bench-section { display: block !important; animation: fadeIn 0.3s ease; }
-.benchmarks-active #specs-container-wrapper { display: none !important; }
-@media (min-width: 1025px) { 
-    .mobile-bench-btn { display: none !important; } 
-    #bench-section { display: block !important; } 
-    .benchmarks-active #specs-container-wrapper { display: block !important; } 
 }
