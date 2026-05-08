@@ -2349,62 +2349,63 @@ body.ui-locked header .achievements-btn {
     -webkit-overflow-scrolling: touch !important;
 }
 /* =========================================
-   THE FINAL 3D STACKING FIX (NO FLATTENING)
+   ABSOLUTE 3D SEPARATION (ANTI-MARRIAGE FIX)
    ========================================= */
 
-/* 1. Εξασφαλίζουμε ότι ο γονέας διατηρεί το 3D βάθος */
+/* 1. Ο γονέας παραμένει 3D αλλά χωρίς περιττά φίλτρα */
 #main-body .gallery-overlay .yg-card {
     transform-style: preserve-3d !important;
     -webkit-transform-style: preserve-3d !important;
-    perspective: none !important; /* Η προοπτική πρέπει να είναι μόνο στον container */
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
 }
 
-/* 2. Καθαρίζουμε τις όψεις από "επικίνδυνες" ιδιότητες */
+/* 2. ΚΟΙΝΕΣ ΡΥΘΜΙΣΕΙΣ ΓΙΑ ΤΙΣ ΔΥΟ ΟΨΕΙΣ */
 #main-body .gallery-overlay .yg-card-front,
 #main-body .gallery-overlay .yg-card-back {
     position: absolute !important;
-    width: 100% !important;
-    height: 100% !important;
-    top: 0 !important;
-    left: 0 !important;
-    
-    /* CRITICAL: Εξαφάνιση της πίσω πλευράς */
+    inset: 0 !important;
     backface-visibility: hidden !important;
     -webkit-backface-visibility: hidden !important;
-    
-    /* ΑΠΑΓΟΡΕΥΕΤΑΙ το overflow εδώ - Σπάει το 3D */
-    overflow: visible !important; 
-    background: #0a0a0c !important;
     border-radius: 16px !important;
+    border: 2px solid #333 !important;
+    /* ΑΦΑΙΡΕΣΗ BACKDROP-FILTER: Αυτό προκαλεί το "πάντρεμα" */
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
 }
 
-/* 3. Σωστή τοποθέτηση των πλευρών στον 3D χώρο */
+/* 3. ΜΠΡΟΣΤΙΝΗ ΟΨΗ: Την σπρώχνουμε 1px μπροστά */
 #main-body .gallery-overlay .yg-card-front {
-    transform: rotateY(0deg) translateZ(1px) !important; /* Το translateZ σπρώχνει την όψη ελαφρώς μπροστά */
+    transform: rotateY(0deg) translateZ(1px) !important;
+    background: #0a0a0c !important; /* Συμπαγές μαύρο */
     z-index: 2 !important;
 }
 
+/* 4. ΠΙΣΩ ΟΨΗ: Την σπρώχνουμε 1px πίσω και την γυρνάμε */
 #main-body .gallery-overlay .yg-card-back {
-    transform: rotateY(180deg) translateZ(1px) !important; /* Το translateZ εξασφαλίζει ότι τα specs είναι "πάνω" από το φόντο */
+    transform: rotateY(180deg) translateZ(1px) !important;
+    background: #050507 !important; /* Συμπαγές μαύρο */
     z-index: 1 !important;
 }
 
-/* 4. Το Scroll γίνεται ΜΟΝΟ εδώ μέσα */
-#main-body .gallery-overlay .scroll-fix-wrapper,
-#main-body .gallery-overlay .yg-card-content {
-    position: absolute !important;
-    inset: 0 !important;
-    overflow-y: auto !important;
-    -webkit-overflow-scrolling: touch !important;
-    padding: 25px !important;
-    /* Αποτρέπουμε το καθρέφτισμα του περιεχομένου */
-    backface-visibility: hidden !important;
-    -webkit-backface-visibility: hidden !important;
+/* 5. ΕΣΩΤΕΡΙΚΑ ΣΤΟΙΧΕΙΑ: Απαγορεύουμε να "τρυπήσουν" την κάρτα */
+#main-body .gallery-overlay .yg-image-section {
+    backdrop-filter: none !important;
+    background: #000 !important; /* Μαύρο φόντο αντί για gradient με transparency */
 }
 
-/* 5. Διόρθωση για το Desktop κενό */
-@media (min-width: 1025px) {
-    #main-body .yg-card-container {
-        height: 620px !important;
-    }
+/* 6. ΔΙΟΡΘΩΣΗ SCROLL ΓΙΑ ΝΑ ΜΗΝ ΧΑΝΟΥΜΕ ΤΑ SPECS */
+#main-body .gallery-overlay .scroll-fix-wrapper {
+    position: relative !important;
+    height: 100% !important;
+    overflow-y: auto !important;
+    padding: 25px !important;
+    transform: translateZ(2px) !important; /* Σπρώχνει το κείμενο πάνω από το φόντο της όψης */
+}
+
+/* Εξαφάνιση scrollbars */
+#main-body .gallery-overlay .scroll-fix-wrapper::-webkit-scrollbar,
+#main-body .gallery-overlay .yg-card-content::-webkit-scrollbar {
+    display: none !important;
 }
