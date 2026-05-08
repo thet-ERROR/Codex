@@ -559,242 +559,6 @@ header {
 .msg.user { background: #222; color: #fff; align-self: flex-end; }
 .chat-input { width: 100%; background: #000; border: none; border-top: 1px solid #222; color: #fff; padding: 12px; outline: none; font-size: 0.9rem; }
 
-/* =========================================
-   9. 🌟 YU-GI-OH FLIP CARD (UPGRADED) 🌟
-   ========================================= */
-
-/* ΚΛΕΙΔΩΜΑ ΔΙΑΣΤΑΣΕΩΝ ΚΑΙ 3D SETUP ΓΙΑ ΝΑ ΜΗΝ ΚΑΤΑΡΡΕΕΙ */
-.yg-card-container { 
-    width: 400px; 
-    height: 80vh; /* <--- ΑΥΤΟ ΚΡΑΤΑΕΙ ΤΟ ΥΨΟΣ */
-    max-height: 750px;
-    max-width: 95vw; 
-    perspective: 1500px; 
-    margin: 0 auto; 
-}
-
-.yg-card { 
-    width: 100%; 
-    height: 100%; 
-    position: relative; 
-    transform-style: preserve-3d; 
-    transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
-}
-
-.yg-card.flipped { transform: rotateY(180deg); }
-
-/* Η κάθε όψη της κάρτας (μπροστά & πίσω) */
-.yg-card-face { 
-    width: 100%; 
-    height: 100%; 
-    position: absolute; 
-    top: 0; left: 0;
-    backface-visibility: hidden; 
-    -webkit-backface-visibility: hidden;
-    border-radius: 16px; 
-    overflow: hidden; 
-    border: 2px solid #333333; 
-}
-
-/* --- 1. FRONT FACE --- */
-.yg-card-front { 
-    z-index: 2; 
-    display: flex; 
-    flex-direction: column; 
-    background: #0a0a0c; /* Συμπαγές μαύρο */
-    transform: rotateY(0deg); 
-}
-
-.yg-tier-badge { position: absolute; top: 15px; left: 15px; background: linear-gradient(135deg, #a855f7 0%, #ec48d9 100%); padding: 6px 16px; border-radius: 6px; font-family: var(--card-font-primary); font-size: 14px; font-weight: 700; color: #fff; text-transform: uppercase; letter-spacing: 1px; box-shadow: 0 0 20px rgba(168, 85, 247, 0.6); z-index: 10; }
-.yg-close-btn { position: absolute; top: 15px; right: 15px; width: 35px; height: 35px; background: rgba(255, 255, 255, 0.1); border: 2px solid rgba(255, 255, 255, 0.2); border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.3s ease; z-index: 10; }
-.yg-close-btn:hover { background: rgba(255, 255, 255, 0.2); border-color: #a855f7; }
-.yg-close-btn::before, .yg-close-btn::after { content: ''; position: absolute; width: 16px; height: 2px; background: #fff; }
-.yg-close-btn::before { transform: rotate(45deg); }
-.yg-close-btn::after { transform: rotate(-45deg); }
-
-/* 🌟 ΒΙΤΡΙΝΑ & ANIMATION ΑΙΩΡΗΣΗΣ (ΚΕΝΤΡΑΡΙΣΜΕΝΗ) 🌟 */
-/* 🌟 ΒΙΤΡΙΝΑ & ΞΕΖΟΥΜΑΡΙΣΜΑ 🌟 */
-.yg-image-section { 
-    width: 100%; 
-    height: 260px; /* Λίγο πιο μαζεμένο για να μην ξεχειλώνει στο κινητό */
-    position: relative; 
-    background: radial-gradient(circle at center, rgba(30, 15, 50, 0.6) 0%, rgba(10, 5, 20, 0.9) 100%); 
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border-bottom: 1px solid rgba(176, 38, 255, 0.3);
-    box-shadow: inset 0 0 30px rgba(176, 38, 255, 0.1);
-    display: flex; 
-    align-items: center; 
-    justify-content: center; 
-    overflow: hidden; 
-}
-
-/* ΟΛΟΚΛΗΡΗ Η ΦΩΤΟΓΡΑΦΙΑ (ΧΩΡΙΣ ΝΑ ΚΟΒΕΤΑΙ) */
-.yg-pc-image { 
-    height: 80%; /* Πιάνει το 80% του ύψους, άρα δεν κόβεται ΠΟΤΕ */
-    max-width: 70%; /* Αφήνει χώρο δεξιά/αριστερά για τα βελάκια */
-    width: auto;
-    object-fit: contain; /* Το μαγικό property για το unzoom */
-    filter: drop-shadow(0 15px 25px rgba(0, 0, 0, 0.8)); 
-    z-index: 1; 
-    display: block; 
-    margin: 0 auto; 
-    animation: pc-float 4s ease-in-out infinite; 
-}
-
-/* 🌟 ΒΕΛΑΚΙΑ ΓΙΑ SWIPE ΣΤΟ INSPECT 🌟 */
-.yg-arrow {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    color: #fff;
-    width: 30px;
-    height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    z-index: 10;
-    border-radius: 6px;
-    transition: 0.3s;
-    font-size: 1.2rem;
-    font-weight: bold;
-}
-.yg-arrow:hover {
-    background: var(--neon-purple);
-    border-color: var(--neon-purple);
-    box-shadow: 0 0 15px var(--neon-purple);
-}
-.yg-arrow.left { left: 15px; }
-.yg-arrow.right { right: 15px; }
-/* ΑΦΑΙΡΕΣΗ ΣΥΝΤΕΤΑΓΜΕΝΩΝ */
-.yg-coordinates, .yg-grid-decal, .yg-hud-corners {
-    display: none !important;
-}
-
-/* ΠΟΛΥ ΜΙΚΡΗ ΕΙΚΟΝΑ ΓΙΑ ΝΑ ΧΩΡΑΕΙ ΟΛΟΚΛΗΡΟ ΤΟ PC (ΚΕΝΤΡΑΡΙΣΜΕΝΗ & ΑΙΩΡΟΥΜΕΝΗ) */
-.yg-pc-image { 
-    max-width: 45%; 
-    height: 150px; 
-    object-fit: contain; 
-    filter: drop-shadow(0 15px 30px rgba(0, 0, 0, 1)); 
-    z-index: 1; 
-    display: block; 
-    margin: 0 auto;
-    animation: pc-float 4s ease-in-out infinite; /* Animation αιώρησης */
-}
-
-/* Animation Αιώρησης */
-@keyframes pc-float {
-    0% { transform: translateY(0px); }
-    50% { transform: translateY(-15px); }
-    100% { transform: translateY(0px); }
-}
-
-/* Φωτεινή βάση (Stand) - Σαν Ολόγραμμα */
-.yg-image-section::after {
-    content: '';
-    position: absolute;
-    bottom: 40px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 150px;
-    height: 15px;
-    background: radial-gradient(ellipse at center, rgba(176, 38, 255, 0.5) 0%, transparent 70%);
-    filter: blur(8px);
-    z-index: 0;
-    animation: stand-glow 4s ease-in-out infinite;
-}
-
-@keyframes stand-glow {
-    0%, 100% { opacity: 0.5; transform: translateX(-50%) scale(1); }
-    50% { opacity: 0.8; transform: translateX(-50%) scale(1.1); }
-}
-
-.yg-specs-badges { position: absolute; bottom: 15px; left: 50%; transform: translateX(-50%); display: flex; gap: 10px; z-index: 2; width: 100%; justify-content: center; padding: 0 10px; }
-.yg-spec-badge { background: rgba(0, 0, 0, 0.8); padding: 6px 12px; border-radius: 8px; border: 1px solid rgba(168, 85, 247, 0.5); display: flex; align-items: center; gap: 6px; font-family: var(--card-font-primary); font-size: 11px; font-weight: 700; color: #fff; text-transform: uppercase; }
-.yg-spec-icon { width: 18px; height: 18px; background: linear-gradient(135deg, #a855f7 0%, #ec48d9 100%); border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 10px; }
-
-/* ΠΕΡΙΕΧΟΜΕΝΟ ΚΑΡΤΑΣ (Scrollable αν δεν χωράει) */
-.yg-card-content { 
-    padding: 20px; 
-    background: #0f0f0f; 
-    flex-grow: 1; 
-    display: flex; 
-    flex-direction: column; 
-    overflow-y: auto;
-    border-top: 1px solid #222;
-}
-.yg-project-name { font-family: var(--card-font-secondary); font-size: 26px; color: #fff; text-align: center; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 1px;}
-.yg-tagline { font-family: var(--font-body); font-style: italic; color: #888; font-size: 0.85rem; margin-bottom: 15px; border-left: 2px solid var(--neon-purple); padding-left: 10px; text-align: center; }
-
-.yg-card-stars { display: flex; justify-content: center; gap: 4px; margin-bottom: 15px; color: #fbbf24; }
-.yg-star { width: 18px; height: 18px; color: #fbbf24; filter: drop-shadow(0 0 4px #fbbf24); display: inline-block; }
-
-.yg-price-section { display: flex; justify-content: center; gap: 15px; align-items: center; margin-bottom: 20px; font-family: var(--card-font-secondary); }
-.yg-current-price { font-size: 32px; font-weight: 900; color: var(--neon-green); text-shadow: 0 0 10px rgba(204, 255, 0, 0.3);}
-.yg-old-price { font-size: 20px; color: #444; text-decoration: line-through; }
-
-.yg-stock-warning { background: rgba(251, 191, 36, 0.1); border: 2px solid #fbbf24; border-radius: 8px; padding: 10px 15px; margin-bottom: 15px; text-align: center; box-shadow: 0 0 10px rgba(251, 191, 36, 0.1);}
-.yg-stock-warning-text { color: #fbbf24; font-family: var(--card-font-primary); font-size: 13px; font-weight: 700; text-transform: uppercase; }
-
-.yg-storage-section { margin-bottom: 15px; }
-.yg-storage-label { color: #888; font-family: var(--card-font-primary); font-size: 11px; text-transform: uppercase; margin-bottom: 6px; }
-.yg-storage-select { width: 100%; background: rgba(0, 0, 0, 0.3); border: 1px solid #333; border-radius: 8px; padding: 12px 14px; color: #fff; font-size: 13px; font-weight: 600; outline: none; cursor: pointer; transition: all 0.3s ease; font-family: var(--font-body);}
-.yg-storage-select:hover { border-color: #a855f7; background: rgba(168, 85, 247, 0.1); }
-.yg-storage-select option { background: #1a1a1a; color: #fff; }
-
-.yg-power-row { display: flex; align-items: center; margin-bottom: 15px; width: 100%; background: rgba(0, 0, 0, 0.6); padding: 10px; border-radius: 8px; border: 1px solid #222; }
-.yg-power-label { font-size: 0.75rem; font-weight: 900; width: 100px; text-align: left; color: var(--neon-purple); letter-spacing: 1px; text-transform: uppercase;}
-.yg-bar-track { flex: 1; height: 10px; background: repeating-linear-gradient(90deg, rgba(255,255,255,0.05), rgba(255,255,255,0.05) 3px, transparent 3px, transparent 5px); border-radius: 2px; position: relative; }
-.yg-bar-fill { height: 100%; background: var(--neon-purple); width: 0%; transition: width 1.5s ease-out; box-shadow: 0 0 15px var(--neon-purple); mask-image: repeating-linear-gradient(90deg, #000, #000 3px, transparent 3px, transparent 5px); -webkit-mask-image: repeating-linear-gradient(90deg, #000, #000 3px, transparent 3px, transparent 5px);}
-
-.yg-buttons-section { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: auto; padding-top: 10px;}
-.yg-btn { padding: 16px; border-radius: 8px; font-weight: 900; cursor: pointer; border: none; text-transform: uppercase; font-family: var(--card-font-primary); display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.3s ease; font-size: 0.95rem; letter-spacing: 1px;}
-.yg-btn-specs { background: rgba(176, 38, 255, 0.1); border: 1px solid var(--neon-purple); color: var(--neon-purple); }
-.yg-btn-specs:hover { background: rgba(176, 38, 255, 0.2); box-shadow: 0 0 20px rgba(168, 85, 247, 0.4); color: #fff;}
-.yg-btn-cart { background: var(--neon-green); color: #000; }
-.yg-btn-cart:hover { box-shadow: 0 0 20px rgba(204, 255, 0, 0.5); transform: translateY(-2px);}
-
-/* --- 2. BACK FACE (CYBER GLOW & SPECS) --- */
-.yg-card-back { 
-    transform: rotateY(180deg); 
-    z-index: 1; 
-    background: #050507; /* Πολύ σκούρο μαύρο */
-    display: flex; 
-    flex-direction: column; 
-    padding: 25px; 
-    overflow-y: auto; 
-    /* Cyber Glow Εφέ */
-    box-shadow: inset 0 0 60px rgba(176, 38, 255, 0.1), 0 0 30px rgba(176, 38, 255, 0.2);
-    border: 2px solid var(--neon-purple); /* Μωβ περίγραμμα για την πίσω όψη */
-}
-.yg-card-back * { backface-visibility: visible; -webkit-backface-visibility: visible; }
-
-.yg-close-back { width: 100%; padding: 12px; background: rgba(168, 85, 247, 0.1); border: 1px solid var(--neon-purple); border-radius: 8px; color: var(--neon-purple); font-size: 13px; font-weight: 700; text-transform: uppercase; text-align: center; display: block; margin-bottom: 20px; cursor:pointer; font-family: var(--card-font-primary); transition: 0.3s;}
-.yg-close-back:hover { background: rgba(168, 85, 247, 0.2); color: #fff; box-shadow: 0 0 15px rgba(176, 38, 255, 0.3);}
-
-.yg-rarity-badge { align-self: center; background: linear-gradient(90deg, var(--neon-purple), #d47aff); color: #fff; font-weight: 900; padding: 6px 25px; border-radius: 4px; font-size: 0.85rem; text-transform: uppercase; margin-bottom: 20px; text-align: center; font-family: var(--font-ui); letter-spacing: 2px; box-shadow: 0 0 15px rgba(176, 38, 255, 0.4);}
-.yg-sys-header { text-align: center; margin-bottom: 25px; }
-.yg-sys-data-title { font-family: var(--card-font-secondary); font-size: 26px; font-weight: 900; color: #fff; margin-bottom: 8px; text-transform: uppercase; text-shadow: 0 0 10px rgba(176, 38, 255, 0.5);}
-.yg-sys-subtitle { font-family: var(--card-font-primary); color: #ec48d9; font-size: 12px; font-style: italic; text-transform: uppercase;}
-
-.yg-specs-list { flex-grow: 1; margin-bottom: 20px; }
-.yg-spec-item { background: rgba(255,255,255,0.03); border: 1px solid #222; padding: 14px; border-radius: 8px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; transition: 0.3s; }
-.yg-spec-item:hover { background: rgba(176, 38, 255, 0.05); border-color: var(--neon-purple); transform: translateX(5px);}
-.yg-spec-label { font-family: var(--card-font-primary); color: #a855f7; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;}
-.yg-spec-value { font-family: var(--card-font-secondary); color: #fff; font-size: 13px; font-weight: 700; text-align: right; letter-spacing: 1px;}
-
-.yg-benchmarks { margin-top: 15px; padding-top: 20px; border-top: 1px solid #222; }
-.yg-benchmarks-title { font-family: var(--card-font-secondary); color: #a855f7; font-size: 14px; font-weight: 900; text-transform: uppercase; margin-bottom: 15px; text-align: center; letter-spacing: 1px;}
-.yg-benchmark-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
-.yg-benchmark-card { background: rgba(26, 10, 46, 0.4); border: 1px solid #222; border-radius: 8px; padding: 12px; text-align: center; transition: 0.3s;}
-.yg-benchmark-card:hover { border-color: var(--neon-green); background: rgba(204, 255, 0, 0.03);}
-.yg-benchmark-game { font-family: var(--card-font-primary); color: #aaa; font-size: 10px; font-weight: 700; text-transform: uppercase; margin-bottom: 6px; letter-spacing: 1px;}
-.yg-benchmark-fps { font-family: var(--card-font-secondary); color: var(--neon-green); font-size: 26px; font-weight: 900; margin-bottom: 4px; text-shadow: 0 0 10px rgba(204, 255, 0, 0.4);}
-.yg-benchmark-settings { font-family: var(--card-font-primary); color: #555; font-size: 9px; font-style: italic; text-transform: uppercase;}
 
 /* =========================================
    10. MEDIA QUERIES
@@ -2195,159 +1959,7 @@ body {
         transform: translateY(20px) !important; /* Την κατεβάζουμε πιο κάτω */
     }
 }
-/* =========================================
-   15. ULTIMATE INTERACTION & SCROLL FIXES
-   ========================================= */
 
-/* --- 1. TARGET LOCK ANIMATION --- */
-.yg-target-lock {
-    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
-}
-.yg-target-lock:active {
-    transform: scale(0.6) !important; /* Πατιέται μέσα σαν αληθινό κουμπί */
-}
-.yg-target-lock.locked {
-    background: var(--neon-green) !important;
-    color: #000 !important;
-    border-color: var(--neon-green) !important;
-    box-shadow: 0 0 20px var(--neon-green) !important;
-    transform: rotate(90deg) !important; /* Γυρνάει 90 μοίρες όταν κλειδώνει! */
-}
-
-/* --- 2. SIGN IN / SIGN OUT UNBLOCKER --- */
-/* Ξεκλειδώνουμε το κεντρικό Header για να πιάνονται τα κλικ */
-body.ui-locked header {
-    pointer-events: auto !important; 
-    filter: none !important;
-    opacity: 1 !important;
-}
-/* Ξανακλειδώνουμε και θολώνουμε ΟΛΑ τα υπόλοιπα, ΕΚΤΟΣ από το Προφίλ */
-body.ui-locked header .nav-bar,
-body.ui-locked header .logo,
-body.ui-locked header .cli-btn,
-body.ui-locked header .achievements-btn {
-    pointer-events: none !important; 
-    filter: blur(3px) !important;
-    opacity: 0.5 !important;
-}
-.profile-menu, .profile-container {
-    pointer-events: auto !important;
-    z-index: 9999999 !important;
-}
-
-/* --- 3. BENCHMARKS & CARD SCROLL FIX (Mobile Magic) --- */
-.gallery-overlay .yg-card-back,
-.gallery-overlay .yg-card-front {
-    overflow-y: auto !important;
-    -webkit-overflow-scrolling: touch !important; /* Ξεμπλοκάρει το iPhone */
-    touch-action: pan-y !important; /* Εξαναγκάζει τον browser να επιτρέψει το κάθετο Swipe */
-    overscroll-behavior: contain !important; /* Απαγορεύει στο site από πίσω να κουνηθεί */
-    padding-bottom: 50px !important;
-}
-
-/* --- 4. DASHBOARD: ΣΤΑΘΕΡΗ ΚΑΡΤΕΛΑ, SCROLL ΜΟΝΟ ΣΤΑ ACHIEVEMENTS --- */
-@media (max-width: 768px) {
-    .dossier-box {
-        overflow: hidden !important; /* ΤΕΛΟΣ το scroll σε όλη την κάρτα */
-        max-height: 85vh !important;
-        padding-bottom: 15px !important;
-    }
-    .dossier-grid {
-        flex: 1 !important;
-        display: flex !important;
-        flex-direction: column !important;
-        overflow: hidden !important;
-    }
-    .dossier-col.dossier-left {
-        flex-shrink: 0 !important; /* Orders & Wishlist παραμένουν σταθερά */
-    }
-    .dossier-col.dossier-right {
-        flex: 1 !important;
-        display: flex !important;
-        flex-direction: column !important;
-        overflow: hidden !important; /* Εγκλωβίζει τα Achievements */
-        min-height: 0 !important;
-    }
-    
-    /* Η μαγεία: Το ΜΟΝΟ πράγμα που κάνει scroll πλέον είναι τα Achievements! */
-    #dossier-achievements {
-        flex: 1 !important;
-        overflow-y: auto !important; 
-        -webkit-overflow-scrolling: touch !important;
-        touch-action: pan-y !important;
-        max-height: none !important;
-        padding-right: 5px !important;
-    }
-    
-    /* Περιορίζουμε ελαφρώς το ύψος σε Orders/Wishlist για να δώσουμε χώρο στα Achievements */
-    #dossier-orders, #dossier-wishlist {
-        max-height: 100px !important;
-        min-height: 60px !important;
-    }
-}
-/* =========================================
-   16. DASHBOARD MERGE & iOS SCROLL FIX
-   ========================================= */
-
-/* --- 1. ΚΟΥΜΠΙΑ SIGN IN / SIGN OUT ΣΤΟ DASHBOARD --- */
-.dossier-auth-actions {
-    display: flex;
-    gap: 10px;
-    margin-top: 15px; /* Κενό από τα από πάνω στοιχεία */
-    padding-top: 15px;
-    border-top: 1px dashed rgba(204, 255, 0, 0.2);
-}
-
-.dossier-auth-actions .yg-btn {
-    flex: 1;
-    padding: 12px;
-    font-size: 0.85rem;
-    font-family: monospace; /* Terminal style */
-}
-
-/* Κόκκινο στυλ για το Sign Out */
-.dossier-btn-logout {
-    border-color: rgba(255, 51, 51, 0.5) !important;
-    color: var(--retro-red) !important;
-    background: rgba(255, 51, 51, 0.05) !important;
-}
-.dossier-btn-logout:hover {
-    background: rgba(255, 51, 51, 0.15) !important;
-    box-shadow: 0 0 15px rgba(255, 51, 51, 0.4) !important;
-    color: #fff !important;
-}
-
-/* --- 2. ΤΟ ΑΠΟΛΥΤΟ FIX ΓΙΑ ΤΟ ΠΑΓΩΜΕΝΟ SCROLL ΣΤΗΝ 3D ΚΑΡΤΑ (iOS & Android) --- */
-.gallery-overlay .yg-card-back {
-    display: block !important; /* Το flex μερικές φορές καταστρέφει το scroll σε 3D */
-    height: 100% !important;
-    overflow-y: scroll !important; /* Εξαναγκασμός scroll */
-    -webkit-overflow-scrolling: touch !important; /* Ενεργοποιεί το hardware scroll στο iPhone */
-    
-    /* ΤΟ ΜΥΣΤΙΚΟ: Δίνει βάθος 1px για να αναγκάσει τον browser να το ρεντάρει σωστά! */
-    transform: rotateY(180deg) translateZ(1px) !important; 
-    padding-bottom: 50px !important;
-}
-
-/* Εξασφαλίζουμε ότι τα παιδιά του card-back δεν μπλοκάρουν την αφή */
-.gallery-overlay .yg-card-back * {
-    transform: translateZ(0); 
-    pointer-events: auto !important;
-}
-
-/* --- 3. ΔΙΟΡΘΩΣΗ SCROLL ΓΙΑ ΤΟ ΥΠΟΛΟΙΠΟ DASHBOARD --- */
-/* (Σε περίπτωση που χάλασε με την ενοποίηση) */
-.dossier-box {
-    max-height: 85vh !important;
-    overflow: hidden !important; 
-    display: flex !important;
-    flex-direction: column !important;
-}
-#dossier-achievements {
-    flex: 1 !important;
-    overflow-y: scroll !important;
-    -webkit-overflow-scrolling: touch !important;
-}
 /* =========================================
    ABSOLUTE 3D SEPARATION (ANTI-MARRIAGE FIX)
    ========================================= */
@@ -2407,5 +2019,87 @@ body.ui-locked header .achievements-btn {
 /* Εξαφάνιση scrollbars */
 #main-body .gallery-overlay .scroll-fix-wrapper::-webkit-scrollbar,
 #main-body .gallery-overlay .yg-card-content::-webkit-scrollbar {
+    display: none !important;
+}
+/* =========================================
+   THE FINAL BULLETPROOF 3D CARD SYSTEM
+   ========================================= */
+
+/* 1. Ο Container ορίζει το σταθερό ύψος και την προοπτική */
+.yg-card-container {
+    width: 400px;
+    height: 600px !important; /* Σταθερό ύψος για να μην καταρρέει */
+    max-width: 95vw;
+    perspective: 2000px !important; 
+    margin: 0 auto;
+    position: relative;
+}
+
+/* 2. Το στοιχείο που κάνει το Flip */
+.yg-card {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    transform-style: preserve-3d !important;
+    transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.yg-card.flipped {
+    transform: rotateY(180deg);
+}
+
+/* 3. Οι όψεις: ΑΠΑΓΟΡΕΥΕΤΑΙ το overflow εδώ */
+.yg-card-front,
+.yg-card-back {
+    position: absolute !important;
+    inset: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    backface-visibility: hidden !important;
+    -webkit-backface-visibility: hidden !important;
+    border-radius: 16px;
+    overflow: hidden !important; /* Κλειδώνει το 3D context */
+    border: 2px solid #333;
+    background: #0a0a0c !important;
+}
+
+/* Σωστή αρχική τοποθέτηση */
+.yg-card-front {
+    z-index: 2;
+    transform: rotateY(0deg);
+}
+
+.yg-card-back {
+    z-index: 1;
+    transform: rotateY(180deg);
+}
+
+/* 4. ΤΟ ΜΥΣΤΙΚΟ: Το Scroll γίνεται ΜΟΝΟ μέσα σε αυτά τα wrappers */
+.yg-card-content, 
+.scroll-fix-wrapper {
+    position: absolute !important;
+    inset: 0 !important;
+    padding: 25px !important;
+    overflow-y: auto !important; /* Εδώ επιτρέπεται το scroll */
+    -webkit-overflow-scrolling: touch !important;
+    display: flex;
+    flex-direction: column;
+}
+
+/* 5. Mobile Προσαρμογή */
+@media (max-width: 768px) {
+    .yg-card-container {
+        height: 80vh !important;
+        max-height: 650px;
+    }
+    .yg-pc-image {
+        height: 180px !important;
+        object-fit: contain !important;
+    }
+}
+
+/* Εξαφάνιση Scrollbars */
+.yg-card-content::-webkit-scrollbar, 
+.scroll-fix-wrapper::-webkit-scrollbar {
     display: none !important;
 }
