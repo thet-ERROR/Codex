@@ -2103,3 +2103,94 @@ body {
 .scroll-fix-wrapper::-webkit-scrollbar {
     display: none !important;
 }
+/* =========================================
+   REBUILD: INSPECTION CARD FRONT & BACK
+   ========================================= */
+
+/* 1. Ο CONTAINER: Ορίζει το μέγεθος του 3D παραθύρου */
+.yg-card-container {
+    width: 400px;
+    height: 620px !important; /* Σταθερό ύψος για να μην εξαφανίζεται */
+    max-width: 95vw;
+    perspective: 2000px !important;
+    margin: 0 auto;
+    position: relative;
+}
+
+/* 2. Η ΚΑΡΤΑ: Το στοιχείο που κάνει το Flip */
+.yg-card {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    transform-style: preserve-3d !important;
+    transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.yg-card.flipped {
+    transform: rotateY(180deg);
+}
+
+/* 3. ΟΙ ΟΨΕΙΣ: Πρέπει να γεμίζουν όλο τον container */
+.yg-card-front,
+.yg-card-back {
+    position: absolute !important;
+    inset: 0 !important; /* Γεμίζει όλο το διαθέσιμο χώρο */
+    width: 100% !important;
+    height: 100% !important;
+    backface-visibility: hidden !important;
+    -webkit-backface-visibility: hidden !important;
+    border-radius: 16px;
+    background: #0a0a0c !important; /* Συμπαγές μαύρο φόντο */
+    border: 2px solid #333;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden !important; /* Κλειδώνει το 3D context */
+}
+
+/* Αρχικός προσανατολισμός */
+.yg-card-front { z-index: 2; transform: rotateY(0deg); }
+.yg-card-back { z-index: 1; transform: rotateY(180deg); }
+
+/* 4. ΤΟ ΠΕΡΙΕΧΟΜΕΝΟ: Εδώ γίνεται το scrolling */
+.yg-card-content, 
+.scroll-fix-wrapper {
+    flex-grow: 1;
+    overflow-y: auto !important;
+    padding: 25px !important;
+    display: flex;
+    flex-direction: column;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* 5. IMAGE SECTION: Unzoom fix */
+.yg-image-section {
+    height: 240px !important;
+    background: #000 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    position: relative;
+    flex-shrink: 0;
+}
+
+.yg-pc-image {
+    max-height: 90% !important;
+    max-width: 90% !important;
+    object-fit: contain !important; /* Δεν κόβεται η εικόνα */
+}
+
+/* 6. BUTTONS FIX */
+.yg-buttons-section {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-top: auto; /* Σπρώχνει τα κουμπιά στο κάτω μέρος */
+    padding: 10px 0;
+    flex-shrink: 0;
+}
+
+/* Εξαφάνιση Scrollbars */
+.yg-card-content::-webkit-scrollbar, 
+.scroll-fix-wrapper::-webkit-scrollbar {
+    display: none !important;
+}
