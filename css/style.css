@@ -2349,73 +2349,62 @@ body.ui-locked header .achievements-btn {
     -webkit-overflow-scrolling: touch !important;
 }
 /* =========================================
-   THE ULTIMATE 3D RESCUE (HIGH SPECIFICITY FIX)
+   THE FINAL 3D STACKING FIX (NO FLATTENING)
    ========================================= */
 
-/* 1. ΕΞΑΝΑΓΚΑΖΟΥΜΕ ΤΗΝ ΚΑΡΤΑ ΝΑ ΚΡΑΤΗΣΕΙ ΤΟ 3D */
+/* 1. Εξασφαλίζουμε ότι ο γονέας διατηρεί το 3D βάθος */
 #main-body .gallery-overlay .yg-card {
     transform-style: preserve-3d !important;
     -webkit-transform-style: preserve-3d !important;
+    perspective: none !important; /* Η προοπτική πρέπει να είναι μόνο στον container */
 }
 
-/* 2. ΑΠΑΓΟΡΕΥΟΥΜΕ ΤΟ SCROLL ΣΤΙΣ ΟΨΕΙΣ (ΑΥΤΟ ΕΛΥΣΕ ΤΟ ΠΡΟΒΛΗΜΑ) */
+/* 2. Καθαρίζουμε τις όψεις από "επικίνδυνες" ιδιότητες */
 #main-body .gallery-overlay .yg-card-front,
-#main-body .gallery-overlay .yg-card-back,
-#main-body .gallery-overlay .yg-card-face {
+#main-body .gallery-overlay .yg-card-back {
+    position: absolute !important;
+    width: 100% !important;
+    height: 100% !important;
+    top: 0 !important;
+    left: 0 !important;
+    
+    /* CRITICAL: Εξαφάνιση της πίσω πλευράς */
     backface-visibility: hidden !important;
     -webkit-backface-visibility: hidden !important;
+    
+    /* ΑΠΑΓΟΡΕΥΕΤΑΙ το overflow εδώ - Σπάει το 3D */
     overflow: visible !important; 
-    overflow-y: visible !important;
-    overflow-x: visible !important;
-    -webkit-overflow-scrolling: auto !important;
+    background: #0a0a0c !important;
+    border-radius: 16px !important;
 }
 
-/* 3. ΦΤΙΑΧΝΟΥΜΕ ΤΑ ΧΡΩΜΑΤΑ ΚΑΙ ΤΙΣ ΓΩΝΙΕΣ */
+/* 3. Σωστή τοποθέτηση των πλευρών στον 3D χώρο */
 #main-body .gallery-overlay .yg-card-front {
-    transform: rotateY(0deg) !important;
-    background: #0a0a0c !important; /* Μαύρο φόντο για να μη φεγγίζει */
+    transform: rotateY(0deg) translateZ(1px) !important; /* Το translateZ σπρώχνει την όψη ελαφρώς μπροστά */
     z-index: 2 !important;
 }
 
 #main-body .gallery-overlay .yg-card-back {
-    transform: rotateY(180deg) !important; 
-    background: #050507 !important; /* Μαύρο φόντο για να μη φεγγίζει */
+    transform: rotateY(180deg) translateZ(1px) !important; /* Το translateZ εξασφαλίζει ότι τα specs είναι "πάνω" από το φόντο */
     z-index: 1 !important;
 }
 
-/* 4. ΤΟ SCROLL ΓΙΝΕΤΑΙ ΑΥΣΤΗΡΑ ΚΑΙ ΜΟΝΟ ΣΤΑ ΕΣΩΤΕΡΙΚΑ ΚΟΥΤΙΑ */
-#main-body .gallery-overlay .yg-card-content,
-#main-body .gallery-overlay .scroll-fix-wrapper {
+/* 4. Το Scroll γίνεται ΜΟΝΟ εδώ μέσα */
+#main-body .gallery-overlay .scroll-fix-wrapper,
+#main-body .gallery-overlay .yg-card-content {
     position: absolute !important;
-    top: 0 !important; left: 0 !important; right: 0 !important; bottom: 0 !important;
-    height: 100% !important;
+    inset: 0 !important;
     overflow-y: auto !important;
     -webkit-overflow-scrolling: touch !important;
-    z-index: 10 !important;
-    transform: translateZ(0) !important; /* Hardware Acceleration μόνο στο εσωτερικό */
-}
-
-/* 5. PADDINGS ΓΙΑ ΝΑ ΜΗΝ ΚΟΒΟΝΤΑΙ ΤΑ ΣΤΟΙΧΕΙΑ */
-#main-body .gallery-overlay .scroll-fix-wrapper {
     padding: 25px !important;
-}
-@media (max-width: 768px) {
-    #main-body .gallery-overlay .scroll-fix-wrapper {
-        padding: 15px !important;
-        padding-bottom: 60px !important; /* Αέρας για το κινητό */
-    }
-    #main-body .gallery-overlay .yg-card-content {
-        padding-bottom: 30px !important;
-    }
+    /* Αποτρέπουμε το καθρέφτισμα του περιεχομένου */
+    backface-visibility: hidden !important;
+    -webkit-backface-visibility: hidden !important;
 }
 
-/* 6. ΑΠΟΛΥΤΗ ΕΞΑΦΑΝΙΣΗ SCROLLBARS */
-#main-body .gallery-overlay .yg-card-content::-webkit-scrollbar,
-#main-body .gallery-overlay .scroll-fix-wrapper::-webkit-scrollbar {
-    display: none !important;
-}
-#main-body .gallery-overlay .yg-card-content,
-#main-body .gallery-overlay .scroll-fix-wrapper {
-    scrollbar-width: none !important;
-    -ms-overflow-style: none !important;
+/* 5. Διόρθωση για το Desktop κενό */
+@media (min-width: 1025px) {
+    #main-body .yg-card-container {
+        height: 620px !important;
+    }
 }
