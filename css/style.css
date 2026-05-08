@@ -2349,87 +2349,73 @@ body.ui-locked header .achievements-btn {
     -webkit-overflow-scrolling: touch !important;
 }
 /* =========================================
-   ABSOLUTE 3D CARD FIX (NO MIRROR EFFECT)
+   THE ULTIMATE 3D RESCUE (HIGH SPECIFICITY FIX)
    ========================================= */
 
-/* 1. Η Κάρτα και το 3D Περιβάλλον της */
-.yg-card-container {
-    perspective: 2000px !important; 
-}
-
-.yg-card {
+/* 1. ΕΞΑΝΑΓΚΑΖΟΥΜΕ ΤΗΝ ΚΑΡΤΑ ΝΑ ΚΡΑΤΗΣΕΙ ΤΟ 3D */
+#main-body .gallery-overlay .yg-card {
     transform-style: preserve-3d !important;
-    position: relative !important;
+    -webkit-transform-style: preserve-3d !important;
 }
 
-/* 2. ΑΥΣΤΗΡΟΙ ΚΑΝΟΝΕΣ ΓΙΑ ΤΙΣ ΟΨΕΙΣ (Ποτέ ανάποδα γράμματα) */
-.gallery-overlay .yg-card-front,
-.gallery-overlay .yg-card-back {
-    position: absolute !important;
-    top: 0 !important; left: 0 !important; right: 0 !important; bottom: 0 !important;
-    width: 100% !important; height: 100% !important;
+/* 2. ΑΠΑΓΟΡΕΥΟΥΜΕ ΤΟ SCROLL ΣΤΙΣ ΟΨΕΙΣ (ΑΥΤΟ ΕΛΥΣΕ ΤΟ ΠΡΟΒΛΗΜΑ) */
+#main-body .gallery-overlay .yg-card-front,
+#main-body .gallery-overlay .yg-card-back,
+#main-body .gallery-overlay .yg-card-face {
     backface-visibility: hidden !important;
     -webkit-backface-visibility: hidden !important;
-    border-radius: 16px !important;
-    /* ΑΠΑΓΟΡΕΥΕΤΑΙ ΤΟ SCROLL ΕΔΩ - Αλλιώς σπάει το 3D */
-    overflow: hidden !important; 
+    overflow: visible !important; 
+    overflow-y: visible !important;
+    overflow-x: visible !important;
+    -webkit-overflow-scrolling: auto !important;
 }
 
-/* 3. Μπροστινή Όψη */
-.gallery-overlay .yg-card-front {
+/* 3. ΦΤΙΑΧΝΟΥΜΕ ΤΑ ΧΡΩΜΑΤΑ ΚΑΙ ΤΙΣ ΓΩΝΙΕΣ */
+#main-body .gallery-overlay .yg-card-front {
     transform: rotateY(0deg) !important;
-    background: #0a0a0c !important; /* Συμπαγές χρώμα για να μη φεγγίζει */
+    background: #0a0a0c !important; /* Μαύρο φόντο για να μη φεγγίζει */
     z-index: 2 !important;
-    display: flex !important;
-    flex-direction: column !important;
 }
 
-/* 4. Πίσω Όψη (Επιστροφή των Specs) */
-.gallery-overlay .yg-card-back {
-    transform: rotateY(180deg) !important;
-    background: #050507 !important;
+#main-body .gallery-overlay .yg-card-back {
+    transform: rotateY(180deg) !important; 
+    background: #050507 !important; /* Μαύρο φόντο για να μη φεγγίζει */
     z-index: 1 !important;
-    display: block !important;
 }
 
-/* 5. ΤΑ ΕΣΩΤΕΡΙΚΑ ΚΟΥΤΙΑ ΑΝΑΛΑΜΒΑΝΟΥΝ ΤΟ SCROLL */
-.scroll-fix-wrapper {
+/* 4. ΤΟ SCROLL ΓΙΝΕΤΑΙ ΑΥΣΤΗΡΑ ΚΑΙ ΜΟΝΟ ΣΤΑ ΕΣΩΤΕΡΙΚΑ ΚΟΥΤΙΑ */
+#main-body .gallery-overlay .yg-card-content,
+#main-body .gallery-overlay .scroll-fix-wrapper {
     position: absolute !important;
     top: 0 !important; left: 0 !important; right: 0 !important; bottom: 0 !important;
+    height: 100% !important;
     overflow-y: auto !important;
     -webkit-overflow-scrolling: touch !important;
+    z-index: 10 !important;
+    transform: translateZ(0) !important; /* Hardware Acceleration μόνο στο εσωτερικό */
+}
+
+/* 5. PADDINGS ΓΙΑ ΝΑ ΜΗΝ ΚΟΒΟΝΤΑΙ ΤΑ ΣΤΟΙΧΕΙΑ */
+#main-body .gallery-overlay .scroll-fix-wrapper {
     padding: 25px !important;
-    z-index: 10 !important; /* Εξασφαλίζει ότι τα specs δεν κρύβονται */
+}
+@media (max-width: 768px) {
+    #main-body .gallery-overlay .scroll-fix-wrapper {
+        padding: 15px !important;
+        padding-bottom: 60px !important; /* Αέρας για το κινητό */
+    }
+    #main-body .gallery-overlay .yg-card-content {
+        padding-bottom: 30px !important;
+    }
 }
 
-.gallery-overlay .yg-card-content {
-    flex-grow: 1 !important;
-    overflow-y: auto !important;
-    -webkit-overflow-scrolling: touch !important;
-    padding: 20px 25px !important;
-    display: flex !important;
-    flex-direction: column !important;
+/* 6. ΑΠΟΛΥΤΗ ΕΞΑΦΑΝΙΣΗ SCROLLBARS */
+#main-body .gallery-overlay .yg-card-content::-webkit-scrollbar,
+#main-body .gallery-overlay .scroll-fix-wrapper::-webkit-scrollbar {
+    display: none !important;
 }
-
-/* 6. ΟΛΙΚΗ ΕΞΑΦΑΝΙΣΗ SCROLLBARS */
-.yg-card-content::-webkit-scrollbar, 
-.scroll-fix-wrapper::-webkit-scrollbar,
-.yg-card-face::-webkit-scrollbar {
-    display: none !important; 
-}
-.yg-card-content, .scroll-fix-wrapper, .yg-card-face {
-    scrollbar-width: none !important; 
-    -ms-overflow-style: none !important; 
-}
-
-/* 7. ΔΙΑΣΤΑΣΕΙΣ (Desktop & Mobile) */
-@media (min-width: 1025px) {
-    .yg-card-container { height: 640px !important; margin-top: 5vh !important; }
-    .gallery-overlay .yg-image-section { height: 260px !important; margin-bottom: 10px !important; }
-}
-@media (max-width: 1024px) {
-    .gallery-overlay .yg-card-container { height: 85vh !important; max-height: 750px !important; margin-top: 0 !important;}
-    .gallery-overlay .yg-pc-image { height: 160px !important; max-width: 160px !important; }
-    .gallery-overlay .yg-buttons-section { margin-top: 15px !important; }
-    .scroll-fix-wrapper { padding: 15px !important; padding-bottom: 50px !important; }
+#main-body .gallery-overlay .yg-card-content,
+#main-body .gallery-overlay .scroll-fix-wrapper {
+    scrollbar-width: none !important;
+    -ms-overflow-style: none !important;
 }
