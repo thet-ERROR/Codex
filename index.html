@@ -90,17 +90,19 @@ Type 'help' for a list of commands.
         </div>
         
         <!-- RESTORED: Το δεξί γκρουπ με τα κουμπιά που είχε χαθεί -->
-        <div class="right-header-group">
-            <button class="cli-btn" onclick="toggleCLI()" title="Terminal">
-                <i class="ph-bold ph-terminal-window"></i>
-            </button>
-            
-            <div class="profile-container">
-                <button class="profile-btn" onclick="playClick(); openModal('agent-dashboard-modal')">
-                    <i class="ph-bold ph-user"></i>
-                </button>
+<div class="right-header-group">
+    <button class="cli-btn" onclick="toggleCLI()" title="Terminal">
+        <i class="ph-bold ph-terminal-window"></i>
+    </button>
+    
+    <div class="profile-container">
+        <button class="profile-btn" onclick="playClick(); toggleProfileMenu()">
+            <i class="ph-bold ph-user"></i>
+        </button>
+        <div class="profile-menu" id="profile-menu">
             </div>
-        </div>
+    </div>
+</div>
     </header>
 
     <div class="stage">
@@ -172,37 +174,30 @@ Type 'help' for a list of commands.
         </div>
     </div>
 
-    <div class="gallery-overlay" id="gallery-overlay">
+ <div class="gallery-overlay" id="gallery-overlay">
         <div class="yg-card-container">
             <div class="yg-card" id="yg-card">
                 
                 <div class="yg-card-face yg-card-front">
                     <div class="yg-tier-badge" id="yg-tier-badge">S-TIER</div>
-                    <div class="yg-close-btn" onclick="playClick(); closeModal('gallery-overlay')"></div>
-
-                    <!-- TARGET LOCK -->
-                    <!-- TARGET LOCK -->
-<                   <div class="yg-target-lock" title="Save to Wishlist" onclick="toggleWishlist(this)"><i class="ph-bold ph-crosshair"></i></div>
-                        <i class="ph-bold ph-crosshair"></i>
-                    </div>
+                    <div class="yg-close-btn" onclick="playClick(); closeModal('gallery-overlay')"><i class="ph-bold ph-x"></i></div>
+                    <div class="yg-target-lock" title="Save to Wishlist" onclick="toggleWishlist(this)"><i class="ph-bold ph-crosshair"></i></div>
                     
-                    <div class="yg-card-content" style="padding: 25px; padding-top: 35px; display: flex; flex-direction: column; flex-grow: 1;">
-                        <h1 class="yg-project-name" id="yg-title" style="margin-bottom: 15px;">Project Cali</h1>
+                    <div class="yg-card-content">
+                        <h1 class="yg-project-name" id="yg-title">Project Cali</h1>
 
                         <div style="display: flex; align-items: center; justify-content: center; gap: 20px; width: 100%; margin-bottom: 15px;">
-                            <button class="yg-gallery-btn left" onclick="playClick(); changeGalleryImage(-1)" style="background: rgba(255,255,255,0.05); padding: 8px 12px; border-radius: 5px; border: 1px solid rgba(255,255,255,0.1); color: #fff; cursor: pointer; transition: 0.2s;"><i class="ph-bold ph-caret-left"></i></button>
-                            
-                            <img src="" id="yg-main-img" alt="PC Build" class="yg-pc-image" onclick="playClick(); changeGalleryImage(1)" style="height: 190px; max-width: 190px; object-fit: contain; filter: drop-shadow(0 10px 15px rgba(0,0,0,0.5)); cursor: pointer; display: block;" title="Next Image">
-                            
-                            <button class="yg-gallery-btn right" onclick="playClick(); changeGalleryImage(1)" style="background: rgba(255,255,255,0.05); padding: 8px 12px; border-radius: 5px; border: 1px solid rgba(255,255,255,0.1); color: #fff; cursor: pointer; transition: 0.2s;"><i class="ph-bold ph-caret-right"></i></button>
+                            <button class="yg-gallery-btn left" onclick="playClick(); changeGalleryImage(-1)"><i class="ph-bold ph-caret-left"></i></button>
+                            <img src="" id="yg-main-img" alt="PC Build" class="yg-pc-image" onclick="playClick(); changeGalleryImage(1)" title="Next Image">
+                            <button class="yg-gallery-btn right" onclick="playClick(); changeGalleryImage(1)"><i class="ph-bold ph-caret-right"></i></button>
                         </div>
 
-                        <div class="yg-price-section" style="margin-bottom: 20px;">
+                        <div class="yg-price-section">
                             <div class="yg-current-price" id="yg-price-live">€0</div>
                             <div class="yg-old-price" id="yg-price-old">€0</div>
                         </div>
 
-                        <div class="yg-storage-section" style="margin-bottom: 20px;">
+                        <div class="yg-storage-section">
                             <div class="yg-storage-label">Storage Expansion</div>
                             <select class="yg-storage-select" id="storage-select" onchange="updatePrice()">
                                 <option value="0">Standard (No Extra)</option>
@@ -211,8 +206,8 @@ Type 'help' for a list of commands.
                             </select>
                         </div>
 
-                        <div class="yg-buttons-section" style="margin-top: auto;">
-                            <button class="yg-btn yg-btn-specs yg-btn-breathe" onclick="playClick(); toggleCardFlip()">
+                        <div class="yg-buttons-section">
+                            <button class="yg-btn yg-btn-specs" onclick="playClick(); toggleCardFlip()">
                                 <span>⇄</span> Flip to Specs
                             </button>
                             <button class="yg-btn yg-btn-cart" id="yg-add-cart" onclick="addToCart()">
@@ -222,6 +217,35 @@ Type 'help' for a list of commands.
                     </div>
                 </div>
 
+                <div class="yg-card-face yg-card-back">
+                    <div class="scroll-fix-wrapper">
+                        <div class="yg-close-back" onclick="playClick(); toggleCardFlip()"><i class="ph-bold ph-arrow-u-up-left"></i></div>
+                        <div id="specs-container-wrapper">
+                            <div class="yg-rarity-badge mobile-hide">CLASSIFIED HARDWARE</div>
+                            <div class="yg-sys-header">
+                                <div class="yg-sys-data-title">
+                                    <span class="yg-sys-icon"><i class="ph-fill ph-cpu"></i></span>
+                                    SYS_DATA
+                                </div>
+                                <div class="yg-sys-subtitle mobile-hide">Detailed specifications for this system.</div>
+                            </div>
+                            <div class="yg-specs-list" id="yg-specs-back"></div>
+                        </div>
+
+                        <button id="bench-toggle-btn" class="yg-btn yg-btn-breathe mobile-bench-btn" onclick="playClick(); toggleBenchmarksView()">
+                            <i class="ph-bold ph-crosshair"></i> SHOW BENCHMARKS
+                        </button>
+
+                        <div class="yg-benchmarks" id="bench-section">
+                            <div class="yg-benchmarks-title">GAME BENCHMARKS (1080p)</div>
+                            <div class="yg-benchmark-grid" id="yg-benchmarks"></div>
+                        </div>
+                    </div>
+                </div>
+            
+            </div>
+        </div>
+    </div>
 <div class="yg-card-face yg-card-back">
     <div class="scroll-fix-wrapper">
         <div class="yg-close-back" onclick="playClick(); toggleCardFlip()"><i class="ph-bold ph-arrow-u-up-left"></i></div>

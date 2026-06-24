@@ -1961,10 +1961,8 @@ body {
 }
 
 /* =========================================
-   PHOENIX CODEX: CLEAN & BULLETPROOF 3D CORE
+   PHOENIX CODEX: THE FINAL 3D REBUILD
    ========================================= */
-
-/* 1. Ορίζουμε τον 3D χώρο στον container */
 .yg-card-container {
     width: 400px !important;
     height: 640px !important;
@@ -1974,7 +1972,6 @@ body {
     position: relative !important;
 }
 
-/* 2. Η Κάρτα που εκτελεί την περιστροφή */
 .yg-card {
     width: 100% !important;
     height: 100% !important;
@@ -1988,7 +1985,6 @@ body {
     transform: rotateY(180deg) !important;
 }
 
-/* 3. Οι δύο όψεις: Απόλυτος διαχωρισμός στον 3D χώρο */
 .yg-card-front,
 .yg-card-back {
     position: absolute !important;
@@ -1999,21 +1995,13 @@ body {
     -webkit-backface-visibility: hidden !important;
     border-radius: 16px !important;
     border: 2px solid #333 !important;
-    background: #0a0a0c !important; /* Σταθερό solid μαύρο για να μη φεγγίζει η μία όψη στην άλλη */
-    overflow: hidden !important; /* Κλειδώνει το 3D context */
+    background: #0a0a0c !important; /* Solid background για να μην φέγγει */
+    overflow: hidden !important;
 }
 
-.yg-card-front {
-    z-index: 2 !important;
-    transform: rotateY(0deg) translateZ(1px) !important;
-}
+.yg-card-front { z-index: 2 !important; transform: rotateY(0deg) translateZ(1px) !important; display: flex !important; flex-direction: column !important; }
+.yg-card-back { z-index: 1 !important; transform: rotateY(180deg) translateZ(1px) !important; }
 
-.yg-card-back {
-    z-index: 1 !important;
-    transform: rotateY(180deg) translateZ(1px) !important;
-}
-
-/* 4. Τα εσωτερικά Wrappers αναλαμβάνουν το Scroll και το Layout */
 .yg-card-content,
 .scroll-fix-wrapper {
     width: 100% !important;
@@ -2026,7 +2014,6 @@ body {
     box-sizing: border-box !important;
 }
 
-/* 5. Σωστές διαστάσεις για την εικόνα του PC */
 .yg-image-section {
     height: 220px !important;
     background: #000 !important;
@@ -2046,22 +2033,15 @@ body {
     display: block !important;
 }
 
-/* 6. Τα κουμπιά στο κάτω μέρος της κάρτας */
 .yg-buttons-section {
     display: grid !important;
     grid-template-columns: 1fr 1fr !important;
     gap: 12px !important;
-    margin-top: auto !important; /* Τα σπρώχνει αυτόματα στον πάτο */
+    margin-top: auto !important; /* Σπρώχνει τα κουμπιά κάτω */
     padding: 10px 0 !important;
     flex-shrink: 0 !important;
 }
 
-/* 7. Εξαφάνιση Scrollbars από το εσωτερικό της κάρτας */
 .yg-card-content::-webkit-scrollbar, 
-.scroll-fix-wrapper::-webkit-scrollbar {
-    display: none !important;
-}
-.yg-card-content, .scroll-fix-wrapper {
-    scrollbar-width: none !important;
-    -ms-overflow-style: none !important;
-}
+.scroll-fix-wrapper::-webkit-scrollbar { display: none !important; }
+.yg-card-content, .scroll-fix-wrapper { scrollbar-width: none !important; -ms-overflow-style: none !important; }
