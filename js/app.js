@@ -186,24 +186,57 @@ async function handleSignup() {
 }
 
 async function handleLogin() {
-    const username = document.getElementById('login-user').value;
-    // ... (ο υπόλοιπος κώδικας του login σου)
+    const user = document.getElementById('login-user').value.trim();
+    const pass = document.getElementById('login-pass').value.trim();
 
-    if (username) {
-        // Ενημερώνει το όνομα στο Dashboard
-        const dossierName = document.getElementById('dossier-username');
-        if (dossierName) {
-            dossierName.innerText = username.toUpperCase();
-        }
+    if (!user || !pass) {
+        alert("SYSTEM ALERT: ENTER BOTH USERNAME & PASSWORD");
+        return;
+    }
+
+    try {
+        // Επικοινωνία με το live backend σου στο Render
+        const res = await fetch(`${API}/user-login`, { 
+            method: 'POST', 
+            headers: {'Content-Type': 'application/json'}, 
+            body: JSON.stringify({ username: user, password: pass }) 
+        });
         
-        // Ενημερώνει και το παλιό user-display αν υπάρχει ακόμα
-        const userDisplay = document.getElementById('user-display');
-        if (userDisplay) {
-            userDisplay.innerText = username.toUpperCase();
-        }
+        const d = await res.json();
 
-        showToast('WELCOME BACK, AGENT ' + username.toUpperCase(), 'normal');
-        closeModal('login-modal');
+        if (d.success) {
+            isLoggedIn = true; // ΚΡΙΣΙΜΟ: Ενημερώνουμε την κατάσταση σύνδεσης
+
+            // Ενημέρωση του ονόματος στο Agent Dashboard
+            const dossierName = document.getElementById('dossier-username');
+            if (dossierName) {
+                dossierName.innerText = d.username.toUpperCase();
+            }
+            
+            // Ενημέρωση του παλιού user-display (αν υπάρχει)
+            const userDisplay = document.getElementById('user-display');
+            if (userDisplay) {
+                userDisplay.innerText = d.username.toUpperCase();
+            }
+
+            // Απόκρυψη των Guest επιλογών και εμφάνιση των User επιλογών στο μενού
+            document.getElementById('guest-options').classList.add('hidden');
+            document.getElementById('user-options').classList.remove('hidden');
+
+            showToast('WELCOME BACK, AGENT ' + d.username.toUpperCase(), 'normal');
+            closeModal('login-modal');
+            
+            // Ξεκλείδωμα του login achievement
+            checkAchievement('login');
+            
+            // Άνοιγμα του Dashboard αυτόματα μετά το επιτυχές login
+            openAgentDashboard();
+        } else {
+            alert("ACCESS DENIED: " + (d.error || "INVALID CREDENTIALS"));
+        }
+    } catch (e) {
+        console.error(e);
+        alert("CONNECTION ERROR: DATABASE MAINFRAME OFFLINE");
     }
 }
 
