@@ -199,18 +199,6 @@ async function completeReset() {
 }
 
 // 🔄 ΕΛΕΓΧΟΣ ΑΠΟΘΗΚΕΥΜΕΝΟΥ USER ΣΤΟ REFRESH
-function checkSavedSession() {
-    const savedUser = localStorage.getItem('codex_username');
-    if (savedUser) {
-        isLoggedIn = true;
-        updateAuthStates(true, savedUser);
-    } else {
-        isLoggedIn = false;
-        updateAuthStates(false, "");
-    }
-}
-
-// 🔐 ΣΥΝΑΡΤΗΣΗ SIGN IN
 // ==========================================
 // PHOENIX CODEX: AUTHENTICATION & MEMORY SYSTEM
 // ==========================================
@@ -306,6 +294,47 @@ function logout() {
     showToast("AGENT DISCONNECTED", "error"); 
 }
 
+// 🛠️ ΔΥΝΑΜΙΚΗ ΕΝΑΛΛΑΓΗ ΣΤΟΙΧΕΙΩΝ ΣΤΟ ΜΕΝΟΥ (UI SWITCHER)
+function updateAuthStates(loggedIn, username) {
+    isLoggedIn = loggedIn;
+    const menu = document.getElementById('profile-menu');
+    const dossierName = document.getElementById('dossier-username');
+    const dossierRank = document.getElementById('dossier-rank');
+    const userDisplay = document.getElementById('user-display');
+
+    if (!menu) return;
+
+    if (loggedIn) {
+        // Όταν είναι συνδεδεμένος: Μόνο Dashboard και Sign Out
+        menu.innerHTML = `
+            <div class="p-item" onclick="playClick(); toggleProfileMenu(); openAgentDashboard();" style="color: var(--neon-green); padding: 10px; cursor: pointer; font-weight: bold;">📊 DASHBOARD</div>
+            <div class="p-item" onclick="playClick(); logout(); toggleProfileMenu();" style="color: #ff3333; padding: 10px; cursor: pointer; font-weight: bold;">❌ SIGN OUT</div>
+        `;
+        if (dossierName) dossierName.innerText = username.toUpperCase();
+        if (userDisplay) userDisplay.innerText = username.toUpperCase();
+        if (dossierRank) dossierRank.innerText = "OPERATIVE";
+        
+        // Απόκρυψη/Εμφάνιση guest επιλογών αν υπάρχουν
+        const guestOpts = document.getElementById('guest-options');
+        const userOpts = document.getElementById('user-options');
+        if(guestOpts) guestOpts.classList.add('hidden');
+        if(userOpts) userOpts.classList.remove('hidden');
+    } else {
+        // Όταν είναι επισκέπτης: Επιλογές σύνδεσης
+        menu.innerHTML = `
+            <div class="p-item" onclick="playClick(); toggleProfileMenu(); openModal('login-modal');" style="padding: 10px; cursor: pointer;">SIGN IN</div>
+            <div class="p-item" onclick="playClick(); toggleProfileMenu(); openModal('signup-modal');" style="padding: 10px; cursor: pointer;">REGISTER</div>
+        `;
+        if (dossierName) dossierName.innerText = "UNKNOWN_USER";
+        if (userDisplay) userDisplay.innerText = "GUEST";
+        if (dossierRank) dossierRank.innerText = "RECRUIT";
+        
+        const guestOpts = document.getElementById('guest-options');
+        const userOpts = document.getElementById('user-options');
+        if(guestOpts) guestOpts.classList.remove('hidden');
+        if(userOpts) userOpts.classList.add('hidden');
+    }
+}
 // 🛠️ ΔΥΝΑΜΙΚΗ ΕΝΑΛΛΑΓΗ ΣΤΟΙΧΕΙΩΝ ΣΤΟ ΜΕΝΟΥ (UI SWITCHER)
 function updateAuthStates(loggedIn, username) {
     isLoggedIn = loggedIn;
