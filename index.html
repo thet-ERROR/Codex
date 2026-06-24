@@ -90,7 +90,7 @@ Type 'help' for a list of commands.
         </div>
         
         <!-- RESTORED: Το δεξί γκρουπ με τα κουμπιά που είχε χαθεί -->
-    <div class="right-header-group">
+   <div class="right-header-group">
             <button class="cli-btn" onclick="toggleCLI()" title="Terminal">
                 <i class="ph-bold ph-terminal-window"></i>
             </button>
@@ -101,7 +101,7 @@ Type 'help' for a list of commands.
                 </button>
                 <div class="profile-menu" id="profile-menu"></div>
             </div>
-    </div>
+        </div>
     </header>
 
     <div class="stage">
@@ -173,7 +173,7 @@ Type 'help' for a list of commands.
         </div>
     </div>
 
- <div class="gallery-overlay" id="gallery-overlay">
+ <<div class="gallery-overlay" id="gallery-overlay">
         <div class="yg-card-container">
             <div class="yg-card" id="yg-card">
                 
@@ -182,21 +182,21 @@ Type 'help' for a list of commands.
                     <div class="yg-close-btn" onclick="playClick(); closeModal('gallery-overlay')"><i class="ph-bold ph-x"></i></div>
                     <div class="yg-target-lock" title="Save to Wishlist" onclick="toggleWishlist(this)"><i class="ph-bold ph-crosshair"></i></div>
                     
-                    <div class="yg-card-content">
-                        <h1 class="yg-project-name" id="yg-title">Project Cali</h1>
+                    <div class="yg-card-content" style="padding: 25px; padding-top: 35px; display: flex; flex-direction: column; flex-grow: 1;">
+                        <h1 class="yg-project-name" id="yg-title" style="margin-bottom: 15px;">Project Cali</h1>
 
                         <div style="display: flex; align-items: center; justify-content: center; gap: 20px; width: 100%; margin-bottom: 15px;">
-                            <button class="yg-gallery-btn left" onclick="playClick(); changeGalleryImage(-1)"><i class="ph-bold ph-caret-left"></i></button>
-                            <img src="" id="yg-main-img" alt="PC Build" class="yg-pc-image" onclick="playClick(); changeGalleryImage(1)" title="Next Image">
-                            <button class="yg-gallery-btn right" onclick="playClick(); changeGalleryImage(1)"><i class="ph-bold ph-caret-right"></i></button>
+                            <button class="yg-gallery-btn left" onclick="playClick(); changeGalleryImage(-1)" style="background: rgba(255,255,255,0.05); padding: 8px 12px; border-radius: 5px; border: 1px solid rgba(255,255,255,0.1); color: #fff; cursor: pointer; transition: 0.2s;"><i class="ph-bold ph-caret-left"></i></button>
+                            <img src="" id="yg-main-img" alt="PC Build" class="yg-pc-image" onclick="playClick(); changeGalleryImage(1)" style="height: 190px; max-width: 190px; object-fit: contain; filter: drop-shadow(0 10px 15px rgba(0,0,0,0.5)); cursor: pointer; display: block;" title="Next Image">
+                            <button class="yg-gallery-btn right" onclick="playClick(); changeGalleryImage(1)" style="background: rgba(255,255,255,0.05); padding: 8px 12px; border-radius: 5px; border: 1px solid rgba(255,255,255,0.1); color: #fff; cursor: pointer; transition: 0.2s;"><i class="ph-bold ph-caret-right"></i></button>
                         </div>
 
-                        <div class="yg-price-section">
+                        <div class="yg-price-section" style="margin-bottom: 20px;">
                             <div class="yg-current-price" id="yg-price-live">€0</div>
                             <div class="yg-old-price" id="yg-price-old">€0</div>
                         </div>
 
-                        <div class="yg-storage-section">
+                        <div class="yg-storage-section" style="margin-bottom: 20px;">
                             <div class="yg-storage-label">Storage Expansion</div>
                             <select class="yg-storage-select" id="storage-select" onchange="updatePrice()">
                                 <option value="0">Standard (No Extra)</option>
@@ -205,8 +205,8 @@ Type 'help' for a list of commands.
                             </select>
                         </div>
 
-                        <div class="yg-buttons-section">
-                            <button class="yg-btn yg-btn-specs" onclick="playClick(); toggleCardFlip()">
+                        <div class="yg-buttons-section" style="margin-top: auto;">
+                            <button class="yg-btn yg-btn-specs yg-btn-breathe" onclick="playClick(); toggleCardFlip()">
                                 <span>⇄</span> Flip to Specs
                             </button>
                             <button class="yg-btn yg-btn-cart" id="yg-add-cart" onclick="addToCart()">
@@ -447,16 +447,17 @@ Type 'help' for a list of commands.
             </div>
             
             <!-- ΤΩΡΑ ΕΙΝΑΙ ΣΩΣΤΑ ΜΕΣΑ ΣΤΟ ΚΟΥΤΙ ΤΟΥ DASHBOARD! -->
-            <div class="dossier-auth-actions">
-                <button class="yg-btn yg-btn-specs" onclick="playClick(); closeModal('agent-dashboard-modal'); openModal('login-modal')">
+           <div class="dossier-auth-actions">
+                <button id="dossier-signin-btn" class="yg-btn yg-btn-specs" onclick="playClick(); closeModal('agent-dashboard-modal'); openModal('login-modal')">
                     > SIGN IN
                 </button>
-                <button class="yg-btn yg-btn-specs dossier-btn-logout" onclick="playClick(); showToast('AGENT DISCONNECTED', 'error'); closeModal('agent-dashboard-modal')">
+                <button id="dossier-signup-btn" class="yg-btn yg-btn-specs" onclick="playClick(); closeModal('agent-dashboard-modal'); openModal('signup-modal')">
+                    > REGISTER
+                </button>
+                <button id="dossier-logout-btn" class="yg-btn yg-btn-specs dossier-btn-logout" onclick="playClick(); logout(); closeModal('agent-dashboard-modal')">
                     > SIGN OUT
                 </button>
             </div>
-        </div>
-    </div>
 
     <div class="modal-overlay" id="signup-modal">
         <div class="modal-content" style="width:400px;">
