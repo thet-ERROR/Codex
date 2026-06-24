@@ -204,18 +204,21 @@ async function completeReset() {
 // ==========================================
 
 // 🔄 ΕΛΕΓΧΟΣ LOCALSTORAGE ΓΙΑ ΑΥΤΟΜΑΤΟ LOGIN
+// ==========================================
+// PHOENIX CODEX: AUTHENTICATION & PERSISTENT MEMORY
+// ==========================================
+
 function checkSavedSession() {
     const savedUser = localStorage.getItem('codex_username');
     if (savedUser) {
         isLoggedIn = true;
-        updateAuthStates(true, savedUser);
+        updateAuthUI(savedUser);
     } else {
         isLoggedIn = false;
-        updateAuthStates(false, "");
+        updateAuthUI(null);
     }
 }
 
-// 🔐 ΣΥΝΑΡΤΗΣΗ SIGN IN (ΣΥΝΔΕΣΗ)
 async function handleLogin() {
     const user = document.getElementById('login-user').value.trim();
     const pass = document.getElementById('login-pass').value.trim();
@@ -234,10 +237,8 @@ async function handleLogin() {
         const d = await res.json();
 
         if (d.success) {
-            // Κρατάμε μνήμη στον Browser
             localStorage.setItem('codex_username', d.username);
-            
-            updateAuthStates(true, d.username);
+            updateAuthUI(d.username);
             showToast('WELCOME BACK, AGENT ' + d.username.toUpperCase(), 'normal');
             closeModal('login-modal');
             checkAchievement('login');
@@ -246,11 +247,10 @@ async function handleLogin() {
         }
     } catch(e) { 
         console.error(e);
-        alert("SERVER ERROR: DATABASE MAINFRAME OFFLINE"); 
+        alert("SERVER ERROR: DATABASE OFFLINE"); 
     }
 }
 
-// 📝 ΣΥΝΑΡΤΗΣΗ SIGN UP (ΕΓΓΡΑΦΗ)
 async function handleSignup() {
     const user = document.getElementById('reg-user').value.trim();
     const email = document.getElementById('reg-email').value.trim();
@@ -271,157 +271,64 @@ async function handleSignup() {
         
         if(d.success) {
             localStorage.setItem('codex_username', d.username);
-            
-            updateAuthStates(true, d.username);
+            updateAuthUI(d.username);
             showToast("WELCOME AGENT: " + d.username.toUpperCase(), "achievement"); 
             closeModal('signup-modal'); 
             checkAchievement('login'); 
         } else { 
             alert(d.error || "REGISTRATION FAILED"); 
         }
-    } catch(e) {
-        console.error(e);
-        alert("SERVER ERROR DURING REGISTRATION");
-    }
+    } catch(e) { alert("SERVER ERROR DURING REGISTRATION"); }
 }
 
-// ❌ ΣΥΝΑΡΤΗΣΗ SIGN OUT (ΑΠΟΣΥΝΔΕΣΗ)
 function logout() { 
     isLoggedIn = false; 
-    localStorage.removeItem('codex_username'); // Σβήνουμε τον χρήστη από τη μνήμη
-    
-    updateAuthStates(false, "");
+    localStorage.removeItem('codex_username');
+    updateAuthUI(null);
     showToast("AGENT DISCONNECTED", "error"); 
 }
 
-// 🛠️ ΔΥΝΑΜΙΚΗ ΕΝΑΛΛΑΓΗ ΣΤΟΙΧΕΙΩΝ ΣΤΟ ΜΕΝΟΥ (UI SWITCHER)
-function updateAuthStates(loggedIn, username) {
-    isLoggedIn = loggedIn;
+// ΟΛΟΚΛΗΡΩΜΕΝΟΣ UI SWITCHER ΠΟΥ ΑΛΛΑΖΕΙ ΤΑ ΚΟΥΜΠΙΑ ΖΩΝΤΑΝΑ
+function updateAuthUI(username) {
     const menu = document.getElementById('profile-menu');
     const dossierName = document.getElementById('dossier-username');
     const dossierRank = document.getElementById('dossier-rank');
-    const userDisplay = document.getElementById('user-display');
+    const signInBtn = document.getElementById('dossier-signin-btn');
+    const signUpBtn = document.getElementById('dossier-signup-btn');
+    const logoutBtn = document.getElementById('dossier-logout-btn');
 
-    if (!menu) return;
-
-    if (loggedIn) {
-        // Όταν είναι συνδεδεμένος: Μόνο Dashboard και Sign Out
-        menu.innerHTML = `
-            <div class="p-item" onclick="playClick(); toggleProfileMenu(); openAgentDashboard();" style="color: var(--neon-green); padding: 10px; cursor: pointer; font-weight: bold;">📊 DASHBOARD</div>
-            <div class="p-item" onclick="playClick(); logout(); toggleProfileMenu();" style="color: #ff3333; padding: 10px; cursor: pointer; font-weight: bold;">❌ SIGN OUT</div>
-        `;
-        if (dossierName) dossierName.innerText = username.toUpperCase();
-        if (userDisplay) userDisplay.innerText = username.toUpperCase();
-        if (dossierRank) dossierRank.innerText = "OPERATIVE";
-        
-        // Απόκρυψη/Εμφάνιση guest επιλογών αν υπάρχουν
-        const guestOpts = document.getElementById('guest-options');
-        const userOpts = document.getElementById('user-options');
-        if(guestOpts) guestOpts.classList.add('hidden');
-        if(userOpts) userOpts.classList.remove('hidden');
-    } else {
-        // Όταν είναι επισκέπτης: Επιλογές σύνδεσης
-        menu.innerHTML = `
-            <div class="p-item" onclick="playClick(); toggleProfileMenu(); openModal('login-modal');" style="padding: 10px; cursor: pointer;">SIGN IN</div>
-            <div class="p-item" onclick="playClick(); toggleProfileMenu(); openModal('signup-modal');" style="padding: 10px; cursor: pointer;">REGISTER</div>
-        `;
-        if (dossierName) dossierName.innerText = "UNKNOWN_USER";
-        if (userDisplay) userDisplay.innerText = "GUEST";
-        if (dossierRank) dossierRank.innerText = "RECRUIT";
-        
-        const guestOpts = document.getElementById('guest-options');
-        const userOpts = document.getElementById('user-options');
-        if(guestOpts) guestOpts.classList.remove('hidden');
-        if(userOpts) userOpts.classList.add('hidden');
-    }
-}
-// 🛠️ ΔΥΝΑΜΙΚΗ ΕΝΑΛΛΑΓΗ ΣΤΟΙΧΕΙΩΝ ΣΤΟ ΜΕΝΟΥ (UI SWITCHER)
-function updateAuthStates(loggedIn, username) {
-    isLoggedIn = loggedIn;
-    const menu = document.getElementById('profile-menu');
-    const dossierName = document.getElementById('dossier-username');
-    const dossierRank = document.getElementById('dossier-rank');
-    const userDisplay = document.getElementById('user-display');
-
-    if (!menu) return;
-
-    if (loggedIn) {
-        // Όταν είναι συνδεδεμένος: Μόνο Dashboard και Sign Out
-        menu.innerHTML = `
-            <div class="p-item" onclick="playClick(); toggleProfileMenu(); openAgentDashboard();" style="color: var(--neon-green); padding: 10px; cursor: pointer; font-weight: bold;">📊 DASHBOARD</div>
-            <div class="p-item" onclick="playClick(); logout(); toggleProfileMenu();" style="color: #ff3333; padding: 10px; cursor: pointer; font-weight: bold;">❌ SIGN OUT</div>
-        `;
-        if (dossierName) dossierName.innerText = username.toUpperCase();
-        if (userDisplay) userDisplay.innerText = username.toUpperCase();
-        if (dossierRank) dossierRank.innerText = "OPERATIVE";
-        
-        // Απόκρυψη/Εμφάνιση guest επιλογών αν υπάρχουν
-        const guestOpts = document.getElementById('guest-options');
-        const userOpts = document.getElementById('user-options');
-        if(guestOpts) guestOpts.classList.add('hidden');
-        if(userOpts) userOpts.classList.remove('hidden');
-    } else {
-        // Όταν είναι επισκέπτης: Επιλογές σύνδεσης
-        menu.innerHTML = `
-            <div class="p-item" onclick="playClick(); toggleProfileMenu(); openModal('login-modal');" style="padding: 10px; cursor: pointer;">SIGN IN</div>
-            <div class="p-item" onclick="playClick(); toggleProfileMenu(); openModal('signup-modal');" style="padding: 10px; cursor: pointer;">REGISTER</div>
-        `;
-        if (dossierName) dossierName.innerText = "UNKNOWN_USER";
-        if (userDisplay) userDisplay.innerText = "GUEST";
-        if (dossierRank) dossierRank.innerText = "RECRUIT";
-        
-        const guestOpts = document.getElementById('guest-options');
-        const userOpts = document.getElementById('user-options');
-        if(guestOpts) guestOpts.classList.remove('hidden');
-        if(userOpts) userOpts.classList.add('hidden');
-    }
-}
-// 🛠️ ΔΥΝΑΜΙΚΗ ΕΝΑΛΛΑΓΗ ΚΟΥΜΠΙΩΝ ΣΤΟ UI
-function updateAuthStates(loggedIn, username) {
-    isLoggedIn = loggedIn;
-    const menu = document.getElementById('profile-menu');
-    const dossierName = document.getElementById('dossier-username');
-    const dossierRank = document.getElementById('dossier-rank');
-
-    if (!menu) return;
-
-    if (loggedIn) {
-        // Αν είναι συνδεδεμένος: Μόνο Dashboard και Sign Out
-        menu.innerHTML = `
-            <div class="p-item" onclick="playClick(); toggleProfileMenu(); openAgentDashboard();" style="color: var(--neon-green); padding: 10px; cursor: pointer; font-weight: bold; font-family: var(--font-ui);">📊 DASHBOARD</div>
-            <div class="p-item" onclick="playClick(); logout(); toggleProfileMenu();" style="color: #ff3333; padding: 10px; cursor: pointer; font-weight: bold; font-family: var(--font-ui);">❌ SIGN OUT</div>
-        `;
+    if (username) {
+        isLoggedIn = true;
         if (dossierName) dossierName.innerText = username.toUpperCase();
         if (dossierRank) dossierRank.innerText = "OPERATIVE";
+        
+        if (signInBtn) signInBtn.style.display = 'none';
+        if (signUpBtn) signUpBtn.style.display = 'none';
+        if (logoutBtn) logoutBtn.style.display = 'block';
+
+        if (menu) {
+            menu.innerHTML = `
+                <div class="p-item" onclick="playClick(); toggleProfileMenu(); openAgentDashboard();" style="color: var(--neon-green);">📊 DASHBOARD</div>
+                <div class="p-item" onclick="playClick(); logout(); toggleProfileMenu();" style="color: #ff3333;">❌ SIGN OUT</div>
+            `;
+        }
     } else {
-        // Αν είναι επισκέπτης: Κανονικά Sign In και Register
-        menu.innerHTML = `
-            <div class="p-item" onclick="playClick(); toggleProfileMenu(); openModal('login-modal');" style="padding: 10px; cursor: pointer; font-family: var(--font-ui);">SIGN IN</div>
-            <div class="p-item" onclick="playClick(); toggleProfileMenu(); openModal('signup-modal');" style="padding: 10px; cursor: pointer; font-family: var(--font-ui);">REGISTER</div>
-        `;
+        isLoggedIn = false;
         if (dossierName) dossierName.innerText = "UNKNOWN_USER";
         if (dossierRank) dossierRank.innerText = "RECRUIT";
-    }
-}
-// Βοηθητική συνάρτηση που αλλάζει ταυτόχρονα όλα τα UI στοιχεία
-function updateAuthStates(loggedIn, username) {
-    isLoggedIn = loggedIn;
-    const userDisplay = document.getElementById('user-display');
-    const dossierName = document.getElementById('dossier-username');
-    
-    if (loggedIn) {
-        if (userDisplay) userDisplay.innerText = username.toUpperCase();
-        if (dossierName) dossierName.innerText = username.toUpperCase();
-        document.getElementById('guest-options').classList.add('hidden');
-        document.getElementById('user-options').classList.remove('hidden');
-    } else {
-        if (userDisplay) userDisplay.innerText = "GUEST";
-        document.getElementById('guest-options').classList.remove('hidden');
-        document.getElementById('user-options').classList.add('hidden');
-    }
-    updateAuthMenuUI();
-}
+        
+        if (signInBtn) signInBtn.style.display = 'block';
+        if (signUpBtn) signUpBtn.style.display = 'block';
+        if (logoutBtn) logoutBtn.style.display = 'none';
 
+        if (menu) {
+            menu.innerHTML = `
+                <div class="p-item" onclick="playClick(); toggleProfileMenu(); openModal('login-modal');">SIGN IN</div>
+                <div class="p-item" onclick="playClick(); toggleProfileMenu(); openModal('signup-modal');">REGISTER</div>
+            `;
+        }
+    }
+}
 function initMatrix() {
     const canvas = document.getElementById('matrix-canvas');
     if(!canvas) return;
