@@ -363,7 +363,24 @@ header {
 .profile-btn:hover { background: var(--neon-green); color: #000; box-shadow: 0 0 15px var(--neon-green); }
 /* FIX PROFILE MENU (SIGN IN / SIGN OUT) */
 .profile-container { position: relative; z-index: 999999 !important; }
-.profile-menu { position: absolute; top: 60px; right: 0; width: 180px; background: rgba(10, 10, 15, 1) !important; border: 1px solid var(--neon-purple) !important; border-radius: 10px; padding: 10px; display: none; flex-direction: column; gap: 5px; box-shadow: 0 10px 50px rgba(0,0,0,0.9); z-index: 999999 !important; }
+.profile-menu { 
+    position: absolute !important; 
+    top: 55px !important; 
+    right: 0 !important; 
+    width: 180px !important; /* Κλειδώνουμε το πλάτος για να μην ξεχειλώνει */
+    background: #0a0a0c !important; /* Συμπαγές μαύρο */
+    border: 1px solid var(--neon-purple) !important; 
+    border-radius: 10px !important; 
+    padding: 10px !important; 
+    display: none; 
+    flex-direction: column !important; 
+    gap: 5px !important; 
+    box-shadow: 0 10px 50px rgba(0,0,0,0.9) !important; 
+    z-index: 999999 !important; 
+}
+.profile-menu.show { 
+    display: flex !important; 
+}
 .profile-menu.show { display: flex; animation: fadeIn 0.2s; }
 .p-item { padding: 10px; text-align: center; cursor: pointer; font-family: var(--font-ui); font-weight: bold; color: #aaa; border-radius: 6px; transition: 0.2s; font-size: 0.9rem; }
 .p-item:hover { background: rgba(255,255,255,0.1); color: #fff; }
