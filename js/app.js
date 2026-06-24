@@ -50,6 +50,26 @@ document.documentElement.style.setProperty('--neon-green', currentTheme);
 if(!crtEnabled) document.querySelector('.scanlines').style.display = 'none';
 
 window.onload = async () => {
+    // ΑΥΤΟΜΑΤΟ LOGIN ΑΠΟ ΤΟ LOCALSTORAGE
+    const savedUser = localStorage.getItem('codex_logged_user');
+    if (savedVol) bgMusic.volume = parseFloat(savedVol); // (Υπήρχε ήδη)
+    
+    if (savedUser) {
+        isLoggedIn = true;
+        setTimeout(() => {
+            const userDisplay = document.getElementById('user-display');
+            const dossierName = document.getElementById('dossier-username');
+            if (userDisplay) userDisplay.innerText = savedVol.toUpperCase(); // fallback
+            if (dossierName) dossierName.innerText = savedVol.toUpperCase();
+            
+            // Ψάχνουμε αν έχουμε αποθηκεύσει το username
+            let localUser = localStorage.getItem('codex_username') || "AGENT";
+            if(userDisplay) userDisplay.innerText = localUser.toUpperCase();
+            if(dossierName) dossierName.innerText = lowerText = localUser.toUpperCase();
+            
+            updateAuthStates(true, localUser);
+        }, 1000);
+    }
     const overlay = document.getElementById('startup-overlay');
     const bar = document.getElementById('loader-fill');
     
@@ -177,74 +197,91 @@ async function completeReset() {
 }
 
 async function handleSignup() {
-    const user = document.getElementById('reg-user').value;
-    const email = document.getElementById('reg-email').value;
-    const pass = document.getElementById('reg-pass').value;
-    const res = await fetch(`${API}/register`, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ username: user, email: email, password: pass }) });
+    const user = document.getElementById('reg-user').value.trim();
+    const email = document.getElementById('reg-email').value.trim();
+    const pass = document.getElementById('reg-pass').value.trim();
+    
+    if(!user || !email || !pass) {
+        alert("SYSTEM ALERT: ALL FIELDS REQUIRED FOR RECRUITMENT");
+        return;
+    }
+
+    const res = await fetch(`${API}/register`, { 
+        method: 'POST', 
+        headers: {'Content-Type': 'application/json'}, 
+        body: JSON.stringify({ username: user, email: email, password: pass }) 
+    });
     const d = await res.json();
-    if(d.success) { showToast("WELCOME AGENT: " + d.username, "achievement"); closeModal('signup-modal'); isLoggedIn = true; document.getElementById('user-display').innerText = d.username; document.getElementById('guest-options').classList.add('hidden'); document.getElementById('user-options').classList.remove('hidden'); checkAchievement('login'); } else { alert(d.error); }
+    
+    if(d.success) {
+        // Κάνουμε αυτόματο login αμέσως μετά το register
+        localStorage.setItem('codex_logged_user', 'true');
+        localStorage.setItem('codex_username', d.username);
+        
+        updateAuthStates(true, d.username);
+        showToast("WELCOME AGENT: " + d.username.toUpperCase(), "achievement"); 
+        closeModal('signup-modal'); 
+        checkAchievement('login'); 
+    } else { 
+        alert(d.error); 
+    }
 }
 
 async function handleLogin() {
     const user = document.getElementById('login-user').value.trim();
     const pass = document.getElementById('login-pass').value.trim();
 
-    if (!user || !pass) {
-        alert("SYSTEM ALERT: ENTER BOTH USERNAME & PASSWORD");
-        return;
-    }
-
     try {
-        // Επικοινωνία με το live backend σου στο Render
         const res = await fetch(`${API}/user-login`, { 
             method: 'POST', 
             headers: {'Content-Type': 'application/json'}, 
             body: JSON.stringify({ username: user, password: pass }) 
         });
-        
         const d = await res.json();
 
         if (d.success) {
-            isLoggedIn = true; // ΚΡΙΣΙΜΟ: Ενημερώνουμε την κατάσταση σύνδεσης
+            isLoggedIn = true;
+            // Αποθηκεύουμε τα στοιχεία τοπικά
+            localStorage.setItem('codex_logged_user', 'true');
+            localStorage.setItem('codex_username', d.username);
 
-            // Ενημέρωση του ονόματος στο Agent Dashboard
-            const dossierName = document.getElementById('dossier-username');
-            if (dossierName) {
-                dossierName.innerText = d.username.toUpperCase();
-            }
-            
-            // Ενημέρωση του παλιού user-display (αν υπάρχει)
-            const userDisplay = document.getElementById('user-display');
-            if (userDisplay) {
-                userDisplay.innerText = d.username.toUpperCase();
-            }
-
-            // Απόκρυψη των Guest επιλογών και εμφάνιση των User επιλογών στο μενού
-            document.getElementById('guest-options').classList.add('hidden');
-            document.getElementById('user-options').classList.remove('hidden');
-
+            updateAuthStates(true, d.username);
             showToast('WELCOME BACK, AGENT ' + d.username.toUpperCase(), 'normal');
             closeModal('login-modal');
-            
-            // Ξεκλείδωμα του login achievement
             checkAchievement('login');
-            
-            // Άνοιγμα του Dashboard αυτόματα μετά το επιτυχές login
-            openAgentDashboard();
         } else {
-            alert("ACCESS DENIED: " + (d.error || "INVALID CREDENTIALS"));
+            alert(d.error || "INVALID CREDENTIALS");
         }
-    } catch (e) {
-        console.error(e);
-        alert("CONNECTION ERROR: DATABASE MAINFRAME OFFLINE");
-    }
+    } catch(e) { alert("SERVER ERROR"); }
 }
 
 function logout() { 
     isLoggedIn = false; 
-    document.getElementById('guest-options').classList.remove('hidden'); 
-    document.getElementById('user-options').classList.add('hidden'); 
+    // Σβήνουμε τα δεδομένα από τον browser
+    localStorage.removeItem('codex_logged_user');
+    localStorage.removeItem('codex_username');
+    
+    updateAuthStates(false, "");
     showToast("LOGGED OUT", "normal"); 
+}
+
+// Βοηθητική συνάρτηση που αλλάζει ταυτόχρονα όλα τα UI στοιχεία
+function updateAuthStates(loggedIn, username) {
+    isLoggedIn = loggedIn;
+    const userDisplay = document.getElementById('user-display');
+    const dossierName = document.getElementById('dossier-username');
+    
+    if (loggedIn) {
+        if (userDisplay) userDisplay.innerText = username.toUpperCase();
+        if (dossierName) dossierName.innerText = username.toUpperCase();
+        document.getElementById('guest-options').classList.add('hidden');
+        document.getElementById('user-options').classList.remove('hidden');
+    } else {
+        if (userDisplay) userDisplay.innerText = "GUEST";
+        document.getElementById('guest-options').classList.remove('hidden');
+        document.getElementById('user-options').classList.add('hidden');
+    }
+    updateAuthMenuUI();
 }
 
 function initMatrix() {
@@ -1219,4 +1256,22 @@ function unlockAchievement(id, title) {
     achContainer.appendChild(ach);
     
     if(typeof showToast === 'function') showToast('ACHIEVEMENT UNLOCKED: ' + title, 'achievement');
+}
+function updateAuthMenuUI() {
+    const menu = document.getElementById('profile-menu');
+    if (!menu) return;
+
+    if (isLoggedIn) {
+        // 🔒 Όταν είναι συνδεδεμένος: Κρύβουμε τα Sign In / Sign Up, δείχνουμε μόνο Dashboard και Sign Out
+        menu.innerHTML = `
+            <div class="p-item" onclick="playClick(); toggleProfileMenu(); openAgentDashboard();" style="color: var(--neon-green);">📊 DASHBOARD</div>
+            <div class="p-item" onclick="playClick(); logout(); toggleProfileMenu();" style="color: #ff3333;">❌ SIGN OUT</div>
+        `;
+    } else {
+        // 🔓 Όταν είναι επισκέπτης: Δείχνουμε τα κανονικά κουμπιά
+        menu.innerHTML = `
+            <div class="p-item" onclick="playClick(); toggleProfileMenu(); openModal('login-modal');">SIGN IN</div>
+            <div class="p-item" onclick="playClick(); toggleProfileMenu(); openModal('signup-modal');">REGISTER</div>
+        `;
+    }
 }
