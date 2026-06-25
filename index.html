@@ -3,16 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PHOENIX CODEX | TERMINAL v52.0</title>
     
+    <!-- Meta Tags Παραγωγής (SEO & Social Media) -->
+    <title>PHOENIX CODEX | TERMINAL v52.0</title>
+    <meta name="description" content="PHOENIX CODEX - Secure your ultimate custom gaming rig.">
+    <meta name="theme-color" content="#b026ff">
+    <meta property="og:title" content="PHOENIX CODEX | TERMINAL v52.0">
+    <meta property="og:description" content="Secure your ultimate custom gaming rig.">
+    <meta property="og:image" content="assets/images/og-image.jpg">
+    <link rel="icon" type="image/x-icon" href="assets/images/favicon.ico">
+    
+    <!-- Γραμματοσειρές & Εικονίδια -->
     <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700;800&family=Space+Grotesk:wght@300;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;600;700&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
-    
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
 
+    <!-- Vendor CSS/JS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/driver.js@1.0.1/dist/driver.css"/>
     <script src="https://cdn.jsdelivr.net/npm/driver.js@1.0.1/dist/driver.js.iife.js"></script>
 
+    <!-- Custom CSS -->
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body id="main-body">
@@ -89,12 +99,13 @@ Type 'help' for a list of commands.
             </button>
         </div>
         
-        <!-- RESTORED: Το δεξί γκρουπ με τα κουμπιά που είχε χαθεί -->
-   <div class="right-header-group">
+        <div class="right-header-group">
             <button class="cli-btn" onclick="toggleCLI()" title="Terminal">
                 <i class="ph-bold ph-terminal-window"></i>
             </button>
+            
             <span id="user-display" class="hidden"></span>
+            
             <div class="profile-container">
                 <button class="profile-btn" onclick="playClick(); toggleProfileMenu()">
                     <i class="ph-bold ph-user"></i>
@@ -144,7 +155,7 @@ Type 'help' for a list of commands.
                 <h2 id="v-title" style="color:#fff; margin-bottom:5px; font-size:2rem; text-transform:uppercase;">LOADING...</h2>
                 <div id="v-price-display" style="color:var(--neon-green); font-family:var(--font-ui); font-weight:bold; font-size:1.5rem; margin-bottom:20px;"></div>
                 <div class="mystery-img-wrap">
-                    <img id="v-img" src="" class="mystery-img">
+                    <img id="v-img" src="" class="mystery-img" alt="Community Drop">
                     <i class="ph-fill ph-lock-key lock-icon" id="v-lock"></i>
                 </div>
                 <div style="display:flex; justify-content:space-between; font-size:0.8rem; color:#ccc;">
@@ -173,14 +184,15 @@ Type 'help' for a list of commands.
         </div>
     </div>
 
- <<div class="gallery-overlay" id="gallery-overlay">
+    <div class="gallery-overlay" id="gallery-overlay">
         <div class="yg-card-container">
             <div class="yg-card" id="yg-card">
                 
+                <!-- FRONT CARD -->
                 <div class="yg-card-face yg-card-front">
                     <div class="yg-tier-badge" id="yg-tier-badge">S-TIER</div>
                     <div class="yg-close-btn" onclick="playClick(); closeModal('gallery-overlay')"><i class="ph-bold ph-x"></i></div>
-                    <div class="yg-target-lock" title="Save to Wishlist" onclick="toggleWishlist(this)"><i class="ph-bold ph-crosshair"></i></div>
+                    <button type="button" class="yg-target-lock" title="Save to Wishlist" onclick="toggleWishlist(this)"><i class="ph-bold ph-crosshair"></i></button>
                     
                     <div class="yg-card-content" style="padding: 25px; padding-top: 35px; display: flex; flex-direction: column; flex-grow: 1;">
                         <h1 class="yg-project-name" id="yg-title" style="margin-bottom: 15px;">Project Cali</h1>
@@ -216,9 +228,11 @@ Type 'help' for a list of commands.
                     </div>
                 </div>
 
+                <!-- BACK CARD -->
                 <div class="yg-card-face yg-card-back">
                     <div class="scroll-fix-wrapper">
                         <div class="yg-close-back" onclick="playClick(); toggleCardFlip()"><i class="ph-bold ph-arrow-u-up-left"></i></div>
+                        
                         <div id="specs-container-wrapper">
                             <div class="yg-rarity-badge mobile-hide">CLASSIFIED HARDWARE</div>
                             <div class="yg-sys-header">
@@ -241,40 +255,7 @@ Type 'help' for a list of commands.
                         </div>
                     </div>
                 </div>
-            
-            </div>
-        </div>
-    </div>
-<div class="yg-card-face yg-card-back">
-    <div class="scroll-fix-wrapper">
-        <div class="yg-close-back" onclick="playClick(); toggleCardFlip()"><i class="ph-bold ph-arrow-u-up-left"></i></div>
 
-        <!-- 1. Προσθέτουμε ID στα Specs για να τα κρύβουμε -->
-        <div id="specs-container-wrapper">
-            <div class="yg-rarity-badge mobile-hide">CLASSIFIED HARDWARE</div>
-            <div class="yg-sys-header">
-                <div class="yg-sys-data-title">
-                    <span class="yg-sys-icon"><i class="ph-fill ph-cpu"></i></span>
-                    SYS_DATA
-                </div>
-                <div class="yg-sys-subtitle mobile-hide">Detailed specifications for this system.</div>
-            </div>
-            <div class="yg-specs-list" id="yg-specs-back"></div>
-        </div>
-
-        <!-- 2. Προσθέτουμε ID στο κουμπί για να αλλάζουμε το κείμενο -->
-        <button id="bench-toggle-btn" class="yg-btn yg-btn-breathe mobile-bench-btn" onclick="playClick(); toggleBenchmarksView()">
-            <i class="ph-bold ph-crosshair"></i> SHOW BENCHMARKS
-        </button>
-
-        <div class="yg-benchmarks" id="bench-section">
-            <div class="yg-benchmarks-title">GAME BENCHMARKS (1080p)</div>
-            <div class="yg-benchmark-grid" id="yg-benchmarks"></div>
-        </div>
-    </div>
-</div>
-            
-            <!-- RESTORED: Τα 3 div που έλειπαν και διέλυαν το layout! -->
             </div>
         </div>
     </div>
@@ -397,8 +378,7 @@ Type 'help' for a list of commands.
     <div class="modal-overlay" id="login-modal">
         <div class="modal-content" style="width:400px;">
             <span class="close-modal" onclick="closeModal('login-modal')">X</span>
-            <h2 class="modal-title">AGENT LOGIN</h2>
-            <div class="auth-form">
+            <h2 class="modal-title">AGENT LOGIN</h2>            <div class="auth-form">
                 <input type="text" id="login-user" class="auth-input" placeholder="USERNAME">
                 <input type="password" id="login-pass" class="auth-input" placeholder="PASSWORD">
                 <button class="btn-inspect" onclick="handleLogin()">AUTHENTICATE</button>
@@ -446,8 +426,7 @@ Type 'help' for a list of commands.
                 </div>
             </div>
             
-            <!-- ΤΩΡΑ ΕΙΝΑΙ ΣΩΣΤΑ ΜΕΣΑ ΣΤΟ ΚΟΥΤΙ ΤΟΥ DASHBOARD! -->
-           <div class="dossier-auth-actions">
+            <div class="dossier-auth-actions">
                 <button id="dossier-signin-btn" class="yg-btn yg-btn-specs" onclick="playClick(); closeModal('agent-dashboard-modal'); openModal('login-modal')">
                     > SIGN IN
                 </button>
@@ -458,6 +437,8 @@ Type 'help' for a list of commands.
                     > SIGN OUT
                 </button>
             </div>
+        </div>
+    </div>
 
     <div class="modal-overlay" id="signup-modal">
         <div class="modal-content" style="width:400px;">
@@ -544,143 +525,6 @@ Type 'help' for a list of commands.
         </div>
     </div>
 
-    <script src="js/app.js"></script>
-    <script>
-    function toggleSocials() {
-        document.getElementById('social-menu').classList.toggle('active');
-    }
-
-    function toggleMobileReviews() {
-        const sidebar = document.querySelector('.right-sidebar');
-        sidebar.classList.toggle('mobile-active');
-        
-        if(sidebar.classList.contains('mobile-active') && !document.getElementById('close-mobile-reviews')) {
-            const closeBtn = document.createElement('button');
-            closeBtn.id = 'close-mobile-reviews';
-            closeBtn.innerHTML = 'CLOSE REVIEWS';
-            closeBtn.style.cssText = 'width: 100%; margin-top: 20px; padding: 12px; background: var(--neon-purple); border: none; color: white; font-weight: bold; border-radius: 8px; cursor: pointer; font-family: var(--font-ui);';
-            closeBtn.onclick = () => sidebar.classList.remove('mobile-active');
-            sidebar.appendChild(closeBtn);
-        }
-    }
-
-    setInterval(() => {
-        const isTerminalOpen = document.getElementById('cli-overlay') && (document.getElementById('cli-overlay').style.display === 'flex' || document.getElementById('cli-overlay').style.display === 'block');
-        const isReviewsOpen = document.querySelector('.right-sidebar') && document.querySelector('.right-sidebar').classList.contains('mobile-active');
-        const isGalleryOpen = document.getElementById('gallery-overlay') && document.getElementById('gallery-overlay').style.display === 'flex';
-        const isAnyModalOpen = document.querySelector('.modal[style*="display: flex"]') || document.querySelector('.modal[style*="display: block"]');
-        
-        if (isTerminalOpen || isReviewsOpen || isGalleryOpen || isAnyModalOpen) {
-            document.body.classList.add('ui-locked');
-            document.getElementById('social-menu').classList.remove('active'); 
-        } else {
-            document.body.classList.remove('ui-locked');
-        }
-    }, 200);
-    </script>
-<script>
-    // 1. FIX ΓΙΑ ΤΟ GLITCH: Αστραπιαίος Έλεγχος (50ms)
-    setInterval(() => {
-        const isTerminalOpen = document.getElementById('cli-overlay') && (document.getElementById('cli-overlay').style.display === 'flex' || document.getElementById('cli-overlay').style.display === 'block');
-        const isReviewsOpen = document.querySelector('.right-sidebar') && document.querySelector('.right-sidebar').classList.contains('mobile-active');
-        const isGalleryOpen = document.getElementById('gallery-overlay') && document.getElementById('gallery-overlay').style.display === 'flex';
-        const isAnyModalOpen = document.querySelector('.modal-overlay[style*="display: flex"]') || document.querySelector('.modal-overlay[style*="display: block"]');
-        
-        if (isTerminalOpen || isReviewsOpen || isGalleryOpen || isAnyModalOpen) {
-            document.body.classList.add('ui-locked');
-        } else {
-            document.body.classList.remove('ui-locked');
-        }
-    }, 50);
-
-    // 2. ΜΗΔΕΝΙΣΜΟΣ ΤΟΥ ΚΟΥΜΠΙΟΥ OTAN ΚΛΕΙΝΕΙ Η ΚΑΡΤΑ
-    document.querySelectorAll('.yg-close-btn, .close-modal, .modal-close, .yg-close-back').forEach(btn => {
-        btn.addEventListener('click', () => {
-            // Ξεθολώνει το φόντο ακαριαία
-            document.body.classList.remove('ui-locked');
-            document.getElementById('social-menu').classList.remove('active');
-            
-            // Κάνει Reset ΜΟΝΟ το εικαστικό του κουμπιού
-            const targetLockBtn = document.querySelector('.yg-target-lock');
-            if(targetLockBtn) {
-                targetLockBtn.classList.remove('locked');
-            }
-        });
-    });
-
-    // 3. Η ΛΟΓΙΚΗ ΤΟΥ TARGET LOCK ΚΑΙ ΤΗΣ ΑΠΟΘΗΚΕΥΣΗΣ
-    window.toggleWishlist = function(btn) {
-        if(typeof playClick === 'function') playClick(); 
-        
-        btn.classList.toggle('locked');
-        const isLocked = btn.classList.contains('locked');
-        
-        const pcNameElement = document.getElementById('yg-title');
-        const pcName = pcNameElement ? pcNameElement.innerText : 'UNKNOWN SYSTEM';
-        
-        const wishlistContainer = document.getElementById('dossier-wishlist');
-        const safeId = 'wish-' + pcName.replace(/\s+/g, '-').toLowerCase();
-        
-        if (isLocked) {
-            // Ο Χρήστης κάνει Lock!
-            if(typeof showToast === 'function') showToast('TARGET ACQUIRED: ' + pcName, 'normal');
-            
-            const emptyMsg = wishlistContainer.querySelector('.dossier-empty');
-            if (emptyMsg) emptyMsg.remove();
-            
-            // Το προσθέτουμε στο Dashboard αν δεν υπάρχει ήδη!
-            if (!document.getElementById(safeId)) {
-                const item = document.createElement('div');
-                item.id = safeId;
-                item.style.cssText = 'color: var(--neon-green); font-family: monospace; font-size: 0.85rem; padding: 10px; border-bottom: 1px dashed rgba(204,255,0,0.2); width: 100%; display: flex; justify-content: space-between; align-items: center; background: rgba(0,255,0,0.05); border-radius: 4px; margin-bottom: 5px;';
-                item.innerHTML = `<span>> ${pcName}</span> <i class="ph-bold ph-crosshair"></i>`;
-                wishlistContainer.appendChild(item);
-                
-                // Δίνουμε το Achievement αν είναι η πρώτη φορά!
-                unlockAchievement('first-target', 'FIRST BLOOD (TARGET LOCKED)');
-            }
-        } else {
-            // Ο Χρήστης κάνει Unlock μέσα από το Inspect! Αφαιρείται από το Profile!
-            if(typeof showToast === 'function') showToast('TARGET REMOVED', 'error');
-            const itemToRemove = document.getElementById(safeId);
-            if (itemToRemove) itemToRemove.remove();
-            
-            // Επαναφορά μηνύματος αν αδειάσει το Wishlist
-            if (wishlistContainer.children.length === 0) {
-                wishlistContainer.innerHTML = '<div class="dossier-empty">> NO SAVED SYSTEMS.</div>';
-            }
-        }
-    };
-
-    // 4. Η ΛΟΓΙΚΗ ΤΩΝ ACHIEVEMENTS
-    window.unlockAchievement = function(id, title) {
-        const achContainer = document.getElementById('dossier-achievements');
-        if (!achContainer) return;
-
-        const emptyMsg = achContainer.querySelector('.dossier-empty');
-        if (emptyMsg) emptyMsg.remove(); 
-        
-        const safeId = 'ach-' + id;
-        if(document.getElementById(safeId)) return; // Το έχει ήδη
-        
-        const ach = document.createElement('div');
-        ach.className = 'ach-card unlocked';
-        ach.id = safeId;
-        ach.style.cssText = 'background: rgba(0,0,0,0.5); border: 1px solid var(--neon-green); border-radius: 6px; padding: 12px; display: flex; align-items: center; gap: 15px; margin-bottom: 10px; box-shadow: inset 0 0 10px rgba(0,255,0,0.05);';
-        ach.innerHTML = `
-            <div style="font-size: 1.8rem; color: var(--neon-green);"><i class="ph-fill ph-trophy"></i></div>
-            <div>
-                <h4 style="margin: 0 0 4px 0; color: var(--neon-green); font-family: var(--font-ui); font-size: 0.85rem;">${title}</h4>
-                <div style="font-family: monospace; font-weight: bold; color: var(--neon-green); font-size: 0.7rem;">UNLOCKED</div>
-            </div>
-        `;
-        achContainer.appendChild(ach);
-        
-        // Popup Οπτικό
-        if(typeof showToast === 'function') showToast('ACHIEVEMENT UNLOCKED: ' + title, 'achievement');
-    };
-</script>
-    
     <div class="delivery-ticker">
         <div class="ticker-track">
             <span>⚡ 24H SECURE DELIVERY ACROSS SKG ⚡</span>
@@ -689,6 +533,34 @@ Type 'help' for a list of commands.
             <span>SYSTEMS FULLY ASSEMBLED & TESTED</span>
         </div>
     </div>
-    
+
+    <!-- Σειρά Φόρτωσης Modules -->
+    <!-- Core & State -->
+    <script src="js/config.js"></script>
+    <script src="js/state.js"></script>
+    <script src="js/api.js"></script>
+
+    <!-- UI Helpers -->
+    <script src="js/ui/toast.js"></script>
+    <script src="js/ui/modals.js"></script>
+    <script src="js/ui/ui-lock.js"></script>
+
+    <!-- Business Logic Modules -->
+    <script src="js/modules/auth.js"></script>
+    <script src="js/modules/achievements.js"></script>
+    <script src="js/modules/wishlist.js"></script>
+    <script src="js/modules/cart.js"></script>
+    <script src="js/modules/compare.js"></script>
+    <script src="js/modules/gallery.js"></script>
+    <script src="js/modules/catalog.js"></script>
+    <script src="js/modules/vote.js"></script>
+    <script src="js/modules/reviews.js"></script>
+    <script src="js/modules/chat.js"></script>
+    <script src="js/modules/terminal.js"></script>
+    <script src="js/modules/tutorial.js"></script>
+
+    <!-- Entry Point -->
+    <script src="js/main.js"></script>
+
 </body>
 </html>
