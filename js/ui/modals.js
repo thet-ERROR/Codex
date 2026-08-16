@@ -1,3 +1,21 @@
+// Αρχικοποίηση Ήχων
+const audioClick = new Audio('assets/audio/click.mp3');
+const audioHover = new Audio('assets/audio/hover.mp3');
+
+export function playClick() { 
+    if(window.codexState && window.codexState.audioEnabled) { 
+        audioClick.currentTime = 0; 
+        audioClick.play().catch(()=>{}); 
+    } 
+}
+
+export function playHover() { 
+    if(window.codexState && window.codexState.audioEnabled) { 
+        audioHover.currentTime = 0; 
+        audioHover.play().catch(()=>{}); 
+    } 
+}
+
 export function openModal(id) { 
     let m = document.getElementById(id) || document.getElementById(id + '-modal');
     if(m) {
@@ -14,17 +32,36 @@ export function closeModal(id) {
     }
 }
 
-export function showToast(msg, type = 'normal') {
-    const container = document.getElementById('toast-container');
-    if(!container) return;
-    const t = document.createElement('div');
-    t.className = `toast ${type}`;
-    t.innerText = msg;
-    container.appendChild(t);
-    setTimeout(() => t.remove(), 3000);
+export function toggleSocials() {
+    const menu = document.getElementById('social-menu');
+    if(menu) menu.classList.toggle('active');
 }
 
-// Εξαγωγή στο window (Επιλογή ii)
+export function toggleMobileReviews() {
+    const sidebar = document.querySelector('.right-sidebar');
+    if(!sidebar) return;
+    sidebar.classList.toggle('mobile-active');
+    
+    if(sidebar.classList.contains('mobile-active') && !document.getElementById('close-mobile-reviews')) {
+        const closeBtn = document.createElement('button');
+        closeBtn.id = 'close-mobile-reviews';
+        closeBtn.innerHTML = 'CLOSE REVIEWS';
+        closeBtn.style.cssText = 'width: 100%; margin-top: 20px; padding: 12px; background: var(--neon-purple); border: none; color: white; font-weight: bold; border-radius: 8px; cursor: pointer; font-family: var(--font-ui);';
+        closeBtn.onclick = () => sidebar.classList.remove('mobile-active');
+        sidebar.appendChild(closeBtn);
+    }
+}
+
+export function toggleProfileMenu() { 
+    const m = document.getElementById('profile-menu');
+    if(m) m.classList.toggle('show'); 
+}
+
+// Εξαγωγή στο global scope
+window.playClick = playClick;
+window.playHover = playHover;
 window.openModal = openModal;
 window.closeModal = closeModal;
-window.showToast = showToast;
+window.toggleSocials = toggleSocials;
+window.toggleMobileReviews = toggleMobileReviews;
+window.toggleProfileMenu = toggleProfileMenu;
