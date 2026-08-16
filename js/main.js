@@ -141,3 +141,9 @@ const initApp = async () => {
 
 // Εκκίνηση μόλις το DOM είναι έτοιμο
 document.addEventListener('DOMContentLoaded', initApp);
+function fetchWithTimeout(promise, ms = 5000) {
+    return Promise.race([
+        promise,
+        new Promise((_, reject) => setTimeout(() => reject(new Error('Request timed out')), ms))
+    ]);
+}
