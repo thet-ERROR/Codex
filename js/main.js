@@ -1,6 +1,9 @@
 // js/main.js
+// js/main.js
 import { state } from './state.js';
 import { api } from './api.js';
+
+// 1. Modules από τα οποία καλούμε συγκεκριμένες συναρτήσεις κατά την εκκίνηση
 import { checkSavedSession } from './modules/auth.js';
 import { updateCartUI } from './modules/cart.js';
 import { filterInv } from './modules/catalog.js';
@@ -9,6 +12,14 @@ import { renderGlobalReviews } from './modules/reviews.js';
 import { initTerminal, initMatrix } from './modules/terminal.js';
 import { initInteractiveTutorial } from './modules/tutorial.js';
 
+// 2. Modules που πρέπει απλά να τρέξουν για να συνδέσουν τα κουμπιά (UI) στο window
+import './modules/gallery.js';
+import './modules/compare.js';
+import './modules/wishlist.js';
+import './modules/chat.js';
+import './modules/achievements.js';
+
+// ... (Το υπόλοιπο αρχείο παραμένει ακριβώς ως έχει από το "SYSTEM AUDIO SETUP" και κάτω) ...
 // --- SYSTEM AUDIO SETUP ---
 const audioStart = new Audio('assets/audio/startup.mp3');
 const bgMusic = new Audio('assets/audio/bg.mp3');
