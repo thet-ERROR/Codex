@@ -548,14 +548,7 @@ body.ui-locked header, body.ui-locked .stage, body.ui-locked .left-sidebar, body
     box-shadow: 0 0 15px var(--neon-purple);
 }
 /* --- ΠΙΣΩ ΟΨΗ (SPECS GRID) --- */
-.yg-specs-back {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-    padding: 15px;
-    max-height: 400px;
-    overflow-y: auto;
-}
+#yg-specs-back { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 15px; max-height: 400px; overflow-y: auto; }
 
 .yg-spec-item {
     background: rgba(255, 255, 255, 0.03);
