@@ -496,209 +496,97 @@ body.ui-locked header, body.ui-locked .stage, body.ui-locked .left-sidebar, body
     100% { left: 200%; }
 }
 
-/* --- ΕΙΚΟΝΑ ΜΠΡΟΣΤΙΝΗΣ ΟΨΗΣ --- */
-.yg-main-img {
-    width: 100%;
-    height: 250px;
-    object-fit: cover;
-    border-bottom: 2px solid #333;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+/* ============ CARD CONTAINER — RESPONSIVE, NO FORCED SCROLL ============ */
+.yg-card-container {
+    width: min(400px, 92vw) !important;
+    height: min(640px, 88dvh) !important;
+    max-width: 95vw !important;
+    perspective: 2000px !important;
+    margin: 0 auto !important;
+    position: relative !important;
 }
 
-/* --- ΚΟΥΜΠΙΑ (GIVING LIFE) --- */
-.yg-actions {
-    display: flex;
-    gap: 10px;
-    padding: 15px;
-    background: rgba(0, 0, 0, 0.4);
+/* ============ FRONT CARD — FLEX LAYOUT, FILLS AVAILABLE SPACE ============ */
+.yg-card-front {
+    display: flex !important;
+    flex-direction: column !important;
+    padding: 0 !important; /* το padding μπαίνει στο content */
 }
 
-.yg-btn {
+.yg-card-content {
     flex: 1;
-    background: transparent;
-    border: 1px solid var(--neon-green);
-    color: var(--neon-green);
-    text-transform: uppercase;
-    font-weight: bold;
-    font-family: var(--font-ui), monospace;
-    padding: 12px;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-    position: relative;
-    overflow: hidden;
-}
-
-.yg-btn:hover {
-    background: var(--neon-green);
-    color: #000;
-    box-shadow: 0 0 15px var(--neon-green);
-    transform: translateY(-2px);
-}
-
-.yg-btn.flip-btn {
-    border-color: var(--neon-purple);
-    color: var(--neon-purple);
-}
-
-.yg-btn.flip-btn:hover {
-    background: var(--neon-purple);
-    color: #fff;
-    box-shadow: 0 0 15px var(--neon-purple);
-}
-/* --- ΠΙΣΩ ΟΨΗ (SPECS GRID) --- */
-#yg-specs-back { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 15px; max-height: 400px; overflow-y: auto; }
-
-.yg-spec-item {
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid #333;
-    border-radius: 6px;
-    padding: 10px;
-    transition: border-color 0.3s;
-}
-
-.yg-spec-item:hover {
-    border-color: var(--neon-green);
-    background: rgba(204, 255, 0, 0.05);
-}
-
-.yg-spec-label {
-    font-size: 0.75rem;
-    color: #888;
-    text-transform: uppercase;
-    margin-bottom: 5px;
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.yg-spec-value {
-    font-size: 0.95rem;
-    color: #fff;
-    font-weight: bold;
-}
-/* FIX: ήταν λάθος selector class αντί για id */
-#yg-specs-back {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-    padding: 15px;
-    max-height: 400px;
-    overflow-y: auto;
-}
-
-/* Rarity stars πάνω από τα specs */
-.yg-rarity-stars {
-    grid-column: 1 / -1;
-    display: flex;
-    justify-content: center;
-    gap: 4px;
-    margin-bottom: 4px;
-}
-.yg-rarity-stars i {
-    color: var(--neon-green);
-    font-size: 1rem;
-    filter: drop-shadow(0 0 4px var(--neon-green));
-}
-.yg-rarity-stars.tier-s i { color: var(--neon-purple); filter: drop-shadow(0 0 5px var(--neon-purple)); }
-.yg-rarity-stars.tier-a i { color: #ec48d9; filter: drop-shadow(0 0 5px #ec48d9); }
-
-/* ATK/DEF style boxes για CPU + GPU */
-.yg-stat-highlight {
-    grid-column: 1 / -1;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-    margin-bottom: 4px;
-}
-.yg-stat-box {
-    background: rgba(0,0,0,0.5);
-    border: 1px solid var(--neon-purple);
-    border-radius: 8px;
-    padding: 10px 12px;
-    text-align: center;
-    position: relative;
+    flex-direction: column;
+    padding: clamp(14px, 4vw, 24px) !important;
+    padding-top: clamp(32px, 8vw, 40px) !important;
+    gap: clamp(8px, 2vh, 14px) !important;
     overflow: hidden;
-}
-.yg-stat-box::before {
-    content: '';
-    position: absolute; top: 0; left: -150%; width: 60%; height: 100%;
-    background: linear-gradient(to right, transparent, rgba(255,255,255,0.08), transparent);
-    transform: skewX(-20deg);
-    animation: holo-glare 4.5s infinite;
-    pointer-events: none;
-}
-.yg-stat-box .label {
-    font-family: var(--font-ui);
-    font-size: 0.65rem;
-    color: var(--neon-purple);
-    letter-spacing: 2px;
-    margin-bottom: 4px;
-}
-.yg-stat-box .value {
-    font-family: var(--card-font-secondary);
-    font-size: 1.1rem;
-    font-weight: 900;
-    color: #fff;
-    text-shadow: 0 0 8px rgba(255,255,255,0.2);
+    min-height: 0;
 }
 
-/* Flavor text κάτω από τα specs */
-.yg-flavor-text {
-    grid-column: 1 / -1;
-    margin-top: 6px;
-    padding: 14px 16px;
-    background: rgba(176, 38, 255, 0.05);
-    border: 1px dashed var(--neon-purple);
-    border-radius: 8px;
-    font-family: var(--font-body);
-    font-style: italic;
-    font-size: 0.8rem;
-    color: #ccc;
-    line-height: 1.5;
-    position: relative;
+/* Fallback scroll ΜΟΝΟ σε πολύ κοντές οθόνες (π.χ. landscape mobile) */
+@media (max-height: 560px) {
+    .yg-card-content { overflow-y: auto; }
 }
-.yg-flavor-text::before {
-    content: '"';
-    font-family: var(--card-font-secondary);
-    font-size: 2.2rem;
-    color: var(--neon-purple);
-    position: absolute;
-    top: -6px;
-    left: 8px;
-    opacity: 0.5;
-    line-height: 1;
-}
-
-/* Ελαφρύ holo shimmer σε όλη την πίσω όψη */
-.scroll-fix-wrapper {
-    position: relative;
-}
-.scroll-fix-wrapper::before {
-    content: '';
-    position: absolute; top: 0; left: -150%; width: 60%; height: 100%;
-    background: linear-gradient(to right, transparent, rgba(255,255,255,0.05), transparent);
-    transform: skewX(-20deg);
-    animation: holo-glare 6s infinite;
-    pointer-events: none;
-    z-index: 1;
-}
-/* ============ FRONT CARD POLISH (missing styles) ============ */
 
 .yg-project-name {
     font-family: var(--card-font-secondary);
-    font-size: 1.5rem;
+    font-size: clamp(1.05rem, 5vw, 1.5rem);
     font-weight: 900;
     color: #fff;
     text-align: center;
     letter-spacing: 1px;
-    text-shadow: 0 0 12px rgba(255,255,255,0.15);
-    line-height: 1.2;
+    flex-shrink: 0;
+    line-height: 1.15;
 }
+
+.yg-image-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    flex: 1 1 auto; /* τραβάει όλο τον διαθέσιμο χώρο - η εικόνα "ζυγίζει" */
+    min-height: 0;
+}
+
+.yg-image-frame {
+    flex: 1;
+    height: 100%;
+    max-height: 100%;
+    min-height: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.yg-pc-image {
+    max-height: 100%;
+    max-width: 100%;
+    object-fit: contain;
+    display: block;
+    cursor: pointer;
+    filter: drop-shadow(0 10px 15px rgba(0,0,0,0.5));
+    transition: transform 0.2s;
+}
+.yg-pc-image:active { transform: scale(0.97); }
 
 .yg-gallery-btn {
     flex-shrink: 0;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    color: #fff;
+    padding: 8px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: 0.2s;
 }
+.yg-gallery-btn:hover { background: rgba(255,255,255,0.15); border-color: var(--neon-green); }
+.yg-gallery-btn.hidden-arrow { visibility: hidden; } /* κρατάει το space, δεν κάνει reflow */
+
+.yg-project-name,
+.yg-price-section,
+.yg-storage-section,
+.yg-buttons-section { flex-shrink: 0; }
 
 .yg-price-section {
     display: flex;
@@ -708,14 +596,14 @@ body.ui-locked header, body.ui-locked .stage, body.ui-locked .left-sidebar, body
 }
 .yg-current-price {
     font-family: var(--font-ui);
-    font-size: 2rem;
+    font-size: clamp(1.4rem, 6vw, 2rem);
     font-weight: 800;
     color: var(--neon-green);
     text-shadow: 0 0 10px rgba(204,255,0,0.3);
 }
 .yg-old-price {
     font-family: var(--font-ui);
-    font-size: 1.1rem;
+    font-size: clamp(0.85rem, 3.5vw, 1.1rem);
     color: #666;
     text-decoration: line-through;
 }
@@ -724,44 +612,40 @@ body.ui-locked header, body.ui-locked .stage, body.ui-locked .left-sidebar, body
     background: rgba(255,255,255,0.03);
     border: 1px solid #2a2a2a;
     border-radius: 10px;
-    padding: 12px 15px;
+    padding: 10px 14px;
 }
 .yg-storage-label {
     font-family: var(--font-ui);
-    font-size: 0.75rem;
+    font-size: 0.7rem;
     color: #888;
     letter-spacing: 1px;
     text-transform: uppercase;
-    margin-bottom: 8px;
+    margin-bottom: 6px;
 }
 .yg-storage-select {
     width: 100%;
     background: #111;
     border: 1px solid #333;
     color: #fff;
-    padding: 10px;
+    padding: 9px;
     border-radius: 6px;
-    font-family: var(--font-body);
     outline: none;
     cursor: pointer;
     transition: 0.2s;
 }
-.yg-storage-select:focus,
-.yg-storage-select:hover {
-    border-color: var(--neon-green);
-}
+.yg-storage-select:hover, .yg-storage-select:focus { border-color: var(--neon-green); }
 
 .yg-buttons-section {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 12px;
+    gap: 10px;
 }
 .yg-btn-specs, .yg-btn-cart {
-    padding: 14px;
+    padding: 13px;
     border-radius: 8px;
     font-family: var(--font-ui);
     font-weight: 700;
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     letter-spacing: 1px;
     text-transform: uppercase;
     cursor: pointer;
@@ -771,84 +655,109 @@ body.ui-locked header, body.ui-locked .stage, body.ui-locked .left-sidebar, body
     justify-content: center;
     gap: 6px;
 }
-.yg-btn-specs {
-    background: transparent;
-    border: 1px solid var(--neon-purple);
-    color: var(--neon-purple);
-}
-.yg-btn-specs:hover {
-    background: var(--neon-purple);
-    color: #fff;
-    box-shadow: 0 0 15px var(--neon-purple);
-}
-.yg-btn-cart {
-    background: var(--neon-green);
-    border: 1px solid var(--neon-green);
-    color: #000;
-}
-.yg-btn-cart:hover {
-    box-shadow: 0 0 20px var(--neon-green);
-    transform: translateY(-2px);
-}
-.yg-btn-cart:disabled {
-    background: #333;
-    border-color: #333;
-    color: #666;
-    cursor: not-allowed;
-    box-shadow: none;
-    transform: none;
-}
+.yg-btn-specs { background: transparent; border: 1px solid var(--neon-purple); color: var(--neon-purple); }
+.yg-btn-specs:hover { background: var(--neon-purple); color: #fff; box-shadow: 0 0 15px var(--neon-purple); }
+.yg-btn-cart { background: var(--neon-green); border: 1px solid var(--neon-green); color: #000; }
+.yg-btn-cart:hover { box-shadow: 0 0 20px var(--neon-green); transform: translateY(-2px); }
+.yg-btn-cart:disabled { background: #333; border-color: #333; color: #666; cursor: not-allowed; box-shadow: none; transform: none; }
+
 @keyframes breathe { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
 .yg-btn-breathe { animation: breathe 2.5s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) {
+    .yg-btn-breathe { animation: none; }
+}
+
+/* ============ BACK CARD — FLEX LAYOUT ============ */
+.yg-card-back { display: flex; flex-direction: column; }
+
+.scroll-fix-wrapper {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    padding: clamp(14px, 4vw, 22px) !important;
+    gap: 10px;
+    overflow: hidden;
+    position: relative;
+    min-height: 0;
+}
+@media (max-height: 560px) {
+    .scroll-fix-wrapper { overflow-y: auto; }
+}
+
+#specs-container-wrapper {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+
+#yg-specs-back {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    flex: 1;
+    overflow-y: auto;
+    min-height: 0;
+    align-content: start;
+    padding-right: 2px;
+}
+
+#bench-toggle-btn { flex-shrink: 0; margin-top: 8px; }
+
+/* ============ FPS PANEL — FULL-COVER SLIDE-UP ============ */
 .yg-fps-panel {
     position: absolute;
-    left: 0;
-    bottom: 0;
-    width: 100%;
-    max-height: 70%;
+    inset: 0;
     background: rgba(8,8,12,0.98);
     backdrop-filter: blur(15px);
-    border-top: 1px solid var(--neon-green);
-    box-shadow: 0 -10px 40px rgba(0,0,0,0.8);
-    border-radius: 16px 16px 0 0;
+    border-radius: 16px;
     transform: translateY(100%);
     transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
     z-index: 30;
     display: flex;
     flex-direction: column;
 }
-.yg-fps-panel.active {
-    transform: translateY(0);
+.yg-fps-panel.active { transform: translateY(0); }
+@media (prefers-reduced-motion: reduce) {
+    .yg-fps-panel { transition: none; }
 }
+
 .yg-fps-panel-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 14px 18px;
+    padding: 16px 18px;
     border-bottom: 1px solid #222;
     font-family: var(--font-ui);
     font-weight: 800;
     letter-spacing: 1px;
     color: var(--neon-green);
-    font-size: 0.85rem;
+    font-size: 0.8rem;
+    flex-shrink: 0;
 }
+.yg-fps-panel-header span { display: flex; align-items: center; gap: 6px; }
 .yg-fps-close {
     display: flex;
     align-items: center;
     gap: 4px;
     color: #888;
     cursor: pointer;
-    font-size: 0.75rem;
+    font-size: 0.7rem;
+    padding: 4px 8px;
+    border-radius: 6px;
     transition: 0.2s;
 }
-.yg-fps-close:hover { color: #fff; }
+.yg-fps-close:hover { color: #fff; background: rgba(255,255,255,0.05); }
+
 .yg-fps-list {
+    flex: 1;
     overflow-y: auto;
-    padding: 12px 18px 20px 18px;
+    padding: 14px 18px 20px 18px;
     display: flex;
     flex-direction: column;
     gap: 10px;
 }
+
 .yg-fps-row {
     display: flex;
     align-items: center;
@@ -856,23 +765,30 @@ body.ui-locked header, body.ui-locked .stage, body.ui-locked .left-sidebar, body
     background: rgba(255,255,255,0.03);
     border: 1px solid #2a2a2a;
     border-radius: 8px;
-    padding: 10px 14px;
+    padding: 12px 14px;
+    transition: 0.2s;
 }
-.yg-fps-game {
-    font-family: var(--font-ui);
-    font-weight: 700;
-    color: #fff;
-    font-size: 0.9rem;
+.yg-fps-row.yg-fps-top {
+    border-color: var(--neon-green);
+    box-shadow: 0 0 12px rgba(204,255,0,0.12);
+    background: rgba(204,255,0,0.03);
 }
-.yg-fps-settings {
-    font-size: 0.7rem;
-    color: #888;
-    margin-top: 2px;
+.yg-fps-game { font-family: var(--font-ui); font-weight: 700; color: #fff; font-size: 0.9rem; display: flex; align-items: center; }
+.yg-fps-settings { font-size: 0.7rem; color: #888; margin-top: 3px; }
+.yg-fps-best-badge {
+    display: inline-block;
+    font-size: 0.55rem;
+    background: var(--neon-green);
+    color: #000;
+    padding: 2px 6px;
+    border-radius: 4px;
+    margin-left: 8px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
 }
-.yg-fps-score {
-    font-family: var(--card-font-secondary);
-    font-size: 1.3rem;
-    font-weight: 900;
-    color: var(--neon-green);
-    text-shadow: 0 0 8px rgba(204,255,0,0.4);
-}
+.yg-fps-score { font-family: var(--card-font-secondary); font-size: 1.3rem; font-weight: 900; color: var(--neon-green); text-shadow: 0 0 8px rgba(204,255,0,0.4); }
+.yg-fps-unit { font-size: 0.6rem; color: #888; font-weight: 400; }
+
+/* Rarity stars / stat boxes / flavor (κράτα ό,τι είχαμε ήδη, μόνο tightened spacing) */
+.yg-spec-item { padding: 10px !important; }
+.yg-flavor-text { padding: 12px 14px !important; font-size: 0.78rem !important; }

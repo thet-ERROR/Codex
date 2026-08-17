@@ -224,17 +224,37 @@ Type 'help' for a list of commands.
         </div>
     </div>
 </div>
-                <div class="yg-card-face yg-card-back">
-                    <div class="scroll-fix-wrapper">
-                        <div class="yg-close-back" onclick="playClick(); toggleCardFlip()"><i class="ph-bold ph-arrow-u-up-left"></i>
-                        <div class="yg-fps-panel" id="fps-panel">
-    <div class="yg-fps-panel-header">
-        <span>GAME BENCHMARKS (1080p)</span>
-        <div class="yg-fps-close" onclick="playClick(); toggleBenchmarksView()">
-            <i class="ph-bold ph-caret-down"></i> CLOSE
+<div class="yg-card-face yg-card-back">
+    <div class="scroll-fix-wrapper">
+        <div class="yg-close-back" onclick="playClick(); toggleCardFlip()"><i class="ph-bold ph-arrow-u-up-left"></i></div>
+
+        <div id="specs-container-wrapper">
+            <div class="yg-rarity-badge mobile-hide">CLASSIFIED HARDWARE</div>
+            <div class="yg-sys-header">
+                <div class="yg-sys-data-title">
+                    <span class="yg-sys-icon"><i class="ph-fill ph-cpu"></i></span>
+                    SYS_DATA
+                </div>
+                <div class="yg-sys-subtitle mobile-hide">Detailed specifications for this system.</div>
+            </div>
+            <div class="yg-specs-list" id="yg-specs-back"></div>
         </div>
+
+        <button id="bench-toggle-btn" class="yg-btn yg-btn-breathe" onclick="playClick(); toggleBenchmarksView()">
+            <i class="ph-bold ph-crosshair"></i> SHOW FPS
+        </button>
     </div>
-    <div class="yg-fps-list" id="yg-fps-list"></div>
+
+    <!-- Full-cover FPS panel — καλύπτει ΟΛΗ την πίσω όψη όταν ενεργό -->
+    <div class="yg-fps-panel" id="fps-panel">
+        <div class="yg-fps-panel-header">
+            <span><i class="ph-bold ph-chart-bar"></i> GAME BENCHMARKS (1080p)</span>
+            <div class="yg-fps-close" onclick="playClick(); toggleBenchmarksView()">
+                <i class="ph-bold ph-caret-down"></i> CLOSE
+            </div>
+        </div>
+        <div class="yg-fps-list" id="yg-fps-list"></div>
+    </div>
 </div>
 </div>
                         
