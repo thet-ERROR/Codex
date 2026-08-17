@@ -671,7 +671,19 @@ body.ui-locked header, body.ui-locked .stage, body.ui-locked .left-sidebar, body
 }
 
 /* Ελαφρύ holo shimmer σε όλη την πίσω όψη */
-./* ==========================================================================
+.scroll-fix-wrapper {
+    position: relative;
+}
+.scroll-fix-wrapper::before {
+    content: '';
+    position: absolute; top: 0; left: -150%; width: 60%; height: 100%;
+    background: linear-gradient(to right, transparent, rgba(255,255,255,0.05), transparent);
+    transform: skewX(-20deg);
+    animation: holo-glare 6s infinite;
+    pointer-events: none;
+    z-index: 1;
+}
+/* ==========================================================================
    INSPECT MODAL - YU-GI-OH RARITY CARD STYLES
    ========================================================================== */
 
