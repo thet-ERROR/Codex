@@ -467,3 +467,121 @@ body.ui-locked header, body.ui-locked .stage, body.ui-locked .left-sidebar, body
     .vote-progress-wrap { height: 15px !important; margin-bottom: 12px !important; }
     .vote-btn { padding: 12px !important; font-size: 0.95rem !important; }
 }
+/* --- YU-GI-OH CARD WRAPPER --- */
+.yg-card-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    border-radius: 12px;
+    background: linear-gradient(145deg, #141414 0%, #0a0a0a 100%);
+    border: 2px solid var(--neon-green);
+    box-shadow: 0 0 20px rgba(204, 255, 0, 0.15), inset 0 0 15px rgba(0, 0, 0, 0.8);
+    overflow: hidden;
+    color: #fff;
+}
+
+/* Holographic Glare (Η γυαλάδα της σπάνιας κάρτας) */
+.yg-card-inner::after {
+    content: '';
+    position: absolute;
+    top: 0; left: -100%; width: 50%; height: 100%;
+    background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0) 100%);
+    transform: skewX(-25deg);
+    animation: holo-glare 4s infinite;
+    pointer-events: none; /* Για να μην μπλοκάρει τα κλικ */
+}
+
+@keyframes holo-glare {
+    0% { left: -100%; }
+    20% { left: 200%; }
+    100% { left: 200%; }
+}
+
+/* --- ΕΙΚΟΝΑ ΜΠΡΟΣΤΙΝΗΣ ΟΨΗΣ --- */
+.yg-main-img {
+    width: 100%;
+    height: 250px;
+    object-fit: cover;
+    border-bottom: 2px solid #333;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+}
+
+/* --- ΚΟΥΜΠΙΑ (GIVING LIFE) --- */
+.yg-actions {
+    display: flex;
+    gap: 10px;
+    padding: 15px;
+    background: rgba(0, 0, 0, 0.4);
+}
+
+.yg-btn {
+    flex: 1;
+    background: transparent;
+    border: 1px solid var(--neon-green);
+    color: var(--neon-green);
+    text-transform: uppercase;
+    font-weight: bold;
+    font-family: var(--font-ui), monospace;
+    padding: 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.yg-btn:hover {
+    background: var(--neon-green);
+    color: #000;
+    box-shadow: 0 0 15px var(--neon-green);
+    transform: translateY(-2px);
+}
+
+.yg-btn.flip-btn {
+    border-color: var(--neon-purple);
+    color: var(--neon-purple);
+}
+
+.yg-btn.flip-btn:hover {
+    background: var(--neon-purple);
+    color: #fff;
+    box-shadow: 0 0 15px var(--neon-purple);
+}
+/* --- ΠΙΣΩ ΟΨΗ (SPECS GRID) --- */
+.yg-specs-back {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    padding: 15px;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.yg-spec-item {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid #333;
+    border-radius: 6px;
+    padding: 10px;
+    transition: border-color 0.3s;
+}
+
+.yg-spec-item:hover {
+    border-color: var(--neon-green);
+    background: rgba(204, 255, 0, 0.05);
+}
+
+.yg-spec-label {
+    font-size: 0.75rem;
+    color: #888;
+    text-transform: uppercase;
+    margin-bottom: 5px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.yg-spec-value {
+    font-size: 0.95rem;
+    color: #fff;
+    font-weight: bold;
+}
