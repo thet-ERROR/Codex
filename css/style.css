@@ -671,19 +671,11 @@ body.ui-locked header, body.ui-locked .stage, body.ui-locked .left-sidebar, body
 }
 
 /* Ελαφρύ holo shimmer σε όλη την πίσω όψη */
-.scroll-fix-wrapper {
-    position: relative;
-}
-.scroll-fix-wrapper::before {
-    content: '';
-    position: absolute; top: 0; left: -150%; width: 60%; height: 100%;
-    background: linear-gradient(to right, transparent, rgba(255,255,255,0.05), transparent);
-    transform: skewX(-20deg);
-    animation: holo-glare 6s infinite;
-    pointer-events: none;
-    z-index: 1;
-}
-/* ============ CARD CONTAINER — RESPONSIVE, NO FORCED SCROLL ============ */
+./* ==========================================================================
+   INSPECT MODAL - YU-GI-OH RARITY CARD STYLES
+   ========================================================================== */
+
+/* --- CARD CONTAINER — RESPONSIVE, NO FORCED SCROLL --- */
 .yg-card-container {
     width: min(400px, 92vw) !important;
     height: min(640px, 88dvh) !important;
@@ -693,7 +685,7 @@ body.ui-locked header, body.ui-locked .stage, body.ui-locked .left-sidebar, body
     position: relative !important;
 }
 
-/* ============ FRONT CARD — FLEX LAYOUT, FILLS AVAILABLE SPACE ============ */
+/* --- FRONT CARD — FLEX LAYOUT, FILLS AVAILABLE SPACE --- */
 .yg-card-front {
     display: flex !important;
     flex-direction: column !important;
@@ -755,6 +747,7 @@ body.ui-locked header, body.ui-locked .stage, body.ui-locked .left-sidebar, body
     filter: drop-shadow(0 10px 15px rgba(0,0,0,0.5));
     transition: transform 0.2s;
 }
+
 .yg-pc-image:active { transform: scale(0.97); }
 
 .yg-gallery-btn {
@@ -767,13 +760,16 @@ body.ui-locked header, body.ui-locked .stage, body.ui-locked .left-sidebar, body
     cursor: pointer;
     transition: 0.2s;
 }
+
 .yg-gallery-btn:hover { background: rgba(255,255,255,0.15); border-color: var(--neon-green); }
 .yg-gallery-btn.hidden-arrow { visibility: hidden; } /* κρατάει το space, δεν κάνει reflow */
 
 .yg-project-name,
 .yg-price-section,
 .yg-storage-section,
-.yg-buttons-section { flex-shrink: 0; }
+.yg-buttons-section { 
+    flex-shrink: 0; 
+}
 
 .yg-price-section {
     display: flex;
@@ -781,6 +777,7 @@ body.ui-locked header, body.ui-locked .stage, body.ui-locked .left-sidebar, body
     justify-content: center;
     gap: 12px;
 }
+
 .yg-current-price {
     font-family: var(--font-ui);
     font-size: clamp(1.4rem, 6vw, 2rem);
@@ -788,6 +785,7 @@ body.ui-locked header, body.ui-locked .stage, body.ui-locked .left-sidebar, body
     color: var(--neon-green);
     text-shadow: 0 0 10px rgba(204,255,0,0.3);
 }
+
 .yg-old-price {
     font-family: var(--font-ui);
     font-size: clamp(0.85rem, 3.5vw, 1.1rem);
@@ -801,6 +799,7 @@ body.ui-locked header, body.ui-locked .stage, body.ui-locked .left-sidebar, body
     border-radius: 10px;
     padding: 10px 14px;
 }
+
 .yg-storage-label {
     font-family: var(--font-ui);
     font-size: 0.7rem;
@@ -809,6 +808,7 @@ body.ui-locked header, body.ui-locked .stage, body.ui-locked .left-sidebar, body
     text-transform: uppercase;
     margin-bottom: 6px;
 }
+
 .yg-storage-select {
     width: 100%;
     background: #111;
@@ -820,13 +820,16 @@ body.ui-locked header, body.ui-locked .stage, body.ui-locked .left-sidebar, body
     cursor: pointer;
     transition: 0.2s;
 }
-.yg-storage-select:hover, .yg-storage-select:focus { border-color: var(--neon-green); }
+
+.yg-storage-select:hover, 
+.yg-storage-select:focus { border-color: var(--neon-green); }
 
 .yg-buttons-section {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 10px;
 }
+
 .yg-btn-specs, .yg-btn-cart {
     padding: 13px;
     border-radius: 8px;
@@ -841,20 +844,23 @@ body.ui-locked header, body.ui-locked .stage, body.ui-locked .left-sidebar, body
     align-items: center;
     justify-content: center;
     gap: 6px;
-}
+} 
+
 .yg-btn-specs { background: transparent; border: 1px solid var(--neon-purple); color: var(--neon-purple); }
 .yg-btn-specs:hover { background: var(--neon-purple); color: #fff; box-shadow: 0 0 15px var(--neon-purple); }
+
 .yg-btn-cart { background: var(--neon-green); border: 1px solid var(--neon-green); color: #000; }
 .yg-btn-cart:hover { box-shadow: 0 0 20px var(--neon-green); transform: translateY(-2px); }
 .yg-btn-cart:disabled { background: #333; border-color: #333; color: #666; cursor: not-allowed; box-shadow: none; transform: none; }
 
 @keyframes breathe { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
 .yg-btn-breathe { animation: breathe 2.5s ease-in-out infinite; }
+
 @media (prefers-reduced-motion: reduce) {
     .yg-btn-breathe { animation: none; }
 }
 
-/* ============ BACK CARD — FLEX LAYOUT ============ */
+/* --- BACK CARD — FLEX LAYOUT --- */
 .yg-card-back { display: flex; flex-direction: column; }
 
 .scroll-fix-wrapper {
@@ -867,6 +873,7 @@ body.ui-locked header, body.ui-locked .stage, body.ui-locked .left-sidebar, body
     position: relative;
     min-height: 0;
 }
+
 @media (max-height: 560px) {
     .scroll-fix-wrapper { overflow-y: auto; }
 }
@@ -891,7 +898,7 @@ body.ui-locked header, body.ui-locked .stage, body.ui-locked .left-sidebar, body
 
 #bench-toggle-btn { flex-shrink: 0; margin-top: 8px; }
 
-/* ============ FPS PANEL — FULL-COVER SLIDE-UP ============ */
+/* --- FPS PANEL — FULL-COVER SLIDE-UP --- */
 .yg-fps-panel {
     position: absolute;
     inset: 0;
@@ -904,7 +911,9 @@ body.ui-locked header, body.ui-locked .stage, body.ui-locked .left-sidebar, body
     display: flex;
     flex-direction: column;
 }
+
 .yg-fps-panel.active { transform: translateY(0); }
+
 @media (prefers-reduced-motion: reduce) {
     .yg-fps-panel { transition: none; }
 }
@@ -922,7 +931,9 @@ body.ui-locked header, body.ui-locked .stage, body.ui-locked .left-sidebar, body
     font-size: 0.8rem;
     flex-shrink: 0;
 }
+
 .yg-fps-panel-header span { display: flex; align-items: center; gap: 6px; }
+
 .yg-fps-close {
     display: flex;
     align-items: center;
@@ -934,6 +945,7 @@ body.ui-locked header, body.ui-locked .stage, body.ui-locked .left-sidebar, body
     border-radius: 6px;
     transition: 0.2s;
 }
+
 .yg-fps-close:hover { color: #fff; background: rgba(255,255,255,0.05); }
 
 .yg-fps-list {
@@ -955,13 +967,16 @@ body.ui-locked header, body.ui-locked .stage, body.ui-locked .left-sidebar, body
     padding: 12px 14px;
     transition: 0.2s;
 }
+
 .yg-fps-row.yg-fps-top {
     border-color: var(--neon-green);
     box-shadow: 0 0 12px rgba(204,255,0,0.12);
     background: rgba(204,255,0,0.03);
 }
+
 .yg-fps-game { font-family: var(--font-ui); font-weight: 700; color: #fff; font-size: 0.9rem; display: flex; align-items: center; }
 .yg-fps-settings { font-size: 0.7rem; color: #888; margin-top: 3px; }
+
 .yg-fps-best-badge {
     display: inline-block;
     font-size: 0.55rem;
@@ -973,9 +988,10 @@ body.ui-locked header, body.ui-locked .stage, body.ui-locked .left-sidebar, body
     font-weight: 800;
     letter-spacing: 0.5px;
 }
+
 .yg-fps-score { font-family: var(--card-font-secondary); font-size: 1.3rem; font-weight: 900; color: var(--neon-green); text-shadow: 0 0 8px rgba(204,255,0,0.4); }
 .yg-fps-unit { font-size: 0.6rem; color: #888; font-weight: 400; }
 
-/* Rarity stars / stat boxes / flavor (κράτα ό,τι είχαμε ήδη, μόνο tightened spacing) */
+/* Rarity stars / stat boxes / flavor */
 .yg-spec-item { padding: 10px !important; }
 .yg-flavor-text { padding: 12px 14px !important; font-size: 0.78rem !important; }
