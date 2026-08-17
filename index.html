@@ -225,7 +225,17 @@ Type 'help' for a list of commands.
 
                 <div class="yg-card-face yg-card-back">
                     <div class="scroll-fix-wrapper">
-                        <div class="yg-close-back" onclick="playClick(); toggleCardFlip()"><i class="ph-bold ph-arrow-u-up-left"></i></div>
+                        <div class="yg-close-back" onclick="playClick(); toggleCardFlip()"><i class="ph-bold ph-arrow-u-up-left"></i>
+                        <div class="yg-fps-panel" id="fps-panel">
+    <div class="yg-fps-panel-header">
+        <span>GAME BENCHMARKS (1080p)</span>
+        <div class="yg-fps-close" onclick="playClick(); toggleBenchmarksView()">
+            <i class="ph-bold ph-caret-down"></i> CLOSE
+        </div>
+    </div>
+    <div class="yg-fps-list" id="yg-fps-list"></div>
+</div>
+</div>
                         
                         <div id="specs-container-wrapper">
                             <div class="yg-rarity-badge mobile-hide">CLASSIFIED HARDWARE</div>
@@ -236,7 +246,11 @@ Type 'help' for a list of commands.
                                 </div>
                                 <div class="yg-sys-subtitle mobile-hide">Detailed specifications for this system.</div>
                             </div>
-                            <div class="yg-specs-list" id="yg-specs-back"></div>
+                            <div class="yg-specs-list" id="yg-specs-back">
+                                <button id="bench-toggle-btn" class="yg-btn yg-btn-breathe" onclick="playClick(); toggleBenchmarksView()" style="margin-top: 15px; width: 100%;">
+    <i class="ph-bold ph-crosshair"></i> SHOW FPS
+</button>
+                            </div>
                         </div>
 
                         <button id="bench-toggle-btn" class="yg-btn yg-btn-breathe mobile-bench-btn" onclick="playClick(); toggleBenchmarksView()">

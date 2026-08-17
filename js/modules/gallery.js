@@ -153,24 +153,26 @@ export function openGallery() {
 
     const elSpecsBack = document.getElementById('yg-specs-back');
     if(elSpecsBack) elSpecsBack.innerHTML = backH;
-    // 7. Back Side Benchmarks
+// 7. FPS Panel Data
     let benchH = "";
     if (state.currentGalleryPC.fps && state.currentGalleryPC.fps.length > 0) {
         state.currentGalleryPC.fps.forEach(f => {
             let settings = "Competitive / Low";
             if(f.game.toLowerCase().includes('cyberpunk') || f.game.toLowerCase().includes('gta')) settings = "High / Ultra";
             benchH += `
-            <div class="yg-benchmark-card">
-                <div class="yg-benchmark-game">${f.game}</div>
-                <div class="yg-benchmark-fps">${f.score}</div>
-                <div class="yg-benchmark-settings">${settings}</div>
+            <div class="yg-fps-row">
+                <div>
+                    <div class="yg-fps-game">${f.game}</div>
+                    <div class="yg-fps-settings">${settings}</div>
+                </div>
+                <div class="yg-fps-score">${f.score}<span style="font-size:0.6rem; color:#888;"> FPS</span></div>
             </div>`;
         });
     } else {
-        benchH = "<div style='color:#888; font-size:12px; font-style:italic; text-align:center; grid-column: span 2; padding: 20px;'>No benchmark data available.</div>";
+        benchH = "<div style='color:#888; font-size:0.8rem; font-style:italic; text-align:center; padding:20px;'>No benchmark data available.</div>";
     }
-    const elBenchmarks = document.getElementById('yg-benchmarks');
-    if(elBenchmarks) elBenchmarks.innerHTML = benchH;
+    const elFpsList = document.getElementById('yg-fps-list');
+    if(elFpsList) elFpsList.innerHTML = benchH;
     
     if(window.openModal) window.openModal('gallery-overlay');
 }
@@ -223,19 +225,17 @@ export function changeGalleryImage(d) {
 }
 
 export function toggleBenchmarksView() {
-    const cardBack = document.querySelector('.yg-card-back');
+    const panel = document.getElementById('fps-panel');
     const btn = document.getElementById('bench-toggle-btn');
-    if(!cardBack || !btn) return;
-    
-    const isShowing = cardBack.classList.toggle('benchmarks-active');
+    if(!panel || !btn) return;
+
+    const isShowing = panel.classList.toggle('active');
 
     if (isShowing) {
-        btn.innerHTML = '<i class="ph-bold ph-arrow-down"></i> HIDE BENCHMARKS';
-        btn.classList.add('bench-active-btn');
+        btn.innerHTML = '<i class="ph-bold ph-arrow-down"></i> CLOSE FPS';
         if(window.showToast) window.showToast('LOADING BENCHMARK DATA...', 'normal');
     } else {
-        btn.innerHTML = '<i class="ph-bold ph-crosshair"></i> SHOW BENCHMARKS';
-        btn.classList.remove('bench-active-btn');
+        btn.innerHTML = '<i class="ph-bold ph-crosshair"></i> SHOW FPS';
     }
 }
 
