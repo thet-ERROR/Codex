@@ -95,11 +95,29 @@ export function openGallery() {
         } 
     }    
     
-    // 6. Back Side Detailed Specs
-    let backH = ""; 
-    if(state.currentGalleryPC.specs) {
-        for(const [k,v] of Object.entries(state.currentGalleryPC.specs)) { 
-            const safeKey = k.replace(/'/g, "\\'"); 
+// 6. Back Side Detailed Specs (Yu-Gi-Oh style: stars + stat boxes + spec items + flavor text)
+    let backH = "";
+
+    // Rarity stars ανάλογα με tier
+    const starCount = tier === 'S-TIER' ? 5 : (tier === 'A-TIER' ? 4 : 3);
+    const tierClass = tier === 'S-TIER' ? 'tier-s' : (tier === 'A-TIER' ? 'tier-a' : '');
+    backH += `<div class="yg-rarity-stars ${tierClass}">${'<i class="ph-fill ph-star"></i>'.repeat(starCount)}</div>`;
+
+    if (state.currentGalleryPC.specs) {
+        const specs = state.currentGalleryPC.specs;
+
+        // CPU/GPU σε ξεχωριστά "stat boxes" (ATK/DEF style)
+        if (specs.cpu || specs.gpu) {
+            backH += `<div class="yg-stat-highlight">`;
+            if (specs.cpu) backH += `<div class="yg-stat-box"><div class="label">CPU POWER</div><div class="value">${specs.cpu}</div></div>`;
+            if (specs.gpu) backH += `<div class="yg-stat-box"><div class="label">GPU POWER</div><div class="value">${specs.gpu}</div></div>`;
+            backH += `</div>`;
+        }
+
+        // Τα υπόλοιπα specs (εκτός cpu/gpu που ήδη δείξαμε πάνω)
+        for (const [k, v] of Object.entries(specs)) {
+            if (k === 'cpu' || k === 'gpu') continue;
+            const safeKey = k.replace(/'/g, "\\'");
             backH += `
             <div class="yg-spec-item">
                 <div class="yg-spec-label">
@@ -107,12 +125,34 @@ export function openGallery() {
                     <i class="ph-bold ph-info yg-info-btn" onclick="playClick(); openSpecInfo('${safeKey}')"></i>
                 </div>
                 <div class="yg-spec-value">${v}</div>
-            </div>`; 
-        } 
+            </div>`;
+        }
     }
-    const elSpecsBack = document.getElementById('yg-specs-back');
-    if(elSpecsBack) elSpecsBack.innerHTML = backH; 
 
+    // Flavor text — δικό του αν υπάρχει, αλλιώς auto-generate ανά tier
+    const flavorPool = {
+        'S-TIER': [
+            "Forged for war, built to dominate. This rig doesn't compete — it conquers.",
+            "Legends aren't found. They're assembled, component by component, right here."
+        ],
+        'A-TIER': [
+            "A balanced warrior — strong enough for any battlefield you throw at it.",
+            "Reliable power for those who take their game seriously."
+        ],
+        'B-TIER': [
+            "Every legend starts somewhere. This is where yours begins.",
+            "Solid, dependable, ready to run. The first step into the arena."
+        ]
+    };
+    let flavor = state.currentGalleryPC.flavorText;
+    if (!flavor) {
+        const pool = flavorPool[tier] || flavorPool['B-TIER'];
+        flavor = pool[Math.floor(Math.random() * pool.length)];
+    }
+    backH += `<div class="yg-flavor-text">${flavor}</div>`;
+
+    const elSpecsBack = document.getElementById('yg-specs-back');
+    if(elSpecsBack) elSpecsBack.innerHTML = backH;
     // 7. Back Side Benchmarks
     let benchH = "";
     if (state.currentGalleryPC.fps && state.currentGalleryPC.fps.length > 0) {
