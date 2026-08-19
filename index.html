@@ -184,80 +184,74 @@ Type 'help' for a list of commands.
     <div class="yg-card-container">
         <div class="yg-card" id="yg-card">
 
-            <div class="yg-card-face yg-card-front">
-                <div class="yg-tier-badge" id="yg-tier-badge">S-TIER</div>
-                <div class="yg-close-btn" onclick="playClick(); closeModal('gallery-overlay')"><i class="ph-bold ph-x"></i></div>
-                <button type="button" class="yg-target-lock" title="Save to Wishlist" onclick="toggleWishlist(this)"><i class="ph-bold ph-crosshair"></i></button>
+<div class="yg-card-face yg-card-front">
+    <div class="yg-close-btn" onclick="playClick(); closeModal('gallery-overlay')"><i class="ph-bold ph-x"></i></div>
+    <button type="button" class="yg-target-lock" title="Save to Wishlist" onclick="toggleWishlist(this)"><i class="ph-bold ph-crosshair"></i></button>
 
-                <div class="yg-card-content">
-                    <h1 class="yg-project-name" id="yg-title">Project Cali</h1>
+    <div class="yg-card-content">
+        <h1 class="yg-project-name" id="yg-title">Project Cali</h1>
 
-                    <div class="yg-image-row" id="yg-image-row">
-                        <button class="yg-gallery-btn left" id="yg-arrow-left" onclick="playClick(); changeGalleryImage(-1)"><i class="ph-bold ph-caret-left"></i></button>
-                        <div class="yg-image-frame">
-                            <img src="" id="yg-main-img" alt="PC Build" class="yg-pc-image" onclick="playClick(); changeGalleryImage(1)" title="Next Image">
-                        </div>
-                        <button class="yg-gallery-btn right" id="yg-arrow-right" onclick="playClick(); changeGalleryImage(1)"><i class="ph-bold ph-caret-right"></i></button>
-                    </div>
-
-                    <div class="yg-price-section">
-                        <div class="yg-current-price" id="yg-price-live">€0</div>
-                        <div class="yg-old-price" id="yg-price-old">€0</div>
-                    </div>
-
-                    <div class="yg-storage-section">
-                        <div class="yg-storage-label">Storage Expansion</div>
-                        <select class="yg-storage-select" id="storage-select" onchange="updatePrice()">
-                            <option value="0">Standard (No Extra)</option>
-                            <option value="50">+ 1TB HDD (€50)</option>
-                            <option value="80">+ 1TB SSD (€80)</option>
-                        </select>
-                    </div>
-
-                    <div class="yg-buttons-section">
-                        <button class="yg-btn yg-btn-specs yg-btn-breathe" onclick="playClick(); toggleCardFlip()">
-                            <span>⇄</span> Flip to Specs
-                        </button>
-                        <button class="yg-btn yg-btn-cart" id="yg-add-cart" onclick="addToCart()">
-                            Add to Cart
-                        </button>
-                    </div>
-                </div>
+        <div class="yg-image-row" id="yg-image-row">
+            <button class="yg-gallery-btn left" id="yg-arrow-left" onclick="playClick(); changeGalleryImage(-1)"><i class="ph-bold ph-caret-left"></i></button>
+            <div class="yg-image-frame">
+                <img src="" id="yg-main-img" alt="PC Build" class="yg-pc-image" onclick="playClick(); changeGalleryImage(1)" title="Next Image">
             </div>
-
-            <div class="yg-card-face yg-card-back">
-                <div class="scroll-fix-wrapper">
-                    <div class="yg-close-back" onclick="playClick(); toggleCardFlip()"><i class="ph-bold ph-arrow-u-up-left"></i></div>
-
-                    <div id="specs-container-wrapper">
-                        <div class="yg-rarity-badge mobile-hide">CLASSIFIED HARDWARE</div>
-                        <div class="yg-sys-header">
-                            <div class="yg-sys-data-title">
-                                <span class="yg-sys-icon"><i class="ph-fill ph-cpu"></i></span>
-                                SYS_DATA
-                            </div>
-                            <div class="yg-sys-subtitle mobile-hide">Detailed specifications for this system.</div>
-                        </div>
-                        <div class="yg-specs-list" id="yg-specs-back"></div>
-                    </div>
-
-                    <button id="bench-toggle-btn" class="yg-btn yg-btn-breathe" onclick="playClick(); toggleBenchmarksView()">
-                        <i class="ph-bold ph-crosshair"></i> SHOW FPS
-                    </button>
-                </div>
-
-                <div class="yg-fps-panel" id="fps-panel">
-                    <div class="yg-fps-panel-header">
-                        <span><i class="ph-bold ph-chart-bar"></i> GAME BENCHMARKS (1080p)</span>
-                        <div class="yg-fps-close" onclick="playClick(); toggleBenchmarksView()">
-                            <i class="ph-bold ph-caret-down"></i> CLOSE
-                        </div>
-                    </div>
-                    <div class="yg-fps-list" id="yg-fps-list"></div>
-                </div>
-            </div>
-
+            <button class="yg-gallery-btn right" id="yg-arrow-right" onclick="playClick(); changeGalleryImage(1)"><i class="ph-bold ph-caret-right"></i></button>
         </div>
+
+        <div class="yg-price-section">
+            <div class="yg-current-price" id="yg-price-live">€0</div>
+            <div class="yg-old-price" id="yg-price-old">€0</div>
+        </div>
+
+        <div class="yg-storage-section">
+            <div class="yg-storage-label">Storage Expansion</div>
+            <select class="yg-storage-select" id="storage-select" onchange="updatePrice()">
+                <option value="0">Standard (No Extra)</option>
+                <option value="50">+ 1TB HDD (€50)</option>
+                <option value="80">+ 1TB SSD (€80)</option>
+            </select>
+        </div>
+
+        <div class="yg-buttons-section">
+            <button class="yg-btn yg-btn-specs yg-btn-breathe" onclick="playClick(); toggleCardFlip()">
+                <span>⇄</span> Flip to Specs
+            </button>
+            <button class="yg-btn yg-btn-cart" id="yg-add-cart" onclick="addToCart()">
+                Add to Cart
+            </button>
+        </div>
+    </div>
+</div>
+
+<div class="yg-card-face yg-card-back">
+    <div class="scroll-fix-wrapper">
+        <div class="yg-back-header">
+            <div class="yg-back-title" id="yg-back-title">SYSTEM</div>
+        </div>
+
+        <div id="specs-container-wrapper">
+            <div class="yg-specs-list" id="yg-specs-back"></div>
+        </div>
+
+        <div class="yg-buttons-section">
+            <button class="yg-btn yg-btn-specs yg-btn-breathe" onclick="playClick(); toggleCardFlip()">
+                <span>⇄</span> Flip to Front
+            </button>
+            <button id="bench-toggle-btn" class="yg-btn yg-btn-fps yg-btn-breathe" onclick="playClick(); toggleBenchmarksView()">
+                <i class="ph-bold ph-crosshair"></i> Show FPS
+            </button>
+        </div>
+    </div>
+
+    <div class="yg-fps-panel" id="fps-panel">
+        <div class="yg-fps-panel-header">
+            <span><i class="ph-bold ph-chart-bar"></i> GAME BENCHMARKS (1080p)</span>
+            <div class="yg-fps-close" onclick="playClick(); toggleBenchmarksView()">
+                <i class="ph-bold ph-caret-down"></i> CLOSE
+            </div>
+        </div>
+        <div class="yg-fps-list" id="yg-fps-list"></div>
     </div>
 </div>
     <!-- MODALS -->
