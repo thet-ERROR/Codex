@@ -17,6 +17,8 @@ export function openGallery() {
     // 1. Basic Info
     const elTitle = document.getElementById('yg-title');
     if(elTitle) elTitle.innerText = state.currentGalleryPC.name; 
+    const elBackTitle = document.getElementById('yg-back-title');
+    if(elBackTitle) elBackTitle.innerText = state.currentGalleryPC.name;
     
     const elDesc = document.getElementById('yg-desc');
     if(elDesc) elDesc.innerText = state.currentGalleryPC.description || "Detailed specifications for this system.";
@@ -42,12 +44,7 @@ export function openGallery() {
 
     let tier = mScore > 80 ? 'S-TIER' : (mScore > 50 ? 'A-TIER' : 'B-TIER');
     let tierColor = mScore > 80 ? '#a855f7' : (mScore > 50 ? '#ec48d9' : '#bef264');
-    let tierBadge = document.getElementById('yg-tier-badge');
-    if(tierBadge) {
-        tierBadge.innerText = tier;
-        tierBadge.style.background = `linear-gradient(135deg, ${tierColor} 0%, #111 100%)`;
-        tierBadge.style.boxShadow = `0 0 20px ${tierColor}80`;
-    }
+
 
     // 3. Image & Watermark
     const elImg = document.getElementById('yg-main-img');
@@ -109,9 +106,7 @@ export function openGallery() {
     let backH = "";
 
     // Rarity stars ανάλογα με tier
-    const starCount = tier === 'S-TIER' ? 5 : (tier === 'A-TIER' ? 4 : 3);
-    const tierClass = tier === 'S-TIER' ? 'tier-s' : (tier === 'A-TIER' ? 'tier-a' : '');
-    backH += `<div class="yg-rarity-stars ${tierClass}">${'<i class="ph-fill ph-star"></i>'.repeat(starCount)}</div>`;
+
 
     if (state.currentGalleryPC.specs) {
         const specs = state.currentGalleryPC.specs;

@@ -1007,3 +1007,69 @@ body.ui-locked header, body.ui-locked .stage, body.ui-locked .left-sidebar, body
 /* Rarity stars / stat boxes / flavor */
 .yg-spec-item { padding: 10px !important; }
 .yg-flavor-text { padding: 12px 14px !important; font-size: 0.78rem !important; }
+/* Neon purple wave title στην πίσω όψη — αντικαθιστά το "SYS_DATA" boilerplate */
+.yg-back-header {
+    text-align: center;
+    padding: 2px 0 12px;
+    flex-shrink: 0;
+}
+.yg-back-title {
+    font-family: var(--card-font-secondary);
+    font-size: clamp(1rem, 4.5vw, 1.3rem);
+    font-weight: 900;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    background: linear-gradient(90deg, var(--neon-purple), #ffffff, var(--neon-purple));
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: waveTextPurple 4s ease-in-out infinite;
+}
+@keyframes waveTextPurple {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+@media (prefers-reduced-motion: reduce) {
+    .yg-back-title { animation: none; }
+}
+
+/* Δεύτερη παραλλαγή κουμπιού (Show FPS) — outline πράσινο, ίδιο μέγεθος με τα υπόλοιπα */
+.yg-btn-fps {
+    background: transparent;
+    border: 1px solid var(--neon-green);
+    color: var(--neon-green);
+}
+.yg-btn-fps:hover {
+    background: var(--neon-green);
+    color: #000;
+    box-shadow: 0 0 15px var(--neon-green);
+}
+
+/* Θωρακίζουμε ΚΑΘΕ .yg-btn μέσα στο .yg-buttons-section ώστε ποτέ ξανά
+   να μην "φουσκώσει" λόγω κληρονομημένου flex:1 από παλαιότερο CSS */
+.yg-buttons-section .yg-btn {
+    flex: none;
+    width: 100%;
+}
+
+/* Breathing neon chrome frame γύρω από την εικόνα του PC */
+.yg-image-frame {
+    border-radius: 12px;
+    border: 1px solid rgba(204, 255, 0, 0.2);
+    animation: chromeBreathe 3.5s ease-in-out infinite;
+}
+@keyframes chromeBreathe {
+    0%, 100% {
+        box-shadow: 0 0 14px rgba(204, 255, 0, 0.12), 0 0 22px rgba(176, 38, 255, 0.08);
+        border-color: rgba(204, 255, 0, 0.22);
+    }
+    50% {
+        box-shadow: 0 0 20px rgba(176, 38, 255, 0.2), 0 0 30px rgba(204, 255, 0, 0.12);
+        border-color: rgba(176, 38, 255, 0.32);
+    }
+}
+@media (prefers-reduced-motion: reduce) {
+    .yg-image-frame { animation: none; }
+}
