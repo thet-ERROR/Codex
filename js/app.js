@@ -1065,16 +1065,8 @@ function updatePrice() {
     if(liveP) liveP.innerText = "€" + (base + extra); 
 }
 
-export function toggleCardFlip() {
+function toggleCardFlip() {
     const cardInner = document.getElementById('yg-card');
-    const fpsPanel = document.getElementById('fps-panel');
-
-    if (fpsPanel && fpsPanel.classList.contains('active')) {
-        fpsPanel.classList.remove('active');
-        const btn = document.getElementById('bench-toggle-btn');
-        if (btn) btn.innerHTML = '<i class="ph-bold ph-crosshair"></i> SHOW FPS';
-    }
-
     if (cardInner) {
         cardInner.classList.toggle('flipped');
     }
