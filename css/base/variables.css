@@ -1,0 +1,39 @@
+:root {
+    --neon-green: #ccff00;
+    --neon-purple: #b026ff;
+    --legendary-orange: #ffaa00;
+    --retro-red: #ff3333;
+    --glass-dark: rgba(8, 8, 12, 0.95);
+    --glass-border: rgba(255, 255, 255, 0.15);
+    --text-main: #ffffff;
+    --font-ui: 'Rajdhani', sans-serif;
+    --font-body: 'Space Grotesk', sans-serif;
+    --card-font-primary: 'Chakra Petch', sans-serif;
+    --card-font-secondary: 'Orbitron', sans-serif;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    scrollbar-width: thin;
+    scrollbar-color: var(--neon-purple) rgba(10, 5, 20, 0.8);
+}
+
+body {
+    font-family: var(--font-body);
+    color: var(--text-main);
+    height: 100vh;
+    overflow: hidden;
+    background: #000;
+    cursor: default;
+    transition: 0.5s;
+    padding-bottom: 40px !important;
+}
+
+.hidden { display: none !important; }
+
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: rgba(10, 5, 20, 0.8); border-left: 1px solid rgba(176, 38, 255, 0.2); }
+::-webkit-scrollbar-thumb { background: var(--neon-purple); border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: #d47aff; }

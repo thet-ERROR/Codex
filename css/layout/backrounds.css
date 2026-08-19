@@ -1,0 +1,14 @@
+#startup-overlay {
+    position: fixed; inset: 0; background: #000; z-index: 10000;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; pointer-events: auto;
+}
+#startup-overlay.hidden { opacity: 0; pointer-events: none; transition: opacity 0.5s; }
+#startup-text { font-family: var(--font-ui); font-size: 4rem; font-weight: 800; letter-spacing: 10px; color: #fff; margin-bottom: 20px; }
+.loader-bar { width: 300px; height: 4px; background: #111; border-radius: 2px; overflow: hidden; }
+.loader-fill { height: 100%; width: 0%; background: var(--neon-green); transition: width 0.1s linear; }
+
+.bg-layer { position: fixed; inset: 0; z-index: -2; background: url('../assets/images/bg.gif') no-repeat center center fixed; background-size: cover; filter: brightness(0.4); transition: opacity 0.5s; }
+canvas#matrix-canvas { position: fixed; top: 0; left: 0; z-index: -1; opacity: 0; transition: opacity 1s; pointer-events: none; }
+.vignette { position: fixed; inset: 0; pointer-events: none; z-index: 0; background: radial-gradient(circle at center, transparent 40%, #000 120%); }
+.grid-overlay { position: fixed; inset: 0; z-index: 0; background-image: linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px); background-size: 40px 40px; pointer-events: none; }
+.scanlines { position: fixed; inset: 0; pointer-events: none; z-index: 100; background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0) 50%, rgba(0,0,0,0.1) 50%, rgba(0,0,0,0.1)); background-size: 100% 3px; }
