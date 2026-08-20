@@ -1,22 +1,22 @@
 @import url('base/variables.css');
-@import url('base/animations.css');
+@import url('css/base/animations.css');
 
-@import url('layout/backgrounds.css');
-@import url('layout/header.css');
-@import url('layout/sidebars.css');
-@import url('layout/stage.css');
+@import url('css/layout/backgrounds.css');
+@import url('css/layout/header.css');
+@import url('css/layout/sidebars.css');
+@import url('css/layout/stage.css');
 
-@import url('components/modals.css');
-@import url('components/cart.css');
-@import url('components/chat-terminal.css');
-@import url('components/ticker.css');
-@import url('components/compare.css');
-@import url('components/dossier.css');
-@import url('components/vote.css');
+@import url('css/components/modals.css');
+@import url('css/components/cart.css');
+@import url('css/components/chat-terminal.css');
+@import url('css/components/ticker.css');
+@import url('css/components/compare.css');
+@import url('css/components/dossier.css');
+@import url('css/components/vote.css');
 
-@import url('gallery/card-front.css');
-@import url('gallery/card-back.css');
-@import url('gallery/ui-lock.css');
+@import url('css/gallery/card-front.css');
+@import url('css/gallery/card-back.css');
+@import url('css/gallery/ui-lock.css');
 
-@import url('responsive/tablet.css');
-@import url('responsive/mobile.css');
+@import url('css/responsive/tablet.css');
+@import url('css/responsive/mobile.css');
