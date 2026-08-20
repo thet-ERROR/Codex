@@ -1,7 +1,7 @@
 @import url('./base/variables.css');
-@import url('base/animations.css');
+@import url('./base/animations.css');
 
-@import url('layout/backgrounds.css');
+@import url('./layout/backgrounds.css');
 @import url('layout/header.css');
 @import url('layout/sidebars.css');
 @import url('layout/stage.css');
