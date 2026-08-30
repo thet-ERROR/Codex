@@ -15,7 +15,6 @@ export const state = {
     achievements: JSON.parse(localStorage.getItem('codex_achievements')) || { 'login': false, 'cart': false, 'vote': false },
     wishlist: JSON.parse(localStorage.getItem('codex_wishlist')) || [],
     audioEnabled: localStorage.getItem('codex_audio') !== 'false',
-    crtEnabled: localStorage.getItem('codex_crt') !== 'false',
     currentTheme: localStorage.getItem('codex_theme') || CONFIG.DEFAULT_THEME,
     matrixEnabled: false,
     isHacked: false,

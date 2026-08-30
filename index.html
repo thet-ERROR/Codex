@@ -47,7 +47,7 @@ Type 'help' for a list of commands.
     <div class="bg-layer"></div>
     <div class="vignette"></div>
     <div class="grid-overlay"></div>
-    <div class="scanlines"></div>
+    <div class="moon-glow"></div>
 
     <div class="left-sidebar">
         <div class="side-group">
@@ -174,8 +174,10 @@ Type 'help' for a list of commands.
     <div class="chat-widget" id="chat-widget">
         <div class="chat-body">
             <div class="chat-top">CODEX AI</div>
-            <div class="chat-msgs" id="chat-msgs"><div class="msg bot">Online.</div></div>
-            <input class="chat-input" placeholder="Type..." onkeypress="if(event.key==='Enter'){sendChat(this)}">
+            <div class="chat-menu">
+                <div class="chat-menu-screen chat-menu-home" id="chat-menu-home"></div>
+                <div class="chat-menu-screen chat-menu-sub" id="chat-menu-sub"></div>
+            </div>
         </div>
     </div>
 
@@ -305,10 +307,6 @@ Type 'help' for a list of commands.
                 <div class="setting-card" id="set-audio" onclick="toggleAudio()">
                     <div class="s-icon"><i class="ph-fill ph-speaker-high"></i></div>
                     <div class="s-title">AUDIO: ON</div>
-                </div>
-                <div class="setting-card active" id="set-crt" onclick="toggleCRT()">
-                    <div class="s-icon"><i class="ph-fill ph-monitor"></i></div>
-                    <div class="s-title">CRT FX: ON</div>
                 </div>
             </div>
             

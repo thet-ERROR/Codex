@@ -1,91 +1,114 @@
 // js/modules/chat.js
 import { CONFIG } from '../config.js';
 
-// Το state του bot είναι τοπικό (private) στο module
-let codexAiState = 'idle'; 
+const CHAT_CATEGORIES = [
+    {
+        id: 'buy', icon: '🛒', label: 'ΑΓΟΡΑ & ΠΑΡΑΓΓΕΛΙΑ', admin: true,
+        response: `🛒 <b>ΔΙΑΔΙΚΑΣΙΑ ΑΓΟΡΑΣ:</b><br>Βάζεις το σύστημα στο Cart. Εναλλακτικά κλείνουμε το deal στο WhatsApp!`
+    },
+    {
+        id: 'shipping', icon: '📦', label: 'ΜΕΤΑΦΟΡΙΚΑ', admin: true,
+        response: `📦 <b>Αποστολές πανελλαδικά!</b><br>Τα μεταφορικά καθορίζονται κατά την παραγγελία.`
+    },
+    {
+        id: 'warranty', icon: '🛡️', label: 'ΕΓΓΥΗΣΗ & SUPPORT',
+        response: `🛡️ <b>MISSION PROTOCOL:</b><br>Όλα ελέγχονται εξονυχιστικά. Αν υπάρξει θέμα, κάνεις Initiate Return Protocol από το site!`
+    },
+    {
+        id: 'games', icon: '🎮', label: 'ΤΙ PC ΧΡΕΙΑΖΟΜΑΙ',
+        sub: [
+            { id: 'esports', icon: '⚡', label: 'ESPORTS', response: `🎮 <b>ESPORTS READY:</b><br>Πήγαινε στα <b>STARTER PACKS</b> και δες τη σειρά "Gaming"!` },
+            { id: 'aaa', icon: '🔥', label: 'HEAVY AAA', response: `🔥 <b>HEAVY DUTY:</b><br>Χρειάζεσαι δυνατό GPU (16GB+ RAM). Ψάξε στα Drops για υψηλό Multitasking Score.` },
+            { id: 'creator', icon: '🎥', label: 'CREATOR', response: `🎥 <b>CREATOR MODE:</b><br>Δες τις κατηγορίες "Streaming" &amp; "Coding" στα Starter Packs!` }
+        ]
+    },
+    {
+        id: 'budget', icon: '💶', label: 'BUDGET ADVISOR',
+        sub: [
+            { id: 'low', icon: '💸', label: '< €400', response: `💰 Με budget κάτω από €400, τσέκαρε τα <b>STARTER PACKS</b> για την καλύτερη σχέση τιμής/απόδοσης!` },
+            { id: 'mid', icon: '💶', label: '€400 – €700', admin: true, response: `💰 Στα €400-700 έχεις αρκετές καλές επιλογές στα <b>LIVE DROPS</b>. Ρίξε μια ματιά!` },
+            { id: 'high', icon: '💎', label: '€700+', admin: true, response: `💰 Με budget €700+, ρώτα τον Admin για <b>Custom Build</b> στα δικά σου specs!` }
+        ]
+    }
+];
 
-export function toggleChat() { 
+export function toggleChat() {
     const c = document.getElementById('chat-widget');
-    if(c) c.classList.toggle('open'); 
-    if(window.playClick) window.playClick();
+    if (c) c.classList.toggle('open');
+    if (window.playClick) window.playClick();
 }
 
-// Βοηθητική συνάρτηση - Παραμένει "κρυφή" από το HTML γιατί δεν την κάνουμε export
-function removeAccents(str) {
-    return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+function adminButtonHTML() {
+    return `<button class="chat-admin-btn" onclick="window.open('https://wa.me/${CONFIG.WHATSAPP_NUM}', '_blank')">💬 ΜΙΛΑ ΜΕ ΤΟΝ ADMIN</button>`;
 }
 
-export function sendChat(inputElement) { 
-    const text = inputElement.value.trim();
-    if(!text) return;
+function renderHome() {
+    const home = document.getElementById('chat-menu-home');
+    if (!home) return;
+    home.innerHTML = `<div class="chat-menu-grid">
+        ${CHAT_CATEGORIES.map(cat => `
+            <button class="chat-menu-item" onclick="openChatCategory('${cat.id}')">
+                <span class="chat-menu-icon">${cat.icon}</span>
+                <span class="chat-menu-label">${cat.label}</span>
+            </button>
+        `).join('')}
+    </div>`;
+}
 
-    const chatMsgs = document.getElementById('chat-msgs');
-    if(!chatMsgs) return;
+export function openChatCategory(id) {
+    const cat = CHAT_CATEGORIES.find(c => c.id === id);
+    const sub = document.getElementById('chat-menu-sub');
+    if (!cat || !sub) return;
+    if (window.playClick) window.playClick();
 
-    // Εμφάνιση μηνύματος χρήστη
-    chatMsgs.innerHTML += `<div class="msg user">${text}</div>`; 
-    inputElement.value = '';
-    chatMsgs.scrollTop = chatMsgs.scrollHeight;
+    if (cat.sub) {
+        sub.innerHTML = `
+            <div class="chat-menu-back" onclick="chatGoBack()"><i class="ph-bold ph-caret-left"></i> BACK</div>
+            <div class="chat-menu-grid">
+                ${cat.sub.map(s => `
+                    <button class="chat-menu-item" onclick="openChatAnswer('${cat.id}','${s.id}')">
+                        <span class="chat-menu-icon">${s.icon}</span>
+                        <span class="chat-menu-label">${s.label}</span>
+                    </button>
+                `).join('')}
+            </div>
+        `;
+    } else {
+        sub.innerHTML = `
+            <div class="chat-menu-back" onclick="chatGoBack()"><i class="ph-bold ph-caret-left"></i> BACK</div>
+            <div class="chat-response">${cat.response}</div>
+            ${cat.admin ? adminButtonHTML() : ''}
+        `;
+    }
 
-    // Fake καθυστέρηση για ρεαλισμό (600ms)
-    setTimeout(() => {
-        const lowerText = removeAccents(text.toLowerCase());
-        let botResponse = "";
+    document.getElementById('chat-menu-home')?.classList.add('hidden-screen');
+    sub.classList.add('active-screen');
+}
 
-        if (codexAiState === 'waiting_admin_redirect') {
-            if (lowerText === 'ναι' || lowerText.includes('ναι') || lowerText.includes('nai') || lowerText.includes('θελω')) {
-                botResponse = "🚀 <b>Εκκίνηση σύνδεσης...</b><br>Σε μεταφέρω στο ασφαλές κανάλι του Admin.";
-                setTimeout(() => window.open(`https://wa.me/${CONFIG.WHATSAPP_NUM}`, "_blank"), 1500); 
-            } else {
-                botResponse = "Λήψη ελήφθη. 🤖 Τι άλλο θα ήθελες να μάθεις;";
-            }
-            codexAiState = 'idle'; 
-        } 
-        else if (codexAiState === 'waiting_budget') {
-            const budget = parseInt(lowerText.replace(/[^0-9]/g, '')); 
-            if (budget > 0) {
-                botResponse = `💰 Με budget <b>€${budget}</b>, τσέκαρε τα <b>STARTER PACKS</b> ή ρώτα τον Admin για Custom Build!<br><br><button class='btn-inspect' style='padding:5px; font-size:0.8rem;' onclick='window.open("https://wa.me/${CONFIG.WHATSAPP_NUM}", "_blank")'>CUSTOM BUILD</button>`;
-            } else {
-                botResponse = "Δεν κατάλαβα το ποσό. Πες μου απλά νούμερα, π.χ. '800'.";
-            }
-            codexAiState = 'idle'; 
-        }
-        else {
-            botResponse = "Δεν το έπιασα αυτό, Agent. 🤖<br>Ρώτα με για <b>Αγορά</b>, <b>Μεταφορικά</b>, <b>Εγγύηση</b>, ή <b>Παιχνίδια</b>!";
-            
-            if (lowerText.includes('μεταφορικα') || lowerText.includes('αποστολη') || lowerText.includes('πολη') || lowerText.includes('ελλαδα')) {
-                botResponse = "📦 <b>Αποστολές πανελλαδικά!</b><br>Τα μεταφορικά καθορίζονται κατά την παραγγελία.<br><br><b>Θέλεις να μιλήσεις με τον Admin για λεπτομέρειες; (Ναι/Όχι)</b>";
-                codexAiState = 'waiting_admin_redirect'; 
-            }
-            else if (lowerText.includes('budget') || lowerText.includes('χρηματα') || lowerText.includes('ευρω') || lowerText.includes('λεφτα')) {
-                botResponse = "💶 Πόσα χρήματα (budget) περίπου διαθέτεις για το νέο σου PC;";
-                codexAiState = 'waiting_budget'; 
-            }
-            else if (lowerText.includes('εγγυηση') || lowerText.includes('χαλασε') || lowerText.includes('προβλημα') || lowerText.includes('support')) {
-                botResponse = "🛡️ <b>MISSION PROTOCOL:</b><br>Όλα ελέγχονται εξονυχιστικά. Αν υπάρξει θέμα, κάνεις Initiate Return Protocol από το site!";
-            }
-            else if (lowerText.includes('αγορα') || lowerText.includes('τιμη') || lowerText.includes('παραγγελια') || lowerText.includes('εκπτωση')) {
-                botResponse = "🛒 <b>ΔΙΑΔΙΚΑΣΙΑ ΑΓΟΡΑΣ:</b><br>Βάζεις το σύστημα στο Cart. Εναλλακτικά κλείνουμε το deal στο WhatsApp!<br><br><b>Να σε συνδέσω με τον Admin; (Ναι/Όχι)</b>";
-                codexAiState = 'waiting_admin_redirect'; 
-            }
-            else if (lowerText.includes('fortnite') || lowerText.includes('valorant') || lowerText.includes('csgo') || lowerText.includes('lol') || lowerText.includes('παιχνιδια')) {
-                botResponse = "🎮 <b>ESPORTS READY:</b><br>Πήγαινε στα <b>STARTER PACKS</b> και δες τη σειρά 'Gaming'!";
-            }
-            else if (lowerText.includes('gta') || lowerText.includes('warzone') || lowerText.includes('fivem') || lowerText.includes('cyberpunk') || lowerText.includes('βαρια')) {
-                botResponse = "🔥 <b>HEAVY DUTY:</b><br>Χρειάζεσαι δυνατό GPU (16GB+ RAM). Ψάξε στα Drops για υψηλό Multitasking Score.";
-            }
-            else if (lowerText.includes('stream') || lowerText.includes('video') || lowerText.includes('edit') || lowerText.includes('coding')) {
-                botResponse = "🎥 <b>CREATOR MODE:</b><br>Δες τις κατηγορίες 'Streaming' & 'Coding' στα Starter Packs!";
-            }
-        }
+export function openChatAnswer(catId, subId) {
+    const cat = CHAT_CATEGORIES.find(c => c.id === catId);
+    const item = cat?.sub?.find(s => s.id === subId);
+    const sub = document.getElementById('chat-menu-sub');
+    if (!item || !sub) return;
+    if (window.playClick) window.playClick();
 
-        chatMsgs.innerHTML += `<div class="msg bot">${botResponse}</div>`;
-        chatMsgs.scrollTop = chatMsgs.scrollHeight;
-        if(window.playHover) window.playHover(); 
+    sub.innerHTML = `
+        <div class="chat-menu-back" onclick="openChatCategory('${catId}')"><i class="ph-bold ph-caret-left"></i> BACK</div>
+        <div class="chat-response">${item.response}</div>
+        ${item.admin ? adminButtonHTML() : ''}
+    `;
+}
 
-    }, 600); 
+export function chatGoBack() {
+    if (window.playClick) window.playClick();
+    document.getElementById('chat-menu-home')?.classList.remove('hidden-screen');
+    document.getElementById('chat-menu-sub')?.classList.remove('active-screen');
 }
 
 // Εξαγωγή στο global scope για το HTML
 window.toggleChat = toggleChat;
-window.sendChat = sendChat;
+window.openChatCategory = openChatCategory;
+window.openChatAnswer = openChatAnswer;
+window.chatGoBack = chatGoBack;
+
+renderHome();
