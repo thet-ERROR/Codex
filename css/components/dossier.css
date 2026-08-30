@@ -8,11 +8,18 @@
 .terminal-name { font-family: monospace; color: #fff; text-shadow: 0 0 8px rgba(255, 255, 255, 0.4); }
 .dossier-label { color: var(--neon-green); font-family: monospace; font-weight: bold; }
 .typewriter-text { display: inline-block; overflow: hidden; white-space: nowrap; border-right: 3px solid var(--neon-green); animation: typing 1.2s steps(20, end), blink-caret 0.8s step-end infinite; }
-.agent-rank, .network-status { font-family: monospace; font-size: 0.8rem; color: #aaa; }
+.agent-rank, .network-status { font-family: monospace; font-size: 0.8rem; color: #aaa; display: flex; align-items: center; gap: 6px; }
 .neon-purple-text { color: var(--neon-purple); font-weight: bold; }
 .neon-green-text { color: var(--neon-green); font-weight: bold; text-shadow: 0 0 5px rgba(0,255,0,0.5); }
 
+.dossier-rank-bar { background: #222; height: 6px; border-radius: 3px; margin: 6px 0 10px 0; overflow: hidden; }
+.dossier-rank-fill { background: var(--neon-purple); height: 100%; width: 0%; transition: 0.5s; box-shadow: 0 0 8px var(--neon-purple); }
+
+.dossier-stats { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+.dossier-stat-chip { font-family: var(--font-ui); font-size: 0.7rem; font-weight: bold; letter-spacing: 0.5px; padding: 4px 10px; border-radius: 4px; background: rgba(204, 255, 0, 0.1); color: var(--neon-green); border: 1px solid var(--neon-green); }
+
 .dossier-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+.dossier-col { display: flex; flex-direction: column; gap: 20px; }
 .dossier-heading { font-family: var(--font-ui); font-size: 0.8rem; color: var(--neon-green); background: rgba(0, 255, 0, 0.1); display: inline-block; padding: 4px 10px; border-radius: 4px; margin-bottom: 8px; letter-spacing: 1px; }
 .purple-heading { color: var(--neon-purple); background: rgba(168, 85, 247, 0.1); }
 .dossier-list, .wishlist-grid { background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(255, 255, 255, 0.05); padding: 12px; min-height: 80px; max-height: 200px; overflow-y: auto; border-radius: 8px; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-start; gap: 8px; transition: border 0.3s ease, box-shadow 0.3s ease; }
@@ -30,3 +37,6 @@
 #dossier-achievements .ach-card.unlocked .ach-info h4 { color: var(--neon-green); }
 #dossier-achievements .ach-status { margin-left: auto; font-family: monospace; font-weight: bold; color: #444; }
 #dossier-achievements .ach-card.unlocked .ach-status { color: var(--neon-green); }
+
+.dossier-auth-actions { display: flex; gap: 10px; margin-top: 5px; }
+.dossier-auth-actions .yg-btn { flex: 1; }

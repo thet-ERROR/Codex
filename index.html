@@ -64,7 +64,7 @@ Type 'help' for a list of commands.
                 <div class="social-menu" id="social-menu">
                     <button class="side-btn" onclick="playClick(); showToast('DISCORD SERVER: COMING SOON', 'normal')" title="Discord"><i class="ph-bold ph-discord-logo"></i></button>
                     <button class="side-btn" onclick="playClick(); window.open('https://instagram.com/codex_rigs', '_blank')" title="Instagram"><i class="ph-bold ph-instagram-logo"></i></button>
-                    <button class="side-btn" onclick="playClick(); openModal('newsletter')" title="The Network"><i class="ph-bold ph-envelope-simple"></i></button>
+                    <button class="side-btn" onclick="playClick(); openModal('newsletter')" title="Drop Alerts"><i class="ph-bold ph-envelope-simple"></i></button>
                 </div>
             </div>
 
@@ -332,10 +332,11 @@ Type 'help' for a list of commands.
     <div class="modal-overlay" id="newsletter-modal">
         <div class="modal-content" style="width:450px;">
             <span class="close-modal" onclick="closeModal('newsletter-modal')">X</span>
-            <h2 class="modal-title">THE NETWORK</h2>
+            <h2 class="modal-title">DROP ALERTS</h2>
+            <p style="color:#888; font-size:0.8rem; text-align:center; margin-top:-10px; margin-bottom:15px;">Ειδοποιήσου μόλις βγει νέο PC ή ξεκινήσει ψηφοφορία.</p>
             <div class="auth-form">
                 <input type="email" id="nl-email" class="auth-input" placeholder="agent@codex.com">
-                <button class="btn-inspect" onclick="submitNewsletter()">ESTABLISH CONNECTION</button>
+                <button class="btn-inspect" onclick="submitNewsletter()">ACTIVATE ALERTS</button>
             </div>
         </div>
     </div>
@@ -403,12 +404,14 @@ Type 'help' for a list of commands.
                     <span class="typewriter-text terminal-name" id="dossier-username">UNKNOWN_USER</span>
                 </div>
                 <div class="agent-rank">RANK: <span id="dossier-rank" class="neon-purple-text">RECRUIT</span></div>
-                <div class="network-status">STATUS: <span class="neon-green-text">ONLINE</span></div>
+                <div class="dossier-rank-bar"><div class="dossier-rank-fill" id="dossier-rank-fill"></div></div>
+                <div class="network-status"><div class="live-dot"></div> STATUS: <span class="neon-green-text">ONLINE</span></div>
+                <div class="dossier-stats" id="dossier-stats"></div>
             </div>
 
             <div class="dossier-grid">
                 <div class="dossier-col dossier-left">
-                    <div style="margin-bottom: 20px;">
+                    <div>
                         <h3 class="dossier-heading">>// MY ORDERS</h3>
                         <div class="dossier-list" id="dossier-orders">
                             <div class="dossier-empty">> NO ORDERS YET.</div>
@@ -453,6 +456,10 @@ Type 'help' for a list of commands.
                 <input type="text" id="reg-user" class="auth-input" placeholder="USERNAME">
                 <input type="email" id="reg-email" class="auth-input" placeholder="EMAIL">
                 <input type="password" id="reg-pass" class="auth-input" placeholder="PASSWORD">
+                <label class="auth-checkbox">
+                    <input type="checkbox" id="reg-subscribe">
+                    <span>🔔 ΘΕΛΩ ΕΙΔΟΠΟΙΗΣΕΙΣ ΓΙΑ ΝΕΑ DROPS</span>
+                </label>
                 <button class="btn-inspect" onclick="handleSignup()">REGISTER</button>
             </div>
         </div>

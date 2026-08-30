@@ -167,9 +167,9 @@ export async function submitNewsletter() {
         });
         const d = await res.json();
         
-        if(d.success) { 
-            if(window.showToast) window.showToast("WELCOME TO THE NETWORK", "achievement"); 
-            if(window.closeModal) window.closeModal('newsletter-modal'); 
+        if(d.success) {
+            if(window.showToast) window.showToast("DROP ALERTS ACTIVATED", "achievement");
+            if(window.closeModal) window.closeModal('newsletter-modal');
         } else { 
             if(window.showToast) window.showToast("CONNECTION FAILED", "error"); 
         }
