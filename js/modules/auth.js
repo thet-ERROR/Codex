@@ -88,13 +88,14 @@ export async function handleSignup() {
     const user = document.getElementById('reg-user').value.trim();
     const email = document.getElementById('reg-email').value.trim();
     const pass = document.getElementById('reg-pass').value.trim();
-    
+    const subscribed = document.getElementById('reg-subscribe')?.checked || false;
+
     if(!user || !email || !pass) {
         alert("SYSTEM ALERT: ALL FIELDS REQUIRED FOR RECRUITMENT");
         return;
     }
 
-    const d = await api.registerUser(user, email, pass);
+    const d = await api.registerUser(user, email, pass, subscribed);
     
     if(d && d.success) {
         localStorage.setItem('codex_username', d.username);

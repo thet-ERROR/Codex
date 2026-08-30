@@ -56,6 +56,19 @@ export function openAgentDashboard() {
     const rankEl = document.getElementById('dossier-rank');
     if(rankEl) rankEl.innerText = rank;
 
+    const totalAchievements = CONFIG.ACHIEVEMENTS_LIST.length;
+    const rankFillEl = document.getElementById('dossier-rank-fill');
+    if(rankFillEl) rankFillEl.style.width = Math.min((unlockedCount / totalAchievements) * 100, 100) + '%';
+
+    const statsEl = document.getElementById('dossier-stats');
+    if(statsEl) {
+        statsEl.innerHTML = `
+            <div class="dossier-stat-chip">${state.wishlist.length} WISHLIST</div>
+            <div class="dossier-stat-chip">${unlockedCount}/${totalAchievements} ACHIEVEMENTS</div>
+            <div class="dossier-stat-chip">${state.cart.length} IN CART</div>
+        `;
+    }
+
     // 4. Ενημέρωση Achievements μέσα στο Dashboard
     const achListContainer = document.getElementById('dossier-achievements');
     if(achListContainer) {

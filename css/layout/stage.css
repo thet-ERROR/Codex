@@ -3,13 +3,15 @@
 .carousel-wrapper, .starter-menu { pointer-events: auto; }
 .carousel-wrapper { display: flex; align-items: center; justify-content: center; gap: 40px; transition: 0.3s; width: 100%; }
 
-#main-card, .holo-card { width: 420px; max-width: 95vw; background: #111111 !important; border: 2px solid #333333 !important; border-radius: 16px; padding: 35px; text-align: center; position: relative; transition: 0.4s; box-shadow: 0 40px 100px rgba(0,0,0,0.8); display: flex; flex-direction: column; align-items: center; pointer-events: auto; backdrop-filter: none !important; -webkit-backdrop-filter: none !important; opacity: 1 !important; visibility: visible !important; animation: chromeBreathe 4s ease-in-out infinite; }
+#main-card, .holo-card { width: 420px; max-width: 95vw; background: #111111 !important; border: 2px solid #333333 !important; border-radius: 16px; padding: 35px; text-align: center; position: relative; transition: 0.4s; box-shadow: 0 40px 100px rgba(0,0,0,0.8); display: flex; flex-direction: column; align-items: center; pointer-events: auto; backdrop-filter: none !important; -webkit-backdrop-filter: none !important; opacity: 1 !important; visibility: visible !important; }
 #main-card:hover, .holo-card:hover { transform: translateY(-4px); box-shadow: 0 50px 120px rgba(0,0,0,0.85); }
-@media (prefers-reduced-motion: reduce) {
-    #main-card, .holo-card { animation: none; }
-}
 .holo-card-inner { position: relative; width: 100%; height: 100%; pointer-events: auto; }
-.hero-img { height: 200px; object-fit: contain; filter: drop-shadow(0 20px 40px rgba(0,0,0,0.5)); margin: 0 auto 10px auto; display: block; transition: 0.3s; }
+.hero-img-frame { position: relative; overflow: hidden; height: 200px; margin: 0 auto 10px auto; border-radius: 8px; }
+.hero-img-frame::before { content: ''; position: absolute; top: 0; left: -150%; width: 60%; height: 100%; background: linear-gradient(to right, transparent, rgba(255,255,255,0.08), transparent); transform: skewX(-20deg); animation: holo-glare 5s infinite; pointer-events: none; }
+@media (prefers-reduced-motion: reduce) {
+    .hero-img-frame::before { animation: none; }
+}
+.hero-img { height: 100%; width: 100%; object-fit: contain; filter: drop-shadow(0 20px 40px rgba(0,0,0,0.5)); display: block; transition: 0.3s; margin: 0; }
 
 .pc-title { font-family: var(--font-ui); font-size: 2.5rem; font-weight: 800; line-height: 1; text-transform: uppercase; margin-bottom: 5px; color: #fff; }
 .card-price-row { display: flex; justify-content: center; align-items: baseline; gap: 10px; margin-bottom: 15px; }

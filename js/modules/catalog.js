@@ -98,7 +98,7 @@ export function renderCard() {
 
     c.innerHTML = `
         <div class="holo-card-inner">
-            <img src="${pc.images[0]||'assets/images/bg.jpg'}" class="hero-img">
+            <div class="hero-img-frame"><img src="${pc.images[0]||'assets/images/bg.jpg'}" class="hero-img"></div>
             <button onclick="toggleWishlist('${pc._id || pc.id}')" style="position:absolute; top:15px; right:15px; background:rgba(0,0,0,0.7); border:1px solid ${wishColor}; color:${wishColor}; border-radius:50%; width:40px; height:40px; display:flex; justify-content:center; align-items:center; cursor:pointer; z-index:10; transition:all 0.3s;">
                 <i class="ph-bold ph-crosshair" style="font-size:1.3rem;"></i>
             </button>

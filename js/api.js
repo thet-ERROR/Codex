@@ -18,11 +18,11 @@ export const api = {
         const res = await fetch(`${CONFIG.API_URL}/cast-vote`, { method: 'POST' });
         return await res.json();
     },
-    async registerUser(username, email, password) {
+    async registerUser(username, email, password, subscribed) {
         const res = await fetch(`${CONFIG.API_URL}/register`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ username, email, password })
+            body: JSON.stringify({ username, email, password, subscribed })
         });
         return await res.json();
     },

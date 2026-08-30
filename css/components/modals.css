@@ -26,6 +26,8 @@
 .auth-form { display: flex; flex-direction: column; gap: 15px; margin-top: 20px; }
 .auth-input { background: #111; border: 1px solid #333; padding: 12px; color: #fff; border-radius: 6px; outline: none; }
 .auth-input:focus { border-color: var(--neon-green); }
+.auth-checkbox { display: flex; align-items: center; gap: 10px; font-family: var(--font-ui); font-size: 0.8rem; color: #aaa; cursor: pointer; }
+.auth-checkbox input { width: 18px; height: 18px; accent-color: var(--neon-green); cursor: pointer; }
 .auth-form .btn-inspect { background: transparent !important; border: 2px solid var(--neon-purple, #b026ff) !important; color: var(--neon-purple, #b026ff) !important; padding: 12px !important; width: 100% !important; font-family: 'Orbitron', sans-serif !important; font-weight: bold !important; font-size: 1rem !important; text-transform: uppercase !important; cursor: pointer !important; transition: all 0.3s ease !important; border-radius: 6px !important; margin-top: 10px !important; }
 .auth-form .btn-inspect:hover { background: var(--neon-purple, #b026ff) !important; color: #000 !important; box-shadow: 0 0 15px var(--neon-purple, #b026ff) !important; }
 
