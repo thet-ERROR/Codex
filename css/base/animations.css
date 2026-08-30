@@ -1,0 +1,16 @@
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes slideUpFade { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+@keyframes blink { 50% { opacity: 0.3; } }
+@keyframes slowWaveBreath { 0% { background-position: 0% 50%; opacity: 0; filter: drop-shadow(0 0 10px rgba(255,255,255,0.2)); } 20% { opacity: 1; filter: drop-shadow(0 0 20px rgba(255,255,255,0.8)); } 50% { background-position: 100% 50%; opacity: 1; filter: drop-shadow(0 0 25px var(--neon-purple)); } 80% { opacity: 1; filter: drop-shadow(0 0 20px #ff4500); } 100% { background-position: 0% 50%; opacity: 0; filter: drop-shadow(0 0 10px rgba(255,255,255,0.2)); } }
+@keyframes scrollTicker { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+@keyframes dossierGlitch { 0% { opacity: 0; transform: scale(0.9) translateY(20px); } 100% { opacity: 1; transform: scale(1) translateY(0); } }
+@keyframes typing { from { width: 0 } to { width: 100% } }
+@keyframes blink-caret { from, to { border-color: transparent } 50% { border-color: var(--neon-green); } }
+@keyframes holo-glare { 0% { left: -100%; } 20% { left: 200%; } 100% { left: 200%; } }
+@keyframes breathe { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
+@keyframes waveTextPurple { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+@keyframes chromeBreathe {
+    0%, 100% { box-shadow: 0 0 14px rgba(204, 255, 0, 0.12), 0 0 22px rgba(176, 38, 255, 0.08); border-color: rgba(204, 255, 0, 0.22); }
+    50% { box-shadow: 0 0 20px rgba(176, 38, 255, 0.2), 0 0 30px rgba(204, 255, 0, 0.12); border-color: rgba(176, 38, 255, 0.32); }
+}

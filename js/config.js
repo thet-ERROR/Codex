@@ -1,0 +1,14 @@
+export const CONFIG = {
+    API_URL: 'https://codex-backend-9kij.onrender.com/api',
+    WHATSAPP_NUM: '306912345678',
+    INSTAGRAM_URL: 'https://instagram.com/codex_rigs',
+    DEFAULT_THEME: '#ccff00',
+    ACHIEVEMENTS_LIST: [
+        { id: 'login', title: 'AGENT RECRUITED', desc: 'Logged in for the first time.', icon: 'ph-identification-card' },
+        { id: 'cart', title: 'FIRST LOOT', desc: 'Added an item to the cart.', icon: 'ph-shopping-cart' },
+        { id: 'vote', title: 'VOTE CASTER', desc: 'Participated in a community vote.', icon: 'ph-thumbs-up' }
+    ]
+};
+
+// Εξαγωγή στο window για να υπάρχει πρόσβαση αν χρειαστεί κάπου global
+window.CONFIG = CONFIG;

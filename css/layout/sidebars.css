@@ -1,0 +1,55 @@
+.side-btn {
+    width: 50px; height: 50px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1);
+    background: rgba(255,255,255,0.02); color: #888; font-size: 1.5rem;
+    display: flex; align-items: center; justify-content: center; cursor: pointer;
+    transition: 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); margin-bottom: 10px;
+    position: relative;
+}
+.side-btn:hover {
+    color: #fff;
+    border-color: rgba(255,255,255,0.3);
+    background: rgba(255,255,255,0.06);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(255,255,255,0.08);
+}
+
+/* Trust / Warranty — πράσινο tint */
+.left-sidebar .side-btn[title="Warranty & Trust"]:hover {
+    border-color: var(--neon-green);
+    color: var(--neon-green);
+    box-shadow: 0 4px 15px rgba(204,255,0,0.15);
+}
+/* Rules — μωβ tint */
+.left-sidebar .side-btn[title="Rules"]:hover {
+    border-color: var(--neon-purple);
+    color: var(--neon-purple);
+    box-shadow: 0 4px 15px rgba(176,38,255,0.15);
+}
+/* Help — γαλάζιο tint */
+.left-sidebar .side-btn[title="Help"]:hover {
+    border-color: #00f0ff;
+    color: #00f0ff;
+    box-shadow: 0 4px 15px rgba(0,240,255,0.15);
+}
+
+.left-sidebar, .right-sidebar { position: fixed; top: 100px; bottom: 60px; z-index: 4000; display: flex; flex-direction: column; align-items: center; padding: 20px 0; pointer-events: auto; }
+.left-sidebar { left: 0; width: 80px; border-right: 1px solid rgba(255,255,255,0.05); background: linear-gradient(to right, rgba(0,0,0,0.8), transparent); }
+.right-sidebar { right: 0; width: 300px; border-left: 1px solid rgba(255,255,255,0.05); background: linear-gradient(to left, rgba(0,0,0,0.8), transparent); padding: 20px; align-items: stretch; z-index: 9990 !important; }
+
+.side-group { display: flex; flex-direction: column; gap: 10px; width: 100%; align-items: center; }
+.side-divider { width: 40%; height: 1px; background: rgba(255,255,255,0.1); margin: 5px 0; }
+.side-btn.chat-toggle { margin-top: auto; border-color: var(--neon-green); color: var(--neon-green); }
+
+.feed-header { font-family: var(--font-ui); color: var(--neon-purple); font-weight: 800; font-size: 1rem; margin-bottom: 20px; letter-spacing: 2px; border-bottom: 1px solid var(--neon-purple); padding-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
+.live-dot { width: 6px; height: 6px; background: var(--neon-green); border-radius: 50%; box-shadow: 0 0 5px var(--neon-green); animation: blink 2s infinite; }
+.review-list { overflow-y: auto; flex: 1; display: flex; flex-direction: column; gap: 15px; padding-right: 5px; }
+.review-card { background: rgba(20, 10, 30, 0.6); border: 1px solid rgba(176, 38, 255, 0.3); padding: 12px; border-radius: 8px; position: relative; }
+.r-user { font-family: var(--font-ui); font-weight: bold; color: #fff; font-size: 0.9rem; }
+.r-stars { color: var(--neon-green); font-size: 0.7rem; margin-left: 5px; }
+.r-text { font-size: 0.8rem; color: #aaa; margin-top: 5px; line-height: 1.4; font-style: italic; }
+.r-date { font-size: 0.65rem; color: #666; position: absolute; top: 12px; right: 12px; font-family: monospace; }
+.add-review-btn { background: transparent; border: 1px solid var(--neon-purple); color: var(--neon-purple); padding: 8px 20px; border-radius: 6px; font-family:var(--font-ui); font-weight:bold; cursor: pointer; transition: 0.3s; margin-top:10px; width:100%; }
+.add-review-btn:hover { background: var(--neon-purple); color: #fff; }
+
+.social-menu { display: none; flex-direction: column; gap: 10px; position: absolute; left: 70px; top: 0; background: rgba(10,5,20,0.95); padding: 10px; border: 1px solid var(--neon-purple); border-radius: 12px; z-index: 1000; box-shadow: 0 10px 25px rgba(0,0,0,0.8); }
+.social-menu.active { display: flex; animation: fadeIn 0.2s ease; }

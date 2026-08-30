@@ -3,8 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="PHOENIX CODEX - Secure your ultimate custom gaming rig.">
+    <meta name="theme-color" content="#b026ff">
+    <meta property="og:title" content="PHOENIX CODEX | TERMINAL v52.0">
+    <meta property="og:description" content="Secure your ultimate custom gaming rig.">
+    <meta property="og:image" content="assets/images/og-image.jpg">
+    
     <title>PHOENIX CODEX | TERMINAL v52.0</title>
     
+    <link rel="icon" type="image/x-icon" href="assets/images/favicon.ico">
     <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700;800&family=Space+Grotesk:wght@300;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;600;700&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
     
@@ -57,7 +64,7 @@ Type 'help' for a list of commands.
                 <div class="social-menu" id="social-menu">
                     <button class="side-btn" onclick="playClick(); showToast('DISCORD SERVER: COMING SOON', 'normal')" title="Discord"><i class="ph-bold ph-discord-logo"></i></button>
                     <button class="side-btn" onclick="playClick(); window.open('https://instagram.com/codex_rigs', '_blank')" title="Instagram"><i class="ph-bold ph-instagram-logo"></i></button>
-                    <button class="side-btn" onclick="playClick(); openModal('newsletter')" title="The Network"><i class="ph-bold ph-envelope-simple"></i></button>
+                    <button class="side-btn" onclick="playClick(); openModal('newsletter')" title="Drop Alerts"><i class="ph-bold ph-envelope-simple"></i></button>
                 </div>
             </div>
 
@@ -89,16 +96,16 @@ Type 'help' for a list of commands.
             </button>
         </div>
         
-        <!-- RESTORED: Το δεξί γκρουπ με τα κουμπιά που είχε χαθεί -->
         <div class="right-header-group">
             <button class="cli-btn" onclick="toggleCLI()" title="Terminal">
                 <i class="ph-bold ph-terminal-window"></i>
             </button>
-            
+            <span id="user-display" class="hidden"></span>
             <div class="profile-container">
-                <button class="profile-btn" onclick="playClick(); openModal('agent-dashboard-modal')">
+                <button class="profile-btn" onclick="playClick(); toggleProfileMenu()">
                     <i class="ph-bold ph-user"></i>
                 </button>
+                <div class="profile-menu" id="profile-menu"></div>
             </div>
         </div>
     </header>
@@ -143,7 +150,7 @@ Type 'help' for a list of commands.
                 <h2 id="v-title" style="color:#fff; margin-bottom:5px; font-size:2rem; text-transform:uppercase;">LOADING...</h2>
                 <div id="v-price-display" style="color:var(--neon-green); font-family:var(--font-ui); font-weight:bold; font-size:1.5rem; margin-bottom:20px;"></div>
                 <div class="mystery-img-wrap">
-                    <img id="v-img" src="" class="mystery-img">
+                    <img id="v-img" src="" class="mystery-img" alt="Vote Event Image">
                     <i class="ph-fill ph-lock-key lock-icon" id="v-lock"></i>
                 </div>
                 <div style="display:flex; justify-content:space-between; font-size:0.8rem; color:#ccc;">
@@ -172,89 +179,85 @@ Type 'help' for a list of commands.
         </div>
     </div>
 
-    <div class="gallery-overlay" id="gallery-overlay">
-        <div class="yg-card-container">
-            <div class="yg-card" id="yg-card">
-                
-                <div class="yg-card-face yg-card-front">
-                    <div class="yg-tier-badge" id="yg-tier-badge">S-TIER</div>
-                    <div class="yg-close-btn" onclick="playClick(); closeModal('gallery-overlay')"></div>
+<!-- GALLERY OVERLAY (FIXED DOM STRUCTURE) -->
+<div class="gallery-overlay" id="gallery-overlay">
+    <div class="yg-card-container">
+        <div class="yg-card" id="yg-card">
 
-                    <!-- TARGET LOCK -->
-                    <!-- TARGET LOCK -->
-<                   <div class="yg-target-lock" title="Save to Wishlist" onclick="toggleWishlist(this)"><i class="ph-bold ph-crosshair"></i></div>
-                        <i class="ph-bold ph-crosshair"></i>
-                    </div>
-                    
-                    <div class="yg-card-content" style="padding: 25px; padding-top: 35px; display: flex; flex-direction: column; flex-grow: 1;">
-                        <h1 class="yg-project-name" id="yg-title" style="margin-bottom: 15px;">Project Cali</h1>
+<div class="yg-card-face yg-card-front">
+    <div class="yg-close-btn" onclick="playClick(); closeModal('gallery-overlay')"><i class="ph-bold ph-x"></i></div>
+    <button type="button" class="yg-target-lock" title="Save to Wishlist" onclick="toggleWishlist(this)"><i class="ph-bold ph-crosshair"></i></button>
 
-                        <div style="display: flex; align-items: center; justify-content: center; gap: 20px; width: 100%; margin-bottom: 15px;">
-                            <button class="yg-gallery-btn left" onclick="playClick(); changeGalleryImage(-1)" style="background: rgba(255,255,255,0.05); padding: 8px 12px; border-radius: 5px; border: 1px solid rgba(255,255,255,0.1); color: #fff; cursor: pointer; transition: 0.2s;"><i class="ph-bold ph-caret-left"></i></button>
-                            
-                            <img src="" id="yg-main-img" alt="PC Build" class="yg-pc-image" onclick="playClick(); changeGalleryImage(1)" style="height: 190px; max-width: 190px; object-fit: contain; filter: drop-shadow(0 10px 15px rgba(0,0,0,0.5)); cursor: pointer; display: block;" title="Next Image">
-                            
-                            <button class="yg-gallery-btn right" onclick="playClick(); changeGalleryImage(1)" style="background: rgba(255,255,255,0.05); padding: 8px 12px; border-radius: 5px; border: 1px solid rgba(255,255,255,0.1); color: #fff; cursor: pointer; transition: 0.2s;"><i class="ph-bold ph-caret-right"></i></button>
-                        </div>
+    <div class="yg-card-content">
+        <h1 class="yg-project-name" id="yg-title">Project Cali</h1>
 
-                        <div class="yg-price-section" style="margin-bottom: 20px;">
-                            <div class="yg-current-price" id="yg-price-live">€0</div>
-                            <div class="yg-old-price" id="yg-price-old">€0</div>
-                        </div>
-
-                        <div class="yg-storage-section" style="margin-bottom: 20px;">
-                            <div class="yg-storage-label">Storage Expansion</div>
-                            <select class="yg-storage-select" id="storage-select" onchange="updatePrice()">
-                                <option value="0">Standard (No Extra)</option>
-                                <option value="50">+ 1TB HDD (€50)</option>
-                                <option value="80">+ 1TB SSD (€80)</option>
-                            </select>
-                        </div>
-
-                        <div class="yg-buttons-section" style="margin-top: auto;">
-                            <button class="yg-btn yg-btn-specs yg-btn-breathe" onclick="playClick(); toggleCardFlip()">
-                                <span>⇄</span> Flip to Specs
-                            </button>
-                            <button class="yg-btn yg-btn-cart" id="yg-add-cart" onclick="addToCart()">
-                                Add to Cart
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-<div class="yg-card-face yg-card-back">
-    <div class="scroll-fix-wrapper">
-        <div class="yg-close-back" onclick="playClick(); toggleCardFlip()"><i class="ph-bold ph-arrow-u-up-left"></i></div>
-
-        <!-- 1. Προσθέτουμε ID στα Specs για να τα κρύβουμε -->
-        <div id="specs-container-wrapper">
-            <div class="yg-rarity-badge mobile-hide">CLASSIFIED HARDWARE</div>
-            <div class="yg-sys-header">
-                <div class="yg-sys-data-title">
-                    <span class="yg-sys-icon"><i class="ph-fill ph-cpu"></i></span>
-                    SYS_DATA
-                </div>
-                <div class="yg-sys-subtitle mobile-hide">Detailed specifications for this system.</div>
+        <div class="yg-image-row" id="yg-image-row">
+            <button class="yg-gallery-btn left" id="yg-arrow-left" onclick="playClick(); changeGalleryImage(-1)"><i class="ph-bold ph-caret-left"></i></button>
+            <div class="yg-image-frame">
+                <img src="" id="yg-main-img" alt="PC Build" class="yg-pc-image" onclick="playClick(); changeGalleryImage(1)" title="Next Image">
             </div>
-            <div class="yg-specs-list" id="yg-specs-back"></div>
+            <button class="yg-gallery-btn right" id="yg-arrow-right" onclick="playClick(); changeGalleryImage(1)"><i class="ph-bold ph-caret-right"></i></button>
         </div>
 
-        <!-- 2. Προσθέτουμε ID στο κουμπί για να αλλάζουμε το κείμενο -->
-        <button id="bench-toggle-btn" class="yg-btn yg-btn-breathe mobile-bench-btn" onclick="playClick(); toggleBenchmarksView()">
-            <i class="ph-bold ph-crosshair"></i> SHOW BENCHMARKS
-        </button>
+        <div class="yg-price-section">
+            <div class="yg-current-price" id="yg-price-live">€0</div>
+            <div class="yg-old-price" id="yg-price-old">€0</div>
+        </div>
 
-        <div class="yg-benchmarks" id="bench-section">
-            <div class="yg-benchmarks-title">GAME BENCHMARKS (1080p)</div>
-            <div class="yg-benchmark-grid" id="yg-benchmarks"></div>
+        <div class="yg-storage-section">
+            <div class="yg-storage-label">Storage Expansion</div>
+            <select class="yg-storage-select" id="storage-select" onchange="updatePrice()">
+                <option value="0">Standard (No Extra)</option>
+                <option value="50">+ 1TB HDD (€50)</option>
+                <option value="80">+ 1TB SSD (€80)</option>
+            </select>
+        </div>
+
+        <div class="yg-buttons-section">
+            <button class="yg-btn yg-btn-specs yg-btn-breathe" onclick="playClick(); toggleCardFlip()">
+                <span>⇄</span> Flip to Specs
+            </button>
+            <button class="yg-btn yg-btn-cart" id="yg-add-cart" onclick="addToCart()">
+                Add to Cart
+            </button>
         </div>
     </div>
 </div>
-            
-            <!-- RESTORED: Τα 3 div που έλειπαν και διέλυαν το layout! -->
-            </div>
+
+<div class="yg-card-face yg-card-back">
+    <div class="scroll-fix-wrapper">
+        <div class="yg-back-header">
+            <div class="yg-back-title" id="yg-back-title">SYSTEM</div>
+        </div>
+
+        <div id="specs-container-wrapper">
+            <div class="yg-specs-list" id="yg-specs-back"></div>
+        </div>
+
+        <div class="yg-buttons-section">
+            <button class="yg-btn yg-btn-specs yg-btn-breathe" onclick="playClick(); toggleCardFlip()">
+                <span>⇄</span> Flip to Front
+            </button>
+            <button id="bench-toggle-btn" class="yg-btn yg-btn-fps yg-btn-breathe" onclick="playClick(); toggleBenchmarksView()">
+                <i class="ph-bold ph-crosshair"></i> Show FPS
+            </button>
         </div>
     </div>
+
+    <div class="yg-fps-panel" id="fps-panel">
+        <div class="yg-fps-panel-header">
+            <span><i class="ph-bold ph-chart-bar"></i> GAME BENCHMARKS (1080p)</span>
+            <div class="yg-fps-close" onclick="playClick(); toggleBenchmarksView()">
+                <i class="ph-bold ph-caret-down"></i> CLOSE
+            </div>
+        </div>
+        <div class="yg-fps-list" id="yg-fps-list"></div>
+    </div>
+</div>
+
+        </div>
+    </div>
+</div>
 
     <!-- MODALS -->
     <div class="modal-overlay" id="trust-modal">
@@ -264,13 +267,18 @@ Type 'help' for a list of commands.
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-top:30px;">
                 <div style="background: rgba(255,255,255,0.03); padding:20px; border: 1px solid #333; border-radius:10px;">
                     <i class="ph-duotone ph-shield-check" style="font-size: 3rem; color: var(--neon-green); margin-bottom: 15px;"></i>
-                    <h4 style="font-family: var(--font-ui); color: #fff; margin-bottom: 10px; font-size:1.2rem;">2 YEAR WARRANTY</h4>
-                    <p style="font-size: 0.85rem; color: #888; line-height: 1.4;">All builds come with full support.</p>
+                    <h4 style="font-family: var(--font-ui); color: #fff; margin-bottom: 10px; font-size:1.2rem;">2-YEAR LEGAL WARRANTY</h4>
+                    <p style="font-size: 0.85rem; color: #888; line-height: 1.4;">Κάθε σύστημα καλύπτεται από τη νόμιμη εγγύηση 2 ετών για ελαττώματα, σύμφωνα με την ισχύουσα νομοθεσία περί προστασίας καταναλωτή.</p>
+                </div>
+                <div style="background: rgba(255,255,255,0.03); padding:20px; border: 1px solid #333; border-radius:10px;">
+                    <i class="ph-duotone ph-arrow-u-up-left" style="font-size: 3rem; color: var(--neon-purple); margin-bottom: 15px;"></i>
+                    <h4 style="font-family: var(--font-ui); color: #fff; margin-bottom: 10px; font-size:1.2rem;">14-DAY RIGHT OF WITHDRAWAL</h4>
+                    <p style="font-size: 0.85rem; color: #888; line-height: 1.4;">Έχετε δικαίωμα υπαναχώρησης εντός 14 ημερολογιακών ημερών από την παραλαβή, χωρίς αιτιολόγηση, σύμφωνα με την ενωσιακή νομοθεσία εξ αποστάσεως πωλήσεων.</p>
                 </div>
                 <div style="background: rgba(255,255,255,0.03); padding:20px; border: 1px solid #333; border-radius:10px;">
                     <i class="ph-duotone ph-truck" style="font-size: 3rem; color: var(--neon-green); margin-bottom: 15px;"></i>
                     <h4 style="font-family: var(--font-ui); color: #fff; margin-bottom: 10px; font-size:1.2rem;">GR SHIPPING</h4>
-                    <p style="font-size: 0.85rem; color: #888; line-height: 1.4;">Securely packed and delivered across Greece.</p>
+                    <p style="font-size: 0.85rem; color: #888; line-height: 1.4;">Ασφαλής συσκευασία και παράδοση σε όλη την Ελλάδα, με πλήρη έλεγχο λειτουργίας πριν την αποστολή.</p>
                 </div>
             </div>
         </div>
@@ -324,10 +332,11 @@ Type 'help' for a list of commands.
     <div class="modal-overlay" id="newsletter-modal">
         <div class="modal-content" style="width:450px;">
             <span class="close-modal" onclick="closeModal('newsletter-modal')">X</span>
-            <h2 class="modal-title">THE NETWORK</h2>
+            <h2 class="modal-title">DROP ALERTS</h2>
+            <p style="color:#888; font-size:0.8rem; text-align:center; margin-top:-10px; margin-bottom:15px;">Ειδοποιήσου μόλις βγει νέο PC ή ξεκινήσει ψηφοφορία.</p>
             <div class="auth-form">
                 <input type="email" id="nl-email" class="auth-input" placeholder="agent@codex.com">
-                <button class="btn-inspect" onclick="submitNewsletter()">ESTABLISH CONNECTION</button>
+                <button class="btn-inspect" onclick="submitNewsletter()">ACTIVATE ALERTS</button>
             </div>
         </div>
     </div>
@@ -374,7 +383,7 @@ Type 'help' for a list of commands.
     <div class="modal-overlay" id="login-modal">
         <div class="modal-content" style="width:400px;">
             <span class="close-modal" onclick="closeModal('login-modal')">X</span>
-            <h2 class="modal-title">AGENT LOGIN</h2>
+            <h2 class="modal-title">AGENT LOGIN</h2>           
             <div class="auth-form">
                 <input type="text" id="login-user" class="auth-input" placeholder="USERNAME">
                 <input type="password" id="login-pass" class="auth-input" placeholder="PASSWORD">
@@ -395,12 +404,14 @@ Type 'help' for a list of commands.
                     <span class="typewriter-text terminal-name" id="dossier-username">UNKNOWN_USER</span>
                 </div>
                 <div class="agent-rank">RANK: <span id="dossier-rank" class="neon-purple-text">RECRUIT</span></div>
-                <div class="network-status">STATUS: <span class="neon-green-text">ONLINE</span></div>
+                <div class="dossier-rank-bar"><div class="dossier-rank-fill" id="dossier-rank-fill"></div></div>
+                <div class="network-status"><div class="live-dot"></div> STATUS: <span class="neon-green-text">ONLINE</span></div>
+                <div class="dossier-stats" id="dossier-stats"></div>
             </div>
 
             <div class="dossier-grid">
                 <div class="dossier-col dossier-left">
-                    <div style="margin-bottom: 20px;">
+                    <div>
                         <h3 class="dossier-heading">>// MY ORDERS</h3>
                         <div class="dossier-list" id="dossier-orders">
                             <div class="dossier-empty">> NO ORDERS YET.</div>
@@ -423,12 +434,14 @@ Type 'help' for a list of commands.
                 </div>
             </div>
             
-            <!-- ΤΩΡΑ ΕΙΝΑΙ ΣΩΣΤΑ ΜΕΣΑ ΣΤΟ ΚΟΥΤΙ ΤΟΥ DASHBOARD! -->
             <div class="dossier-auth-actions">
-                <button class="yg-btn yg-btn-specs" onclick="playClick(); closeModal('agent-dashboard-modal'); openModal('login-modal')">
+                <button id="dossier-signin-btn" class="yg-btn yg-btn-specs" onclick="playClick(); closeModal('agent-dashboard-modal'); openModal('login-modal')">
                     > SIGN IN
                 </button>
-                <button class="yg-btn yg-btn-specs dossier-btn-logout" onclick="playClick(); showToast('AGENT DISCONNECTED', 'error'); closeModal('agent-dashboard-modal')">
+                <button id="dossier-signup-btn" class="yg-btn yg-btn-specs" onclick="playClick(); closeModal('agent-dashboard-modal'); openModal('signup-modal')">
+                    > REGISTER
+                </button>
+                <button id="dossier-logout-btn" class="yg-btn yg-btn-specs dossier-btn-logout" onclick="playClick(); logout(); closeModal('agent-dashboard-modal')">
                     > SIGN OUT
                 </button>
             </div>
@@ -443,6 +456,10 @@ Type 'help' for a list of commands.
                 <input type="text" id="reg-user" class="auth-input" placeholder="USERNAME">
                 <input type="email" id="reg-email" class="auth-input" placeholder="EMAIL">
                 <input type="password" id="reg-pass" class="auth-input" placeholder="PASSWORD">
+                <label class="auth-checkbox">
+                    <input type="checkbox" id="reg-subscribe">
+                    <span>🔔 ΘΕΛΩ ΕΙΔΟΠΟΙΗΣΕΙΣ ΓΙΑ ΝΕΑ DROPS</span>
+                </label>
                 <button class="btn-inspect" onclick="handleSignup()">REGISTER</button>
             </div>
         </div>
@@ -498,16 +515,21 @@ Type 'help' for a list of commands.
     <div class="modal-overlay" id="rules-modal">
         <div class="modal-content">
             <span class="close-modal" onclick="closeModal('rules-modal')">X</span>
-            <h2>RULES</h2>
-            <p>1. First come first served.</p>
+            <h2 style="color:#fff; margin-bottom:15px;">TERMS & CONDITIONS</h2>
+<div style="color:#ccc; font-size:0.85rem; line-height:1.7; text-align:left;">
+    <p>1. Οι διαθέσιμες ποσότητες εμφανίζονται σε πραγματικό χρόνο· η παραγγελία ολοκληρώνεται με την επιβεβαίωση πληρωμής.</p>
+    <p>2. Οι τιμές περιλαμβάνουν ΦΠΑ, εκτός αν αναφέρεται διαφορετικά.</p>
+    <p>3. Ισχύει δικαίωμα υπαναχώρησης 14 ημερών και νόμιμη εγγύηση 2 ετών (βλ. Trust Protocols).</p>
+    <p>4. Για πλήρεις όρους χρήσης και πολιτική απορρήτου, επικοινωνήστε μαζί μας.</p>
+</div>
         </div>
     </div>
-    
+
     <div class="modal-overlay" id="help-modal">
         <div class="modal-content">
             <span class="close-modal" onclick="closeModal('help-modal')">X</span>
-            <h2>HELP</h2>
-            <p>Contact support.</p>
+           <h2>SUPPORT</h2>
+<p style="color:#ccc; font-size:0.9rem; line-height:1.6;">Για ερωτήσεις σχετικά με παραγγελίες, εγγύηση ή τεχνική υποστήριξη, επικοινωνήστε στο <strong>d.codexphoenix@gmail.com</strong> ή μέσω του chat κάτω αριστερά.</p>
         </div>
     </div>
     
@@ -520,143 +542,6 @@ Type 'help' for a list of commands.
         </div>
     </div>
 
-    <script src="js/app.js"></script>
-    <script>
-    function toggleSocials() {
-        document.getElementById('social-menu').classList.toggle('active');
-    }
-
-    function toggleMobileReviews() {
-        const sidebar = document.querySelector('.right-sidebar');
-        sidebar.classList.toggle('mobile-active');
-        
-        if(sidebar.classList.contains('mobile-active') && !document.getElementById('close-mobile-reviews')) {
-            const closeBtn = document.createElement('button');
-            closeBtn.id = 'close-mobile-reviews';
-            closeBtn.innerHTML = 'CLOSE REVIEWS';
-            closeBtn.style.cssText = 'width: 100%; margin-top: 20px; padding: 12px; background: var(--neon-purple); border: none; color: white; font-weight: bold; border-radius: 8px; cursor: pointer; font-family: var(--font-ui);';
-            closeBtn.onclick = () => sidebar.classList.remove('mobile-active');
-            sidebar.appendChild(closeBtn);
-        }
-    }
-
-    setInterval(() => {
-        const isTerminalOpen = document.getElementById('cli-overlay') && (document.getElementById('cli-overlay').style.display === 'flex' || document.getElementById('cli-overlay').style.display === 'block');
-        const isReviewsOpen = document.querySelector('.right-sidebar') && document.querySelector('.right-sidebar').classList.contains('mobile-active');
-        const isGalleryOpen = document.getElementById('gallery-overlay') && document.getElementById('gallery-overlay').style.display === 'flex';
-        const isAnyModalOpen = document.querySelector('.modal[style*="display: flex"]') || document.querySelector('.modal[style*="display: block"]');
-        
-        if (isTerminalOpen || isReviewsOpen || isGalleryOpen || isAnyModalOpen) {
-            document.body.classList.add('ui-locked');
-            document.getElementById('social-menu').classList.remove('active'); 
-        } else {
-            document.body.classList.remove('ui-locked');
-        }
-    }, 200);
-    </script>
-<script>
-    // 1. FIX ΓΙΑ ΤΟ GLITCH: Αστραπιαίος Έλεγχος (50ms)
-    setInterval(() => {
-        const isTerminalOpen = document.getElementById('cli-overlay') && (document.getElementById('cli-overlay').style.display === 'flex' || document.getElementById('cli-overlay').style.display === 'block');
-        const isReviewsOpen = document.querySelector('.right-sidebar') && document.querySelector('.right-sidebar').classList.contains('mobile-active');
-        const isGalleryOpen = document.getElementById('gallery-overlay') && document.getElementById('gallery-overlay').style.display === 'flex';
-        const isAnyModalOpen = document.querySelector('.modal-overlay[style*="display: flex"]') || document.querySelector('.modal-overlay[style*="display: block"]');
-        
-        if (isTerminalOpen || isReviewsOpen || isGalleryOpen || isAnyModalOpen) {
-            document.body.classList.add('ui-locked');
-        } else {
-            document.body.classList.remove('ui-locked');
-        }
-    }, 50);
-
-    // 2. ΜΗΔΕΝΙΣΜΟΣ ΤΟΥ ΚΟΥΜΠΙΟΥ OTAN ΚΛΕΙΝΕΙ Η ΚΑΡΤΑ
-    document.querySelectorAll('.yg-close-btn, .close-modal, .modal-close, .yg-close-back').forEach(btn => {
-        btn.addEventListener('click', () => {
-            // Ξεθολώνει το φόντο ακαριαία
-            document.body.classList.remove('ui-locked');
-            document.getElementById('social-menu').classList.remove('active');
-            
-            // Κάνει Reset ΜΟΝΟ το εικαστικό του κουμπιού
-            const targetLockBtn = document.querySelector('.yg-target-lock');
-            if(targetLockBtn) {
-                targetLockBtn.classList.remove('locked');
-            }
-        });
-    });
-
-    // 3. Η ΛΟΓΙΚΗ ΤΟΥ TARGET LOCK ΚΑΙ ΤΗΣ ΑΠΟΘΗΚΕΥΣΗΣ
-    window.toggleWishlist = function(btn) {
-        if(typeof playClick === 'function') playClick(); 
-        
-        btn.classList.toggle('locked');
-        const isLocked = btn.classList.contains('locked');
-        
-        const pcNameElement = document.getElementById('yg-title');
-        const pcName = pcNameElement ? pcNameElement.innerText : 'UNKNOWN SYSTEM';
-        
-        const wishlistContainer = document.getElementById('dossier-wishlist');
-        const safeId = 'wish-' + pcName.replace(/\s+/g, '-').toLowerCase();
-        
-        if (isLocked) {
-            // Ο Χρήστης κάνει Lock!
-            if(typeof showToast === 'function') showToast('TARGET ACQUIRED: ' + pcName, 'normal');
-            
-            const emptyMsg = wishlistContainer.querySelector('.dossier-empty');
-            if (emptyMsg) emptyMsg.remove();
-            
-            // Το προσθέτουμε στο Dashboard αν δεν υπάρχει ήδη!
-            if (!document.getElementById(safeId)) {
-                const item = document.createElement('div');
-                item.id = safeId;
-                item.style.cssText = 'color: var(--neon-green); font-family: monospace; font-size: 0.85rem; padding: 10px; border-bottom: 1px dashed rgba(204,255,0,0.2); width: 100%; display: flex; justify-content: space-between; align-items: center; background: rgba(0,255,0,0.05); border-radius: 4px; margin-bottom: 5px;';
-                item.innerHTML = `<span>> ${pcName}</span> <i class="ph-bold ph-crosshair"></i>`;
-                wishlistContainer.appendChild(item);
-                
-                // Δίνουμε το Achievement αν είναι η πρώτη φορά!
-                unlockAchievement('first-target', 'FIRST BLOOD (TARGET LOCKED)');
-            }
-        } else {
-            // Ο Χρήστης κάνει Unlock μέσα από το Inspect! Αφαιρείται από το Profile!
-            if(typeof showToast === 'function') showToast('TARGET REMOVED', 'error');
-            const itemToRemove = document.getElementById(safeId);
-            if (itemToRemove) itemToRemove.remove();
-            
-            // Επαναφορά μηνύματος αν αδειάσει το Wishlist
-            if (wishlistContainer.children.length === 0) {
-                wishlistContainer.innerHTML = '<div class="dossier-empty">> NO SAVED SYSTEMS.</div>';
-            }
-        }
-    };
-
-    // 4. Η ΛΟΓΙΚΗ ΤΩΝ ACHIEVEMENTS
-    window.unlockAchievement = function(id, title) {
-        const achContainer = document.getElementById('dossier-achievements');
-        if (!achContainer) return;
-
-        const emptyMsg = achContainer.querySelector('.dossier-empty');
-        if (emptyMsg) emptyMsg.remove(); 
-        
-        const safeId = 'ach-' + id;
-        if(document.getElementById(safeId)) return; // Το έχει ήδη
-        
-        const ach = document.createElement('div');
-        ach.className = 'ach-card unlocked';
-        ach.id = safeId;
-        ach.style.cssText = 'background: rgba(0,0,0,0.5); border: 1px solid var(--neon-green); border-radius: 6px; padding: 12px; display: flex; align-items: center; gap: 15px; margin-bottom: 10px; box-shadow: inset 0 0 10px rgba(0,255,0,0.05);';
-        ach.innerHTML = `
-            <div style="font-size: 1.8rem; color: var(--neon-green);"><i class="ph-fill ph-trophy"></i></div>
-            <div>
-                <h4 style="margin: 0 0 4px 0; color: var(--neon-green); font-family: var(--font-ui); font-size: 0.85rem;">${title}</h4>
-                <div style="font-family: monospace; font-weight: bold; color: var(--neon-green); font-size: 0.7rem;">UNLOCKED</div>
-            </div>
-        `;
-        achContainer.appendChild(ach);
-        
-        // Popup Οπτικό
-        if(typeof showToast === 'function') showToast('ACHIEVEMENT UNLOCKED: ' + title, 'achievement');
-    };
-</script>
-    
     <div class="delivery-ticker">
         <div class="ticker-track">
             <span>⚡ 24H SECURE DELIVERY ACROSS SKG ⚡</span>
@@ -665,6 +550,34 @@ Type 'help' for a list of commands.
             <span>SYSTEMS FULLY ASSEMBLED & TESTED</span>
         </div>
     </div>
-    
+
+    <!-- Core & State -->
+    <script type="module" src="js/config.js"></script>
+    <script type="module" src="js/state.js"></script>
+    <script type="module" src="js/api.js"></script>
+
+    <!-- UI Helpers -->
+    <script type="module" src="js/ui/toast.js"></script>
+    <script type="module" src="js/ui/modals.js"></script>
+    <script type="module" src="js/ui/ui-lock.js"></script>
+
+    <!-- Business Logic Modules -->
+    <script type="module" src="js/modules/auth.js"></script>
+    <script type="module" src="js/modules/achievements.js"></script>
+    <script type="module" src="js/modules/wishlist.js"></script>
+    <script type="module" src="js/modules/cart.js"></script>
+    <script type="module" src="js/modules/compare.js"></script>
+    <script type="module" src="js/modules/gallery.js"></script>
+    <script type="module" src="js/modules/catalog.js"></script>
+    <script type="module" src="js/modules/vote.js"></script>
+    <script type="module" src="js/modules/reviews.js"></script>
+    <script type="module" src="js/modules/chat.js"></script>
+    <script type="module" src="js/modules/terminal.js"></script>
+    <script type="module" src="js/modules/tutorial.js"></script>
+
+    <!-- Entry Point -->
+
+    <script type="module" src="js/main.js"></script>
+
 </body>
 </html>

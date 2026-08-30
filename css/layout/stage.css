@@ -1,0 +1,43 @@
+.stage { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; z-index: 10; flex-direction: column; pointer-events: none; }
+.system-select-label { font-family: var(--font-ui); font-size: 1.2rem; color: #fff; letter-spacing: 6px; font-weight: 800; margin-bottom: 20px; text-transform: uppercase; opacity: 0.8; }
+.carousel-wrapper, .starter-menu { pointer-events: auto; }
+.carousel-wrapper { display: flex; align-items: center; justify-content: center; gap: 40px; transition: 0.3s; width: 100%; }
+
+#main-card, .holo-card { width: 420px; max-width: 95vw; background: #111111 !important; border: 2px solid #333333 !important; border-radius: 16px; padding: 35px; text-align: center; position: relative; transition: 0.4s; box-shadow: 0 40px 100px rgba(0,0,0,0.8); display: flex; flex-direction: column; align-items: center; pointer-events: auto; backdrop-filter: none !important; -webkit-backdrop-filter: none !important; opacity: 1 !important; visibility: visible !important; }
+#main-card:hover, .holo-card:hover { transform: translateY(-4px); box-shadow: 0 50px 120px rgba(0,0,0,0.85); }
+.holo-card-inner { position: relative; width: 100%; height: 100%; pointer-events: auto; }
+.hero-img-frame { position: relative; overflow: hidden; height: 200px; margin: 0 auto 10px auto; border-radius: 8px; }
+.hero-img-frame::before { content: ''; position: absolute; top: 0; left: -150%; width: 60%; height: 100%; background: linear-gradient(to right, transparent, rgba(255,255,255,0.08), transparent); transform: skewX(-20deg); animation: holo-glare 5s infinite; pointer-events: none; }
+@media (prefers-reduced-motion: reduce) {
+    .hero-img-frame::before { animation: none; }
+}
+.hero-img { height: 100%; width: 100%; object-fit: contain; filter: drop-shadow(0 20px 40px rgba(0,0,0,0.5)); display: block; transition: 0.3s; margin: 0; }
+
+.pc-title { font-family: var(--font-ui); font-size: 2.5rem; font-weight: 800; line-height: 1; text-transform: uppercase; margin-bottom: 5px; color: #fff; }
+.card-price-row { display: flex; justify-content: center; align-items: baseline; gap: 10px; margin-bottom: 15px; }
+.pc-price { font-family: var(--font-ui); font-size: 2rem; color: var(--neon-green); font-weight: bold; }
+.pc-price-old { font-family: var(--font-ui); font-size: 1.2rem; color: #666; text-decoration: line-through; }
+
+.stock-badge { padding: 4px 10px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; display: inline-block; margin-bottom: 10px; letter-spacing: 1px; }
+.stock-badge.low { background: rgba(255, 170, 0, 0.2); color: var(--legendary-orange); border: 1px solid var(--legendary-orange); }
+.stock-badge.out { background: rgba(255, 51, 51, 0.2); color: var(--retro-red); border: 1px solid var(--retro-red); }
+.stock-badge.in { background: rgba(204, 255, 0, 0.2); color: var(--neon-green); border: 1px solid var(--neon-green); }
+
+.sys-brief { background: rgba(0, 0, 0, 0.5); border-left: 2px solid var(--neon-purple); padding: 12px; margin-bottom: 15px; width: 100%; text-align: left; border-radius: 0 6px 6px 0; }
+.sys-brief-title { color: var(--neon-purple); font-family: var(--font-ui); font-weight: 800; font-size: 0.9rem; letter-spacing: 2px; margin-bottom: 6px; text-transform: uppercase; }
+.sys-brief-text { font-family: var(--font-body); font-size: 0.8rem; color: #aaa; font-style: italic; line-height: 1.5; }
+
+.btn-card-inspect { width: 100%; padding: 14px; background: rgba(176, 38, 255, 0.1); border: 1px solid var(--neon-purple); color: #fff; font-family: var(--font-ui); font-weight: 700; font-size: 1rem; text-transform: uppercase; cursor: pointer; transition: 0.3s; margin-top: 5px; border-radius: 6px; }
+.btn-card-inspect:hover { background: var(--neon-purple); color: #fff; box-shadow: 0 0 20px var(--neon-purple); }
+.btn-card-compare { width: 100%; margin-top: 8px; font-size: 0.75rem; background: transparent; border: 1px dashed var(--neon-green); color: var(--neon-green); padding: 6px; cursor: pointer; font-family: var(--font-ui); transition: 0.3s; border-radius: 4px; text-transform: uppercase; }
+.btn-card-compare:hover { background: rgba(204, 255, 0, 0.1); color: #fff; border-style: solid; box-shadow: 0 0 10px var(--neon-green); }
+.btn-card-compare.selected { background: var(--neon-green); color: #000; border: 1px solid var(--neon-green); font-weight: bold; box-shadow: 0 0 15px var(--neon-green); }
+
+.nav-arrow { background: rgba(255,255,255,0.05); color: #fff; width: 40px; height: 80px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; cursor: pointer; clip-path: polygon(0 20%, 100% 0, 100% 100%, 0 80%); transition: 0.3s; }
+.nav-arrow:hover { background: var(--neon-green); color:#000; }
+
+.starter-menu { display: flex; flex-direction: row; justify-content: center; gap: 20px; width: 100%; }
+.pack-card { width: 220px; height: 320px; background: rgba(20, 20, 25, 0.7); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; transition: 0.3s; backdrop-filter: blur(20px); }
+.pack-card:hover { transform: translateY(-10px); border-color: var(--retro-red); background: rgba(255, 51, 51, 0.1); }
+.pack-icon { font-size: 3.5rem; color: #666; margin-bottom: 15px; }
+.pack-title { font-family: var(--font-ui); font-size: 1.4rem; color: #fff; text-transform: uppercase; font-weight: 800; }
