@@ -26,11 +26,13 @@ export const api = {
         });
         return await res.json();
     },
-    // Το login παραμένει placeholder όπως συμφωνήσαμε (Δ)
     async loginUser(username, password) {
-        // TODO: Σύνδεση με το Backend (Αναμένει υλοποίηση)
-        // Προσομοίωση επιστροφής
-        return { success: false, error: "Backend Login Not Implemented Yet" };
+        const res = await fetch(`${CONFIG.API_URL}/user-login`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username, password })
+        });
+        return await res.json();
     }
 };
 

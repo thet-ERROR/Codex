@@ -70,7 +70,7 @@ export async function handleLogin() {
     }
 
     // Κλήση στο backend μέσω του api.js
-    const d = await api.login(user, pass);
+    const d = await api.loginUser(user, pass);
 
     if (d && d.success) {
         localStorage.setItem('codex_username', d.username);
@@ -94,7 +94,7 @@ export async function handleSignup() {
         return;
     }
 
-    const d = await api.register(user, email, pass);
+    const d = await api.registerUser(user, email, pass);
     
     if(d && d.success) {
         localStorage.setItem('codex_username', d.username);
