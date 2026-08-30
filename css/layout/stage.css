@@ -5,6 +5,7 @@
 
 #main-card, .holo-card { width: 420px; max-width: 95vw; background: #111111 !important; border: 2px solid #333333 !important; border-radius: 16px; padding: 35px; text-align: center; position: relative; transition: 0.4s; box-shadow: 0 40px 100px rgba(0,0,0,0.8); display: flex; flex-direction: column; align-items: center; pointer-events: auto; backdrop-filter: none !important; -webkit-backdrop-filter: none !important; opacity: 1 !important; visibility: visible !important; }
 #main-card:hover, .holo-card:hover { transform: translateY(-4px); box-shadow: 0 50px 120px rgba(0,0,0,0.85); }
+body.night-mode #main-card, body.night-mode .holo-card { background: var(--card-bg-night) !important; border-color: var(--card-border-night) !important; box-shadow: 0 40px 100px rgba(0,0,0,0.9), var(--night-glow); }
 .holo-card-inner { position: relative; width: 100%; height: 100%; pointer-events: auto; }
 .hero-img-frame { position: relative; overflow: hidden; height: 200px; margin: 0 auto 10px auto; border-radius: 8px; }
 .hero-img-frame::before { content: ''; position: absolute; top: 0; left: -150%; width: 60%; height: 100%; background: linear-gradient(to right, transparent, rgba(255,255,255,0.08), transparent); transform: skewX(-20deg); animation: holo-glare 5s infinite; pointer-events: none; }

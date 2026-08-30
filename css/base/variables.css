@@ -10,6 +10,9 @@
     --font-body: 'Space Grotesk', sans-serif;
     --card-font-primary: 'Chakra Petch', sans-serif;
     --card-font-secondary: 'Orbitron', sans-serif;
+    --card-bg-night: rgba(6, 8, 14, 0.97);
+    --card-border-night: rgba(140, 170, 255, 0.35);
+    --night-glow: 0 0 30px rgba(120,150,255,0.15);
 }
 
 * {

@@ -9,6 +9,7 @@ import { renderVoteState, updateTimer } from './modules/vote.js';
 import { renderGlobalReviews } from './modules/reviews.js';
 import { initTerminal, initMatrix } from './modules/terminal.js';
 import { initInteractiveTutorial } from './modules/tutorial.js';
+import { initDayNightCycle } from './modules/time.js';
 
 import './modules/gallery.js';
 import './modules/compare.js';
@@ -54,21 +55,6 @@ window.updateVolume = (val) => {
     localStorage.setItem('codex_volume', decimal);
 };
 
-window.toggleCRT = () => {
-    state.crtEnabled = !state.crtEnabled;
-    localStorage.setItem('codex_crt', state.crtEnabled);
-    const scanlines = document.querySelector('.scanlines');
-    if (scanlines) scanlines.style.display = state.crtEnabled ? 'block' : 'none';
-    
-    // UI Update
-    const crtBtn = document.getElementById('set-crt');
-    if (crtBtn) {
-        crtBtn.className = state.crtEnabled ? 'setting-card active' : 'setting-card'; 
-        const cTitle = crtBtn.querySelector('.s-title');
-        if (cTitle) cTitle.innerText = state.crtEnabled ? 'CRT FX: ON' : 'CRT FX: OFF'; 
-    }
-};
-
 window.setTheme = (color) => {
     state.currentTheme = color;
     localStorage.setItem('codex_theme', color);
@@ -82,12 +68,9 @@ const initApp = async () => {
     // 1. Setup Auth & Listeners
     checkSavedSession();
     initTerminal();
+    initDayNightCycle();
 
     // 2. Apply Saved Settings
-    if (!state.crtEnabled) {
-        const scanlines = document.querySelector('.scanlines');
-        if (scanlines) scanlines.style.display = 'none';
-    }
     document.documentElement.style.setProperty('--neon-green', state.currentTheme);
     
     const volSlider = document.getElementById('vol-slider');
