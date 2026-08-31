@@ -40,6 +40,8 @@
         .btn-purple { background: #b026ff; color: #fff; }
         .btn-cyan { background: #00f0ff; color: #000; }
         .btn-cancel { background: transparent; border: 1px solid #555; color: #aaa; }
+        .btn-red { background: #ff3333; color: #fff; }
+        .btn-red:hover { background: #cc0000; }
 
         /* LIST ITEMS */
         .item { display: flex; gap: 10px; align-items: center; background: #181818; padding: 10px; border-radius: 8px; border: 1px solid #333; margin-bottom: 8px; }

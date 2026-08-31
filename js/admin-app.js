@@ -12,13 +12,13 @@
             TOKEN=p; 
             document.getElementById('login-ui').style.display='none'; 
             document.getElementById('dashboard-ui').style.display='grid'; 
-            loadInv(); loadVote(); loadTickets(); loadEmails(); loadUserCount();
+            loadInv(); loadVote(); loadTickets(); loadEmails(); loadUserCount(); loadMaintenance();
         } else alert('WRONG PASSWORD');
     }
 
     // --- LOAD DATA ---
     async function loadInv() {
-        const res = await fetch(`${API}/drops`); inventory = await res.json();
+        const res = await fetch(`${API}/drops`, { headers:{'x-admin-auth':TOKEN} }); inventory = await res.json();
         
         // 1. Fill Inventory List
         document.getElementById('inventory-list').innerHTML = inventory.map(pc => {
@@ -140,9 +140,9 @@ const data = {
     async function del(id) { if(confirm('Delete?')) { await fetch(`${API}/drops/${id}`, {method:'DELETE', headers:{'x-admin-auth':TOKEN}}); loadInv(); } }
 
     // --- TOOLS ---
-    async function loadVote() { 
-        try { 
-            const res=await fetch(`${API}/vote-event`); const v=await res.json(); 
+    async function loadVote() {
+        try {
+            const res=await fetch(`${API}/vote-event`, { headers:{'x-admin-auth':TOKEN} }); const v=await res.json();
             if(v.title) { 
                 document.getElementById('v-title').value=v.title; 
                 document.getElementById('v-price').value=v.price || ''; 
@@ -181,7 +181,24 @@ const data = {
     }
     async function activateCode(id) { if(confirm("Confirm?")) { await fetch(`${API}/activate-ticket/${id}`, { method: 'POST', headers:{'x-admin-auth':TOKEN} }); loadTickets(); } }
 
-    async function loadEmails() { 
-        const res = await fetch(`${API}/newsletter`, { headers:{'x-admin-auth':TOKEN} }); const emails = await res.json(); 
-        document.getElementById('email-list').innerHTML = emails.map(e => `<div style="border-bottom:1px solid #222; padding:5px;">${e.email} <span style="float:right; font-size:0.7rem;">${new Date(e.date).toLocaleDateString()}</span></div>`).join(''); 
+    async function loadEmails() {
+        const res = await fetch(`${API}/newsletter`, { headers:{'x-admin-auth':TOKEN} }); const emails = await res.json();
+        document.getElementById('email-list').innerHTML = emails.map(e => `<div style="border-bottom:1px solid #222; padding:5px;">${e.email} <span style="float:right; font-size:0.7rem;">${new Date(e.date).toLocaleDateString()}</span></div>`).join('');
+    }
+
+    // --- MAINTENANCE KILL SWITCH ---
+    async function loadMaintenance() {
+        try {
+            const res = await fetch(`${API}/site-config`, { headers:{'x-admin-auth':TOKEN} });
+            const config = await res.json();
+            document.getElementById('maint-toggle').checked = !!config.maintenanceMode;
+            document.getElementById('maint-message').value = config.maintenanceMessage || '';
+        } catch(e) { console.log("Maintenance config load error", e); }
+    }
+
+    async function saveMaintenance() {
+        const maintenanceMode = document.getElementById('maint-toggle').checked;
+        const maintenanceMessage = document.getElementById('maint-message').value;
+        await fetch(`${API}/site-config`, { method:'POST', headers:{'Content-Type':'application/json', 'x-admin-auth':TOKEN}, body:JSON.stringify({ maintenanceMode, maintenanceMessage }) });
+        alert(maintenanceMode ? "⚠ MAINTENANCE MODE ACTIVE" : "SITE LIVE");
     }

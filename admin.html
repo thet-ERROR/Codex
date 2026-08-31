@@ -100,6 +100,17 @@
                 <div id="user-count" style="font-size:2rem; font-weight:bold; color:#fff; text-align:center;">0</div>
             </div>
 
+            <div class="tool-box" style="border-color:#ff3333;">
+                <h3 style="color:#ff3333;">⚠ MAINTENANCE KILL SWITCH</h3>
+                <label style="display:flex; align-items:center; gap:8px; text-transform:none; font-size:0.9rem; color:#fff;">
+                    <input type="checkbox" id="maint-toggle" style="width:18px; height:18px; accent-color:#ff3333;">
+                    SITE IN MAINTENANCE MODE
+                </label>
+                <label>Message shown to visitors</label>
+                <textarea id="maint-message" placeholder="PHOENIX CODEX is currently undergoing scheduled maintenance..."></textarea>
+                <button class="btn btn-red" onclick="saveMaintenance()">SAVE</button>
+            </div>
+
             <div class="tool-box">
                 <h3 style="color:#b026ff;">VOTE EVENT</h3>
                 <label>Event Title</label><input type="text" id="v-title" placeholder="Project Ronin">

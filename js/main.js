@@ -65,6 +65,18 @@ window.setTheme = (color) => {
 const initApp = async () => {
     console.log(">> SYSTEM INITIALIZING. WAITING FOR MODULES...");
 
+    // 0. Maintenance Kill Switch Check
+    try {
+        const status = await api.checkStatus();
+        if (status.maintenance) {
+            const startupText = document.getElementById('startup-text');
+            if (startupText) startupText.innerText = status.message || "SYSTEM UNDER MAINTENANCE";
+            return; // never hides #startup-overlay, never renders the rest of the site
+        }
+    } catch (e) {
+        // Network/API error: fail open, proceed with normal boot
+    }
+
     // 1. Setup Auth & Listeners
     checkSavedSession();
     initTerminal();
