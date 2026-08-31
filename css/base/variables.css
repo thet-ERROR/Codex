@@ -36,6 +36,8 @@ body {
 
 .hidden { display: none !important; }
 
+input, textarea, select { font-size: 16px; }
+
 ::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: rgba(10, 5, 20, 0.8); border-left: 1px solid rgba(176, 38, 255, 0.2); }
 ::-webkit-scrollbar-thumb { background: var(--neon-purple); border-radius: 10px; }
