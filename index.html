@@ -83,7 +83,7 @@ Type 'help' for a list of commands.
     </div>
     
     <header>
-        <img src="assets/images/logo.png" alt="PHOENIX CODEX" class="logo">
+        <img src="assets/images/logo.png" alt="PHOENIX CODEX" class="logo" onclick="playClick(); openWhoAmI();">
         
         <div class="nav-bar">
             <button class="nav-btn active-live" id="tab-live" onclick="playClick(); switchTab('live')">LIVE DROPS</button>
@@ -262,6 +262,14 @@ Type 'help' for a list of commands.
 </div>
 
     <!-- MODALS -->
+    <div class="modal-overlay" id="whoami-modal">
+        <div class="modal-content whoami-content">
+            <span class="close-modal" onclick="closeModal('whoami-modal')">X</span>
+            <div class="whoami-title"><span class="cli-prompt">&gt;</span> whoami</div>
+            <div class="whoami-body"><span id="whoami-text"></span><span class="whoami-cursor">_</span></div>
+        </div>
+    </div>
+
     <div class="modal-overlay" id="trust-modal">
         <div class="modal-content" style="width:750px; text-align:center;">
             <span class="close-modal" onclick="closeModal('trust-modal')">X</span>

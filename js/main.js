@@ -16,6 +16,7 @@ import './modules/compare.js';
 import './modules/wishlist.js';
 import './modules/chat.js';
 import './modules/achievements.js';
+import './modules/whoami.js';
 
 // --- ΠΡΟΣΘΕΣΕ ΑΥΤΕΣ ΤΙΣ 3 ΓΡΑΜΜΕΣ ΕΔΩ ---
 // 3. UI Helpers (Παράθυρα, Ήχοι, Ειδοποιήσεις)
