@@ -17,8 +17,6 @@
 .setting-card.active { border-color: var(--neon-green); box-shadow: 0 0 15px rgba(204,255,0,0.2); }
 .s-icon { font-size: 1.5rem; color: var(--neon-green); }
 .s-title { font-family: var(--font-ui); font-weight: bold; color: #fff; font-size: 0.9rem; }
-.neon-slider { width: 100%; -webkit-appearance: none; background: #333; height: 4px; border-radius: 2px; outline: none; }
-.neon-slider::-webkit-slider-thumb { -webkit-appearance: none; width: 15px; height: 15px; background: var(--neon-green); border-radius: 50%; cursor: pointer; box-shadow: 0 0 10px var(--neon-green); }
 .color-opts { display: flex; justify-content: center; gap: 15px; }
 .color-btn { width: 30px; height: 30px; border-radius: 50%; cursor: pointer; border: 2px solid transparent; transition: 0.3s; box-shadow: 0 0 10px rgba(255,255,255,0.1); }
 .color-btn:hover { transform: scale(1.2); }

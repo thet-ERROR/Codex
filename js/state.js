@@ -18,7 +18,8 @@ export const state = {
     currentTheme: localStorage.getItem('codex_theme') || CONFIG.DEFAULT_THEME,
     matrixEnabled: false,
     isHacked: false,
-    bgVolume: localStorage.getItem('codex_volume') ? parseFloat(localStorage.getItem('codex_volume')) : 0.1
+    bgVolume: 0.1,
+    unlockedColors: JSON.parse(localStorage.getItem('codex_unlocked_colors')) || []
 };
 
 window.codexState = state;
