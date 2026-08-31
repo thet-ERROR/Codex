@@ -7,6 +7,29 @@
 .loader-bar { width: 300px; height: 4px; background: #111; border-radius: 2px; overflow: hidden; }
 .loader-fill { height: 100%; width: 0%; background: var(--neon-green); transition: width 0.1s linear; }
 
+#startup-overlay.maintenance-active::before {
+    content: "⚠";
+    font-size: clamp(1.8rem, 5vw, 2.6rem);
+    color: var(--retro-red);
+    margin-bottom: 18px;
+    text-shadow: 0 0 20px rgba(255, 51, 51, 0.6);
+    animation: breathe 2.6s ease-in-out infinite;
+}
+#startup-overlay.maintenance-active #startup-text {
+    font-family: var(--font-body);
+    font-size: clamp(1rem, 3.2vw, 1.6rem);
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    line-height: 1.6;
+    max-width: 700px;
+    padding: 0 24px;
+    text-align: center;
+    color: #eee;
+    text-shadow: 0 0 12px rgba(255, 51, 51, 0.35);
+    animation: breathe 2.6s ease-in-out infinite;
+}
+#startup-overlay.maintenance-active .loader-bar { display: none; }
+
 .bg-layer { position: fixed; inset: 0; z-index: -2; background: url('/assets/images/bg.gif') no-repeat center center fixed; background-size: cover; filter: brightness(0.4); transition: opacity 0.5s, filter 1.2s ease; }
 body.night-mode .bg-layer { filter: brightness(0.22) contrast(1.15) saturate(0.8); }
 canvas#matrix-canvas { position: fixed; top: 0; left: 0; z-index: -1; opacity: 0; transition: opacity 1s; pointer-events: none; }
