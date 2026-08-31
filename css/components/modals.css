@@ -31,6 +31,11 @@
 .auth-form .btn-inspect { background: transparent !important; border: 2px solid var(--neon-purple, #b026ff) !important; color: var(--neon-purple, #b026ff) !important; padding: 12px !important; width: 100% !important; font-family: 'Orbitron', sans-serif !important; font-weight: bold !important; font-size: 1rem !important; text-transform: uppercase !important; cursor: pointer !important; transition: all 0.3s ease !important; border-radius: 6px !important; margin-top: 10px !important; }
 .auth-form .btn-inspect:hover { background: var(--neon-purple, #b026ff) !important; color: #000 !important; box-shadow: 0 0 15px var(--neon-purple, #b026ff) !important; }
 
+.whoami-content { width: 90%; max-width: 650px; background: #050806; border: 1px solid #0f0; box-shadow: 0 0 40px rgba(0, 255, 0, 0.15); font-family: monospace; }
+.whoami-title { color: #0f0; font-size: 1.1rem; letter-spacing: 1px; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px solid rgba(0, 255, 0, 0.2); }
+.whoami-body { color: #0f0; font-size: 0.95rem; line-height: 1.7; white-space: pre-wrap; min-height: 260px; text-align: left; }
+.whoami-cursor { display: inline-block; color: #0f0; font-weight: bold; animation: cursorBlink 1s step-end infinite; }
+
 /* Driver.js Overrides */
 .driver-popover { background-color: rgba(10, 5, 20, 0.95) !important; border: 1px solid var(--neon-purple, #b026ff) !important; color: #fff !important; border-radius: 12px !important; box-shadow: 0 0 20px rgba(176, 38, 255, 0.3) !important; backdrop-filter: blur(10px) !important; }
 .driver-popover-title { color: var(--neon-green, #ccff00) !important; font-family: 'Orbitron', sans-serif !important; font-size: 1.2rem !important; margin-bottom: 5px !important; }

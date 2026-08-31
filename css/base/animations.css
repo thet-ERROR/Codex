@@ -10,6 +10,7 @@
 @keyframes holo-glare { 0% { left: -100%; } 20% { left: 200%; } 100% { left: 200%; } }
 @keyframes breathe { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
 @keyframes waveTextPurple { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+@keyframes cursorBlink { 0%, 50% { opacity: 1; } 51%, 100% { opacity: 0; } }
 @keyframes logoGlow {
     0%, 100% { filter: drop-shadow(0 0 8px rgba(176, 38, 255, 0.35)); }
     50% { filter: drop-shadow(0 0 16px rgba(255, 69, 0, 0.45)); }
