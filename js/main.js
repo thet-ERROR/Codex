@@ -17,6 +17,7 @@ import './modules/wishlist.js';
 import './modules/chat.js';
 import './modules/achievements.js';
 import './modules/whoami.js';
+import './modules/wheel.js';
 
 // --- ΠΡΟΣΘΕΣΕ ΑΥΤΕΣ ΤΙΣ 3 ΓΡΑΜΜΕΣ ΕΔΩ ---
 // 3. UI Helpers (Παράθυρα, Ήχοι, Ειδοποιήσεις)
@@ -47,16 +48,11 @@ window.toggleAudio = () => {
     }
 };
 
-window.updateVolume = (val) => {
-    const decimal = val / 100;
-    bgMusic.volume = decimal;
-    state.bgVolume = decimal;
-    const volDisplay = document.getElementById('vol-display');
-    if(volDisplay) volDisplay.innerText = val + "%";
-    localStorage.setItem('codex_volume', decimal);
-};
-
-window.setTheme = (color) => {
+window.setTheme = (color, id) => {
+    if (id && !state.unlockedColors.includes(id)) {
+        if (window.showToast) window.showToast('LOCKED. SPIN THE WHEEL TO UNLOCK.', 'error');
+        return;
+    }
     state.currentTheme = color;
     localStorage.setItem('codex_theme', color);
     document.documentElement.style.setProperty('--neon-green', color);
@@ -87,11 +83,7 @@ const initApp = async () => {
 
     // 2. Apply Saved Settings
     document.documentElement.style.setProperty('--neon-green', state.currentTheme);
-    
-    const volSlider = document.getElementById('vol-slider');
-    const volDisp = document.getElementById('vol-display');
-    if(volSlider) volSlider.value = state.bgVolume * 100;
-    if(volDisp) volDisp.innerText = Math.round(state.bgVolume * 100) + "%";
+    if (window.refreshColorLocks) window.refreshColorLocks();
 
     // 3. Setup Audio Triggers
     if (state.audioEnabled) audioStart.play().catch(e => console.log("Audio autoplay blocked"));

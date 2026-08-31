@@ -270,6 +270,19 @@ Type 'help' for a list of commands.
         </div>
     </div>
 
+    <div class="modal-overlay" id="wheel-modal">
+        <div class="modal-content wheel-content">
+            <span class="close-modal" onclick="closeModal('wheel-modal')">X</span>
+            <h2 class="modal-title" style="font-size:1.4rem;">SPIN THE WHEEL</h2>
+            <div class="wheel-stage">
+                <div class="wheel-pointer"></div>
+                <div id="wheel"></div>
+            </div>
+            <button class="wheel-spin-btn" id="wheel-spin-btn" onclick="spinWheel()">SPIN</button>
+            <div id="wheel-result"></div>
+        </div>
+    </div>
+
     <div class="modal-overlay" id="trust-modal">
         <div class="modal-content" style="width:750px; text-align:center;">
             <span class="close-modal" onclick="closeModal('trust-modal')">X</span>
@@ -318,11 +331,6 @@ Type 'help' for a list of commands.
                 </div>
             </div>
             
-            <div style="margin-top:20px;">
-                <div class="s-title" style="margin-bottom:10px; color:#aaa; font-size:0.8rem;">MUSIC VOLUME: <span id="vol-display" style="color:#fff;">10%</span></div>
-                <input type="range" id="vol-slider" min="0" max="100" value="10" class="neon-slider" oninput="updateVolume(this.value)">
-            </div>
-
             <div style="margin-top:20px; text-align:center;">
                 <div class="s-title" style="margin-bottom:10px;">ACCENT COLOR</div>
                 <div class="color-opts">
@@ -330,6 +338,10 @@ Type 'help' for a list of commands.
                     <div class="color-btn" style="background:#00f0ff;" onclick="setTheme('#00f0ff')"></div>
                     <div class="color-btn" style="background:#ff3333;" onclick="setTheme('#ff3333')"></div>
                     <div class="color-btn" style="background:#b026ff;" onclick="setTheme('#b026ff')"></div>
+                    <div class="color-btn locked" data-id="cyberGold" style="background:#ffd700;" onclick="setTheme('#ffd700','cyberGold')"><i class="ph-fill ph-lock-simple color-lock-icon"></i></div>
+                    <div class="color-btn locked" data-id="toxicOrange" style="background:#ff5e00;" onclick="setTheme('#ff5e00','toxicOrange')"><i class="ph-fill ph-lock-simple color-lock-icon"></i></div>
+                    <div class="color-btn locked" data-id="neonPink" style="background:#ff2bd6;" onclick="setTheme('#ff2bd6','neonPink')"><i class="ph-fill ph-lock-simple color-lock-icon"></i></div>
+                    <div class="color-btn locked" data-id="matrixGreen" style="background:#00ff41;" onclick="setTheme('#00ff41','matrixGreen')"><i class="ph-fill ph-lock-simple color-lock-icon"></i></div>
                 </div>
             </div>
         </div>    

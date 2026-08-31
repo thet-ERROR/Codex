@@ -78,6 +78,12 @@ export async function handleLogin() {
         if(window.showToast) window.showToast('WELCOME BACK, AGENT ' + d.username.toUpperCase(), 'normal');
         if(window.closeModal) window.closeModal('login-modal');
         if(window.checkAchievement) window.checkAchievement('login');
+
+        const loginCount = (parseInt(localStorage.getItem('codex_login_count')) || 0) + 1;
+        localStorage.setItem('codex_login_count', loginCount);
+        if (loginCount % 2 === 0) {
+            setTimeout(() => { if (window.openWheel) window.openWheel(); }, 600);
+        }
     } else {
         alert(d?.error || "ACCESS DENIED: INVALID CREDENTIALS");
     }
