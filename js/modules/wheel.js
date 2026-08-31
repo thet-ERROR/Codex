@@ -1,33 +1,32 @@
 // js/modules/wheel.js
 import { state } from '../state.js';
 
-const BLANK_COLOR = '#2a2a2a';
-const COUPON_COLOR = '#00f0ff';
-
 const SLICES = [
-    { type: 'blank', color: BLANK_COLOR, label: 'BLANK' },
+    { type: 'blank', label: 'BLANK' },
     { type: 'color', id: 'cyberGold', hex: '#ffd700', label: 'CYBER GOLD' },
-    { type: 'coupon', color: COUPON_COLOR, label: '5% COUPON' },
+    { type: 'coupon', label: '5% COUPON' },
     { type: 'color', id: 'toxicOrange', hex: '#ff5e00', label: 'TOXIC ORANGE' },
-    { type: 'blank', color: BLANK_COLOR, label: 'BLANK' },
+    { type: 'blank', label: 'BLANK' },
     { type: 'color', id: 'neonPink', hex: '#ff2bd6', label: 'NEON PINK' },
-    { type: 'coupon', color: COUPON_COLOR, label: '5% COUPON' },
+    { type: 'coupon', label: '5% COUPON' },
     { type: 'color', id: 'matrixGreen', hex: '#00ff41', label: 'MATRIX GREEN' }
 ];
 const SLICE_DEG = 360 / SLICES.length;
+const MAX_ATTEMPTS = 3;
+const COOLDOWN_MS = 24 * 60 * 60 * 1000;
 
 let spinning = false;
 let currentRotation = 0;
 
-function sliceFill(slice) {
-    return slice.type === 'color' ? slice.hex : slice.color;
+function sliceFill(i) {
+    return i % 2 === 0 ? '#111' : '#1a1a1a';
 }
 
 function buildWheel() {
     const wheel = document.getElementById('wheel');
     if (!wheel) return;
 
-    const gradientStops = SLICES.map((s, i) => `${sliceFill(s)} ${i * SLICE_DEG}deg ${(i + 1) * SLICE_DEG}deg`).join(', ');
+    const gradientStops = SLICES.map((s, i) => `${sliceFill(i)} ${i * SLICE_DEG}deg ${(i + 1) * SLICE_DEG}deg`).join(', ');
     wheel.style.background = `conic-gradient(${gradientStops})`;
 
     wheel.querySelectorAll('.wheel-slice-label').forEach(el => el.remove());
@@ -49,7 +48,66 @@ export function refreshColorLocks() {
     });
 }
 
-export function openWheel() {
+// --- Attempts / cooldown status ---
+function getWheelStatus() {
+    const now = Date.now();
+    const stored = localStorage.getItem('codex_wheel_attempts_left');
+    let attemptsLeft = stored === null ? MAX_ATTEMPTS : parseInt(stored);
+    let nextAvailableAt = parseInt(localStorage.getItem('codex_wheel_next_available_at')) || 0;
+
+    if (attemptsLeft <= 0 && now >= nextAvailableAt) {
+        attemptsLeft = MAX_ATTEMPTS;
+        nextAvailableAt = 0;
+        localStorage.setItem('codex_wheel_attempts_left', attemptsLeft);
+        localStorage.setItem('codex_wheel_next_available_at', nextAvailableAt);
+    }
+    return { attemptsLeft, nextAvailableAt, available: attemptsLeft > 0 };
+}
+
+function formatCountdown(ms) {
+    if (ms <= 0) return '0h 0m';
+    const totalMinutes = Math.ceil(ms / 60000);
+    return `${Math.floor(totalMinutes / 60)}h ${totalMinutes % 60}m`;
+}
+
+export function refreshWheelButton() {
+    const btn = document.getElementById('wheel-settings-btn');
+    if (!btn) return;
+
+    if (!state.isLoggedIn) {
+        btn.textContent = 'SPIN THE WHEEL (LOGIN REQUIRED)';
+        btn.classList.remove('ready');
+        return;
+    }
+
+    const status = getWheelStatus();
+    if (status.available) {
+        btn.textContent = `SPIN THE WHEEL (${status.attemptsLeft} LEFT)`;
+        btn.classList.add('ready');
+    } else {
+        btn.textContent = `NEXT SPIN IN ${formatCountdown(status.nextAvailableAt - Date.now())}`;
+        btn.classList.remove('ready');
+    }
+}
+
+function updateAttemptsDisplay(n) {
+    const el = document.getElementById('wheel-attempts');
+    if (el) el.textContent = `SPINS LEFT: ${Math.max(n, 0)}/${MAX_ATTEMPTS}`;
+}
+
+export function openWheelFromSettings() {
+    if (!state.isLoggedIn) {
+        if (window.showToast) window.showToast('ACCESS DENIED. LOGIN REQUIRED.', 'error');
+        if (window.openModal) window.openModal('login-modal');
+        return;
+    }
+
+    const status = getWheelStatus();
+    if (!status.available) {
+        if (window.showToast) window.showToast(`NO SPINS LEFT. TRY AGAIN IN ${formatCountdown(status.nextAvailableAt - Date.now())}.`, 'error');
+        return;
+    }
+
     if (window.openModal) window.openModal('wheel-modal');
     const resultEl = document.getElementById('wheel-result');
     if (resultEl) resultEl.textContent = '';
@@ -64,17 +122,34 @@ export function openWheel() {
     currentRotation = 0;
     spinning = false;
 
-    const btn = document.getElementById('wheel-spin-btn');
+    updateAttemptsDisplay(status.attemptsLeft);
+    const btn = document.getElementById('wheel-initiate-btn');
     if (btn) btn.disabled = false;
 
     requestAnimationFrame(buildWheel);
 }
 
-function resolveSpin(slice) {
+function resolveSpin(slice, attemptsLeftAfterSpin) {
     spinning = false;
     const resultEl = document.getElementById('wheel-result');
-    const btn = document.getElementById('wheel-spin-btn');
-    if (btn) btn.disabled = false;
+    const btn = document.getElementById('wheel-initiate-btn');
+    const pointer = document.querySelector('.wheel-pointer');
+    if (pointer) {
+        pointer.classList.add('locked');
+        setTimeout(() => pointer.classList.remove('locked'), 700);
+    }
+
+    const isWin = slice.type !== 'blank';
+
+    if (isWin) {
+        // Winning ends this cycle immediately, even with attempts left.
+        localStorage.setItem('codex_wheel_attempts_left', 0);
+        localStorage.setItem('codex_wheel_next_available_at', Date.now() + COOLDOWN_MS);
+    } else if (attemptsLeftAfterSpin <= 0) {
+        localStorage.setItem('codex_wheel_next_available_at', Date.now() + COOLDOWN_MS);
+    }
+
+    updateAttemptsDisplay(attemptsLeftAfterSpin);
 
     if (slice.type === 'color') {
         const alreadyUnlocked = state.unlockedColors.includes(slice.id);
@@ -90,17 +165,24 @@ function resolveSpin(slice) {
     } else if (slice.type === 'coupon') {
         if (resultEl) resultEl.textContent = '> ENCRYPTED REWARD FOUND. CONTACT ADMIN DIRECTLY WITH SECURE CODE: PHOENIX-5 TO CLAIM 5% DISCOUNT.';
     } else {
-        if (resultEl) resultEl.textContent = '> HACK FAILED. NO REWARD EXTRACTED.';
+        if (resultEl) resultEl.textContent = attemptsLeftAfterSpin > 0
+            ? '> HACK FAILED. NO REWARD EXTRACTED. TRY AGAIN.'
+            : '> HACK FAILED. NO REWARD EXTRACTED. NO ATTEMPTS REMAINING.';
     }
+
+    if (btn) btn.disabled = isWin || attemptsLeftAfterSpin <= 0;
+    refreshWheelButton();
 }
 
 export function spinWheel() {
     if (spinning) return;
+    const status = getWheelStatus();
+    if (!status.available) return;
     const wheel = document.getElementById('wheel');
     if (!wheel) return;
 
     spinning = true;
-    const btn = document.getElementById('wheel-spin-btn');
+    const btn = document.getElementById('wheel-initiate-btn');
     if (btn) btn.disabled = true;
     const resultEl = document.getElementById('wheel-result');
     if (resultEl) resultEl.textContent = '';
@@ -116,9 +198,13 @@ export function spinWheel() {
 
     wheel.style.transform = `rotate(${currentRotation}deg)`;
 
-    setTimeout(() => resolveSpin(SLICES[chosenIndex]), 4600);
+    const attemptsLeftAfterSpin = status.attemptsLeft - 1;
+    localStorage.setItem('codex_wheel_attempts_left', attemptsLeftAfterSpin);
+
+    setTimeout(() => resolveSpin(SLICES[chosenIndex], attemptsLeftAfterSpin), 4600);
 }
 
 window.spinWheel = spinWheel;
-window.openWheel = openWheel;
+window.openWheelFromSettings = openWheelFromSettings;
+window.refreshWheelButton = refreshWheelButton;
 window.refreshColorLocks = refreshColorLocks;
