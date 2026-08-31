@@ -69,7 +69,9 @@ const initApp = async () => {
     try {
         const status = await api.checkStatus();
         if (status.maintenance) {
+            const overlay = document.getElementById('startup-overlay');
             const startupText = document.getElementById('startup-text');
+            if (overlay) overlay.classList.add('maintenance-active');
             if (startupText) startupText.innerText = status.message || "SYSTEM UNDER MAINTENANCE";
             return; // never hides #startup-overlay, never renders the rest of the site
         }
