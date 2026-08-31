@@ -1,6 +1,10 @@
 import { CONFIG } from './config.js';
 
 export const api = {
+    async checkStatus() {
+        const res = await fetch(`${CONFIG.API_URL}/status`);
+        return await res.json();
+    },
     async fetchDrops() {
         const res = await fetch(`${CONFIG.API_URL}/drops`);
         return await res.json();
