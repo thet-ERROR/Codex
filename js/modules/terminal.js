@@ -6,9 +6,11 @@ export function toggleCLI() {
     const input = document.getElementById('cli-input'); 
     if(!cli) return;
     
-    cli.classList.toggle('active'); 
-    if (cli.classList.contains('active') && input) {
-        input.focus(); 
+    cli.classList.toggle('active');
+    if (cli.classList.contains('active')) {
+        const output = document.getElementById('cli-output');
+        if (output) output.scrollTop = output.scrollHeight;
+        if (input) input.focus();
     }
 }
 
