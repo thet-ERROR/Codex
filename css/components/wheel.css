@@ -2,14 +2,22 @@
 .color-lock-icon { display: none; position: absolute; inset: 0; align-items: center; justify-content: center; background: rgba(0, 0, 0, 0.55); border-radius: 50%; color: #fff; font-size: 0.9rem; }
 .color-btn.locked .color-lock-icon { display: flex; }
 
+.wheel-settings-btn { width: 100%; padding: 12px; background: transparent; border: 1px solid #0f0; color: #0f0; font-family: var(--font-ui); font-weight: 700; font-size: 0.8rem; letter-spacing: 1px; cursor: pointer; border-radius: 6px; transition: 0.3s; text-transform: uppercase; }
+.wheel-settings-btn.ready:hover { background: #0f0; color: #000; box-shadow: 0 0 15px #0f0; }
+.wheel-settings-btn:not(.ready) { border-color: #444; color: #666; cursor: default; }
+
 .wheel-content { width: 400px; max-width: 90vw; text-align: center; }
-.wheel-stage { position: relative; width: min(280px, 70vw); height: min(280px, 70vw); margin: 10px auto 25px auto; }
-.wheel-pointer { position: absolute; top: -6px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 12px solid transparent; border-right: 12px solid transparent; border-top: 20px solid var(--neon-green); z-index: 5; filter: drop-shadow(0 0 6px var(--neon-green)); }
-#wheel { position: relative; width: 100%; height: 100%; border-radius: 50%; border: 3px solid #333; box-shadow: 0 0 30px rgba(0, 0, 0, 0.6), inset 0 0 20px rgba(0, 0, 0, 0.5); transition: transform 4.5s cubic-bezier(0.17, 0.67, 0.12, 0.99); }
-.wheel-slice-label { position: absolute; top: 50%; left: 50%; width: 90px; height: 20px; line-height: 20px; margin-left: -45px; margin-top: -10px; text-align: center; font-family: var(--font-ui); font-weight: 800; font-size: 0.65rem; letter-spacing: 0.5px; color: #fff; text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8); pointer-events: none; }
+#wheel-attempts { font-family: var(--font-ui); color: #aaa; font-size: 0.8rem; letter-spacing: 1px; margin-bottom: 10px; }
+.wheel-stage { position: relative; width: min(280px, 70vw); height: min(280px, 70vw); margin: 5px auto 20px auto; }
 
-.wheel-spin-btn { width: 100%; padding: 14px; background: var(--neon-green); color: #000; border: none; border-radius: 8px; font-family: var(--font-ui); font-weight: 800; font-size: 1rem; letter-spacing: 2px; cursor: pointer; transition: 0.3s; }
-.wheel-spin-btn:hover { box-shadow: 0 0 20px var(--neon-green); }
-.wheel-spin-btn:disabled { opacity: 0.5; cursor: not-allowed; box-shadow: none; }
+.wheel-pointer { position: absolute; top: -10px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 13px solid transparent; border-right: 13px solid transparent; border-top: 22px solid #0f0; z-index: 6; filter: drop-shadow(0 0 6px #0f0); transition: filter 0.2s ease; }
+.wheel-pointer.locked { filter: drop-shadow(0 0 12px #0f0) drop-shadow(0 0 24px #0f0); }
 
-#wheel-result { margin-top: 15px; min-height: 20px; font-family: monospace; color: #0f0; font-size: 0.85rem; line-height: 1.5; white-space: pre-wrap; }
+#wheel { position: relative; width: 100%; height: 100%; border-radius: 50%; border: 3px solid #0f0; box-shadow: 0 0 25px rgba(0, 255, 0, 0.4), inset 0 0 25px rgba(0, 255, 0, 0.15); transition: transform 4.5s cubic-bezier(0.1, 0.82, 0.15, 1); }
+.wheel-slice-label { position: absolute; top: 50%; left: 50%; width: 90px; height: 20px; line-height: 20px; margin-left: -45px; margin-top: -10px; text-align: center; font-family: var(--font-ui); font-weight: 800; font-size: 0.62rem; letter-spacing: 0.5px; color: #0f0; text-shadow: 0 1px 3px #000; pointer-events: none; }
+
+.wheel-initiate-btn { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 80px; height: 80px; border-radius: 50%; background: #000; border: 2px solid #0f0; color: #0f0; font-family: var(--font-ui); font-weight: 900; font-size: 0.8rem; letter-spacing: 1px; cursor: pointer; z-index: 7; box-shadow: 0 0 15px rgba(0, 255, 0, 0.5); animation: wheelPulse 1.8s ease-in-out infinite; transition: background 0.2s, color 0.2s; }
+.wheel-initiate-btn:hover:not(:disabled) { background: #0f0; color: #000; }
+.wheel-initiate-btn:disabled { opacity: 0.4; cursor: not-allowed; animation: none; box-shadow: none; }
+
+#wheel-result { margin-top: 5px; min-height: 20px; font-family: monospace; color: #0f0; font-size: 0.85rem; line-height: 1.5; white-space: pre-wrap; }

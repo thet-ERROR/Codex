@@ -274,11 +274,12 @@ Type 'help' for a list of commands.
         <div class="modal-content wheel-content">
             <span class="close-modal" onclick="closeModal('wheel-modal')">X</span>
             <h2 class="modal-title" style="font-size:1.4rem;">SPIN THE WHEEL</h2>
+            <div id="wheel-attempts">SPINS LEFT: 3/3</div>
             <div class="wheel-stage">
                 <div class="wheel-pointer"></div>
                 <div id="wheel"></div>
+                <button class="wheel-initiate-btn" id="wheel-initiate-btn" onclick="spinWheel()">INITIATE</button>
             </div>
-            <button class="wheel-spin-btn" id="wheel-spin-btn" onclick="spinWheel()">SPIN</button>
             <div id="wheel-result"></div>
         </div>
     </div>
@@ -344,7 +345,12 @@ Type 'help' for a list of commands.
                     <div class="color-btn locked" data-id="matrixGreen" style="background:#00ff41;" onclick="setTheme('#00ff41','matrixGreen')"><i class="ph-fill ph-lock-simple color-lock-icon"></i></div>
                 </div>
             </div>
-        </div>    
+
+            <div style="margin-top:20px; text-align:center;">
+                <div class="s-title" style="margin-bottom:10px;">DAILY REWARD</div>
+                <button class="wheel-settings-btn" id="wheel-settings-btn" onclick="openWheelFromSettings()">SPIN THE WHEEL</button>
+            </div>
+        </div>
     </div>
 
     <div class="modal-overlay" id="newsletter-modal">

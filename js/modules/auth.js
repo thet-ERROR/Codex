@@ -78,12 +78,7 @@ export async function handleLogin() {
         if(window.showToast) window.showToast('WELCOME BACK, AGENT ' + d.username.toUpperCase(), 'normal');
         if(window.closeModal) window.closeModal('login-modal');
         if(window.checkAchievement) window.checkAchievement('login');
-
-        const loginCount = (parseInt(localStorage.getItem('codex_login_count')) || 0) + 1;
-        localStorage.setItem('codex_login_count', loginCount);
-        if (loginCount % 2 === 0) {
-            setTimeout(() => { if (window.openWheel) window.openWheel(); }, 600);
-        }
+        if(window.refreshWheelButton) window.refreshWheelButton();
     } else {
         alert(d?.error || "ACCESS DENIED: INVALID CREDENTIALS");
     }
@@ -106,9 +101,10 @@ export async function handleSignup() {
     if(d && d.success) {
         localStorage.setItem('codex_username', d.username);
         updateAuthUI(d.username);
-        if(window.showToast) window.showToast("WELCOME AGENT: " + d.username.toUpperCase(), "achievement"); 
-        if(window.closeModal) window.closeModal('signup-modal'); 
-        if(window.checkAchievement) window.checkAchievement('login'); 
+        if(window.showToast) window.showToast("WELCOME AGENT: " + d.username.toUpperCase(), "achievement");
+        if(window.closeModal) window.closeModal('signup-modal');
+        if(window.checkAchievement) window.checkAchievement('login');
+        if(window.refreshWheelButton) window.refreshWheelButton();
     } else { 
         alert(d?.error || "REGISTRATION FAILED"); 
     }
@@ -119,7 +115,8 @@ export function logout() {
     state.isLoggedIn = false; 
     localStorage.removeItem('codex_username');
     updateAuthUI(null);
-    if(window.showToast) window.showToast("AGENT DISCONNECTED", "error"); 
+    if(window.refreshWheelButton) window.refreshWheelButton();
+    if(window.showToast) window.showToast("AGENT DISCONNECTED", "error");
 }
 
 // --- PASSWORD RECOVERY ---
