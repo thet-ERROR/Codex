@@ -14,7 +14,8 @@ const STEPS = {
         { element: '.cart-btn', popover: { title: 'YOUR LOOT', description: 'Your secured items are stored here. Check your total and proceed to secure checkout.', side: "bottom", align: 'end' } },
         { element: '.cli-btn', popover: { title: 'THE TERMINAL', description: 'Click here or press the [`] key to open the command line interface. Try typing "hack" inside it.', side: "bottom", align: 'end' } },
         { element: '.profile-btn', popover: { title: 'AGENT PROFILE', description: 'Sign in or register here to save your wishlist, track your rank, and unlock rewards.', side: "bottom", align: 'end' } },
-        { element: '[data-i18n-title="sideSettings"]', popover: { title: 'SYSTEM PREFERENCES', description: 'Customize your accent color and unlock premium skins by spinning the wheel.', side: "right", align: 'center' } },
+        { element: '[data-i18n-title="sideSettings"]', popover: { title: 'SYSTEM PREFERENCES', description: 'Customize your accent color here.', side: "right", align: 'center' } },
+        { element: '[data-i18n-title="sideWheel"]', popover: { title: 'DAILY SPIN', description: 'Spin the wheel once a day for a chance to unlock premium accent colors or a discount coupon.', side: "right", align: 'center' } },
         { element: '#lang-toggle-btn', popover: { title: 'LANGUAGE', description: 'Switch between Greek and English anytime — the whole site updates instantly.', side: "right", align: 'center' } },
         { element: isMobile() ? '.mobile-reviews-btn' : '.add-review-btn', popover: { title: 'MISSION CODES', description: 'Found a physical code in your PC box? Enter it here to validate your system and unlock achievements.', side: isMobile() ? "top" : "left", align: 'center' } }
     ],
@@ -26,7 +27,8 @@ const STEPS = {
         { element: '.cart-btn', popover: { title: 'Η ΛΕΙΑ ΣΟΥ', description: 'Εδώ αποθηκεύονται τα προϊόντα που έχεις επιλέξει. Έλεγξε το σύνολο και προχώρα σε ασφαλή ολοκλήρωση.', side: "bottom", align: 'end' } },
         { element: '.cli-btn', popover: { title: 'ΤΟ ΤΕΡΜΑΤΙΚΟ', description: 'Πάτα εδώ ή το πλήκτρο [`] για να ανοίξεις τη γραμμή εντολών. Δοκίμασε να γράψεις "hack" μέσα.', side: "bottom", align: 'end' } },
         { element: '.profile-btn', popover: { title: 'ΠΡΟΦΙΛ ΠΡΑΚΤΟΡΑ', description: 'Συνδέσου ή κάνε εγγραφή εδώ για να αποθηκεύσεις τη λίστα επιθυμιών σου, να παρακολουθείς το rank σου και να ξεκλειδώνεις έπαθλα.', side: "bottom", align: 'end' } },
-        { element: '[data-i18n-title="sideSettings"]', popover: { title: 'ΡΥΘΜΙΣΕΙΣ ΣΥΣΤΗΜΑΤΟΣ', description: 'Προσάρμοσε το χρώμα τονισμού και ξεκλείδωσε premium skins γυρίζοντας τον τροχό.', side: "right", align: 'center' } },
+        { element: '[data-i18n-title="sideSettings"]', popover: { title: 'ΡΥΘΜΙΣΕΙΣ ΣΥΣΤΗΜΑΤΟΣ', description: 'Προσάρμοσε το χρώμα τονισμού σου εδώ.', side: "right", align: 'center' } },
+        { element: '[data-i18n-title="sideWheel"]', popover: { title: 'ΚΑΘΗΜΕΡΙΝΗ ΠΕΡΙΣΤΡΟΦΗ', description: 'Γύρνα τον τροχό μία φορά τη μέρα για να ξεκλειδώσεις premium χρώματα ή κουπόνι έκπτωσης.', side: "right", align: 'center' } },
         { element: '#lang-toggle-btn', popover: { title: 'ΓΛΩΣΣΑ', description: 'Άλλαξε ανά πάσα στιγμή μεταξύ ελληνικών και αγγλικών — όλο το site ενημερώνεται αμέσως.', side: "right", align: 'center' } },
         { element: isMobile() ? '.mobile-reviews-btn' : '.add-review-btn', popover: { title: 'ΚΩΔΙΚΟΙ ΑΠΟΣΤΟΛΗΣ', description: 'Βρήκες φυσικό κωδικό στο κουτί του PC σου; Καταχώρησέ τον εδώ για να επικυρώσεις το σύστημά σου και να ξεκλειδώσεις επιτεύγματα.', side: isMobile() ? "top" : "left", align: 'center' } }
     ]
@@ -37,7 +39,7 @@ export function initInteractiveTutorial() {
     if (!localStorage.getItem('codex_tutorial_done')) {
         setTimeout(() => {
             if (window.openModal) window.openModal('tutorial-lang-modal');
-        }, 2000);
+        }, 800);
     }
 }
 
