@@ -1,13 +1,15 @@
 // js/modules/achievements.js
 import { state } from '../state.js';
+import { api } from '../api.js';
 import { CONFIG } from '../config.js';
 
-export function checkAchievement(id) { 
-    if(!state.achievements[id]) { 
-        state.achievements[id] = true; 
-        localStorage.setItem('codex_achievements', JSON.stringify(state.achievements)); 
-        if(window.showToast) window.showToast(`ACHIEVEMENT UNLOCKED: ${id.toUpperCase()}`, "achievement"); 
-    } 
+export function checkAchievement(id) {
+    if (!state.achievements.includes(id)) {
+        state.achievements.push(id);
+        localStorage.setItem('codex_achievements', JSON.stringify(state.achievements));
+        if(window.showToast) window.showToast(`ACHIEVEMENT UNLOCKED: ${id.toUpperCase()}`, "achievement");
+        if (state.isLoggedIn) api.saveAchievement(id).catch(() => {});
+    }
 }
 
 export function openAchievements() { 
@@ -20,7 +22,7 @@ export function openAchievements() {
     const list = document.getElementById('ach-list'); 
     if(list) {
         list.innerHTML = CONFIG.ACHIEVEMENTS_LIST.map(a => { 
-            const unlocked = state.achievements[a.id]; 
+            const unlocked = state.achievements.includes(a.id);
             return `<div class="ach-card ${unlocked ? 'unlocked' : ''}">
                         <i class="ph-fill ${a.icon} ach-icon"></i>
                         <div class="ach-info">
@@ -48,7 +50,7 @@ export function openAgentDashboard() {
     if(dossierNameEl) dossierNameEl.innerText = userName;
 
     // 3. Υπολογισμός Rank (βάσει ξεκλειδωμένων achievements)
-    let unlockedCount = Object.values(state.achievements).filter(val => val === true).length;
+    let unlockedCount = state.achievements.length;
     let rank = "RECRUIT";
     if (unlockedCount >= 1) rank = "OPERATIVE";
     if (unlockedCount >= 3) rank = "ELITE AGENT";
@@ -73,7 +75,7 @@ export function openAgentDashboard() {
     const achListContainer = document.getElementById('dossier-achievements');
     if(achListContainer) {
         achListContainer.innerHTML = CONFIG.ACHIEVEMENTS_LIST.map(a => { 
-            const unlocked = state.achievements[a.id]; 
+            const unlocked = state.achievements.includes(a.id);
             return `<div class="ach-card ${unlocked ? 'unlocked' : ''}" style="margin-bottom:10px; width:100%; box-sizing:border-box;">
                         <i class="ph-fill ${a.icon} ach-icon"></i>
                         <div class="ach-info">

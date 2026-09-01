@@ -78,14 +78,13 @@ const initApp = async () => {
     }
 
     // 1. Setup Auth & Listeners
-    checkSavedSession();
+    await checkSavedSession();
     initTerminal();
     initDayNightCycle();
 
     // 2. Apply Saved Settings
     document.documentElement.style.setProperty('--neon-green', state.currentTheme);
     if (window.refreshColorLocks) window.refreshColorLocks();
-    if (window.refreshWheelButton) window.refreshWheelButton();
     applyLanguage(localStorage.getItem('codex_lang') || 'el');
 
     // 3. Setup Audio Triggers
