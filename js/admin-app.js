@@ -1,5 +1,5 @@
     // ⚠️ ΒΑΛΕ ΤΗΝ IP ΣΟΥ ΕΔΩ (π.χ. 'http://192.168.1.15:5000/api') ΓΙΑ ΚΙΝΗΤΟ Ή ΑΦΗΣΕ LOCALHOST
-    const API = 'https://codex-backend-9kij.onrender.com/api';
+    const API = 'https://phoenix-codex.onrender.com/api';
     
     let TOKEN = null, inventory = [], editId = null;
     let currentImgs = [], currentFPS = [], currentReviews = [], currentVoteImg = "";
