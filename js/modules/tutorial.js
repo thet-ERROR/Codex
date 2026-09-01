@@ -1,6 +1,9 @@
 // js/modules/tutorial.js
 
-const isMobile = () => window.innerWidth <= 768;
+// .add-review-btn (desktop right-sidebar) and .mobile-reviews-btn swap visibility at 1024px
+// (css/responsive/tablet.css), not 768px — must match that breakpoint exactly or this step
+// points at a hidden element on tablet-width / larger-phone screens.
+const isMobile = () => window.innerWidth <= 1024;
 
 const STEPS = {
     en: [
