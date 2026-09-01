@@ -67,7 +67,8 @@ const translations = {
         descFallback: "Αναλυτικές προδιαγραφές για αυτό το σύστημα.", taglineFallback: "Εξουσιοδοτημένη κατασκευή συστήματος", systemDetailsFallback: "Στοιχεία συστήματος",
 
         menuDashboard: "Πίνακας ελέγχου", menuSignOut: "Αποσύνδεση", menuSignIn: "Σύνδεση", menuRegister: "Εγγραφή",
-        rankOperative: "Πράκτορας", rankRecruit: "Νεοσύλλεκτος", unknownUser: "Άγνωστος χρήστης", agentFallback: "Πράκτορας"
+        rankOperative: "Πράκτορας", rankRecruit: "Νεοσύλλεκτος", unknownUser: "Άγνωστος χρήστης", agentFallback: "Πράκτορας",
+        purchasedLabel: "Αγορασμένο"
     },
     en: {
         sideSettings: "System Settings", sideTrust: "Warranty & Trust", sideRules: "Rules", sideHelp: "Help",
@@ -136,7 +137,8 @@ const translations = {
         descFallback: "Detailed specifications for this system.", taglineFallback: "AUTHORIZED SYSTEM BUILD", systemDetailsFallback: "System Details",
 
         menuDashboard: "DASHBOARD", menuSignOut: "SIGN OUT", menuSignIn: "SIGN IN", menuRegister: "REGISTER",
-        rankOperative: "OPERATIVE", rankRecruit: "RECRUIT", unknownUser: "UNKNOWN_USER", agentFallback: "AGENT"
+        rankOperative: "OPERATIVE", rankRecruit: "RECRUIT", unknownUser: "UNKNOWN_USER", agentFallback: "AGENT",
+        purchasedLabel: "PURCHASED"
     }
 };
 
@@ -172,6 +174,7 @@ export function applyLanguage(lang) {
     // Re-render JS-templated chrome (card buttons / brief heading / profile menu) so it flips instantly too
     if (window.renderCard) window.renderCard();
     if (window.updateAuthUI) window.updateAuthUI(localStorage.getItem('codex_username'));
+    if (window.renderGlobalReviews) window.renderGlobalReviews();
 }
 
 export function toggleLanguage() {
