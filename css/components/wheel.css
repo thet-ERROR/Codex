@@ -2,13 +2,18 @@
 .color-lock-icon { display: none; position: absolute; inset: 0; align-items: center; justify-content: center; background: rgba(0, 0, 0, 0.55); border-radius: 50%; color: #fff; font-size: 0.9rem; }
 .color-btn.locked .color-lock-icon { display: flex; }
 
-.wheel-settings-btn { width: 100%; padding: 12px; background: transparent; border: 1px solid #0f0; color: #0f0; font-family: var(--font-ui); font-weight: 700; font-size: 0.8rem; letter-spacing: 1px; cursor: pointer; border-radius: 6px; transition: 0.3s; text-transform: uppercase; }
-.wheel-settings-btn.ready:hover { background: #0f0; color: #000; box-shadow: 0 0 15px #0f0; }
-.wheel-settings-btn:not(.ready) { border-color: #444; color: #666; cursor: default; }
+.wheel-content { width: 600px; max-width: 90vw; text-align: center; }
+.wheel-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; align-items: center; text-align: left; }
+.wheel-col-left { text-align: center; }
 
-.wheel-content { width: 400px; max-width: 90vw; text-align: center; }
+.wheel-legend-title { font-family: var(--font-ui); color: #0f0; font-size: 0.85rem; letter-spacing: 1px; margin-bottom: 15px; text-transform: uppercase; }
+.wheel-legend-row { display: flex; align-items: center; gap: 12px; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.08); font-family: var(--font-ui); font-size: 0.85rem; color: #ccc; }
+.wheel-legend-row:last-child { border-bottom: none; }
+.wheel-legend-swatch { width: 20px; height: 20px; border-radius: 50%; flex-shrink: 0; box-shadow: 0 0 8px rgba(255,255,255,0.3); }
+.wheel-legend-coupon { background: #00f0ff; display: flex; align-items: center; justify-content: center; color: #000; font-size: 0.7rem; box-shadow: 0 0 8px rgba(0,240,255,0.5); }
+
 #wheel-attempts { font-family: var(--font-ui); color: #aaa; font-size: 0.8rem; letter-spacing: 1px; margin-bottom: 10px; }
-.wheel-stage { position: relative; width: min(280px, 70vw); height: min(280px, 70vw); margin: 5px auto 20px auto; }
+.wheel-stage { position: relative; width: min(240px, 60vw); height: min(240px, 60vw); margin: 5px auto 20px auto; }
 
 .wheel-pointer { position: absolute; top: -10px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 13px solid transparent; border-right: 13px solid transparent; border-top: 22px solid #0f0; z-index: 6; filter: drop-shadow(0 0 6px #0f0); transition: filter 0.2s ease; }
 .wheel-pointer.locked { filter: drop-shadow(0 0 12px #0f0) drop-shadow(0 0 24px #0f0); }

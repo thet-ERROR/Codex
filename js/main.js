@@ -10,6 +10,7 @@ import { renderGlobalReviews } from './modules/reviews.js';
 import { initTerminal, initMatrix } from './modules/terminal.js';
 import { initInteractiveTutorial } from './modules/tutorial.js';
 import { initDayNightCycle } from './modules/time.js';
+import { applyLanguage } from './i18n.js';
 
 import './modules/gallery.js';
 import './modules/compare.js';
@@ -85,6 +86,7 @@ const initApp = async () => {
     document.documentElement.style.setProperty('--neon-green', state.currentTheme);
     if (window.refreshColorLocks) window.refreshColorLocks();
     if (window.refreshWheelButton) window.refreshWheelButton();
+    applyLanguage(localStorage.getItem('codex_lang') || 'el');
 
     // 3. Setup Audio Triggers
     if (state.audioEnabled) audioStart.play().catch(e => console.log("Audio autoplay blocked"));

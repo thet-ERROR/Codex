@@ -110,13 +110,13 @@ export function renderCard() {
             </div>
             
             <div class="sys-brief">
-                <div class="sys-brief-title">>// CLASSIFIED_BRIEF</div>
+                <div class="sys-brief-title">${window.t ? window.t('classifiedBrief') : '>// CLASSIFIED_BRIEF'}</div>
                 <div class="sys-brief-text">${pcLore}</div>
             </div>
 
-            <button class="btn-card-inspect" onclick="openGallery()">INSPECT SYSTEM</button>
+            <button class="btn-card-inspect" onclick="openGallery()">${window.t ? window.t('inspectSystemBtn') : 'INSPECT SYSTEM'}</button>
             <button class="btn-card-compare ${inCompare ? 'selected' : ''}" onclick="toggleCompare('${pc._id || pc.id}', this)">
-                ${inCompare ? 'ADDED TO VS' : 'COMPARE'}
+                ${inCompare ? (window.t ? window.t('addedToVs') : 'ADDED TO VS') : (window.t ? window.t('compareBtn') : 'COMPARE')}
             </button>
         </div>
     `;

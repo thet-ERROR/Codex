@@ -45,7 +45,7 @@ export function openCompareModal() {
             <img src="${p.images[0]}" class="compare-img">
             <h3>${p.name}</h3>
             <div style="color:var(--neon-green); font-weight:bold; margin-bottom:10px;">${p.price}</div>
-            <div class="gallery-desc-box">${p.description || 'System Details'}</div>
+            <div class="gallery-desc-box">${p.description || (window.t ? window.t('systemDetailsFallback') : 'System Details')}</div>
             ${Object.keys(p.specs).map(k => `
                 <div class="compare-spec-row">
                     <span class="compare-spec-label">${k.toUpperCase()}</span>

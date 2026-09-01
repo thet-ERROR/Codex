@@ -40,6 +40,9 @@
 .side-divider { width: 40%; height: 1px; background: rgba(255,255,255,0.1); margin: 5px 0; }
 .side-btn.chat-toggle { margin-top: auto; border-color: var(--neon-green); color: var(--neon-green); }
 
+#lang-toggle-btn { font-family: var(--font-ui); font-size: 0.85rem; font-weight: 800; letter-spacing: 1px; }
+#lang-toggle-btn:hover { border-color: #0f0; color: #0f0; box-shadow: 0 4px 15px rgba(0,255,0,0.15); }
+
 .feed-header { font-family: var(--font-ui); color: var(--neon-purple); font-weight: 800; font-size: 1rem; margin-bottom: 20px; letter-spacing: 2px; border-bottom: 1px solid var(--neon-purple); padding-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
 .live-dot { width: 6px; height: 6px; background: var(--neon-green); border-radius: 50%; box-shadow: 0 0 5px var(--neon-green); animation: blink 2s infinite; }
 .review-list { overflow-y: auto; flex: 1; display: flex; flex-direction: column; gap: 15px; padding-right: 5px; }
