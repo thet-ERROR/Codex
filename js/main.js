@@ -85,7 +85,7 @@ const initApp = async () => {
     // 2. Apply Saved Settings
     document.documentElement.style.setProperty('--neon-green', state.currentTheme);
     if (window.refreshColorLocks) window.refreshColorLocks();
-    applyLanguage(localStorage.getItem('codex_lang') || 'el');
+    applyLanguage(localStorage.getItem('codex_lang') || 'en');
 
     // 3. Setup Audio Triggers
     if (state.audioEnabled) audioStart.play().catch(e => console.log("Audio autoplay blocked"));

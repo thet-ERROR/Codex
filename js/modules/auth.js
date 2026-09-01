@@ -92,7 +92,7 @@ export async function handleLogin() {
     const pass = document.getElementById('login-pass').value.trim();
 
     if (!user || !pass) {
-        alert("SYSTEM ALERT: ENTER BOTH USERNAME & PASSWORD");
+        alert(window.t ? window.t('alertBothFields') : "SYSTEM ALERT: ENTER BOTH USERNAME & PASSWORD");
         return;
     }
 
@@ -107,7 +107,7 @@ export async function handleLogin() {
         if(window.closeModal) window.closeModal('login-modal');
         if(window.checkAchievement) window.checkAchievement('login');
     } else {
-        alert(d?.error || "ACCESS DENIED: INVALID CREDENTIALS");
+        alert(d?.error || (window.t ? window.t('alertInvalidCreds') : "ACCESS DENIED: INVALID CREDENTIALS"));
     }
 }
 
@@ -119,7 +119,7 @@ export async function handleSignup() {
     const subscribed = document.getElementById('reg-subscribe')?.checked || false;
 
     if(!user || !email || !pass) {
-        alert("SYSTEM ALERT: ALL FIELDS REQUIRED FOR RECRUITMENT");
+        alert(window.t ? window.t('alertAllFieldsRecruit') : "SYSTEM ALERT: ALL FIELDS REQUIRED FOR RECRUITMENT");
         return;
     }
 
@@ -133,7 +133,7 @@ export async function handleSignup() {
         if(window.closeModal) window.closeModal('signup-modal');
         if(window.checkAchievement) window.checkAchievement('login');
     } else {
-        alert(d?.error || "REGISTRATION FAILED");
+        alert(d?.error || (window.t ? window.t('alertRegistrationFailed') : "REGISTRATION FAILED"));
     }
 }
 

@@ -35,14 +35,14 @@ const translations = {
         missionSelectReason: "Επίλεξε πρωτόκολλο σφάλματος...", missionReason1: "1. Απόκλιση FPS", missionReason2: "2. Βλάβη υλικού (DOA)",
         missionReturnBtn: "Έναρξη επιστροφής",
 
-        loginTitle: "Σύνδεση πράκτορα", usernamePlaceholder: "Όνομα χρήστη", passwordPlaceholder: "Κωδικός",
+        loginTitle: "Σύνδεση", usernamePlaceholder: "Όνομα χρήστη", passwordPlaceholder: "Κωδικός",
         loginBtn: "Σύνδεση", lostAccessLink: "[ Ξέχασες τον κωδικό; ]",
 
-        dossierProfileLabel: "[Προφίλ πράκτορα]", dossierOrdersHeading: ">// Οι παραγγελίες μου", dossierNoOrders: "> Δεν υπάρχουν παραγγελίες ακόμα.",
+        dossierProfileLabel: "[Προφίλ]", dossierOrdersHeading: ">// Οι παραγγελίες μου", dossierNoOrders: "> Δεν υπάρχουν παραγγελίες ακόμα.",
         dossierWishlistHeading: ">// Λίστα επιθυμιών", dossierWishlistSub: "(Αποθηκευμένα συστήματα)",
         dossierAchievementsHeading: ">// Επιτεύγματα", dossierSignIn: "> Σύνδεση", dossierRegister: "> Εγγραφή", dossierSignOut: "> Αποσύνδεση",
 
-        signupTitle: "Νέος στρατολογημένος", emailPlaceholder: "Email",
+        signupTitle: "Νέα εγγραφή", emailPlaceholder: "Email",
         regSubscribeLabel: "🔔 Θέλω ειδοποιήσεις για νέα drops", signupBtn: "Εγγραφή",
 
         forgotTitle: "Πρωτόκολλο ανάκτησης", forgotBtn: "Αποστολή κωδικού",
@@ -63,12 +63,21 @@ const translations = {
         cartYourLoot: "Η λεία σου", cartTotalLabel: "Σύνολο", cartCheckoutBtn: "Ασφαλής ολοκλήρωση",
         tickerDelivery: "⚡ Ασφαλής παράδοση 24ω σε όλη τη Θεσσαλονίκη ⚡", tickerAssembled: "Συστήματα πλήρως συναρμολογημένα & ελεγμένα",
 
-        classifiedBrief: ">// Διαβαθμισμένη αναφορά", inspectSystemBtn: "Επιθεώρηση συστήματος", addedToVs: "Προστέθηκε στο VS", compareBtn: "Σύγκριση",
+        classifiedBrief: ">// Απόρρητος φάκελος", inspectSystemBtn: "Επιθεώρηση συστήματος", addedToVs: "Προστέθηκε στο VS", compareBtn: "Σύγκριση",
         descFallback: "Αναλυτικές προδιαγραφές για αυτό το σύστημα.", taglineFallback: "Εξουσιοδοτημένη κατασκευή συστήματος", systemDetailsFallback: "Στοιχεία συστήματος",
 
         menuDashboard: "Πίνακας ελέγχου", menuSignOut: "Αποσύνδεση", menuSignIn: "Σύνδεση", menuRegister: "Εγγραφή",
         rankOperative: "Πράκτορας", rankRecruit: "Νεοσύλλεκτος", unknownUser: "Άγνωστος χρήστης", agentFallback: "Πράκτορας",
-        purchasedLabel: "Αγορασμένο"
+        purchasedLabel: "Αγορασμένο",
+
+        alertBothFields: "Προσοχή: Συμπλήρωσε όνομα χρήστη και κωδικό", alertInvalidCreds: "Λανθασμένα στοιχεία σύνδεσης",
+        alertAllFieldsRecruit: "Προσοχή: Όλα τα πεδία είναι υποχρεωτικά", alertRegistrationFailed: "Η εγγραφή απέτυχε",
+        alertSoldOut: "Εξαντλήθηκε!", alertCartEmpty: "Το καλάθι είναι άδειο!", alertMaxCompare: "Μέγιστο 2 συστήματα στη σύγκριση",
+        missionPromptCode: "Εισάγετε τον κωδικό αποστολής (βρίσκεται στο κουτί):",
+        missionExpiredAlert: "⚠️ Η αποστολή έληξε. Πέρασαν 48 ώρες.",
+        connectionErrorAlert: "⚠️ Σφάλμα σύνδεσης!\nΟ διακομιστής δεν ανταποκρίνεται.",
+        alertAllFieldsReview: "Προσοχή: Όλα τα πεδία είναι υποχρεωτικά", alertTransmissionFailed: "Η αποστολή απέτυχε",
+        alertServerError: "Σφάλμα διακομιστή", alertSelectErrorProtocol: "⚠️ Προσοχή: Επίλεξε έγκυρο πρωτόκολλο σφάλματος."
     },
     en: {
         sideSettings: "System Settings", sideTrust: "Warranty & Trust", sideRules: "Rules", sideHelp: "Help",
@@ -138,11 +147,36 @@ const translations = {
 
         menuDashboard: "DASHBOARD", menuSignOut: "SIGN OUT", menuSignIn: "SIGN IN", menuRegister: "REGISTER",
         rankOperative: "OPERATIVE", rankRecruit: "RECRUIT", unknownUser: "UNKNOWN_USER", agentFallback: "AGENT",
-        purchasedLabel: "PURCHASED"
+        purchasedLabel: "PURCHASED",
+
+        alertBothFields: "SYSTEM ALERT: ENTER BOTH USERNAME & PASSWORD", alertInvalidCreds: "ACCESS DENIED: INVALID CREDENTIALS",
+        alertAllFieldsRecruit: "SYSTEM ALERT: ALL FIELDS REQUIRED FOR RECRUITMENT", alertRegistrationFailed: "REGISTRATION FAILED",
+        alertSoldOut: "SOLD OUT!", alertCartEmpty: "Cart is empty!", alertMaxCompare: "MAX 2 ITEMS ALLOWED IN VS MODE",
+        missionPromptCode: "ENTER MISSION CODE (Found in Box):",
+        missionExpiredAlert: "⚠️ MISSION EXPIRED. 48 HOURS HAVE PASSED.",
+        connectionErrorAlert: "⚠️ CONNECTION ERROR!\nThe server is not responding.",
+        alertAllFieldsReview: "SYSTEM ALERT: ALL FIELDS REQUIRED", alertTransmissionFailed: "TRANSMISSION FAILED",
+        alertServerError: "SERVER ERROR", alertSelectErrorProtocol: "⚠️ SYSTEM ALERT: Please select a valid Error Protocol."
     }
 };
 
-let currentLang = localStorage.getItem('codex_lang') || 'el';
+let currentLang = localStorage.getItem('codex_lang') || 'en';
+
+// Small "pixel art" flag icons (hard-edged rects, shape-rendering:crispEdges) — shown for the
+// language you'd switch TO, not the currently active one.
+const FLAG_GR = `<svg width="24" height="16" viewBox="0 0 27 18" shape-rendering="crispEdges" xmlns="http://www.w3.org/2000/svg">
+    <rect width="27" height="18" fill="#fff"/>
+    <rect y="0" width="27" height="2" fill="#0D5EAF"/><rect y="4" width="27" height="2" fill="#0D5EAF"/>
+    <rect y="8" width="27" height="2" fill="#0D5EAF"/><rect y="12" width="27" height="2" fill="#0D5EAF"/>
+    <rect y="16" width="27" height="2" fill="#0D5EAF"/>
+    <rect x="0" y="0" width="10" height="10" fill="#0D5EAF"/>
+    <rect x="4" y="0" width="2" height="10" fill="#fff"/><rect x="0" y="4" width="10" height="2" fill="#fff"/>
+</svg>`;
+const FLAG_UK = `<svg width="24" height="16" viewBox="0 0 24 16" shape-rendering="crispEdges" xmlns="http://www.w3.org/2000/svg">
+    <rect width="24" height="16" fill="#00247D"/>
+    <rect x="0" y="6" width="24" height="4" fill="#fff"/><rect x="10" y="0" width="4" height="16" fill="#fff"/>
+    <rect x="0" y="7" width="24" height="2" fill="#CF142B"/><rect x="11" y="0" width="2" height="16" fill="#CF142B"/>
+</svg>`;
 
 export function applyLanguage(lang) {
     document.body.classList.toggle('lang-el', lang === 'el');
@@ -169,7 +203,7 @@ export function applyLanguage(lang) {
     document.documentElement.lang = lang;
 
     const btn = document.getElementById('lang-toggle-btn');
-    if (btn) btn.textContent = lang === 'el' ? '🇬🇧' : '🇬🇷';
+    if (btn) btn.innerHTML = lang === 'el' ? FLAG_UK : FLAG_GR;
 
     // Re-render JS-templated chrome (card buttons / brief heading / profile menu) so it flips instantly too
     if (window.renderCard) window.renderCard();

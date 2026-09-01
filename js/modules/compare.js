@@ -22,7 +22,7 @@ export function toggleCompare(id, btnElement) {
                 btnElement.innerText = 'ADDED TO VS';
             }
         } else { 
-            alert("MAX 2 ITEMS ALLOWED IN VS MODE"); 
+            alert(window.t ? window.t('alertMaxCompare') : "MAX 2 ITEMS ALLOWED IN VS MODE");
         } 
     } 
     

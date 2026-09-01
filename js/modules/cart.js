@@ -36,7 +36,7 @@ export function updateCartUI() {
 
 export function addToCart() { 
     if(!state.currentGalleryPC) return;
-    if(state.currentGalleryPC.stock === 0) return alert("SOLD OUT!"); 
+    if(state.currentGalleryPC.stock === 0) return alert(window.t ? window.t('alertSoldOut') : "SOLD OUT!");
     
     const sel = document.getElementById('storage-select');
     const extra = sel ? parseInt(sel.value) : 0; 
@@ -72,7 +72,7 @@ export function removeFromCart(i) {
 }
 
 export function handleCheckout() { 
-    if(state.cart.length === 0) return alert("Cart is empty!");
+    if(state.cart.length === 0) return alert(window.t ? window.t('alertCartEmpty') : "Cart is empty!");
     window.open("https://wa.me/306912345678", "_blank"); 
 }
 

@@ -4,20 +4,21 @@ import { api } from '../api.js';
 import { CONFIG } from '../config.js';
 
 export async function checkMissionCode() {
-    const code = prompt("ENTER MISSION CODE (Found in Box):"); 
-    if(!code) return; 
-    
+    const t = window.t || (k => k);
+    const code = prompt(t('missionPromptCode'));
+    if(!code) return;
+
     try {
         // Κλήση μέσω του κεντρικού api.js
         const data = await api.checkMissionCode(code);
-        
-        if (!data.valid) { 
-            alert("❌ " + data.msg); 
-            return; 
+
+        if (!data.valid) {
+            alert("❌ " + data.msg);
+            return;
         }
-        if (data.expired) { 
-            alert("⚠️ MISSION EXPIRED. 48 HOURS HAVE PASSED."); 
-            return; 
+        if (data.expired) {
+            alert(t('missionExpiredAlert'));
+            return;
         }
         
         // Αποθηκεύουμε τον κωδικό στο state
@@ -30,7 +31,7 @@ export async function checkMissionCode() {
         if (window.openModal) window.openModal('mission-modal');
     } catch (error) {
         console.error("⛔ CONNECTION ERROR:", error);
-        alert("⚠️ ΣΦΑΛΜΑ ΣΥΝΔΕΣΗΣ!\nΟ Server δεν ανταποκρίνεται.");
+        alert(t('connectionErrorAlert'));
     }
 }
 
@@ -70,7 +71,7 @@ export async function submitReviewCode() {
     const text = document.getElementById('rc-text').value.trim();
 
     if(!code || !user || !text) {
-        alert("SYSTEM ALERT: ALL FIELDS REQUIRED");
+        alert(window.t ? window.t('alertAllFieldsReview') : "SYSTEM ALERT: ALL FIELDS REQUIRED");
         return;
     }
 
@@ -86,10 +87,10 @@ export async function submitReviewCode() {
             if(window.showToast) window.showToast("TRANSMISSION SUCCESSFUL", "achievement");
             if(window.closeModal) window.closeModal('review-code-modal');
         } else {
-            alert(data.error || "TRANSMISSION FAILED");
+            alert(data.error || (window.t ? window.t('alertTransmissionFailed') : "TRANSMISSION FAILED"));
         }
     } catch(e) {
-        alert("SERVER ERROR");
+        alert(window.t ? window.t('alertServerError') : "SERVER ERROR");
     }
 }
 
@@ -100,8 +101,8 @@ export function requestReturn() {
     const pcNameEl = document.getElementById('mission-pc-name');
     const pcName = pcNameEl ? pcNameEl.innerText : "Unknown";
     
-    if (!reasonValue) { 
-        alert("⚠️ SYSTEM ALERT: Please select a valid Error Protocol."); 
+    if (!reasonValue) {
+        alert(window.t ? window.t('alertSelectErrorProtocol') : "⚠️ SYSTEM ALERT: Please select a valid Error Protocol.");
         return; 
     }
     
