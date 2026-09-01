@@ -6,10 +6,10 @@
     --glass-dark: rgba(8, 8, 12, 0.95);
     --glass-border: rgba(255, 255, 255, 0.15);
     --text-main: #ffffff;
-    --font-ui: 'Rajdhani', sans-serif;
-    --font-body: 'Space Grotesk', sans-serif;
-    --card-font-primary: 'Chakra Petch', sans-serif;
-    --card-font-secondary: 'Orbitron', sans-serif;
+    --font-ui: 'Rajdhani', 'Exo 2', sans-serif;
+    --font-body: 'Space Grotesk', 'Exo 2', sans-serif;
+    --card-font-primary: 'Chakra Petch', 'Exo 2', sans-serif;
+    --card-font-secondary: 'Orbitron', 'Exo 2', sans-serif;
     --card-bg-night: rgba(6, 8, 14, 0.97);
     --card-border-night: rgba(140, 170, 255, 0.35);
     --night-glow: 0 0 30px rgba(120,150,255,0.15);
@@ -33,11 +33,17 @@ body {
     transition: 0.5s;
     padding-bottom: 40px !important;
     touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
 }
 
 .hidden { display: none !important; }
 
 input, textarea, select { font-size: 16px; }
+
+/* Rajdhani/Orbitron/Chakra Petch/Space Grotesk have no Greek glyphs (falls back to Exo 2 — see --font-* above),
+   which renders visually larger than the Latin display faces at the same declared size. Scale translated
+   Greek text down to match. */
+body.lang-el [data-i18n], body.lang-el [data-i18n-placeholder] { font-size: 0.85em; }
 
 ::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: rgba(10, 5, 20, 0.8); border-left: 1px solid rgba(176, 38, 255, 0.2); }

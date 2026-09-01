@@ -37,6 +37,28 @@ export const api = {
             body: JSON.stringify({ username, password })
         });
         return await res.json();
+    },
+    async getMe() {
+        const res = await fetch(`${CONFIG.API_URL}/me`, {
+            headers: { 'Authorization': `Bearer ${localStorage.getItem('codex_token')}` }
+        });
+        if (!res.ok) throw { status: res.status, ...(await res.json().catch(() => ({}))) };
+        return await res.json();
+    },
+    async saveWishlist(pcId, action) {
+        const res = await fetch(`${CONFIG.API_URL}/wishlist/${pcId}`, {
+            method: action === 'add' ? 'POST' : 'DELETE',
+            headers: { 'Authorization': `Bearer ${localStorage.getItem('codex_token')}` }
+        });
+        return await res.json();
+    },
+    async saveAchievement(id) {
+        const res = await fetch(`${CONFIG.API_URL}/achievements`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('codex_token')}` },
+            body: JSON.stringify({ id })
+        });
+        return await res.json();
     }
 };
 

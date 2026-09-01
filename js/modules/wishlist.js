@@ -1,5 +1,6 @@
 // js/modules/wishlist.js
 import { state } from '../state.js';
+import { api } from '../api.js';
 
 export function toggleWishlist(param) {
     if(window.playClick) window.playClick();
@@ -29,21 +30,31 @@ export function toggleWishlist(param) {
     // 3. Έλεγχος αν υπάρχει ήδη στη λίστα
     const index = state.wishlist.findIndex(p => (p._id || p.id) === pcId);
 
+    let added;
     if (index > -1) {
         // Υπάρχει ήδη -> Αφαίρεση
         state.wishlist.splice(index, 1);
         if (window.showToast) window.showToast("TARGET REMOVED FROM WISHLIST", "normal");
         if (isBtn && btn) btn.classList.remove('locked');
+        added = false;
     } else {
         // Δεν υπάρχει -> Προσθήκη
         state.wishlist.push(pc);
         if (window.showToast) window.showToast("TARGET LOCKED: SAVED TO PROFILE", "achievement");
         if (isBtn && btn) btn.classList.add('locked');
+        added = true;
     }
 
     // 4. Αποθήκευση τοπικά
     localStorage.setItem('codex_wishlist', JSON.stringify(state.wishlist));
-    
+
+    // 4b. Συγχρονισμός με τον λογαριασμό, αν είναι συνδεδεμένος (best-effort, δεν μπλοκάρει το UI)
+    if (state.isLoggedIn) {
+        api.saveWishlist(pcId, added ? 'add' : 'remove').catch(() => {
+            if (window.showToast) window.showToast("WISHLIST SYNC FAILED — SAVED LOCALLY ONLY", "error");
+        });
+    }
+
     // 5. Ανανέωση UI
     if (window.renderCard) window.renderCard(); // Ανανεώνει το κεντρικό μενού αν χρειάζεται
     

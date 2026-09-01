@@ -5,6 +5,9 @@
 
 .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 6000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(15px); }
 .modal-overlay.active { display: flex; animation: fadeInUp 0.3s forwards; z-index: 99999 !important; pointer-events: auto !important; }
+/* .gallery-overlay sits at z-index 999999 (css/gallery/card-front.css) so a spec-info popup
+   opened from inside the flipped inspect card must render above it, not behind. */
+#spec-info-modal.active { z-index: 1000000 !important; }
 
 .modal-content { width: 600px; background: #0a0a0c; border: 1px solid #333; padding: 40px; border-radius: 20px; position: relative; max-height: 80vh; overflow-y: auto; box-shadow: 0 0 50px rgba(0,0,0,0.8); }
 .close-modal, .close-btn { position: absolute; top: 20px; right: 20px; font-size: 1.5rem; cursor: pointer; color: #666; z-index: 100; transition: 0.2s; }

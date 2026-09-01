@@ -70,26 +70,6 @@ function formatCountdown(ms) {
     return `${Math.floor(totalMinutes / 60)}h ${totalMinutes % 60}m`;
 }
 
-export function refreshWheelButton() {
-    const btn = document.getElementById('wheel-settings-btn');
-    if (!btn) return;
-
-    if (!state.isLoggedIn) {
-        btn.textContent = 'SPIN THE WHEEL (LOGIN REQUIRED)';
-        btn.classList.remove('ready');
-        return;
-    }
-
-    const status = getWheelStatus();
-    if (status.available) {
-        btn.textContent = `SPIN THE WHEEL (${status.attemptsLeft} LEFT)`;
-        btn.classList.add('ready');
-    } else {
-        btn.textContent = `NEXT SPIN IN ${formatCountdown(status.nextAvailableAt - Date.now())}`;
-        btn.classList.remove('ready');
-    }
-}
-
 function updateAttemptsDisplay(n) {
     const el = document.getElementById('wheel-attempts');
     if (el) el.textContent = `SPINS LEFT: ${Math.max(n, 0)}/${MAX_ATTEMPTS}`;
@@ -149,7 +129,7 @@ function resolveSpin(slice, attemptsLeftAfterSpin) {
         localStorage.setItem('codex_wheel_next_available_at', Date.now() + COOLDOWN_MS);
     }
 
-    updateAttemptsDisplay(attemptsLeftAfterSpin);
+    updateAttemptsDisplay(isWin ? 0 : attemptsLeftAfterSpin);
 
     if (slice.type === 'color') {
         const alreadyUnlocked = state.unlockedColors.includes(slice.id);
@@ -171,7 +151,6 @@ function resolveSpin(slice, attemptsLeftAfterSpin) {
     }
 
     if (btn) btn.disabled = isWin || attemptsLeftAfterSpin <= 0;
-    refreshWheelButton();
 }
 
 export function spinWheel() {
@@ -206,5 +185,4 @@ export function spinWheel() {
 
 window.spinWheel = spinWheel;
 window.openWheelFromSettings = openWheelFromSettings;
-window.refreshWheelButton = refreshWheelButton;
 window.refreshColorLocks = refreshColorLocks;

@@ -1,70 +1,73 @@
 // js/i18n.js
 const translations = {
     el: {
-        sideSettings: "Ρυθμίσεις Συστήματος", sideTrust: "Εγγύηση & Αξιοπιστία", sideRules: "Κανόνες", sideHelp: "Βοήθεια",
-        sideWheel: "Καθημερινή Περιστροφή", sideLang: "Αλλαγή Γλώσσας", sideSocial: "Κοινωνικά Δίκτυα", sideDiscord: "Discord",
-        sideInstagram: "Instagram", sideDropAlerts: "Ειδοποιήσεις Νέων PC", sideReviews: "Κριτικές", sideTerminal: "Τερματικό",
+        sideSettings: "Ρυθμίσεις συστήματος", sideTrust: "Εγγύηση & αξιοπιστία", sideRules: "Κανόνες", sideHelp: "Βοήθεια",
+        sideWheel: "Καθημερινή περιστροφή", sideLang: "Αλλαγή γλώσσας", sideSocial: "Κοινωνικά δίκτυα", sideDiscord: "Discord",
+        sideInstagram: "Instagram", sideDropAlerts: "Ειδοποιήσεις νέων PC", sideReviews: "Κριτικές", sideTerminal: "Τερματικό",
 
-        reviewsLabel: "ΚΡΙΤΙΚΕΣ", writeReviewBtn: "[+] ΓΡΑΨΕ ΚΡΙΤΙΚΗ", cartLabel: "ΚΑΛΑΘΙ",
+        reviewsLabel: "Κριτικές", writeReviewBtn: "[+] Γράψε κριτική", cartLabel: "Καλάθι",
         packGaming: "GAMING", packStreaming: "STREAMING", packCoding: "CODING",
-        armoryLocked: "ΟΠΛΟΣΤΑΣΙΟ ΚΛΕΙΔΩΜΕΝΟ", voteCommunityDrop: "ΚΟΙΝΟΤΙΚΟ DROP!", voteProgressLabel: "ΠΡΟΟΔΟΣ",
-        vsModeReady: "ΛΕΙΤΟΥΡΓΙΑ VS ΕΤΟΙΜΗ", chatTop: "CODEX AI",
+        armoryLocked: "Οπλοστάσιο κλειδωμένο", voteCommunityDrop: "Κοινοτικό drop!", voteProgressLabel: "Πρόοδος",
+        vsModeReady: "Λειτουργία VS έτοιμη", chatTop: "CODEX AI",
 
-        storageLabel: "Επέκταση Αποθηκευτικού Χώρου", storageOptStandard: "Στάνταρ (Χωρίς Επιπλέον)",
+        storageLabel: "Επέκταση αποθηκευτικού χώρου", storageOptStandard: "Στάνταρ (χωρίς επιπλέον)",
         storageOptHdd: "+ 1TB HDD (€50)", storageOptSsd: "+ 1TB SSD (€80)",
 
-        wheelTitle: "ΓΥΡΙΣΕ ΤΟΝ ΤΡΟΧΟ", wheelLegendTitle: "ΠΙΘΑΝΑ ΕΠΑΘΛΑ",
-        rewardCyberGold: "SKIN CYBER GOLD", rewardToxicOrange: "SKIN TOXIC ORANGE", rewardNeonPink: "SKIN NEON PINK",
-        rewardMatrixGreen: "SKIN MATRIX GREEN", rewardCoupon: "ΚΟΥΠΟΝΙ 5%",
+        wheelTitle: "Γύρισε τον τροχό", wheelLegendTitle: "Πιθανά έπαθλα",
+        rewardCyberGold: "Skin Cyber Gold", rewardToxicOrange: "Skin Toxic Orange", rewardNeonPink: "Skin Neon Pink",
+        rewardMatrixGreen: "Skin Matrix Green", rewardCoupon: "Κουπόνι 5%",
 
-        trustTitle: "ΠΡΩΤΟΚΟΛΛΑ ΕΜΠΙΣΤΟΣΥΝΗΣ",
-        trustWarrantyTitle: "ΝΟΜΙΜΗ ΕΓΓΥΗΣΗ 2 ΕΤΩΝ",
+        trustTitle: "Πρωτόκολλα εμπιστοσύνης",
+        trustWarrantyTitle: "Νόμιμη εγγύηση 2 ετών",
         trustWarrantyText: "Κάθε σύστημα καλύπτεται από τη νόμιμη εγγύηση 2 ετών για ελαττώματα, σύμφωνα με την ισχύουσα νομοθεσία περί προστασίας καταναλωτή.",
-        trustReturnTitle: "ΔΙΚΑΙΩΜΑ ΥΠΑΝΑΧΩΡΗΣΗΣ 14 ΗΜΕΡΩΝ",
+        trustReturnTitle: "Δικαίωμα υπαναχώρησης 14 ημερών",
         trustReturnText: "Έχετε δικαίωμα υπαναχώρησης εντός 14 ημερολογιακών ημερών από την παραλαβή, χωρίς αιτιολόγηση, σύμφωνα με την ενωσιακή νομοθεσία εξ αποστάσεως πωλήσεων.",
-        trustShippingTitle: "ΑΠΟΣΤΟΛΗ ΕΝΤΟΣ ΕΛΛΑΔΑΣ",
+        trustShippingTitle: "Αποστολή εντός Ελλάδας",
         trustShippingText: "Ασφαλής συσκευασία και παράδοση σε όλη την Ελλάδα, με πλήρη έλεγχο λειτουργίας πριν την αποστολή.",
 
-        settingsTitle: "ΡΥΘΜΙΣΕΙΣ ΣΥΣΤΗΜΑΤΟΣ", accentColorLabel: "ΧΡΩΜΑ ΤΟΝΙΣΜΟΥ",
+        settingsTitle: "Ρυθμίσεις συστήματος", accentColorLabel: "Χρώμα τονισμού",
 
-        newsletterTitle: "ΕΙΔΟΠΟΙΗΣΕΙΣ ΝΕΩΝ PC", newsletterDesc: "Ειδοποιήσου μόλις βγει νέο PC ή ξεκινήσει ψηφοφορία.", newsletterBtn: "ΕΝΕΡΓΟΠΟΙΗΣΗ ΕΙΔΟΠΟΙΗΣΕΩΝ",
-        reviewCodeTitle: "ΕΠΙΒΕΒΑΙΩΜΕΝΗ ΚΡΙΤΙΚΗ", reviewCodeBtn: "ΑΠΟΣΤΟΛΗ", rcUserPlaceholder: "Όνομα Πράκτορα", rcTextPlaceholder: "Απόδοση συστήματος...",
+        newsletterTitle: "Ειδοποιήσεις νέων PC", newsletterDesc: "Ειδοποιήσου μόλις βγει νέο PC ή ξεκινήσει ψηφοφορία.", newsletterBtn: "Ενεργοποίηση ειδοποιήσεων",
+        reviewCodeTitle: "Επιβεβαιωμένη κριτική", reviewCodeBtn: "Αποστολή", rcUserPlaceholder: "Όνομα πράκτορα", rcTextPlaceholder: "Απόδοση συστήματος...",
 
-        missionTitle: "ΕΠΙΚΥΡΩΣΗ ΣΥΣΤΗΜΑΤΟΣ", missionWindowLabel: "Ο ΧΡΟΝΟΣ ΕΠΙΚΥΡΩΣΗΣ ΛΗΓΕΙ ΣΕ:",
-        missionKeepBtn: "ΤΟ ΣΥΣΤΗΜΑ ΛΕΙΤΟΥΡΓΕΙ (ΚΡΑΤΑ & ΑΞΙΟΛΟΓΗΣΕ)", missionReportTitle: "Αναφορά Βλάβης Συστήματος",
-        missionSelectReason: "Επίλεξε Πρωτόκολλο Σφάλματος...", missionReason1: "1. Απόκλιση FPS", missionReason2: "2. Βλάβη Υλικού (DOA)",
-        missionReturnBtn: "ΕΝΑΡΞΗ ΕΠΙΣΤΡΟΦΗΣ",
+        missionTitle: "Επικύρωση συστήματος", missionWindowLabel: "Ο χρόνος επικύρωσης λήγει σε:",
+        missionKeepBtn: "Το σύστημα λειτουργεί (κράτα & αξιολόγησε)", missionReportTitle: "Αναφορά βλάβης συστήματος",
+        missionSelectReason: "Επίλεξε πρωτόκολλο σφάλματος...", missionReason1: "1. Απόκλιση FPS", missionReason2: "2. Βλάβη υλικού (DOA)",
+        missionReturnBtn: "Έναρξη επιστροφής",
 
-        loginTitle: "ΣΥΝΔΕΣΗ ΠΡΑΚΤΟΡΑ", usernamePlaceholder: "ΟΝΟΜΑ ΧΡΗΣΤΗ", passwordPlaceholder: "ΚΩΔΙΚΟΣ",
-        loginBtn: "ΣΥΝΔΕΣΗ", lostAccessLink: "[ ΞΕΧΑΣΕΣ ΤΟΝ ΚΩΔΙΚΟ; ]",
+        loginTitle: "Σύνδεση πράκτορα", usernamePlaceholder: "Όνομα χρήστη", passwordPlaceholder: "Κωδικός",
+        loginBtn: "Σύνδεση", lostAccessLink: "[ Ξέχασες τον κωδικό; ]",
 
-        dossierProfileLabel: "[ΠΡΟΦΙΛ ΠΡΑΚΤΟΡΑ]", dossierOrdersHeading: ">// ΟΙ ΠΑΡΑΓΓΕΛΙΕΣ ΜΟΥ", dossierNoOrders: "> ΔΕΝ ΥΠΑΡΧΟΥΝ ΠΑΡΑΓΓΕΛΙΕΣ ΑΚΟΜΑ.",
-        dossierWishlistHeading: ">// ΛΙΣΤΑ ΕΠΙΘΥΜΙΩΝ", dossierWishlistSub: "(ΑΠΟΘΗΚΕΥΜΕΝΑ ΣΥΣΤΗΜΑΤΑ)",
-        dossierAchievementsHeading: ">// ΕΠΙΤΕΥΓΜΑΤΑ", dossierSignIn: "> ΣΥΝΔΕΣΗ", dossierRegister: "> ΕΓΓΡΑΦΗ", dossierSignOut: "> ΑΠΟΣΥΝΔΕΣΗ",
+        dossierProfileLabel: "[Προφίλ πράκτορα]", dossierOrdersHeading: ">// Οι παραγγελίες μου", dossierNoOrders: "> Δεν υπάρχουν παραγγελίες ακόμα.",
+        dossierWishlistHeading: ">// Λίστα επιθυμιών", dossierWishlistSub: "(Αποθηκευμένα συστήματα)",
+        dossierAchievementsHeading: ">// Επιτεύγματα", dossierSignIn: "> Σύνδεση", dossierRegister: "> Εγγραφή", dossierSignOut: "> Αποσύνδεση",
 
-        signupTitle: "ΝΕΟΣ ΣΤΡΑΤΟΛΟΓΗΜΕΝΟΣ", emailPlaceholder: "EMAIL",
-        regSubscribeLabel: "🔔 ΘΕΛΩ ΕΙΔΟΠΟΙΗΣΕΙΣ ΓΙΑ ΝΕΑ DROPS", signupBtn: "ΕΓΓΡΑΦΗ",
+        signupTitle: "Νέος στρατολογημένος", emailPlaceholder: "Email",
+        regSubscribeLabel: "🔔 Θέλω ειδοποιήσεις για νέα drops", signupBtn: "Εγγραφή",
 
-        forgotTitle: "ΠΡΩΤΟΚΟΛΛΟ ΑΝΑΚΤΗΣΗΣ", forgotBtn: "ΑΠΟΣΤΟΛΗ ΚΩΔΙΚΟΥ",
-        resetTitle: "ΝΕΑ ΣΤΟΙΧΕΙΑ ΠΡΟΣΒΑΣΗΣ", resetTokenPlaceholder: "Κωδικός", resetNewPassPlaceholder: "Νέος Κωδικός", resetBtn: "ΕΝΗΜΕΡΩΣΗ ΣΥΣΤΗΜΑΤΟΣ",
+        forgotTitle: "Πρωτόκολλο ανάκτησης", forgotBtn: "Αποστολή κωδικού",
+        resetTitle: "Νέα στοιχεία πρόσβασης", resetTokenPlaceholder: "Κωδικός", resetNewPassPlaceholder: "Νέος κωδικός", resetBtn: "Ενημέρωση συστήματος",
 
-        achievementsTitle: "ΑΡΧΕΙΟ ΠΡΑΚΤΟΡΑ", compareTitle: "ΛΕΙΤΟΥΡΓΙΑ VS",
-        voteInfoTitle: "ΠΩΣ ΛΕΙΤΟΥΡΓΕΙ", voteInfoText: "1. Η ψηφοφορία ανοίγει στην καθορισμένη ημερομηνία.<br>2. Συγκεντρώστε τις απαιτούμενες ψήφους για να ξεκλειδώσει το drop.",
+        achievementsTitle: "Αρχείο πράκτορα", compareTitle: "Λειτουργία VS",
+        voteInfoTitle: "Πώς λειτουργεί", voteInfoText: "1. Η ψηφοφορία ανοίγει στην καθορισμένη ημερομηνία.<br>2. Συγκεντρώστε τις απαιτούμενες ψήφους για να ξεκλειδώσει το drop.",
 
-        rulesTitle: "ΟΡΟΙ & ΠΡΟΫΠΟΘΕΣΕΙΣ",
+        rulesTitle: "Όροι & προϋποθέσεις",
         rules1: "1. Οι διαθέσιμες ποσότητες εμφανίζονται σε πραγματικό χρόνο· η παραγγελία ολοκληρώνεται με την επιβεβαίωση πληρωμής.",
         rules2: "2. Οι τιμές περιλαμβάνουν ΦΠΑ, εκτός αν αναφέρεται διαφορετικά.",
         rules3: "3. Ισχύει δικαίωμα υπαναχώρησης 14 ημερών και νόμιμη εγγύηση 2 ετών (βλ. Trust Protocols).",
         rules4: "4. Για πλήρεις όρους χρήσης και πολιτική απορρήτου, επικοινωνήστε μαζί μας.",
 
-        helpTitle: "ΥΠΟΣΤΗΡΙΞΗ",
+        helpTitle: "Υποστήριξη",
         helpText: "Για ερωτήσεις σχετικά με παραγγελίες, εγγύηση ή τεχνική υποστήριξη, επικοινωνήστε στο <strong>d.codexphoenix@gmail.com</strong> ή μέσω του chat κάτω αριστερά.",
 
-        cartYourLoot: "Η ΛΕΙΑ ΣΟΥ", cartTotalLabel: "ΣΥΝΟΛΟ", cartCheckoutBtn: "ΑΣΦΑΛΗΣ ΟΛΟΚΛΗΡΩΣΗ",
-        tickerDelivery: "⚡ ΑΣΦΑΛΗΣ ΠΑΡΑΔΟΣΗ 24Ω ΣΕ ΟΛΗ ΤΗ ΘΕΣΣΑΛΟΝΙΚΗ ⚡", tickerAssembled: "ΣΥΣΤΗΜΑΤΑ ΠΛΗΡΩΣ ΣΥΝΑΡΜΟΛΟΓΗΜΕΝΑ & ΕΛΕΓΜΕΝΑ",
+        cartYourLoot: "Η λεία σου", cartTotalLabel: "Σύνολο", cartCheckoutBtn: "Ασφαλής ολοκλήρωση",
+        tickerDelivery: "⚡ Ασφαλής παράδοση 24ω σε όλη τη Θεσσαλονίκη ⚡", tickerAssembled: "Συστήματα πλήρως συναρμολογημένα & ελεγμένα",
 
-        classifiedBrief: ">// ΔΙΑΒΑΘΜΙΣΜΕΝΗ ΑΝΑΦΟΡΑ", inspectSystemBtn: "ΕΠΙΘΕΩΡΗΣΗ ΣΥΣΤΗΜΑΤΟΣ", addedToVs: "ΠΡΟΣΤΕΘΗΚΕ ΣΤΟ VS", compareBtn: "ΣΥΓΚΡΙΣΗ",
-        descFallback: "Αναλυτικές προδιαγραφές για αυτό το σύστημα.", taglineFallback: "ΕΞΟΥΣΙΟΔΟΤΗΜΕΝΗ ΚΑΤΑΣΚΕΥΗ ΣΥΣΤΗΜΑΤΟΣ", systemDetailsFallback: "Στοιχεία Συστήματος"
+        classifiedBrief: ">// Διαβαθμισμένη αναφορά", inspectSystemBtn: "Επιθεώρηση συστήματος", addedToVs: "Προστέθηκε στο VS", compareBtn: "Σύγκριση",
+        descFallback: "Αναλυτικές προδιαγραφές για αυτό το σύστημα.", taglineFallback: "Εξουσιοδοτημένη κατασκευή συστήματος", systemDetailsFallback: "Στοιχεία συστήματος",
+
+        menuDashboard: "Πίνακας ελέγχου", menuSignOut: "Αποσύνδεση", menuSignIn: "Σύνδεση", menuRegister: "Εγγραφή",
+        rankOperative: "Πράκτορας", rankRecruit: "Νεοσύλλεκτος", unknownUser: "Άγνωστος χρήστης", agentFallback: "Πράκτορας"
     },
     en: {
         sideSettings: "System Settings", sideTrust: "Warranty & Trust", sideRules: "Rules", sideHelp: "Help",
@@ -130,13 +133,18 @@ const translations = {
         tickerDelivery: "⚡ 24H SECURE DELIVERY ACROSS SKG ⚡", tickerAssembled: "SYSTEMS FULLY ASSEMBLED & TESTED",
 
         classifiedBrief: ">// CLASSIFIED_BRIEF", inspectSystemBtn: "INSPECT SYSTEM", addedToVs: "ADDED TO VS", compareBtn: "COMPARE",
-        descFallback: "Detailed specifications for this system.", taglineFallback: "AUTHORIZED SYSTEM BUILD", systemDetailsFallback: "System Details"
+        descFallback: "Detailed specifications for this system.", taglineFallback: "AUTHORIZED SYSTEM BUILD", systemDetailsFallback: "System Details",
+
+        menuDashboard: "DASHBOARD", menuSignOut: "SIGN OUT", menuSignIn: "SIGN IN", menuRegister: "REGISTER",
+        rankOperative: "OPERATIVE", rankRecruit: "RECRUIT", unknownUser: "UNKNOWN_USER", agentFallback: "AGENT"
     }
 };
 
 let currentLang = localStorage.getItem('codex_lang') || 'el';
 
 export function applyLanguage(lang) {
+    document.body.classList.toggle('lang-el', lang === 'el');
+
     document.querySelectorAll('[data-i18n]').forEach(el => {
         const v = translations[lang]?.[el.dataset.i18n];
         if (v !== undefined) el.textContent = v;
@@ -159,10 +167,11 @@ export function applyLanguage(lang) {
     document.documentElement.lang = lang;
 
     const btn = document.getElementById('lang-toggle-btn');
-    if (btn) btn.textContent = lang.toUpperCase();
+    if (btn) btn.textContent = lang === 'el' ? '🇬🇧' : '🇬🇷';
 
-    // Re-render JS-templated chrome (card buttons / brief heading) so it flips instantly too
+    // Re-render JS-templated chrome (card buttons / brief heading / profile menu) so it flips instantly too
     if (window.renderCard) window.renderCard();
+    if (window.updateAuthUI) window.updateAuthUI(localStorage.getItem('codex_username'));
 }
 
 export function toggleLanguage() {
