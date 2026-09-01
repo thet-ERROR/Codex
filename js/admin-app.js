@@ -71,7 +71,7 @@
 
     function edit(id) {
         const pc = inventory.find(i=>i._id===id); if(!pc) return;
-       ['name','price','stock','description','lore','multitasking','status','category'].forEach(k => {
+       ['name','price','stock','description','lore','loreEl','multitasking','status','category'].forEach(k => {
     if(document.getElementById(k)) document.getElementById(k).value = pc[k]||'';
 });
         ['cpu','gpu','ram','ssd','mobo','psu','case'].forEach(k => document.getElementById(k).value = pc.specs[k]||'');
@@ -106,6 +106,7 @@ const data = {
             status: document.getElementById('status').value, 
             description: document.getElementById('description').value, 
             lore: document.getElementById('lore') ? document.getElementById('lore').value : "", // Προσθήκη Lore
+            loreEl: document.getElementById('loreEl') ? document.getElementById('loreEl').value : "",
             multitasking: document.getElementById('multitasking').value, 
             images: imgs,
             specs: { 

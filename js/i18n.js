@@ -77,7 +77,8 @@ const translations = {
         missionExpiredAlert: "⚠️ Η αποστολή έληξε. Πέρασαν 48 ώρες.",
         connectionErrorAlert: "⚠️ Σφάλμα σύνδεσης!\nΟ διακομιστής δεν ανταποκρίνεται.",
         alertAllFieldsReview: "Προσοχή: Όλα τα πεδία είναι υποχρεωτικά", alertTransmissionFailed: "Η αποστολή απέτυχε",
-        alertServerError: "Σφάλμα διακομιστή", alertSelectErrorProtocol: "⚠️ Προσοχή: Επίλεξε έγκυρο πρωτόκολλο σφάλματος."
+        alertServerError: "Σφάλμα διακομιστή", alertSelectErrorProtocol: "⚠️ Προσοχή: Επίλεξε έγκυρο πρωτόκολλο σφάλματος.",
+        loreFallback: "Σύστημα τακτικών επιχειρήσεων. Οι πλήρεις προδιαγραφές βρίσκονται στον φάκελο INSPECT. Απαιτείται εξουσιοδότηση."
     },
     en: {
         sideSettings: "System Settings", sideTrust: "Warranty & Trust", sideRules: "Rules", sideHelp: "Help",
@@ -156,7 +157,8 @@ const translations = {
         missionExpiredAlert: "⚠️ MISSION EXPIRED. 48 HOURS HAVE PASSED.",
         connectionErrorAlert: "⚠️ CONNECTION ERROR!\nThe server is not responding.",
         alertAllFieldsReview: "SYSTEM ALERT: ALL FIELDS REQUIRED", alertTransmissionFailed: "TRANSMISSION FAILED",
-        alertServerError: "SERVER ERROR", alertSelectErrorProtocol: "⚠️ SYSTEM ALERT: Please select a valid Error Protocol."
+        alertServerError: "SERVER ERROR", alertSelectErrorProtocol: "⚠️ SYSTEM ALERT: Please select a valid Error Protocol.",
+        loreFallback: "Tactical operations system. Full specifications are available in the INSPECT file. Authorization required."
     }
 };
 

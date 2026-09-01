@@ -92,7 +92,9 @@ export function renderCard() {
         }); 
     }
 
-    const pcLore = pc.lore || "Σύστημα τακτικών επιχειρήσεων. Οι πλήρεις προδιαγραφές βρίσκονται στον φάκελο INSPECT. Απαιτείται εξουσιοδότηση.";
+    const isGreek = (localStorage.getItem('codex_lang') || 'en') === 'el';
+    const loreFallback = window.t ? window.t('loreFallback') : "Σύστημα τακτικών επιχειρήσεων. Οι πλήρεις προδιαγραφές βρίσκονται στον φάκελο INSPECT. Απαιτείται εξουσιοδότηση.";
+    const pcLore = (isGreek && pc.loreEl) ? pc.loreEl : (pc.lore || loreFallback);
     const inWishlist = state.wishlist.find(p => (p._id || p.id) === (pc._id || pc.id));
     const wishColor = inWishlist ? "var(--neon-green)" : "#555";
 
