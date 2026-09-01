@@ -142,7 +142,7 @@ export function renderGlobalReviews() {
             return `<div class="review-card">
                         <span class="r-date">${date}</span>
                         <div class="r-user">${r.user} <span class="r-stars">★${r.rating}</span></div>
-                        <div style="font-size:0.7rem; color:var(--neon-purple); margin-bottom:4px; font-weight:bold;">PURCHASED: ${r.pcName}</div>
+                        <div style="font-size:0.7rem; color:var(--neon-purple); margin-bottom:4px; font-weight:bold;">${window.t ? window.t('purchasedLabel') : 'PURCHASED'}: ${r.pcName}</div>
                         <div class="r-text">"${r.text}"</div>
                     </div>`; 
         }).join(''); 
