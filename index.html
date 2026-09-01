@@ -51,34 +51,36 @@ Type 'help' for a list of commands.
 
     <div class="left-sidebar">
         <div class="side-group">
-            <button class="side-btn" onclick="playClick(); openModal('settings')" title="System Settings"><i class="ph-bold ph-gear"></i></button>
+            <button class="side-btn" onclick="playClick(); openModal('settings')" title="System Settings" data-i18n-title="sideSettings"><i class="ph-bold ph-gear"></i></button>
             <div class="side-divider"></div>
-            <button class="side-btn" onclick="playClick(); openModal('trust-modal')" title="Warranty & Trust"><i class="ph-bold ph-shield-check"></i></button>
-            <button class="side-btn" onclick="playClick(); openModal('rules')" title="Rules"><i class="ph-bold ph-book-bookmark"></i></button>
-            <button class="side-btn" onclick="playClick(); openModal('help')" title="Help"><i class="ph-bold ph-headset"></i></button>
+            <button class="side-btn" onclick="playClick(); openModal('trust-modal')" title="Warranty & Trust" data-i18n-title="sideTrust"><i class="ph-bold ph-shield-check"></i></button>
+            <button class="side-btn" onclick="playClick(); openModal('rules')" title="Rules" data-i18n-title="sideRules"><i class="ph-bold ph-book-bookmark"></i></button>
+            <button class="side-btn" onclick="playClick(); openModal('help')" title="Help" data-i18n-title="sideHelp"><i class="ph-bold ph-headset"></i></button>
+            <button class="side-btn" onclick="playClick(); openWheelFromSettings()" title="Daily Spin" data-i18n-title="sideWheel"><i class="ph-bold ph-gift"></i></button>
+            <button class="side-btn" id="lang-toggle-btn" onclick="playClick(); toggleLanguage()" title="Toggle Language" data-i18n-title="sideLang">EL</button>
             <div class="side-divider"></div>
-            
+
             <div class="social-dropdown" style="position: relative;">
-                <button class="side-btn" onclick="playClick(); toggleSocials()" title="Social Networks"><i class="ph-bold ph-share-network"></i></button>
-                
+                <button class="side-btn" onclick="playClick(); toggleSocials()" title="Social Networks" data-i18n-title="sideSocial"><i class="ph-bold ph-share-network"></i></button>
+
                 <div class="social-menu" id="social-menu">
-                    <button class="side-btn" onclick="playClick(); showToast('DISCORD SERVER: COMING SOON', 'normal')" title="Discord"><i class="ph-bold ph-discord-logo"></i></button>
-                    <button class="side-btn" onclick="playClick(); window.open('https://instagram.com/codex_rigs', '_blank')" title="Instagram"><i class="ph-bold ph-instagram-logo"></i></button>
-                    <button class="side-btn" onclick="playClick(); openModal('newsletter')" title="Drop Alerts"><i class="ph-bold ph-envelope-simple"></i></button>
+                    <button class="side-btn" onclick="playClick(); showToast('DISCORD SERVER: COMING SOON', 'normal')" title="Discord" data-i18n-title="sideDiscord"><i class="ph-bold ph-discord-logo"></i></button>
+                    <button class="side-btn" onclick="playClick(); window.open('https://instagram.com/codex_rigs', '_blank')" title="Instagram" data-i18n-title="sideInstagram"><i class="ph-bold ph-instagram-logo"></i></button>
+                    <button class="side-btn" onclick="playClick(); openModal('newsletter')" title="Drop Alerts" data-i18n-title="sideDropAlerts"><i class="ph-bold ph-envelope-simple"></i></button>
                 </div>
             </div>
 
-            <button class="side-btn mobile-reviews-btn" onclick="playClick(); toggleMobileReviews()" title="Reviews"><i class="ph-bold ph-star"></i></button>
+            <button class="side-btn mobile-reviews-btn" onclick="playClick(); toggleMobileReviews()" title="Reviews" data-i18n-title="sideReviews"><i class="ph-bold ph-star"></i></button>
         </div>
-        
+
         <button class="side-btn chat-toggle" onclick="playClick(); toggleChat()"><i class="ph-bold ph-chat-circle-dots"></i></button>
     </div>
 
     <div class="right-sidebar">
-        <div class="feed-header"><span><i class="ph-bold ph-star"></i> REVIEWS</span><div class="live-dot"></div></div>
+        <div class="feed-header"><span><i class="ph-bold ph-star"></i> <span data-i18n="reviewsLabel">REVIEWS</span></span><div class="live-dot"></div></div>
         <div class="review-list" id="review-list"></div>
         <div style="text-align:center; margin-top:10px;">
-            <button class="add-review-btn" onclick="checkMissionCode()">[+] WRITE REVIEW</button>
+            <button class="add-review-btn" onclick="checkMissionCode()" data-i18n="writeReviewBtn">[+] WRITE REVIEW</button>
         </div>
     </div>
     
@@ -92,12 +94,12 @@ Type 'help' for a list of commands.
             <button class="nav-btn" id="tab-vote" onclick="playClick(); switchTab('vote')">VOTE</button>
             
             <button class="nav-btn cart-btn" onclick="toggleCartDropdown()">
-                <i class="ph-bold ph-shopping-cart"></i> CART <span class="cart-count" id="cart-count">0</span>
+                <i class="ph-bold ph-shopping-cart"></i> <span data-i18n="cartLabel">CART</span> <span class="cart-count" id="cart-count">0</span>
             </button>
         </div>
-        
+
         <div class="right-header-group">
-            <button class="cli-btn" onclick="toggleCLI()" title="Terminal">
+            <button class="cli-btn" onclick="toggleCLI()" title="Terminal" data-i18n-title="sideTerminal">
                 <i class="ph-bold ph-terminal-window"></i>
             </button>
             <span id="user-display" class="hidden"></span>
@@ -122,29 +124,29 @@ Type 'help' for a list of commands.
         <div class="starter-menu hidden" id="starter-menu">
             <div class="pack-card" onclick="selectPack('gaming')">
                 <i class="ph-duotone ph-game-controller pack-icon"></i>
-                <div class="pack-title">GAMING</div>
+                <div class="pack-title" data-i18n="packGaming">GAMING</div>
             </div>
             <div class="pack-card" onclick="selectPack('streaming')">
                 <i class="ph-duotone ph-video-camera pack-icon"></i>
-                <div class="pack-title">STREAMING</div>
+                <div class="pack-title" data-i18n="packStreaming">STREAMING</div>
             </div>
             <div class="pack-card" onclick="selectPack('coding')">
                 <i class="ph-duotone ph-code pack-icon"></i>
-                <div class="pack-title">CODING</div>
+                <div class="pack-title" data-i18n="packCoding">CODING</div>
             </div>
         </div>
 
         <div class="holo-card hidden" id="gear-view">
             <div class="gear-container">
                 <i class="ph-duotone ph-lock-key gear-lock"></i>
-                <h2 style="color:#fff;">ARMORY LOCKED</h2>
+                <h2 style="color:#fff;" data-i18n="armoryLocked">ARMORY LOCKED</h2>
             </div>
         </div>
 
         <div id="vote-view" class="hidden">
             <div class="vote-container">
                 <div class="vote-header-row">
-                    <span style="font-family:var(--font-ui); font-weight:800; color:var(--neon-purple); font-size:1.2rem;">COMMUNITY DROP!</span>
+                    <span style="font-family:var(--font-ui); font-weight:800; color:var(--neon-purple); font-size:1.2rem;" data-i18n="voteCommunityDrop">COMMUNITY DROP!</span>
                     <div class="info-icon" onclick="openModal('vote-info-modal')">?</div>
                 </div>
                 <h2 id="v-title" style="color:#fff; margin-bottom:5px; font-size:2rem; text-transform:uppercase;">LOADING...</h2>
@@ -154,7 +156,7 @@ Type 'help' for a list of commands.
                     <i class="ph-fill ph-lock-key lock-icon" id="v-lock"></i>
                 </div>
                 <div style="display:flex; justify-content:space-between; font-size:0.8rem; color:#ccc;">
-                    <span>PROGRESS</span>
+                    <span data-i18n="voteProgressLabel">PROGRESS</span>
                     <span id="v-count">0 / 0 VOTES</span>
                 </div>
                 <div class="vote-progress-wrap">
@@ -168,12 +170,12 @@ Type 'help' for a list of commands.
     </div>
 
     <div class="compare-float" id="compare-float" onclick="playClick(); openCompareModal()">
-        <i class="ph-bold ph-scales"></i> VS MODE READY
+        <i class="ph-bold ph-scales"></i> <span data-i18n="vsModeReady">VS MODE READY</span>
     </div>
 
     <div class="chat-widget" id="chat-widget">
         <div class="chat-body">
-            <div class="chat-top">CODEX AI</div>
+            <div class="chat-top" data-i18n="chatTop">CODEX AI</div>
             <div class="chat-menu">
                 <div class="chat-menu-screen chat-menu-home" id="chat-menu-home"></div>
                 <div class="chat-menu-screen chat-menu-sub" id="chat-menu-sub"></div>
@@ -207,11 +209,11 @@ Type 'help' for a list of commands.
         </div>
 
         <div class="yg-storage-section">
-            <div class="yg-storage-label">Storage Expansion</div>
+            <div class="yg-storage-label" data-i18n="storageLabel">Storage Expansion</div>
             <select class="yg-storage-select" id="storage-select" onchange="updatePrice()">
-                <option value="0">Standard (No Extra)</option>
-                <option value="50">+ 1TB HDD (€50)</option>
-                <option value="80">+ 1TB SSD (€80)</option>
+                <option value="0" data-i18n="storageOptStandard">Standard (No Extra)</option>
+                <option value="50" data-i18n="storageOptHdd">+ 1TB HDD (€50)</option>
+                <option value="80" data-i18n="storageOptSsd">+ 1TB SSD (€80)</option>
             </select>
         </div>
 
@@ -273,36 +275,48 @@ Type 'help' for a list of commands.
     <div class="modal-overlay" id="wheel-modal">
         <div class="modal-content wheel-content">
             <span class="close-modal" onclick="closeModal('wheel-modal')">X</span>
-            <h2 class="modal-title" style="font-size:1.4rem;">SPIN THE WHEEL</h2>
-            <div id="wheel-attempts">SPINS LEFT: 3/3</div>
-            <div class="wheel-stage">
-                <div class="wheel-pointer"></div>
-                <div id="wheel"></div>
-                <button class="wheel-initiate-btn" id="wheel-initiate-btn" onclick="spinWheel()">INITIATE</button>
+            <h2 class="modal-title" style="font-size:1.4rem;" data-i18n="wheelTitle">SPIN THE WHEEL</h2>
+            <div class="wheel-grid">
+                <div class="wheel-col-left">
+                    <div id="wheel-attempts">SPINS LEFT: 3/3</div>
+                    <div class="wheel-stage">
+                        <div class="wheel-pointer"></div>
+                        <div id="wheel"></div>
+                        <button class="wheel-initiate-btn" id="wheel-initiate-btn" onclick="spinWheel()">INITIATE</button>
+                    </div>
+                    <div id="wheel-result"></div>
+                </div>
+                <div class="wheel-col-right">
+                    <div class="wheel-legend-title" data-i18n="wheelLegendTitle">POSSIBLE REWARDS</div>
+                    <div class="wheel-legend-row"><span class="wheel-legend-swatch" style="background:#ffd700;"></span> <span data-i18n="rewardCyberGold">CYBER GOLD SKIN</span></div>
+                    <div class="wheel-legend-row"><span class="wheel-legend-swatch" style="background:#ff5e00;"></span> <span data-i18n="rewardToxicOrange">TOXIC ORANGE SKIN</span></div>
+                    <div class="wheel-legend-row"><span class="wheel-legend-swatch" style="background:#ff2bd6;"></span> <span data-i18n="rewardNeonPink">NEON PINK SKIN</span></div>
+                    <div class="wheel-legend-row"><span class="wheel-legend-swatch" style="background:#00ff41;"></span> <span data-i18n="rewardMatrixGreen">MATRIX GREEN SKIN</span></div>
+                    <div class="wheel-legend-row"><span class="wheel-legend-swatch wheel-legend-coupon"><i class="ph-fill ph-ticket"></i></span> <span data-i18n="rewardCoupon">5% COUPON</span></div>
+                </div>
             </div>
-            <div id="wheel-result"></div>
         </div>
     </div>
 
     <div class="modal-overlay" id="trust-modal">
         <div class="modal-content" style="width:750px; text-align:center;">
             <span class="close-modal" onclick="closeModal('trust-modal')">X</span>
-            <h2 class="modal-title">TRUST PROTOCOLS</h2>
+            <h2 class="modal-title" data-i18n="trustTitle">TRUST PROTOCOLS</h2>
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-top:30px;">
                 <div style="background: rgba(255,255,255,0.03); padding:20px; border: 1px solid #333; border-radius:10px;">
                     <i class="ph-duotone ph-shield-check" style="font-size: 3rem; color: var(--neon-green); margin-bottom: 15px;"></i>
-                    <h4 style="font-family: var(--font-ui); color: #fff; margin-bottom: 10px; font-size:1.2rem;">2-YEAR LEGAL WARRANTY</h4>
-                    <p style="font-size: 0.85rem; color: #888; line-height: 1.4;">Κάθε σύστημα καλύπτεται από τη νόμιμη εγγύηση 2 ετών για ελαττώματα, σύμφωνα με την ισχύουσα νομοθεσία περί προστασίας καταναλωτή.</p>
+                    <h4 style="font-family: var(--font-ui); color: #fff; margin-bottom: 10px; font-size:1.2rem;" data-i18n="trustWarrantyTitle">2-YEAR LEGAL WARRANTY</h4>
+                    <p style="font-size: 0.85rem; color: #888; line-height: 1.4;" data-i18n="trustWarrantyText">Κάθε σύστημα καλύπτεται από τη νόμιμη εγγύηση 2 ετών για ελαττώματα, σύμφωνα με την ισχύουσα νομοθεσία περί προστασίας καταναλωτή.</p>
                 </div>
                 <div style="background: rgba(255,255,255,0.03); padding:20px; border: 1px solid #333; border-radius:10px;">
                     <i class="ph-duotone ph-arrow-u-up-left" style="font-size: 3rem; color: var(--neon-purple); margin-bottom: 15px;"></i>
-                    <h4 style="font-family: var(--font-ui); color: #fff; margin-bottom: 10px; font-size:1.2rem;">14-DAY RIGHT OF WITHDRAWAL</h4>
-                    <p style="font-size: 0.85rem; color: #888; line-height: 1.4;">Έχετε δικαίωμα υπαναχώρησης εντός 14 ημερολογιακών ημερών από την παραλαβή, χωρίς αιτιολόγηση, σύμφωνα με την ενωσιακή νομοθεσία εξ αποστάσεως πωλήσεων.</p>
+                    <h4 style="font-family: var(--font-ui); color: #fff; margin-bottom: 10px; font-size:1.2rem;" data-i18n="trustReturnTitle">14-DAY RIGHT OF WITHDRAWAL</h4>
+                    <p style="font-size: 0.85rem; color: #888; line-height: 1.4;" data-i18n="trustReturnText">Έχετε δικαίωμα υπαναχώρησης εντός 14 ημερολογιακών ημερών από την παραλαβή, χωρίς αιτιολόγηση, σύμφωνα με την ενωσιακή νομοθεσία εξ αποστάσεως πωλήσεων.</p>
                 </div>
                 <div style="background: rgba(255,255,255,0.03); padding:20px; border: 1px solid #333; border-radius:10px;">
                     <i class="ph-duotone ph-truck" style="font-size: 3rem; color: var(--neon-green); margin-bottom: 15px;"></i>
-                    <h4 style="font-family: var(--font-ui); color: #fff; margin-bottom: 10px; font-size:1.2rem;">GR SHIPPING</h4>
-                    <p style="font-size: 0.85rem; color: #888; line-height: 1.4;">Ασφαλής συσκευασία και παράδοση σε όλη την Ελλάδα, με πλήρη έλεγχο λειτουργίας πριν την αποστολή.</p>
+                    <h4 style="font-family: var(--font-ui); color: #fff; margin-bottom: 10px; font-size:1.2rem;" data-i18n="trustShippingTitle">GR SHIPPING</h4>
+                    <p style="font-size: 0.85rem; color: #888; line-height: 1.4;" data-i18n="trustShippingText">Ασφαλής συσκευασία και παράδοση σε όλη την Ελλάδα, με πλήρη έλεγχο λειτουργίας πριν την αποστολή.</p>
                 </div>
             </div>
         </div>
@@ -324,16 +338,16 @@ Type 'help' for a list of commands.
     <div class="modal-overlay" id="settings-modal">
         <div class="modal-content" style="width:450px;">
             <span class="close-modal" onclick="closeModal('settings-modal')">X</span>
-            <h2 class="modal-title">SYSTEM PREFERENCES</h2>
+            <h2 class="modal-title" data-i18n="settingsTitle">SYSTEM PREFERENCES</h2>
             <div class="settings-grid">
                 <div class="setting-card" id="set-audio" onclick="toggleAudio()">
                     <div class="s-icon"><i class="ph-fill ph-speaker-high"></i></div>
                     <div class="s-title">AUDIO: ON</div>
                 </div>
             </div>
-            
+
             <div style="margin-top:20px; text-align:center;">
-                <div class="s-title" style="margin-bottom:10px;">ACCENT COLOR</div>
+                <div class="s-title" style="margin-bottom:10px;" data-i18n="accentColorLabel">ACCENT COLOR</div>
                 <div class="color-opts">
                     <div class="color-btn" style="background:#ccff00;" onclick="setTheme('#ccff00')"></div>
                     <div class="color-btn" style="background:#00f0ff;" onclick="setTheme('#00f0ff')"></div>
@@ -345,22 +359,17 @@ Type 'help' for a list of commands.
                     <div class="color-btn locked" data-id="matrixGreen" style="background:#00ff41;" onclick="setTheme('#00ff41','matrixGreen')"><i class="ph-fill ph-lock-simple color-lock-icon"></i></div>
                 </div>
             </div>
-
-            <div style="margin-top:20px; text-align:center;">
-                <div class="s-title" style="margin-bottom:10px;">DAILY REWARD</div>
-                <button class="wheel-settings-btn" id="wheel-settings-btn" onclick="openWheelFromSettings()">SPIN THE WHEEL</button>
-            </div>
         </div>
     </div>
 
     <div class="modal-overlay" id="newsletter-modal">
         <div class="modal-content" style="width:450px;">
             <span class="close-modal" onclick="closeModal('newsletter-modal')">X</span>
-            <h2 class="modal-title">DROP ALERTS</h2>
-            <p style="color:#888; font-size:0.8rem; text-align:center; margin-top:-10px; margin-bottom:15px;">Ειδοποιήσου μόλις βγει νέο PC ή ξεκινήσει ψηφοφορία.</p>
+            <h2 class="modal-title" data-i18n="newsletterTitle">DROP ALERTS</h2>
+            <p style="color:#888; font-size:0.8rem; text-align:center; margin-top:-10px; margin-bottom:15px;" data-i18n="newsletterDesc">Ειδοποιήσου μόλις βγει νέο PC ή ξεκινήσει ψηφοφορία.</p>
             <div class="auth-form">
                 <input type="email" id="nl-email" class="auth-input" placeholder="agent@codex.com">
-                <button class="btn-inspect" onclick="submitNewsletter()">ACTIVATE ALERTS</button>
+                <button class="btn-inspect" onclick="submitNewsletter()" data-i18n="newsletterBtn">ACTIVATE ALERTS</button>
             </div>
         </div>
     </div>
@@ -368,13 +377,13 @@ Type 'help' for a list of commands.
     <div class="modal-overlay" id="review-code-modal">
         <div class="modal-content" style="width:450px;">
             <span class="close-modal" onclick="closeModal('review-code-modal')">X</span>
-            <h2 class="modal-title">VERIFIED REVIEW</h2>
+            <h2 class="modal-title" data-i18n="reviewCodeTitle">VERIFIED REVIEW</h2>
             <div class="auth-form">
                 <input type="text" id="rc-code" class="auth-input" placeholder="CDX-XXXXXX">
-                <input type="text" id="rc-user" class="auth-input" placeholder="Agent Name">
+                <input type="text" id="rc-user" class="auth-input" placeholder="Agent Name" data-i18n-placeholder="rcUserPlaceholder">
                 <input type="number" id="rc-rating" class="auth-input" min="1" max="5" value="5">
-                <textarea id="rc-text" class="auth-input" style="height:80px; resize:none;" placeholder="System performance..."></textarea>
-                <button class="btn-inspect" onclick="submitReviewCode()">SUBMIT TRANSMISSION</button>
+                <textarea id="rc-text" class="auth-input" style="height:80px; resize:none;" placeholder="System performance..." data-i18n-placeholder="rcTextPlaceholder"></textarea>
+                <button class="btn-inspect" onclick="submitReviewCode()" data-i18n="reviewCodeBtn">SUBMIT TRANSMISSION</button>
             </div>
         </div>
     </div>
@@ -382,23 +391,23 @@ Type 'help' for a list of commands.
     <div class="modal-overlay" id="mission-modal">
         <div class="modal-content" style="text-align:center; border: 2px solid var(--neon-green); width: 500px;">
             <span class="close-modal" onclick="closeModal('mission-modal')">X</span>
-            <h2 style="color:var(--neon-green); font-family:var(--font-ui); letter-spacing:2px; margin-bottom:5px;">SYSTEM VALIDATION</h2>
+            <h2 style="color:var(--neon-green); font-family:var(--font-ui); letter-spacing:2px; margin-bottom:5px;" data-i18n="missionTitle">SYSTEM VALIDATION</h2>
             <div id="mission-pc-name" style="font-size:1.2rem; font-weight:bold; color:#fff; margin-bottom:20px;">PROJECT X</div>
             <div style="background:#111; padding:15px; border-radius:8px; margin-bottom:20px; border:1px solid #333;">
-                <div style="color:#aaa; font-size:0.7rem; letter-spacing:1px;">VALIDATION WINDOW CLOSES IN:</div>
+                <div style="color:#aaa; font-size:0.7rem; letter-spacing:1px;" data-i18n="missionWindowLabel">VALIDATION WINDOW CLOSES IN:</div>
                 <div id="mission-timer" style="font-size:2.5rem; font-family:monospace; color:#fff; font-weight:bold;">47:59:00</div>
             </div>
             <div style="display:flex; flex-direction:column; gap:15px;">
-                <button class="btn-inspect" onclick="openReviewForm()" style="background:var(--neon-green); color:#000; border:none;">
+                <button class="btn-inspect" onclick="openReviewForm()" style="background:var(--neon-green); color:#000; border:none;" data-i18n="missionKeepBtn">
                     SYSTEM OPERATIONAL (KEEP & REVIEW)                </button>
                 <div style="background:rgba(255, 51, 51, 0.1); padding:15px; border:1px solid var(--retro-red); border-radius:8px;">
-                    <h4 style="color:var(--retro-red); margin-bottom:10px;">Report System Failure</h4>
+                    <h4 style="color:var(--retro-red); margin-bottom:10px;" data-i18n="missionReportTitle">Report System Failure</h4>
                     <select id="return-reason" style="width:100%; padding:10px; background:#000; color:#fff; border:1px solid #555; border-radius:4px; margin-bottom:10px;">
-                        <option value="" disabled selected>Select Error Protocol...</option>
-                        <option value="1">1. FPS Mismatch</option>
-                        <option value="2">2. Hardware Defect (DOA)</option>
+                        <option value="" disabled selected data-i18n="missionSelectReason">Select Error Protocol...</option>
+                        <option value="1" data-i18n="missionReason1">1. FPS Mismatch</option>
+                        <option value="2" data-i18n="missionReason2">2. Hardware Defect (DOA)</option>
                     </select>
-                    <button class="btn-inspect" onclick="requestReturn()" style="background:transparent; border:1px solid var(--retro-red); color:var(--retro-red);">INITIATE RETURN</button>
+                    <button class="btn-inspect" onclick="requestReturn()" style="background:transparent; border:1px solid var(--retro-red); color:var(--retro-red);" data-i18n="missionReturnBtn">INITIATE RETURN</button>
                 </div>
             </div>
         </div>
@@ -407,12 +416,12 @@ Type 'help' for a list of commands.
     <div class="modal-overlay" id="login-modal">
         <div class="modal-content" style="width:400px;">
             <span class="close-modal" onclick="closeModal('login-modal')">X</span>
-            <h2 class="modal-title">AGENT LOGIN</h2>           
+            <h2 class="modal-title" data-i18n="loginTitle">AGENT LOGIN</h2>
             <div class="auth-form">
-                <input type="text" id="login-user" class="auth-input" placeholder="USERNAME">
-                <input type="password" id="login-pass" class="auth-input" placeholder="PASSWORD">
-                <button class="btn-inspect" onclick="handleLogin()">AUTHENTICATE</button>
-                <div style="text-align:center; margin-top:15px; font-size:0.8rem; color:#666; cursor:pointer;" onclick="openRecovery()">[ LOST ACCESS? ]</div>
+                <input type="text" id="login-user" class="auth-input" placeholder="USERNAME" data-i18n-placeholder="usernamePlaceholder">
+                <input type="password" id="login-pass" class="auth-input" placeholder="PASSWORD" data-i18n-placeholder="passwordPlaceholder">
+                <button class="btn-inspect" onclick="handleLogin()" data-i18n="loginBtn">AUTHENTICATE</button>
+                <div style="text-align:center; margin-top:15px; font-size:0.8rem; color:#666; cursor:pointer;" onclick="openRecovery()" data-i18n="lostAccessLink">[ LOST ACCESS? ]</div>
             </div>
         </div>
     </div>
@@ -422,7 +431,7 @@ Type 'help' for a list of commands.
             <button class="modal-close" onclick="closeModal('agent-dashboard-modal')">X</button>
             
             <div class="dossier-header">
-                <div class="dossier-title">[AGENT PROFILE]</div>
+                <div class="dossier-title" data-i18n="dossierProfileLabel">[AGENT PROFILE]</div>
                 <div class="agent-handle-box">
                     <span class="dossier-label">> </span> 
                     <span class="typewriter-text terminal-name" id="dossier-username">UNKNOWN_USER</span>
@@ -436,14 +445,14 @@ Type 'help' for a list of commands.
             <div class="dossier-grid">
                 <div class="dossier-col dossier-left">
                     <div>
-                        <h3 class="dossier-heading">>// MY ORDERS</h3>
+                        <h3 class="dossier-heading" data-i18n="dossierOrdersHeading">>// MY ORDERS</h3>
                         <div class="dossier-list" id="dossier-orders">
-                            <div class="dossier-empty">> NO ORDERS YET.</div>
+                            <div class="dossier-empty" data-i18n="dossierNoOrders">> NO ORDERS YET.</div>
                         </div>
                     </div>
 
                     <div>
-                        <h3 class="dossier-heading">>// WISHLIST <span style="font-size: 0.6em; color: #888;">(SAVED SYSTEMS)</span></h3>
+                        <h3 class="dossier-heading"><span data-i18n="dossierWishlistHeading">&gt;// WISHLIST</span> <span style="font-size: 0.6em; color: #888;" data-i18n="dossierWishlistSub">(SAVED SYSTEMS)</span></h3>
                         <div class="wishlist-grid" id="dossier-wishlist">
                              <div class="dossier-empty">> NO SAVED SYSTEMS.</div>
                         </div>
@@ -451,7 +460,7 @@ Type 'help' for a list of commands.
                 </div>
 
                 <div class="dossier-col dossier-right">
-                    <h3 class="dossier-heading purple-heading">>// ACHIEVEMENTS</h3>
+                    <h3 class="dossier-heading purple-heading" data-i18n="dossierAchievementsHeading">>// ACHIEVEMENTS</h3>
                     <div class="dossier-list" id="dossier-achievements">
                         <div class="dossier-empty">> NO ACHIEVEMENTS UNLOCKED.</div>
                     </div>
@@ -459,13 +468,13 @@ Type 'help' for a list of commands.
             </div>
             
             <div class="dossier-auth-actions">
-                <button id="dossier-signin-btn" class="yg-btn yg-btn-specs" onclick="playClick(); closeModal('agent-dashboard-modal'); openModal('login-modal')">
+                <button id="dossier-signin-btn" class="yg-btn yg-btn-specs" onclick="playClick(); closeModal('agent-dashboard-modal'); openModal('login-modal')" data-i18n="dossierSignIn">
                     > SIGN IN
                 </button>
-                <button id="dossier-signup-btn" class="yg-btn yg-btn-specs" onclick="playClick(); closeModal('agent-dashboard-modal'); openModal('signup-modal')">
+                <button id="dossier-signup-btn" class="yg-btn yg-btn-specs" onclick="playClick(); closeModal('agent-dashboard-modal'); openModal('signup-modal')" data-i18n="dossierRegister">
                     > REGISTER
                 </button>
-                <button id="dossier-logout-btn" class="yg-btn yg-btn-specs dossier-btn-logout" onclick="playClick(); logout(); closeModal('agent-dashboard-modal')">
+                <button id="dossier-logout-btn" class="yg-btn yg-btn-specs dossier-btn-logout" onclick="playClick(); logout(); closeModal('agent-dashboard-modal')" data-i18n="dossierSignOut">
                     > SIGN OUT
                 </button>
             </div>
@@ -475,16 +484,16 @@ Type 'help' for a list of commands.
     <div class="modal-overlay" id="signup-modal">
         <div class="modal-content" style="width:400px;">
             <span class="close-modal" onclick="closeModal('signup-modal')">X</span>
-            <h2 class="modal-title">NEW RECRUIT</h2>
+            <h2 class="modal-title" data-i18n="signupTitle">NEW RECRUIT</h2>
             <div class="auth-form">
-                <input type="text" id="reg-user" class="auth-input" placeholder="USERNAME">
-                <input type="email" id="reg-email" class="auth-input" placeholder="EMAIL">
-                <input type="password" id="reg-pass" class="auth-input" placeholder="PASSWORD">
+                <input type="text" id="reg-user" class="auth-input" placeholder="USERNAME" data-i18n-placeholder="usernamePlaceholder">
+                <input type="email" id="reg-email" class="auth-input" placeholder="EMAIL" data-i18n-placeholder="emailPlaceholder">
+                <input type="password" id="reg-pass" class="auth-input" placeholder="PASSWORD" data-i18n-placeholder="passwordPlaceholder">
                 <label class="auth-checkbox">
                     <input type="checkbox" id="reg-subscribe">
-                    <span>🔔 ΘΕΛΩ ΕΙΔΟΠΟΙΗΣΕΙΣ ΓΙΑ ΝΕΑ DROPS</span>
+                    <span data-i18n="regSubscribeLabel">🔔 ΘΕΛΩ ΕΙΔΟΠΟΙΗΣΕΙΣ ΓΙΑ ΝΕΑ DROPS</span>
                 </label>
-                <button class="btn-inspect" onclick="handleSignup()">REGISTER</button>
+                <button class="btn-inspect" onclick="handleSignup()" data-i18n="signupBtn">REGISTER</button>
             </div>
         </div>
     </div>
@@ -492,10 +501,10 @@ Type 'help' for a list of commands.
     <div class="modal-overlay" id="forgot-modal">
         <div class="modal-content" style="width:400px;">
             <span class="close-modal" onclick="closeModal('forgot-modal')">X</span>
-            <h2 class="modal-title">RECOVERY PROTOCOL</h2>
+            <h2 class="modal-title" data-i18n="forgotTitle">RECOVERY PROTOCOL</h2>
             <div class="auth-form">
                 <input type="email" id="forgot-email" class="auth-input" placeholder="agent@codex.com">
-                <button class="btn-inspect" onclick="requestReset()">SEND TOKEN</button>
+                <button class="btn-inspect" onclick="requestReset()" data-i18n="forgotBtn">SEND TOKEN</button>
             </div>
         </div>
     </div>
@@ -503,11 +512,11 @@ Type 'help' for a list of commands.
     <div class="modal-overlay" id="reset-modal">
         <div class="modal-content" style="width:400px;">
             <span class="close-modal" onclick="closeModal('reset-modal')">X</span>
-            <h2 class="modal-title">NEW CREDENTIALS</h2>
+            <h2 class="modal-title" data-i18n="resetTitle">NEW CREDENTIALS</h2>
             <div class="auth-form">
-                <input type="text" id="reset-token" class="auth-input" placeholder="Token">
-                <input type="password" id="new-pass" class="auth-input" placeholder="New Password">
-                <button class="btn-inspect" onclick="completeReset()">UPDATE SYSTEM</button>
+                <input type="text" id="reset-token" class="auth-input" placeholder="Token" data-i18n-placeholder="resetTokenPlaceholder">
+                <input type="password" id="new-pass" class="auth-input" placeholder="New Password" data-i18n-placeholder="resetNewPassPlaceholder">
+                <button class="btn-inspect" onclick="completeReset()" data-i18n="resetBtn">UPDATE SYSTEM</button>
             </div>
         </div>
     </div>
@@ -515,7 +524,7 @@ Type 'help' for a list of commands.
     <div class="modal-overlay" id="achievements-modal">
         <div class="modal-content">
             <span class="close-modal" onclick="closeModal('achievements-modal')">X</span>
-            <h2 class="modal-title">AGENT RECORD</h2>
+            <h2 class="modal-title" data-i18n="achievementsTitle">AGENT RECORD</h2>
             <div class="ach-grid" id="ach-list"></div>
         </div>
     </div>
@@ -523,7 +532,7 @@ Type 'help' for a list of commands.
     <div class="modal-overlay" id="compare-modal">
         <div class="modal-content" style="width:1200px;">
             <span class="close-modal" onclick="playClick(); closeModal('compare-modal')">X</span>
-            <h2 style="text-align:center;">VS MODE</h2>
+            <h2 style="text-align:center;" data-i18n="compareTitle">VS MODE</h2>
             <div class="compare-grid" id="compare-grid"></div>
         </div>
     </div>
@@ -531,20 +540,20 @@ Type 'help' for a list of commands.
     <div class="modal-overlay" id="vote-info-modal">
         <div class="modal-content">
             <div class="close-btn" onclick="closeModal('vote-info-modal')">X</div>
-            <h2 style="color:var(--neon-purple); margin-bottom:15px;">HOW IT WORKS</h2>
-            <p style="color:#ccc; font-size:0.9rem; line-height:1.6;">1. Voting opens at the specified date.<br>2. Reach target votes to unlock drops.</p>
+            <h2 style="color:var(--neon-purple); margin-bottom:15px;" data-i18n="voteInfoTitle">HOW IT WORKS</h2>
+            <p style="color:#ccc; font-size:0.9rem; line-height:1.6;" data-i18n-html="voteInfoText">1. Voting opens at the specified date.<br>2. Reach target votes to unlock drops.</p>
         </div>
     </div>
-    
+
     <div class="modal-overlay" id="rules-modal">
         <div class="modal-content">
             <span class="close-modal" onclick="closeModal('rules-modal')">X</span>
-            <h2 style="color:#fff; margin-bottom:15px;">TERMS & CONDITIONS</h2>
+            <h2 style="color:#fff; margin-bottom:15px;" data-i18n="rulesTitle">TERMS & CONDITIONS</h2>
 <div style="color:#ccc; font-size:0.85rem; line-height:1.7; text-align:left;">
-    <p>1. Οι διαθέσιμες ποσότητες εμφανίζονται σε πραγματικό χρόνο· η παραγγελία ολοκληρώνεται με την επιβεβαίωση πληρωμής.</p>
-    <p>2. Οι τιμές περιλαμβάνουν ΦΠΑ, εκτός αν αναφέρεται διαφορετικά.</p>
-    <p>3. Ισχύει δικαίωμα υπαναχώρησης 14 ημερών και νόμιμη εγγύηση 2 ετών (βλ. Trust Protocols).</p>
-    <p>4. Για πλήρεις όρους χρήσης και πολιτική απορρήτου, επικοινωνήστε μαζί μας.</p>
+    <p data-i18n="rules1">1. Οι διαθέσιμες ποσότητες εμφανίζονται σε πραγματικό χρόνο· η παραγγελία ολοκληρώνεται με την επιβεβαίωση πληρωμής.</p>
+    <p data-i18n="rules2">2. Οι τιμές περιλαμβάνουν ΦΠΑ, εκτός αν αναφέρεται διαφορετικά.</p>
+    <p data-i18n="rules3">3. Ισχύει δικαίωμα υπαναχώρησης 14 ημερών και νόμιμη εγγύηση 2 ετών (βλ. Trust Protocols).</p>
+    <p data-i18n="rules4">4. Για πλήρεις όρους χρήσης και πολιτική απορρήτου, επικοινωνήστε μαζί μας.</p>
 </div>
         </div>
     </div>
@@ -552,26 +561,26 @@ Type 'help' for a list of commands.
     <div class="modal-overlay" id="help-modal">
         <div class="modal-content">
             <span class="close-modal" onclick="closeModal('help-modal')">X</span>
-           <h2>SUPPORT</h2>
-<p style="color:#ccc; font-size:0.9rem; line-height:1.6;">Για ερωτήσεις σχετικά με παραγγελίες, εγγύηση ή τεχνική υποστήριξη, επικοινωνήστε στο <strong>d.codexphoenix@gmail.com</strong> ή μέσω του chat κάτω αριστερά.</p>
+           <h2 data-i18n="helpTitle">SUPPORT</h2>
+<p style="color:#ccc; font-size:0.9rem; line-height:1.6;" data-i18n-html="helpText">Για ερωτήσεις σχετικά με παραγγελίες, εγγύηση ή τεχνική υποστήριξη, επικοινωνήστε στο <strong>d.codexphoenix@gmail.com</strong> ή μέσω του chat κάτω αριστερά.</p>
         </div>
     </div>
     
     <div class="cart-dropdown" id="cart-dropdown">
-        <div class="mini-cart-header"><span>YOUR LOOT</span><span onclick="toggleCartDropdown()" style="cursor:pointer;">X</span></div>
+        <div class="mini-cart-header"><span data-i18n="cartYourLoot">YOUR LOOT</span><span onclick="toggleCartDropdown()" style="cursor:pointer;">X</span></div>
         <div class="mini-cart-list" id="mini-cart-items"><div style="color:#666; text-align:center; padding:20px;">CART IS EMPTY</div></div>
         <div class="mini-cart-footer">
-            <div class="mc-total-row"><span>TOTAL</span><span id="mc-total">€0</span></div>
-            <button class="mc-checkout-btn" onclick="handleCheckout()">SECURE CHECKOUT</button>
+            <div class="mc-total-row"><span data-i18n="cartTotalLabel">TOTAL</span><span id="mc-total">€0</span></div>
+            <button class="mc-checkout-btn" onclick="handleCheckout()" data-i18n="cartCheckoutBtn">SECURE CHECKOUT</button>
         </div>
     </div>
 
     <div class="delivery-ticker">
         <div class="ticker-track">
-            <span>⚡ 24H SECURE DELIVERY ACROSS SKG ⚡</span>
-            <span>SYSTEMS FULLY ASSEMBLED & TESTED</span>
-            <span>⚡ 24H SECURE DELIVERY ACROSS SKG ⚡</span>
-            <span>SYSTEMS FULLY ASSEMBLED & TESTED</span>
+            <span data-i18n="tickerDelivery">⚡ 24H SECURE DELIVERY ACROSS SKG ⚡</span>
+            <span data-i18n="tickerAssembled">SYSTEMS FULLY ASSEMBLED & TESTED</span>
+            <span data-i18n="tickerDelivery">⚡ 24H SECURE DELIVERY ACROSS SKG ⚡</span>
+            <span data-i18n="tickerAssembled">SYSTEMS FULLY ASSEMBLED & TESTED</span>
         </div>
     </div>
 

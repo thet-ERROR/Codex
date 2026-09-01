@@ -21,10 +21,10 @@ export function openGallery() {
     if(elBackTitle) elBackTitle.innerText = state.currentGalleryPC.name;
     
     const elDesc = document.getElementById('yg-desc');
-    if(elDesc) elDesc.innerText = state.currentGalleryPC.description || "Detailed specifications for this system.";
-    
+    if(elDesc) elDesc.innerText = state.currentGalleryPC.description || (window.t ? window.t('descFallback') : "Detailed specifications for this system.");
+
     const elTag = document.getElementById('yg-tagline');
-    if(elTag) elTag.innerText = state.currentGalleryPC.tagline || "AUTHORIZED SYSTEM BUILD";
+    if(elTag) elTag.innerText = state.currentGalleryPC.tagline || (window.t ? window.t('taglineFallback') : "AUTHORIZED SYSTEM BUILD");
 
     const basePrice = parseInt(state.currentGalleryPC.price.replace(/[^0-9]/g, '')) || 0; 
     const elLivePrice = document.getElementById('yg-price-live');
