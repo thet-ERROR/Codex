@@ -58,7 +58,7 @@ Type 'help' for a list of commands.
             <button class="side-btn" onclick="playClick(); openModal('rules')" title="Rules" data-i18n-title="sideRules"><i class="ph-bold ph-book-bookmark"></i></button>
             <button class="side-btn" onclick="playClick(); openModal('help')" title="Help" data-i18n-title="sideHelp"><i class="ph-bold ph-headset"></i></button>
             <button class="side-btn" onclick="playClick(); openWheelFromSettings()" title="Daily Spin" data-i18n-title="sideWheel"><i class="ph-bold ph-gift"></i></button>
-            <button class="side-btn" id="lang-toggle-btn" onclick="playClick(); toggleLanguage()" title="Toggle Language" data-i18n-title="sideLang">🇬🇧</button>
+            <button class="side-btn" id="lang-toggle-btn" onclick="playClick(); toggleLanguage()" title="Toggle Language" data-i18n-title="sideLang"><svg width="24" height="16" viewBox="0 0 27 18" shape-rendering="crispEdges" xmlns="http://www.w3.org/2000/svg"><rect width="27" height="18" fill="#fff"/><rect y="0" width="27" height="2" fill="#0D5EAF"/><rect y="4" width="27" height="2" fill="#0D5EAF"/><rect y="8" width="27" height="2" fill="#0D5EAF"/><rect y="12" width="27" height="2" fill="#0D5EAF"/><rect y="16" width="27" height="2" fill="#0D5EAF"/><rect x="0" y="0" width="10" height="10" fill="#0D5EAF"/><rect x="4" y="0" width="2" height="10" fill="#fff"/><rect x="0" y="4" width="10" height="2" fill="#fff"/></svg></button>
             <div class="side-divider"></div>
 
             <div class="social-dropdown" style="position: relative;">
@@ -265,6 +265,24 @@ Type 'help' for a list of commands.
 </div>
 
     <!-- MODALS -->
+    <div class="modal-overlay" id="tutorial-lang-modal">
+        <div class="modal-content" style="width:380px; text-align:center;">
+            <span class="close-modal" onclick="playClick(); skipTutorial()">X</span>
+            <h2 class="modal-title" style="font-size:1.3rem;">CHOOSE TOUR LANGUAGE</h2>
+            <div class="tutorial-lang-opts">
+                <button class="tutorial-lang-btn" onclick="playClick(); startTutorialTour('el')">
+                    <svg width="28" height="19" viewBox="0 0 27 18" shape-rendering="crispEdges" xmlns="http://www.w3.org/2000/svg"><rect width="27" height="18" fill="#fff"/><rect y="0" width="27" height="2" fill="#0D5EAF"/><rect y="4" width="27" height="2" fill="#0D5EAF"/><rect y="8" width="27" height="2" fill="#0D5EAF"/><rect y="12" width="27" height="2" fill="#0D5EAF"/><rect y="16" width="27" height="2" fill="#0D5EAF"/><rect x="0" y="0" width="10" height="10" fill="#0D5EAF"/><rect x="4" y="0" width="2" height="10" fill="#fff"/><rect x="0" y="4" width="10" height="2" fill="#fff"/></svg>
+                    <span>Ελληνικά</span>
+                </button>
+                <button class="tutorial-lang-btn" onclick="playClick(); startTutorialTour('en')">
+                    <svg width="28" height="19" viewBox="0 0 24 16" shape-rendering="crispEdges" xmlns="http://www.w3.org/2000/svg"><rect width="24" height="16" fill="#00247D"/><rect x="0" y="6" width="24" height="4" fill="#fff"/><rect x="10" y="0" width="4" height="16" fill="#fff"/><rect x="0" y="7" width="24" height="2" fill="#CF142B"/><rect x="11" y="0" width="2" height="16" fill="#CF142B"/></svg>
+                    <span>English</span>
+                </button>
+            </div>
+            <div class="tutorial-skip-link" onclick="playClick(); skipTutorial()">Skip tour</div>
+        </div>
+    </div>
+
     <div class="modal-overlay" id="whoami-modal">
         <div class="modal-content whoami-content">
             <span class="close-modal" onclick="closeModal('whoami-modal')">X</span>
