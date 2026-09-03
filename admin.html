@@ -67,6 +67,18 @@
                 <input type="text" id="psu" placeholder="PSU (e.g. 650W)">
             </div>
             <input type="text" id="case" placeholder="CASE Model" style="margin-top:10px;">
+
+            <label style="color:#00f0ff; margin-top:20px;">SPEC INFO TEXT (shown when a visitor clicks the ⓘ next to each spec)</label>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                <textarea id="specInfo-cpu" placeholder="CPU info..." style="height:45px;"></textarea>
+                <textarea id="specInfo-gpu" placeholder="GPU info..." style="height:45px;"></textarea>
+                <textarea id="specInfo-ram" placeholder="RAM info..." style="height:45px;"></textarea>
+                <textarea id="specInfo-ssd" placeholder="SSD info..." style="height:45px;"></textarea>
+                <textarea id="specInfo-mobo" placeholder="Motherboard info..." style="height:45px;"></textarea>
+                <textarea id="specInfo-psu" placeholder="PSU info..." style="height:45px;"></textarea>
+            </div>
+            <textarea id="specInfo-case" placeholder="Case info..." style="height:45px; margin-top:10px;"></textarea>
+
             <label>Multitasking (0-100)</label><input type="number" id="multitasking">
 
             <label style="color:#ccff00;">PERFORMANCE (FPS)</label>

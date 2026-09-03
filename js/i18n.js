@@ -49,7 +49,7 @@ const translations = {
         resetTitle: "Νέα στοιχεία πρόσβασης", resetTokenPlaceholder: "Κωδικός", resetNewPassPlaceholder: "Νέος κωδικός", resetBtn: "Ενημέρωση συστήματος",
 
         achievementsTitle: "Αρχείο πράκτορα", compareTitle: "Λειτουργία VS",
-        voteInfoTitle: "Πώς λειτουργεί", voteInfoText: "1. Η ψηφοφορία ανοίγει στην καθορισμένη ημερομηνία.<br>2. Συγκεντρώστε τις απαιτούμενες ψήφους για να ξεκλειδώσει το drop.<br>3. Μόνο συνδεδεμένοι πράκτορες μπορούν να ψηφίσουν.<br>4. Αν το σύστημα δεν εξασφαλιστεί πριν λήξει το χρονόμετρο, μεταφέρεται αυτόματα στα Live Drops.",
+        voteInfoTitle: "Πώς λειτουργεί", voteInfoText: "Το Vote είναι ένα κοινοτικό σύστημα: η ομάδα ψηφίζει ποιο μυστηριώδες PC θα ξεκλειδωθεί για αγορά.<br><br>1. Η ψηφοφορία ανοίγει στην καθορισμένη ημερομηνία.<br>2. Συγκεντρώστε τις απαιτούμενες ψήφους για να ξεκλειδώσει το drop.<br>3. Μόνο συνδεδεμένοι πράκτορες μπορούν να ψηφίσουν.<br>4. Αν το σύστημα δεν εξασφαλιστεί πριν λήξει το χρονόμετρο, μεταφέρεται αυτόματα στα Live Drops.",
 
         rulesTitle: "Όροι & προϋποθέσεις",
         rules1: "1. Οι διαθέσιμες ποσότητες εμφανίζονται σε πραγματικό χρόνο· η παραγγελία ολοκληρώνεται με την επιβεβαίωση πληρωμής.",
@@ -64,7 +64,7 @@ const translations = {
         tickerDelivery: "⚡ Ασφαλής παράδοση 24H σε όλη τη Θεσσαλονίκη ⚡", tickerAssembled: "Συστήματα πλήρως συναρμολογημένα & ελεγμένα",
         tickerProcessed: "⚡ Οι παραγγελίες επεξεργάζονται εντός 24 ωρών ⚡", tickerDiagnostic: "Πλήρης διαγνωστικός έλεγχος πριν από κάθε αποστολή",
 
-        classifiedBrief: ">// UNIT_DATA", inspectSystemBtn: "Επιθεώρηση συστήματος", addedToVs: "Προστέθηκε στο VS", compareBtn: "Σύγκριση",
+        classifiedBrief: ">// ΣΤΟΙΧΕΙΑ ΜΟΝΑΔΑΣ", inspectSystemBtn: "Επιθεώρηση συστήματος", addedToVs: "Προστέθηκε στο VS", compareBtn: "Σύγκριση",
         descFallback: "Αναλυτικές προδιαγραφές για αυτό το σύστημα.", taglineFallback: "Εξουσιοδοτημένη κατασκευή συστήματος", systemDetailsFallback: "Στοιχεία συστήματος",
 
         menuDashboard: "Πίνακας ελέγχου", menuSignOut: "Αποσύνδεση", menuSignIn: "Σύνδεση", menuRegister: "Εγγραφή",
@@ -81,7 +81,7 @@ const translations = {
         alertServerError: "Σφάλμα διακομιστή", alertSelectErrorProtocol: "⚠️ Προσοχή: Επίλεξε έγκυρο πρωτόκολλο σφάλματος.",
         loreFallback: "Σύστημα τακτικών επιχειρήσεων. Οι πλήρεις προδιαγραφές βρίσκονται στον φάκελο INSPECT. Απαιτείται εξουσιοδότηση.",
         backToPacksBtn: "Πίσω στα packs", voteSpecsBtn: "Δες τα specs", voteAlmostThere: "ΚΟΝΤΑ ΣΤΟ ΣΤΟΧΟ",
-        voteRemaining: "ψήφοι ακόμα"
+        voteRemaining: "ψήφοι ακόμα", voteSpecsHeading: "Απόρρητα specs", voteBackBtn: "Πίσω"
     },
     en: {
         sideSettings: "System Settings", sideTrust: "Warranty & Trust", sideRules: "Rules", sideHelp: "Help",
@@ -132,7 +132,7 @@ const translations = {
         resetTitle: "NEW CREDENTIALS", resetTokenPlaceholder: "Token", resetNewPassPlaceholder: "New Password", resetBtn: "UPDATE SYSTEM",
 
         achievementsTitle: "AGENT RECORD", compareTitle: "VS MODE",
-        voteInfoTitle: "HOW IT WORKS", voteInfoText: "1. Voting opens at the specified date.<br>2. Reach target votes to unlock drops.<br>3. Only signed-in agents can vote.<br>4. If the system isn't secured before the timer runs out, it automatically moves to Live Drops.",
+        voteInfoTitle: "HOW IT WORKS", voteInfoText: "Vote is a community system: the network votes on which mystery PC gets unlocked for purchase.<br><br>1. Voting opens at the specified date.<br>2. Reach target votes to unlock drops.<br>3. Only signed-in agents can vote.<br>4. If the system isn't secured before the timer runs out, it automatically moves to Live Drops.",
 
         rulesTitle: "TERMS & CONDITIONS",
         rules1: "1. Available quantities are shown in real time; an order is completed once payment is confirmed.",
@@ -164,17 +164,14 @@ const translations = {
         alertServerError: "SERVER ERROR", alertSelectErrorProtocol: "⚠️ SYSTEM ALERT: Please select a valid Error Protocol.",
         loreFallback: "Tactical operations system. Full specifications are available in the INSPECT file. Authorization required.",
         backToPacksBtn: "BACK TO PACKS", voteSpecsBtn: "VIEW SPECS", voteAlmostThere: "ALMOST THERE",
-        voteRemaining: "votes to go"
+        voteRemaining: "votes to go", voteSpecsHeading: "CLASSIFIED SPECS", voteBackBtn: "BACK"
     }
 };
 
 let currentLang = localStorage.getItem('codex_lang') || 'en';
 
-// Small "pixel art" Greek flag (hard-edged rects, shape-rendering:crispEdges) — shown for the
-// language you'd switch TO, not the currently active one. The English side uses the plain 🇬🇧
-// emoji instead of a hand-built SVG: a blocky cross-on-blue approximation without the Union
-// Jack's diagonals reads as Iceland's flag, not the UK — not worth risking getting wrong twice
-// with no browser to verify pixel geometry in.
+// Small "pixel art" flag icons (hard-edged rects, shape-rendering:crispEdges) — shown for the
+// language you'd switch TO, not the currently active one.
 const FLAG_GR = `<svg width="24" height="16" viewBox="0 0 27 18" shape-rendering="crispEdges" xmlns="http://www.w3.org/2000/svg">
     <rect width="27" height="18" fill="#fff"/>
     <rect y="0" width="27" height="2" fill="#0D5EAF"/><rect y="4" width="27" height="2" fill="#0D5EAF"/>
@@ -183,7 +180,24 @@ const FLAG_GR = `<svg width="24" height="16" viewBox="0 0 27 18" shape-rendering
     <rect x="0" y="0" width="10" height="10" fill="#0D5EAF"/>
     <rect x="4" y="0" width="2" height="10" fill="#fff"/><rect x="0" y="4" width="10" height="2" fill="#fff"/>
 </svg>`;
-const FLAG_UK = '🇬🇧';
+// Union Jack, second attempt: built layer-by-layer like the real flag (blue field -> white
+// diagonal saltire -> red diagonal saltire -> white straight cross -> red straight cross), each
+// diagonal as a 4-step staircase of plain rects (crispEdges won't pixelate an actual diagonal
+// line/polygon, only axis-aligned rects, hence the staircase). Still unverified without a
+// browser — flag if it looks wrong and I'll adjust the step coordinates.
+const FLAG_UK = `<svg width="24" height="16" viewBox="0 0 24 16" shape-rendering="crispEdges" xmlns="http://www.w3.org/2000/svg">
+    <rect width="24" height="16" fill="#00247D"/>
+    <rect x="0" y="0" width="6" height="4" fill="#fff"/><rect x="6" y="4" width="6" height="4" fill="#fff"/>
+    <rect x="12" y="8" width="6" height="4" fill="#fff"/><rect x="18" y="12" width="6" height="4" fill="#fff"/>
+    <rect x="18" y="0" width="6" height="4" fill="#fff"/><rect x="12" y="4" width="6" height="4" fill="#fff"/>
+    <rect x="6" y="8" width="6" height="4" fill="#fff"/><rect x="0" y="12" width="6" height="4" fill="#fff"/>
+    <rect x="2" y="0" width="2" height="4" fill="#CF142B"/><rect x="8" y="4" width="2" height="4" fill="#CF142B"/>
+    <rect x="14" y="8" width="2" height="4" fill="#CF142B"/><rect x="20" y="12" width="2" height="4" fill="#CF142B"/>
+    <rect x="20" y="0" width="2" height="4" fill="#CF142B"/><rect x="14" y="4" width="2" height="4" fill="#CF142B"/>
+    <rect x="8" y="8" width="2" height="4" fill="#CF142B"/><rect x="2" y="12" width="2" height="4" fill="#CF142B"/>
+    <rect x="0" y="6" width="24" height="4" fill="#fff"/><rect x="10" y="0" width="4" height="16" fill="#fff"/>
+    <rect x="0" y="7" width="24" height="2" fill="#CF142B"/><rect x="11" y="0" width="2" height="16" fill="#CF142B"/>
+</svg>`;
 
 export function applyLanguage(lang) {
     document.body.classList.toggle('lang-el', lang === 'el');

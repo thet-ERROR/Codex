@@ -75,7 +75,12 @@
     if(document.getElementById(k)) document.getElementById(k).value = pc[k]||'';
 });
         ['cpu','gpu','ram','ssd','mobo','psu','case'].forEach(k => document.getElementById(k).value = pc.specs[k]||'');
-        
+        ['cpu','gpu','ram','ssd','mobo','psu','case'].forEach(k => {
+            const el = document.getElementById('specInfo-' + k);
+            if (el) el.value = (pc.specDetails && pc.specDetails[k]) || '';
+        });
+
+
         // Load the image URL into the text box
         document.getElementById('imageUrl').value = pc.images[0] || '';
         
@@ -116,9 +121,18 @@ const data = {
                 ssd:document.getElementById('ssd').value, 
                 mobo:document.getElementById('mobo').value, 
                 psu:document.getElementById('psu').value, 
-                case:document.getElementById('case').value 
+                case:document.getElementById('case').value
             },
-            fps: currentFPS, 
+            specDetails: {
+                cpu: document.getElementById('specInfo-cpu').value,
+                gpu: document.getElementById('specInfo-gpu').value,
+                ram: document.getElementById('specInfo-ram').value,
+                ssd: document.getElementById('specInfo-ssd').value,
+                mobo: document.getElementById('specInfo-mobo').value,
+                psu: document.getElementById('specInfo-psu').value,
+                case: document.getElementById('specInfo-case').value
+            },
+            fps: currentFPS,
             reviews: currentReviews
         };
         const url = editId ? `${API}/drops/${editId}` : `${API}/drops`;
