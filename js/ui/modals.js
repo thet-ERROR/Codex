@@ -52,10 +52,17 @@ export function toggleMobileReviews() {
     }
 }
 
-export function toggleProfileMenu() { 
+export function toggleProfileMenu() {
     const m = document.getElementById('profile-menu');
-    if(m) m.classList.toggle('show'); 
+    if(m) m.classList.toggle('show');
 }
+
+document.addEventListener('click', (e) => {
+    const menu = document.getElementById('profile-menu');
+    if (!menu || !menu.classList.contains('show')) return;
+    if (e.target.closest('#profile-menu') || e.target.closest('.profile-btn')) return;
+    menu.classList.remove('show');
+});
 
 // Εξαγωγή στο global scope
 window.playClick = playClick;

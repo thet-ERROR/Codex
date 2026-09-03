@@ -1,17 +1,20 @@
 // js/modules/catalog.js
 import { state } from '../state.js';
 
-export function switchTab(mode) { 
-    state.currentTab = mode; 
-    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active-live', 'active-vault', 'active-starter', 'active-vote', 'active-gear')); 
+export function switchTab(mode) {
+    state.currentTab = mode;
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active-live', 'active-vault', 'active-starter', 'active-vote', 'active-gear'));
     const tabBtn = document.getElementById(`tab-${mode}`);
-    if (tabBtn) tabBtn.classList.add(`active-live`); 
-    
+    if (tabBtn) tabBtn.classList.add(`active-live`);
+
     ['carousel-wrapper', 'starter-menu', 'gear-view', 'vote-view'].forEach(id => {
         const el = document.getElementById(id);
         if (el) el.classList.add('hidden');
     });
-    
+
+    const backBtn = document.getElementById('back-to-packs-btn');
+    if (backBtn) backBtn.classList.add('hidden');
+
     const label = document.getElementById('stage-label');
     if (mode === 'vote') { 
         document.getElementById('vote-view').classList.remove('hidden'); 
@@ -29,12 +32,21 @@ export function switchTab(mode) {
     } 
 }
 
-export function selectPack(cat) { 
-    document.getElementById('starter-menu').classList.add('hidden'); 
-    document.getElementById('carousel-wrapper').classList.remove('hidden'); 
-    state.filtered = state.inventory.filter(p => p.category === cat); 
-    state.index = 0; 
-    renderCard(); 
+export function selectPack(cat) {
+    document.getElementById('starter-menu').classList.add('hidden');
+    document.getElementById('carousel-wrapper').classList.remove('hidden');
+    const backBtn = document.getElementById('back-to-packs-btn');
+    if (backBtn) backBtn.classList.remove('hidden');
+    state.filtered = state.inventory.filter(p => p.category === cat);
+    state.index = 0;
+    renderCard();
+}
+
+export function backToPacks() {
+    document.getElementById('carousel-wrapper').classList.add('hidden');
+    document.getElementById('starter-menu').classList.remove('hidden');
+    const backBtn = document.getElementById('back-to-packs-btn');
+    if (backBtn) backBtn.classList.add('hidden');
 }
 
 export function filterInv() { 
@@ -132,6 +144,7 @@ export function renderCard() {
 // Εξαγωγή στο window
 window.switchTab = switchTab;
 window.selectPack = selectPack;
+window.backToPacks = backToPacks;
 window.filterInv = filterInv;
 window.nextPC = nextPC;
 window.prevPC = prevPC;

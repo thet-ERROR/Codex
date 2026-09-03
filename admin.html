@@ -25,7 +25,7 @@
                     <label>STATUS (LOCATION)</label>
                     <select id="status">
                         <option value="available">🟢 LIVE (Άμεσα Διαθέσιμο)</option>
-                        <option value="coming">🟠 THE VAULT (Προσεχώς)</option>
+                        <option value="coming">🟠 LAST CALL (Προσεχώς)</option>
                         <option value="sold">🔴 SOLD OUT</option>
                     </select>
                 </div>
@@ -115,6 +115,7 @@
 
             <div class="tool-box">
                 <h3 style="color:#b026ff;">VOTE EVENT</h3>
+                <p style="font-size:0.75rem; color:#888; margin:-5px 0 10px 0;">Un-secured events auto-convert to a Live Drop when their timer ends.</p>
                 <label>Event Title</label><input type="text" id="v-title" placeholder="Project Ronin">
                 <label>Estimated Price (€)</label><input type="text" id="v-price" placeholder="1200">
                 <label>Hero Image URL (Discord / Imgur Link)</label><input type="text" id="v-imageUrl" placeholder="https://cdn.discordapp.com/...">
@@ -123,6 +124,16 @@
                     <div><label>Duration (Days)</label><input type="number" id="v-days" placeholder="3"></div>
                 </div>
                 <label>Start Date</label><input type="datetime-local" id="v-start">
+                <label style="color:#00f0ff; margin-top:15px;">HARDWARE SPECS</label>
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                    <input type="text" id="v-cpu" placeholder="CPU (e.g. Ryzen 5)">
+                    <input type="text" id="v-gpu" placeholder="GPU (e.g. RTX 3060)">
+                    <input type="text" id="v-ram" placeholder="RAM (e.g. 16GB)">
+                    <input type="text" id="v-ssd" placeholder="SSD (e.g. 1TB)">
+                    <input type="text" id="v-mobo" placeholder="Motherboard">
+                    <input type="text" id="v-psu" placeholder="PSU (e.g. 650W)">
+                </div>
+                <input type="text" id="v-case" placeholder="CASE Model" style="margin-top:10px;">
                 <button class="btn btn-purple" onclick="uploadVote()">START EVENT</button>
             </div>
 

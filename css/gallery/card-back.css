@@ -1,4 +1,6 @@
 .yg-card-back { z-index: 1 !important; transform: rotateY(180deg) translateZ(1px) !important; display: flex; flex-direction: column; }
+.yg-close-back { position: absolute; top: 15px; right: 15px; z-index: 20; color: #888; cursor: pointer; transition: 0.2s; font-size: 1.2rem; }
+.yg-close-back:hover { color: #fff; }
 
 .scroll-fix-wrapper {
     display: flex;
