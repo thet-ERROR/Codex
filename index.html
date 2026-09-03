@@ -90,7 +90,7 @@ Type 'help' for a list of commands.
         
         <div class="nav-bar">
             <button class="nav-btn active-live" id="tab-live" onclick="playClick(); switchTab('live')">LIVE DROPS</button>
-            <button class="nav-btn" id="tab-vault" onclick="playClick(); switchTab('vault')">THE VAULT</button>
+            <button class="nav-btn" id="tab-vault" onclick="playClick(); switchTab('vault')">LAST CALL</button>
             <button class="nav-btn" id="tab-starter" onclick="playClick(); switchTab('starter')">STARTER PACKS</button>
             <button class="nav-btn" id="tab-vote" onclick="playClick(); switchTab('vote')">VOTE</button>
             
@@ -115,7 +115,8 @@ Type 'help' for a list of commands.
 
     <div class="stage">
         <div class="system-select-label" id="stage-label">// SYSTEM SELECT //</div>
-        
+        <button class="back-to-packs-btn hidden" id="back-to-packs-btn" onclick="playClick(); backToPacks()"><i class="ph-bold ph-arrow-left"></i> <span data-i18n="backToPacksBtn">BACK TO PACKS</span></button>
+
         <div class="carousel-wrapper" id="carousel-wrapper">
             <button class="nav-arrow" onclick="playClick(); prevPC()"><i class="ph-bold ph-caret-left"></i></button>
             <div id="main-card"></div>
@@ -163,9 +164,17 @@ Type 'help' for a list of commands.
                 <div class="vote-progress-wrap">
                     <div class="vote-progress-fill" id="v-fill"></div>
                 </div>
+                <div id="v-remaining-chip" class="vote-remaining-chip hidden"></div>
                 <button class="vote-btn" id="v-btn" onclick="castVote()">AUTHORIZE DROP</button>
                 <button class="vote-btn hidden" id="v-buy-btn" onclick="buyVotePC()" style="background:#ccff00; color:#000; margin-top:10px;">SECURE NOW</button>
                 <div class="timer-text" id="v-timer">CALCULATING TIME...</div>
+
+                <button class="vote-specs-toggle hidden" id="v-specs-toggle" onclick="playClick(); toggleVoteSpecs()">
+                    <i class="ph-bold ph-caret-down" id="v-specs-caret"></i> <span data-i18n="voteSpecsBtn">VIEW SPECS</span>
+                </button>
+                <div class="vote-specs-panel" id="v-specs-panel">
+                    <div class="vote-specs-grid" id="v-specs-grid"></div>
+                </div>
             </div>
         </div>
     </div>
@@ -230,6 +239,7 @@ Type 'help' for a list of commands.
 </div>
 
 <div class="yg-card-face yg-card-back">
+    <div class="yg-close-back" onclick="playClick(); closeModal('gallery-overlay')"><i class="ph-bold ph-x"></i></div>
     <div class="scroll-fix-wrapper">
         <div class="yg-back-header">
             <div class="yg-back-title" id="yg-back-title">SYSTEM</div>
@@ -275,7 +285,7 @@ Type 'help' for a list of commands.
                     <span>Ελληνικά</span>
                 </button>
                 <button class="tutorial-lang-btn" onclick="playClick(); startTutorialTour('en')">
-                    <svg width="28" height="19" viewBox="0 0 24 16" shape-rendering="crispEdges" xmlns="http://www.w3.org/2000/svg"><rect width="24" height="16" fill="#00247D"/><rect x="0" y="6" width="24" height="4" fill="#fff"/><rect x="10" y="0" width="4" height="16" fill="#fff"/><rect x="0" y="7" width="24" height="2" fill="#CF142B"/><rect x="11" y="0" width="2" height="16" fill="#CF142B"/></svg>
+                    <span style="font-size:1.8rem; line-height:1;">🇬🇧</span>
                     <span>English</span>
                 </button>
             </div>
@@ -598,8 +608,12 @@ Type 'help' for a list of commands.
         <div class="ticker-track">
             <span data-i18n="tickerDelivery">⚡ 24H SECURE DELIVERY ACROSS SKG ⚡</span>
             <span data-i18n="tickerAssembled">SYSTEMS FULLY ASSEMBLED & TESTED</span>
+            <span data-i18n="tickerProcessed">⚡ ORDERS PROCESSED WITHIN 24 HOURS ⚡</span>
+            <span data-i18n="tickerDiagnostic">FULL DIAGNOSTIC CHECK BEFORE EVERY SHIPMENT</span>
             <span data-i18n="tickerDelivery">⚡ 24H SECURE DELIVERY ACROSS SKG ⚡</span>
             <span data-i18n="tickerAssembled">SYSTEMS FULLY ASSEMBLED & TESTED</span>
+            <span data-i18n="tickerProcessed">⚡ ORDERS PROCESSED WITHIN 24 HOURS ⚡</span>
+            <span data-i18n="tickerDiagnostic">FULL DIAGNOSTIC CHECK BEFORE EVERY SHIPMENT</span>
         </div>
     </div>
 

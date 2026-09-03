@@ -49,7 +49,7 @@ const translations = {
         resetTitle: "Νέα στοιχεία πρόσβασης", resetTokenPlaceholder: "Κωδικός", resetNewPassPlaceholder: "Νέος κωδικός", resetBtn: "Ενημέρωση συστήματος",
 
         achievementsTitle: "Αρχείο πράκτορα", compareTitle: "Λειτουργία VS",
-        voteInfoTitle: "Πώς λειτουργεί", voteInfoText: "1. Η ψηφοφορία ανοίγει στην καθορισμένη ημερομηνία.<br>2. Συγκεντρώστε τις απαιτούμενες ψήφους για να ξεκλειδώσει το drop.",
+        voteInfoTitle: "Πώς λειτουργεί", voteInfoText: "1. Η ψηφοφορία ανοίγει στην καθορισμένη ημερομηνία.<br>2. Συγκεντρώστε τις απαιτούμενες ψήφους για να ξεκλειδώσει το drop.<br>3. Μόνο συνδεδεμένοι πράκτορες μπορούν να ψηφίσουν.<br>4. Αν το σύστημα δεν εξασφαλιστεί πριν λήξει το χρονόμετρο, μεταφέρεται αυτόματα στα Live Drops.",
 
         rulesTitle: "Όροι & προϋποθέσεις",
         rules1: "1. Οι διαθέσιμες ποσότητες εμφανίζονται σε πραγματικό χρόνο· η παραγγελία ολοκληρώνεται με την επιβεβαίωση πληρωμής.",
@@ -62,8 +62,9 @@ const translations = {
 
         cartYourLoot: "Η λεία σου", cartTotalLabel: "Σύνολο", cartCheckoutBtn: "Ασφαλής ολοκλήρωση",
         tickerDelivery: "⚡ Ασφαλής παράδοση 24ω σε όλη τη Θεσσαλονίκη ⚡", tickerAssembled: "Συστήματα πλήρως συναρμολογημένα & ελεγμένα",
+        tickerProcessed: "⚡ Οι παραγγελίες επεξεργάζονται εντός 24 ωρών ⚡", tickerDiagnostic: "Πλήρης διαγνωστικός έλεγχος πριν από κάθε αποστολή",
 
-        classifiedBrief: ">// Απόρρητος φάκελος", inspectSystemBtn: "Επιθεώρηση συστήματος", addedToVs: "Προστέθηκε στο VS", compareBtn: "Σύγκριση",
+        classifiedBrief: ">// UNIT_DATA", inspectSystemBtn: "Επιθεώρηση συστήματος", addedToVs: "Προστέθηκε στο VS", compareBtn: "Σύγκριση",
         descFallback: "Αναλυτικές προδιαγραφές για αυτό το σύστημα.", taglineFallback: "Εξουσιοδοτημένη κατασκευή συστήματος", systemDetailsFallback: "Στοιχεία συστήματος",
 
         menuDashboard: "Πίνακας ελέγχου", menuSignOut: "Αποσύνδεση", menuSignIn: "Σύνδεση", menuRegister: "Εγγραφή",
@@ -78,7 +79,9 @@ const translations = {
         connectionErrorAlert: "⚠️ Σφάλμα σύνδεσης!\nΟ διακομιστής δεν ανταποκρίνεται.",
         alertAllFieldsReview: "Προσοχή: Όλα τα πεδία είναι υποχρεωτικά", alertTransmissionFailed: "Η αποστολή απέτυχε",
         alertServerError: "Σφάλμα διακομιστή", alertSelectErrorProtocol: "⚠️ Προσοχή: Επίλεξε έγκυρο πρωτόκολλο σφάλματος.",
-        loreFallback: "Σύστημα τακτικών επιχειρήσεων. Οι πλήρεις προδιαγραφές βρίσκονται στον φάκελο INSPECT. Απαιτείται εξουσιοδότηση."
+        loreFallback: "Σύστημα τακτικών επιχειρήσεων. Οι πλήρεις προδιαγραφές βρίσκονται στον φάκελο INSPECT. Απαιτείται εξουσιοδότηση.",
+        backToPacksBtn: "Πίσω στα packs", voteSpecsBtn: "Δες τα specs", voteAlmostThere: "ΚΟΝΤΑ ΣΤΟ ΣΤΟΧΟ",
+        voteRemaining: "ψήφοι ακόμα"
     },
     en: {
         sideSettings: "System Settings", sideTrust: "Warranty & Trust", sideRules: "Rules", sideHelp: "Help",
@@ -115,21 +118,21 @@ const translations = {
         missionSelectReason: "Select Error Protocol...", missionReason1: "1. FPS Mismatch", missionReason2: "2. Hardware Defect (DOA)",
         missionReturnBtn: "INITIATE RETURN",
 
-        loginTitle: "AGENT LOGIN", usernamePlaceholder: "USERNAME", passwordPlaceholder: "PASSWORD",
+        loginTitle: "AGENT SIGN-IN", usernamePlaceholder: "USERNAME", passwordPlaceholder: "PASSWORD",
         loginBtn: "AUTHENTICATE", lostAccessLink: "[ LOST ACCESS? ]",
 
         dossierProfileLabel: "[AGENT PROFILE]", dossierOrdersHeading: ">// MY ORDERS", dossierNoOrders: "> NO ORDERS YET.",
         dossierWishlistHeading: ">// WISHLIST", dossierWishlistSub: "(SAVED SYSTEMS)",
         dossierAchievementsHeading: ">// ACHIEVEMENTS", dossierSignIn: "> SIGN IN", dossierRegister: "> REGISTER", dossierSignOut: "> SIGN OUT",
 
-        signupTitle: "NEW RECRUIT", emailPlaceholder: "EMAIL",
+        signupTitle: "AGENT REGISTRATION", emailPlaceholder: "EMAIL",
         regSubscribeLabel: "🔔 I WANT NOTIFICATIONS FOR NEW DROPS", signupBtn: "REGISTER",
 
         forgotTitle: "RECOVERY PROTOCOL", forgotBtn: "SEND TOKEN",
         resetTitle: "NEW CREDENTIALS", resetTokenPlaceholder: "Token", resetNewPassPlaceholder: "New Password", resetBtn: "UPDATE SYSTEM",
 
         achievementsTitle: "AGENT RECORD", compareTitle: "VS MODE",
-        voteInfoTitle: "HOW IT WORKS", voteInfoText: "1. Voting opens at the specified date.<br>2. Reach target votes to unlock drops.",
+        voteInfoTitle: "HOW IT WORKS", voteInfoText: "1. Voting opens at the specified date.<br>2. Reach target votes to unlock drops.<br>3. Only signed-in agents can vote.<br>4. If the system isn't secured before the timer runs out, it automatically moves to Live Drops.",
 
         rulesTitle: "TERMS & CONDITIONS",
         rules1: "1. Available quantities are shown in real time; an order is completed once payment is confirmed.",
@@ -142,8 +145,9 @@ const translations = {
 
         cartYourLoot: "YOUR LOOT", cartTotalLabel: "TOTAL", cartCheckoutBtn: "SECURE CHECKOUT",
         tickerDelivery: "⚡ 24H SECURE DELIVERY ACROSS SKG ⚡", tickerAssembled: "SYSTEMS FULLY ASSEMBLED & TESTED",
+        tickerProcessed: "⚡ ORDERS PROCESSED WITHIN 24 HOURS ⚡", tickerDiagnostic: "FULL DIAGNOSTIC CHECK BEFORE EVERY SHIPMENT",
 
-        classifiedBrief: ">// CLASSIFIED_BRIEF", inspectSystemBtn: "INSPECT SYSTEM", addedToVs: "ADDED TO VS", compareBtn: "COMPARE",
+        classifiedBrief: ">// UNIT_DATA", inspectSystemBtn: "INSPECT SYSTEM", addedToVs: "ADDED TO VS", compareBtn: "COMPARE",
         descFallback: "Detailed specifications for this system.", taglineFallback: "AUTHORIZED SYSTEM BUILD", systemDetailsFallback: "System Details",
 
         menuDashboard: "DASHBOARD", menuSignOut: "SIGN OUT", menuSignIn: "SIGN IN", menuRegister: "REGISTER",
@@ -158,14 +162,19 @@ const translations = {
         connectionErrorAlert: "⚠️ CONNECTION ERROR!\nThe server is not responding.",
         alertAllFieldsReview: "SYSTEM ALERT: ALL FIELDS REQUIRED", alertTransmissionFailed: "TRANSMISSION FAILED",
         alertServerError: "SERVER ERROR", alertSelectErrorProtocol: "⚠️ SYSTEM ALERT: Please select a valid Error Protocol.",
-        loreFallback: "Tactical operations system. Full specifications are available in the INSPECT file. Authorization required."
+        loreFallback: "Tactical operations system. Full specifications are available in the INSPECT file. Authorization required.",
+        backToPacksBtn: "BACK TO PACKS", voteSpecsBtn: "VIEW SPECS", voteAlmostThere: "ALMOST THERE",
+        voteRemaining: "votes to go"
     }
 };
 
 let currentLang = localStorage.getItem('codex_lang') || 'en';
 
-// Small "pixel art" flag icons (hard-edged rects, shape-rendering:crispEdges) — shown for the
-// language you'd switch TO, not the currently active one.
+// Small "pixel art" Greek flag (hard-edged rects, shape-rendering:crispEdges) — shown for the
+// language you'd switch TO, not the currently active one. The English side uses the plain 🇬🇧
+// emoji instead of a hand-built SVG: a blocky cross-on-blue approximation without the Union
+// Jack's diagonals reads as Iceland's flag, not the UK — not worth risking getting wrong twice
+// with no browser to verify pixel geometry in.
 const FLAG_GR = `<svg width="24" height="16" viewBox="0 0 27 18" shape-rendering="crispEdges" xmlns="http://www.w3.org/2000/svg">
     <rect width="27" height="18" fill="#fff"/>
     <rect y="0" width="27" height="2" fill="#0D5EAF"/><rect y="4" width="27" height="2" fill="#0D5EAF"/>
@@ -174,11 +183,7 @@ const FLAG_GR = `<svg width="24" height="16" viewBox="0 0 27 18" shape-rendering
     <rect x="0" y="0" width="10" height="10" fill="#0D5EAF"/>
     <rect x="4" y="0" width="2" height="10" fill="#fff"/><rect x="0" y="4" width="10" height="2" fill="#fff"/>
 </svg>`;
-const FLAG_UK = `<svg width="24" height="16" viewBox="0 0 24 16" shape-rendering="crispEdges" xmlns="http://www.w3.org/2000/svg">
-    <rect width="24" height="16" fill="#00247D"/>
-    <rect x="0" y="6" width="24" height="4" fill="#fff"/><rect x="10" y="0" width="4" height="16" fill="#fff"/>
-    <rect x="0" y="7" width="24" height="2" fill="#CF142B"/><rect x="11" y="0" width="2" height="16" fill="#CF142B"/>
-</svg>`;
+const FLAG_UK = '🇬🇧';
 
 export function applyLanguage(lang) {
     document.body.classList.toggle('lang-el', lang === 'el');

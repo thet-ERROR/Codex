@@ -23,7 +23,7 @@
         // 1. Fill Inventory List
         document.getElementById('inventory-list').innerHTML = inventory.map(pc => {
             let statusColor = pc.status === 'available' ? '#ccff00' : pc.status === 'coming' ? '#ffaa00' : '#ff3333';
-            let statusText = pc.status === 'coming' ? 'THE VAULT' : pc.status === 'available' ? 'LIVE' : 'SOLD OUT';
+            let statusText = pc.status === 'coming' ? 'LAST CALL' : pc.status === 'available' ? 'LIVE' : 'SOLD OUT';
             
             return `
             <div class="item">
@@ -144,13 +144,18 @@ const data = {
     async function loadVote() {
         try {
             const res=await fetch(`${API}/vote-event`, { headers:{'x-admin-auth':TOKEN} }); const v=await res.json();
-            if(v.title) { 
-                document.getElementById('v-title').value=v.title; 
-                document.getElementById('v-price').value=v.price || ''; 
-                document.getElementById('v-target').value=v.targetVotes; 
-                document.getElementById('v-days').value=v.durationDays; 
-                document.getElementById('v-imageUrl').value = v.image || ''; 
-            } 
+            if(v.title) {
+                document.getElementById('v-title').value=v.title;
+                document.getElementById('v-price').value=v.price || '';
+                document.getElementById('v-target').value=v.targetVotes;
+                document.getElementById('v-days').value=v.durationDays;
+                document.getElementById('v-imageUrl').value = v.image || '';
+                const specs = v.specs || {};
+                ['cpu','gpu','ram','ssd','mobo','psu','case'].forEach(k => {
+                    const el = document.getElementById('v-' + k);
+                    if (el) el.value = specs[k] || '';
+                });
+            }
         } catch(e) {} 
     }
     
@@ -158,13 +163,22 @@ const data = {
         // Παίρνουμε το Link απευθείας από το Text Box για το Vote Event!
         const imgInput = document.getElementById('v-imageUrl').value.trim();
         
-        const data = { 
-            title: document.getElementById('v-title').value, 
-            price: document.getElementById('v-price').value, 
-            image: imgInput, 
-            targetVotes: document.getElementById('v-target').value, 
-            startDate: document.getElementById('v-start').value, 
-            durationDays: document.getElementById('v-days').value 
+        const data = {
+            title: document.getElementById('v-title').value,
+            price: document.getElementById('v-price').value,
+            image: imgInput,
+            targetVotes: document.getElementById('v-target').value,
+            startDate: document.getElementById('v-start').value,
+            durationDays: document.getElementById('v-days').value,
+            specs: {
+                cpu: document.getElementById('v-cpu').value,
+                gpu: document.getElementById('v-gpu').value,
+                ram: document.getElementById('v-ram').value,
+                ssd: document.getElementById('v-ssd').value,
+                mobo: document.getElementById('v-mobo').value,
+                psu: document.getElementById('v-psu').value,
+                case: document.getElementById('v-case').value
+            }
         };
         await fetch(`${API}/vote-event`, { method: 'POST', headers:{'Content-Type':'application/json', 'x-admin-auth':TOKEN}, body:JSON.stringify(data) }); alert('VOTE LIVE');
     }

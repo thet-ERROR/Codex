@@ -2,26 +2,77 @@
 import { state } from '../state.js';
 import { CONFIG } from '../config.js';
 
-export function renderVoteState() { 
+let notifiedAlmostThere = false;
+let lastEventTitle = null;
+
+export function renderVoteState() {
     if(!state.activeEvent) return;
-    
+
+    if (state.activeEvent.title !== lastEventTitle) {
+        lastEventTitle = state.activeEvent.title;
+        notifiedAlmostThere = false;
+        const panel = document.getElementById('v-specs-panel');
+        if (panel) panel.classList.remove('open');
+        const caret = document.getElementById('v-specs-caret');
+        if (caret) caret.className = 'ph-bold ph-caret-down';
+    }
+
     const title = document.getElementById('v-title');
-    if(title) title.innerText = state.activeEvent.title; 
-    
+    if(title) title.innerText = state.activeEvent.title;
+
     const priceDisp = document.getElementById('v-price-display');
     if(priceDisp) priceDisp.innerText = state.activeEvent.price ? "ESTIMATED PRICE: €" + state.activeEvent.price : "";
-    
+
     const img = document.getElementById('v-img');
-    if(img) img.src = state.activeEvent.image || ''; 
-    
-    const pct = (state.activeEvent.currentVotes / state.activeEvent.targetVotes) * 100; 
+    if(img) img.src = state.activeEvent.image || '';
+
+    const pct = (state.activeEvent.currentVotes / state.activeEvent.targetVotes) * 100;
     const fill = document.getElementById('v-fill');
-    if(fill) fill.style.width = Math.min(pct, 100) + '%';    
-    
+    if(fill) fill.style.width = Math.min(pct, 100) + '%';
+
     const count = document.getElementById('v-count');
-    if(count) count.innerText = `${state.activeEvent.currentVotes} / ${state.activeEvent.targetVotes} VOTES`; 
-    
-    if(state.activeEvent.currentVotes >= state.activeEvent.targetVotes) unlockVisuals(); 
+    if(count) count.innerText = `${state.activeEvent.currentVotes} / ${state.activeEvent.targetVotes} VOTES`;
+
+    const t = window.t || (k => k);
+    const remaining = Math.max(state.activeEvent.targetVotes - state.activeEvent.currentVotes, 0);
+    const remainingChip = document.getElementById('v-remaining-chip');
+    if (remainingChip) {
+        if (remaining > 0) {
+            remainingChip.textContent = `${remaining} ${t('voteRemaining')}`;
+            remainingChip.classList.remove('hidden');
+        } else {
+            remainingChip.classList.add('hidden');
+        }
+    }
+
+    if (pct >= 80 && pct < 100 && !notifiedAlmostThere) {
+        notifiedAlmostThere = true;
+        if (window.showToast) window.showToast(`🔥 ${t('voteAlmostThere')} — ${remaining} ${t('voteRemaining')}`, 'achievement');
+    }
+
+    renderVoteSpecs();
+
+    if(state.activeEvent.currentVotes >= state.activeEvent.targetVotes) unlockVisuals();
+}
+
+function renderVoteSpecs() {
+    const toggle = document.getElementById('v-specs-toggle');
+    const grid = document.getElementById('v-specs-grid');
+    const specs = state.activeEvent?.specs;
+    const hasSpecs = specs && Object.values(specs).some(v => v);
+    if (toggle) toggle.classList.toggle('hidden', !hasSpecs);
+    if (!hasSpecs || !grid) return;
+    grid.innerHTML = Object.entries(specs).filter(([, v]) => v).map(([k, v]) => `
+        <div class="vote-spec-chip"><div class="label">${k}</div><div class="value">${v}</div></div>
+    `).join('');
+}
+
+export function toggleVoteSpecs() {
+    const panel = document.getElementById('v-specs-panel');
+    const caret = document.getElementById('v-specs-caret');
+    if (!panel) return;
+    const isOpen = panel.classList.toggle('open');
+    if (caret) caret.className = isOpen ? 'ph-bold ph-caret-up' : 'ph-bold ph-caret-down';
 }
 
 export function formatTime(ms) { 
@@ -59,16 +110,26 @@ export function updateTimer() {
     } 
 }
 
-export async function castVote() { 
+export async function castVote() {
+    if (!state.isLoggedIn) {
+        if (window.showToast) window.showToast("ACCESS DENIED. LOGIN REQUIRED TO VOTE.", "error");
+        if (window.openModal) window.openModal('login-modal');
+        return;
+    }
     try {
-        const res = await fetch(`${CONFIG.API_URL}/cast-vote`, { method: 'POST' }); 
-        const data = await res.json(); 
-        if(data.votes) { 
-            state.activeEvent.currentVotes = data.votes; 
-            renderVoteState(); 
-            if(window.showToast) window.showToast("VOTE REGISTERED", "normal"); 
-            if(window.checkAchievement) window.checkAchievement('vote'); 
-        } 
+        const res = await fetch(`${CONFIG.API_URL}/cast-vote`, {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${localStorage.getItem('codex_token')}` }
+        });
+        const data = await res.json();
+        if(data.votes) {
+            state.activeEvent.currentVotes = data.votes;
+            renderVoteState();
+            if(window.showToast) window.showToast("VOTE REGISTERED", "normal");
+            if(window.checkAchievement) window.checkAchievement('vote');
+        } else if (!res.ok) {
+            if(window.showToast) window.showToast(data.error || "VOTE FAILED", "error");
+        }
     } catch(e) { 
         console.error("Vote failed.", e); 
     }
@@ -103,3 +164,4 @@ window.updateTimer = updateTimer;
 window.castVote = castVote;
 window.unlockVisuals = unlockVisuals;
 window.buyVotePC = buyVotePC;
+window.toggleVoteSpecs = toggleVoteSpecs;
