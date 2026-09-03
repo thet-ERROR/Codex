@@ -11,10 +11,8 @@ export function renderVoteState() {
     if (state.activeEvent.title !== lastEventTitle) {
         lastEventTitle = state.activeEvent.title;
         notifiedAlmostThere = false;
-        const panel = document.getElementById('v-specs-panel');
-        if (panel) panel.classList.remove('open');
-        const caret = document.getElementById('v-specs-caret');
-        if (caret) caret.className = 'ph-bold ph-caret-down';
+        const flipWrap = document.getElementById('vote-flip-wrap');
+        if (flipWrap) flipWrap.classList.remove('flipped');
     }
 
     const title = document.getElementById('v-title');
@@ -68,11 +66,8 @@ function renderVoteSpecs() {
 }
 
 export function toggleVoteSpecs() {
-    const panel = document.getElementById('v-specs-panel');
-    const caret = document.getElementById('v-specs-caret');
-    if (!panel) return;
-    const isOpen = panel.classList.toggle('open');
-    if (caret) caret.className = isOpen ? 'ph-bold ph-caret-up' : 'ph-bold ph-caret-down';
+    const flipWrap = document.getElementById('vote-flip-wrap');
+    if (flipWrap) flipWrap.classList.toggle('flipped');
 }
 
 export function formatTime(ms) { 

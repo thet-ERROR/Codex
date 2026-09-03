@@ -59,9 +59,20 @@ export function toggleProfileMenu() {
 
 document.addEventListener('click', (e) => {
     const menu = document.getElementById('profile-menu');
-    if (!menu || !menu.classList.contains('show')) return;
-    if (e.target.closest('#profile-menu') || e.target.closest('.profile-btn')) return;
-    menu.classList.remove('show');
+    if (menu && menu.classList.contains('show')) {
+        if (!e.target.closest('#profile-menu') && !e.target.closest('.profile-btn')) {
+            menu.classList.remove('show');
+        }
+    }
+
+    const cart = document.getElementById('cart-dropdown');
+    if (cart && cart.classList.contains('show')) {
+        if (!e.target.closest('#cart-dropdown') && !e.target.closest('.cart-btn')) {
+            cart.classList.remove('show');
+            const cartBtn = document.querySelector('.nav-btn.cart-btn');
+            if (cartBtn) cartBtn.classList.remove('active');
+        }
+    }
 });
 
 // Εξαγωγή στο global scope
