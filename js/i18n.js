@@ -61,7 +61,7 @@ const translations = {
         helpText: "Για ερωτήσεις σχετικά με παραγγελίες, εγγύηση ή τεχνική υποστήριξη, επικοινωνήστε στο <strong>d.codexphoenix@gmail.com</strong> ή μέσω του chat κάτω αριστερά.",
 
         cartYourLoot: "Η λεία σου", cartTotalLabel: "Σύνολο", cartCheckoutBtn: "Ασφαλής ολοκλήρωση",
-        tickerDelivery: "⚡ Ασφαλής παράδοση 24ω σε όλη τη Θεσσαλονίκη ⚡", tickerAssembled: "Συστήματα πλήρως συναρμολογημένα & ελεγμένα",
+        tickerDelivery: "⚡ Ασφαλής παράδοση 24H σε όλη τη Θεσσαλονίκη ⚡", tickerAssembled: "Συστήματα πλήρως συναρμολογημένα & ελεγμένα",
         tickerProcessed: "⚡ Οι παραγγελίες επεξεργάζονται εντός 24 ωρών ⚡", tickerDiagnostic: "Πλήρης διαγνωστικός έλεγχος πριν από κάθε αποστολή",
 
         classifiedBrief: ">// UNIT_DATA", inspectSystemBtn: "Επιθεώρηση συστήματος", addedToVs: "Προστέθηκε στο VS", compareBtn: "Σύγκριση",
