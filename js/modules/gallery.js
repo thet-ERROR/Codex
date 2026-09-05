@@ -1,7 +1,190 @@
 // js/modules/gallery.js
 import { state } from '../state.js';
+import { t } from '../i18n.js';
 
-export function openGallery() { 
+// --- EXTRAS: normalisation, pricing, image sets ---
+
+// PCs created before the options field existed come back without it, so every read goes through
+// here and lands on the same defaults the backend schema declares.
+const DEFAULT_OPTIONS = {
+    storage: { enabled: true, hdd: 50, ssd: 80 },
+    proConfig: { enabled: false },
+    paint: { enabled: false, colorName: '', colorNameEl: '', colorHex: '#1a1a1a', price: 40, leadTimeHours: 48, images: [] }
+};
+
+function esc(s) {
+    return String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+}
+
+export function getOptions(pc) {
+    const o = (pc && pc.options) || {};
+    return {
+        storage: { ...DEFAULT_OPTIONS.storage, ...(o.storage || {}) },
+        proConfig: { ...DEFAULT_OPTIONS.proConfig, ...(o.proConfig || {}) },
+        paint: { ...DEFAULT_OPTIONS.paint, ...(o.paint || {}) }
+    };
+}
+
+function paintName(opts) {
+    const isGreek = (localStorage.getItem('codex_lang') || 'en') === 'el';
+    return (isGreek && opts.paint.colorNameEl) ? opts.paint.colorNameEl : (opts.paint.colorName || '');
+}
+
+// The image set currently on show: the painted photos while Custom Paint is on (and the admin
+// actually supplied some), otherwise the stock photos.
+export function getActiveImages(pc) {
+    if (!pc) return [];
+    const opts = getOptions(pc);
+    if (state.build.paint && opts.paint.enabled && opts.paint.images.length) return opts.paint.images;
+    return pc.images || [];
+}
+
+// Base price + every selected extra. Single source of truth for the live price, the breakdown
+// line, the cart entry and the WhatsApp order message.
+export function getBreakdown() {
+    const pc = state.currentGalleryPC;
+    if (!pc) return { base: 0, lines: [], total: 0 };
+    const opts = getOptions(pc);
+    const base = parseInt(String(pc.price).replace(/[^0-9]/g, '')) || 0;
+    const lines = [];
+
+    if (opts.storage.enabled && state.build.storage === 'hdd' && opts.storage.hdd > 0) {
+        lines.push({ key: 'storage', label: t('storageOptHdd'), price: opts.storage.hdd });
+    }
+    if (opts.storage.enabled && state.build.storage === 'ssd' && opts.storage.ssd > 0) {
+        lines.push({ key: 'storage', label: t('storageOptSsd'), price: opts.storage.ssd });
+    }
+    if (opts.proConfig.enabled && state.build.proConfig) {
+        lines.push({ key: 'proConfig', label: t('proConfigTitle'), price: state.proConfigPrice });
+    }
+    if (opts.paint.enabled && state.build.paint) {
+        const name = paintName(opts);
+        lines.push({ key: 'paint', label: name ? `${t('paintTitle')} — ${name}` : t('paintTitle'), price: opts.paint.price });
+    }
+
+    return { base, lines, total: lines.reduce((sum, l) => sum + l.price, base) };
+}
+
+// Builds the extras block for the PC currently open. Called on openGallery and again on a
+// language switch (prices/hours are baked into the strings, so data-i18n can't cover them).
+export function renderExtras() {
+    const host = document.getElementById('yg-extras-section');
+    const pc = state.currentGalleryPC;
+    if (!host || !pc) return;
+
+    const opts = getOptions(pc);
+    const showStorage = opts.storage.enabled && (opts.storage.hdd > 0 || opts.storage.ssd > 0);
+    const showPro = !!opts.proConfig.enabled;
+    const showPaint = !!opts.paint.enabled;
+
+    // Nothing enabled for this build: hide the whole block rather than leave an empty frame
+    host.classList.toggle('hidden', !showStorage && !showPro && !showPaint);
+
+    let html = `<div class="yg-extras-label">${esc(t('extrasLabel'))}</div>`;
+
+    if (showStorage) {
+        const hddOpt = opts.storage.hdd > 0
+            ? `<option value="hdd" ${state.build.storage === 'hdd' ? 'selected' : ''}>${esc(t('storageOptHdd'))} (+€${opts.storage.hdd})</option>` : '';
+        const ssdOpt = opts.storage.ssd > 0
+            ? `<option value="ssd" ${state.build.storage === 'ssd' ? 'selected' : ''}>${esc(t('storageOptSsd'))} (+€${opts.storage.ssd})</option>` : '';
+        html += `
+        <div class="yg-extra-block">
+            <div class="yg-storage-label">${esc(t('storageLabel'))}</div>
+            <select class="yg-storage-select" id="storage-select" onchange="onStorageChange(this.value)">
+                <option value="" ${!state.build.storage ? 'selected' : ''}>${esc(t('storageOptStandard'))}</option>
+                ${hddOpt}${ssdOpt}
+            </select>
+        </div>`;
+    }
+
+    if (showPro) {
+        html += `
+        <label class="yg-extra-toggle">
+            <input type="checkbox" id="opt-proconfig" ${state.build.proConfig ? 'checked' : ''} onchange="onProConfigChange(this.checked)">
+            <span class="yg-extra-body">
+                <span class="yg-extra-title">
+                    ${esc(t('proConfigTitle'))}
+                    <span class="yg-extra-info" role="button" tabindex="0" title="${esc(t('proConfigInfoTitle'))}"
+                          onclick="event.preventDefault(); event.stopPropagation(); playClick(); openProConfigInfo();">
+                        <i class="ph-bold ph-info"></i>
+                    </span>
+                </span>
+                <span class="yg-extra-sub">${esc(t('proConfigShort'))}</span>
+            </span>
+            <span class="yg-extra-price">+€${state.proConfigPrice}</span>
+        </label>`;
+    }
+
+    if (showPaint) {
+        const name = paintName(opts);
+        html += `
+        <label class="yg-extra-toggle">
+            <input type="checkbox" id="opt-paint" ${state.build.paint ? 'checked' : ''} onchange="onPaintChange(this.checked)">
+            <span class="yg-extra-body">
+                <span class="yg-extra-title">
+                    <span class="yg-paint-swatch" style="background:${esc(opts.paint.colorHex || '#1a1a1a')}"></span>
+                    ${esc(t('paintTitle'))}${name ? ' — ' + esc(name) : ''}
+                </span>
+                <span class="yg-extra-sub">${esc(t('paintLeadTime', { hours: opts.paint.leadTimeHours }))}</span>
+            </span>
+            <span class="yg-extra-price">+€${opts.paint.price}</span>
+        </label>
+        <div class="yg-paint-notice" id="paint-notice" ${state.build.paint ? '' : 'hidden'}>
+            <p class="yg-paint-legal">${t('paintNoReturnText')}</p>
+            <label class="yg-paint-ack">
+                <input type="checkbox" id="opt-paint-ack" ${state.build.paintAck ? 'checked' : ''} onchange="onPaintAckChange(this.checked)">
+                <span>${esc(t('paintAckLabel'))}</span>
+            </label>
+        </div>`;
+    }
+
+    html += `<div class="yg-price-breakdown" id="yg-price-breakdown"></div>`;
+    host.innerHTML = html;
+    updatePrice();
+}
+
+export function onStorageChange(value) {
+    state.build.storage = value || '';
+    updatePrice();
+}
+
+export function onProConfigChange(checked) {
+    state.build.proConfig = !!checked;
+    updatePrice();
+}
+
+export function onPaintChange(checked) {
+    state.build.paint = !!checked;
+    if (!checked) state.build.paintAck = false;
+
+    const notice = document.getElementById('paint-notice');
+    if (notice) notice.hidden = !checked;
+    const ackBox = document.getElementById('opt-paint-ack');
+    if (ackBox && !checked) ackBox.checked = false;
+
+    // Swap to (or back from) the painted photo set and restart the carousel at its first frame
+    state.galleryIndex = 0;
+    updateGalleryImage();
+    updateGalleryArrows();
+    updatePrice();
+}
+
+export function onPaintAckChange(checked) {
+    state.build.paintAck = !!checked;
+    updatePrice();
+}
+
+// Custom paint is a made-to-order product, so the personalisation terms must be accepted before
+// the build can be ordered. Enforced here and again in addToCart.
+export function needsPaintAck() {
+    return state.build.paint && !state.build.paintAck;
+}
+
+export function openProConfigInfo() {
+    if (window.openModal) window.openModal('proconfig-info-modal');
+}
+
+export function openGallery() {
     state.currentGalleryPC = state.filtered[state.index]; 
     if(!state.currentGalleryPC) return;
     // Reset FPS panel state σε κάθε άνοιγμα κάρτας
@@ -9,8 +192,10 @@ export function openGallery() {
     if (fpsPanelReset) fpsPanelReset.classList.remove('active');
     const benchBtnReset = document.getElementById('bench-toggle-btn');
     if (benchBtnReset) benchBtnReset.innerHTML = '<i class="ph-bold ph-crosshair"></i> SHOW FPS';
-    state.galleryIndex = 0; 
-    
+    state.galleryIndex = 0;
+    // Every build starts unconfigured — extras never leak from the previously viewed PC
+    state.build = { storage: '', proConfig: false, paint: false, paintAck: false };
+
     const cardInner = document.getElementById('yg-card');
     if(cardInner) cardInner.classList.remove('flipped');
 
@@ -31,10 +216,10 @@ export function openGallery() {
     if(elLivePrice) elLivePrice.innerText = "€" + basePrice; 
     
     const elOldPrice = document.getElementById('yg-price-old');
-    if(elOldPrice) elOldPrice.innerText = "€" + Math.floor(basePrice * 1.2); 
-    
-    const elSelect = document.getElementById('storage-select');
-    if(elSelect) elSelect.value = "0"; 
+    if(elOldPrice) elOldPrice.innerText = "€" + Math.floor(basePrice * 1.2);
+
+    // Builds the extras this particular PC offers, then prices them (sets #yg-price-live)
+    renderExtras();
 
     // 2. Power Bar & Tier Badge
     let mScore = state.currentGalleryPC.multitasking || 0;
@@ -48,12 +233,8 @@ export function openGallery() {
 
     // 3. Image & Watermark
     const elImg = document.getElementById('yg-main-img');
-    if(elImg) elImg.src = state.currentGalleryPC.images[0] || 'assets/images/bg.jpg';
-    const imgCount = (state.currentGalleryPC.images || []).length;
-    const arrowLeft = document.getElementById('yg-arrow-left');
-    const arrowRight = document.getElementById('yg-arrow-right');
-    if (arrowLeft) arrowLeft.classList.toggle('hidden-arrow', imgCount <= 1);
-    if (arrowRight) arrowRight.classList.toggle('hidden-arrow', imgCount <= 1);
+    if(elImg) elImg.src = getActiveImages(state.currentGalleryPC)[0] || 'assets/images/bg.jpg';
+    updateGalleryArrows();
     
     const elWater = document.getElementById('g-watermark');
     if(elWater) elWater.innerText = state.currentGalleryPC.name;
@@ -203,13 +384,31 @@ export function openSpecInfo(key) {
     if(window.openModal) window.openModal('spec-info-modal');
 }
 
-export function updatePrice() { 
+export function updatePrice() {
     if(!state.currentGalleryPC) return;
-    const sel = document.getElementById('storage-select');
-    const extra = sel ? parseInt(sel.value) : 0; 
-    const base = parseInt(state.currentGalleryPC.price.replace(/[^0-9]/g, '')) || 0; 
+    const { base, lines, total } = getBreakdown();
+
     const liveP = document.getElementById('yg-price-live');
-    if(liveP) liveP.innerText = "€" + (base + extra); 
+    if(liveP) liveP.innerText = "€" + total;
+    const oldP = document.getElementById('yg-price-old');
+    if(oldP) oldP.innerText = "€" + Math.floor(total * 1.2);
+
+    const bd = document.getElementById('yg-price-breakdown');
+    if (bd) {
+        bd.hidden = lines.length === 0;
+        bd.innerHTML = lines.length === 0 ? '' :
+            `<div class="yg-bd-row"><span>${esc(t('priceBaseLabel'))}</span><span>€${base}</span></div>` +
+            lines.map(l => `<div class="yg-bd-row"><span>+ ${esc(l.label)}</span><span>+€${l.price}</span></div>`).join('') +
+            `<div class="yg-bd-row yg-bd-total"><span>${esc(t('priceTotalLabel'))}</span><span>€${total}</span></div>`;
+    }
+
+    // A painted build can't be ordered until the personalisation terms are accepted.
+    // Guarded on stock so this never re-enables the button on a sold-out system.
+    const addBtn = document.getElementById('yg-add-cart');
+    if (addBtn && (state.currentGalleryPC.stock || 0) > 0) {
+        addBtn.disabled = needsPaintAck();
+        addBtn.classList.toggle('needs-ack', needsPaintAck());
+    }
 }
 
 export function toggleCardFlip() {
@@ -227,17 +426,25 @@ export function toggleCardFlip() {
     }
 }
 
-export function updateGalleryImage() { 
-    const img = document.getElementById('yg-main-img');
-    if(img && state.currentGalleryPC && state.currentGalleryPC.images) {
-        img.src = state.currentGalleryPC.images[state.galleryIndex]; 
-    }
+export function updateGalleryArrows() {
+    const imgCount = getActiveImages(state.currentGalleryPC).length;
+    const arrowLeft = document.getElementById('yg-arrow-left');
+    const arrowRight = document.getElementById('yg-arrow-right');
+    if (arrowLeft) arrowLeft.classList.toggle('hidden-arrow', imgCount <= 1);
+    if (arrowRight) arrowRight.classList.toggle('hidden-arrow', imgCount <= 1);
 }
 
-export function changeGalleryImage(d) { 
-    if(!state.currentGalleryPC || !state.currentGalleryPC.images) return;
-    state.galleryIndex = (state.galleryIndex + d + state.currentGalleryPC.images.length) % state.currentGalleryPC.images.length; 
-    updateGalleryImage(); 
+export function updateGalleryImage() {
+    const img = document.getElementById('yg-main-img');
+    const imgs = getActiveImages(state.currentGalleryPC);
+    if (img && imgs.length) img.src = imgs[state.galleryIndex] || imgs[0];
+}
+
+export function changeGalleryImage(d) {
+    const imgs = getActiveImages(state.currentGalleryPC);
+    if (!imgs.length) return;
+    state.galleryIndex = (state.galleryIndex + d + imgs.length) % imgs.length;
+    updateGalleryImage();
 }
 
 export function toggleBenchmarksView() {
@@ -261,3 +468,9 @@ window.updatePrice = updatePrice;
 window.toggleCardFlip = toggleCardFlip;
 window.changeGalleryImage = changeGalleryImage;
 window.toggleBenchmarksView = toggleBenchmarksView;
+window.renderExtras = renderExtras;
+window.onStorageChange = onStorageChange;
+window.onProConfigChange = onProConfigChange;
+window.onPaintChange = onPaintChange;
+window.onPaintAckChange = onPaintAckChange;
+window.openProConfigInfo = openProConfigInfo;

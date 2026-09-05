@@ -226,14 +226,9 @@ Type 'help' for a list of commands.
             <div class="yg-old-price" id="yg-price-old">€0</div>
         </div>
 
-        <div class="yg-storage-section">
-            <div class="yg-storage-label" data-i18n="storageLabel">Storage Expansion</div>
-            <select class="yg-storage-select" id="storage-select" onchange="updatePrice()">
-                <option value="0" data-i18n="storageOptStandard">Standard (No Extra)</option>
-                <option value="50" data-i18n="storageOptHdd">+ 1TB HDD (€50)</option>
-                <option value="80" data-i18n="storageOptSsd">+ 1TB SSD (€80)</option>
-            </select>
-        </div>
+        <!-- Built by renderExtras() in js/modules/gallery.js — contents depend on which extras
+             the open PC has enabled in the admin panel. -->
+        <div class="yg-extras-section" id="yg-extras-section"></div>
 
         <div class="yg-buttons-section">
             <button class="yg-btn yg-btn-specs yg-btn-breathe" onclick="playClick(); toggleCardFlip()">
@@ -590,8 +585,17 @@ Type 'help' for a list of commands.
     <p data-i18n="rules1">1. Οι διαθέσιμες ποσότητες εμφανίζονται σε πραγματικό χρόνο· η παραγγελία ολοκληρώνεται με την επιβεβαίωση πληρωμής.</p>
     <p data-i18n="rules2">2. Οι τιμές περιλαμβάνουν ΦΠΑ, εκτός αν αναφέρεται διαφορετικά.</p>
     <p data-i18n="rules3">3. Ισχύει δικαίωμα υπαναχώρησης 14 ημερών και νόμιμη εγγύηση 2 ετών (βλ. Trust Protocols).</p>
-    <p data-i18n="rules4">4. Για πλήρεις όρους χρήσης και πολιτική απορρήτου, επικοινωνήστε μαζί μας.</p>
+    <p data-i18n="rules4">4. Σε περιπτώσεις custom βαφής ή άλλης τροποποίησης κατόπιν επιλογής του πελάτη, το προϊόν θεωρείται εξατομικευμένο και κατασκευάζεται κατά παραγγελία. Δεν γίνεται δεκτή επιστροφή χρημάτων λόγω αλλαγής γνώμης. Η νόμιμη εγγύηση 2 ετών για ελαττώματα ισχύει κανονικά.</p>
+    <p data-i18n="rules5">5. Για πλήρεις όρους χρήσης και πολιτική απορρήτου, επικοινωνήστε μαζί μας.</p>
 </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="proconfig-info-modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal('proconfig-info-modal')">X</span>
+            <h2 style="color:var(--neon-green); margin-bottom:15px;" data-i18n="proConfigInfoTitle">What Pro Configuration includes</h2>
+            <p style="color:#ccc; font-size:0.9rem; line-height:1.7; text-align:left;" data-i18n-html="proConfigInfoText"></p>
         </div>
     </div>
 

@@ -73,8 +73,9 @@ const initApp = async () => {
             if (startupText) startupText.innerText = status.message || "SYSTEM UNDER MAINTENANCE";
             return; // never hides #startup-overlay, never renders the rest of the site
         }
+        if (typeof status.proConfigPrice === 'number') state.proConfigPrice = status.proConfigPrice;
     } catch (e) {
-        // Network/API error: fail open, proceed with normal boot
+        // Network/API error: fail open, proceed with normal boot (state keeps the CONFIG default)
     }
 
     // 1. Setup Auth & Listeners
