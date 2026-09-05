@@ -69,8 +69,71 @@
         document.getElementById('review-area').innerHTML = currentReviews.map((r,i) => `<div class="tag" style="border-color:#b026ff;">${r.user} <span onclick="currentReviews.splice(${i},1);renderTags()">x</span></div>`).join('');
     }
 
+    // --- EXTRAS HELPERS ---
+    const $ = id => document.getElementById(id);
+
+    // Preset dropdown just fills the fields — you can always type your own colour over it.
+    function applyPaintPreset(value) {
+        if (!value) return;
+        const [en, el, hex] = value.split('|');
+        $('opt-paint-name').value = en;
+        $('opt-paint-nameEl').value = el;
+        $('opt-paint-hex').value = hex;
+        if ($('opt-paint-enabled')) $('opt-paint-enabled').checked = true;
+    }
+
+    function fillOptions(pc) {
+        const o = pc.options || {};
+        const st = o.storage || {}, paint = o.paint || {};
+        $('opt-storage-enabled').checked = st.enabled !== false;
+        $('opt-storage-hdd').value = st.hdd ?? 50;
+        $('opt-storage-ssd').value = st.ssd ?? 80;
+        $('opt-proconfig-enabled').checked = !!(o.proConfig && o.proConfig.enabled);
+        $('opt-paint-enabled').checked = !!paint.enabled;
+        $('opt-paint-name').value = paint.colorName || '';
+        $('opt-paint-nameEl').value = paint.colorNameEl || '';
+        $('opt-paint-hex').value = paint.colorHex || '#1a1a1a';
+        $('opt-paint-price').value = paint.price ?? 40;
+        $('opt-paint-lead').value = paint.leadTimeHours ?? 48;
+        $('opt-paint-images').value = (paint.images || []).join('\n');
+        $('opt-paint-preset').value = '';
+    }
+
+    function resetOptions() {
+        $('opt-storage-enabled').checked = true;
+        $('opt-storage-hdd').value = 50;
+        $('opt-storage-ssd').value = 80;
+        $('opt-proconfig-enabled').checked = false;
+        $('opt-paint-enabled').checked = false;
+        $('opt-paint-hex').value = '#1a1a1a';
+        $('opt-paint-price').value = 40;
+        $('opt-paint-lead').value = 48;
+        $('opt-paint-preset').value = '';
+    }
+
+    function collectOptions() {
+        return {
+            storage: {
+                enabled: $('opt-storage-enabled').checked,
+                hdd: parseInt($('opt-storage-hdd').value) || 0,
+                ssd: parseInt($('opt-storage-ssd').value) || 0
+            },
+            proConfig: { enabled: $('opt-proconfig-enabled').checked },
+            paint: {
+                enabled: $('opt-paint-enabled').checked,
+                colorName: $('opt-paint-name').value.trim(),
+                colorNameEl: $('opt-paint-nameEl').value.trim(),
+                colorHex: $('opt-paint-hex').value,
+                price: parseInt($('opt-paint-price').value) || 0,
+                leadTimeHours: parseInt($('opt-paint-lead').value) || 48,
+                images: $('opt-paint-images').value.split('\n').map(s => s.trim()).filter(Boolean)
+            }
+        };
+    }
+
     function edit(id) {
         const pc = inventory.find(i=>i._id===id); if(!pc) return;
+        fillOptions(pc);
        ['name','price','stock','description','lore','loreEl','multitasking','status','category'].forEach(k => {
     if(document.getElementById(k)) document.getElementById(k).value = pc[k]||'';
 });
@@ -92,7 +155,10 @@
 
     function resetForm() {
         editId=null; currentFPS=[]; currentReviews=[]; renderTags();
-        document.querySelectorAll('input, textarea').forEach(i=>i.value='');
+        // Scoped to the PC form — the unscoped version also wiped the vote form, the maintenance
+        // message and the global settings box every time a build was saved.
+        document.querySelectorAll('.col-left input, .col-left textarea').forEach(i=>i.value='');
+        resetOptions(); // checkboxes/colour/number defaults the blanket .value='' above can't restore
         document.getElementById('stock').value='1';
         document.getElementById('submit-btn').innerText = "UPLOAD SYSTEM";
         document.getElementById('cancel-btn').style.display = 'none';
@@ -133,8 +199,15 @@ const data = {
                 case: document.getElementById('specInfo-case').value
             },
             fps: currentFPS,
-            reviews: currentReviews
+            reviews: currentReviews,
+            options: collectOptions()
         };
+
+        // A paint option with no colour name renders as a nameless toggle on the storefront
+        if (data.options.paint.enabled && !data.options.paint.colorName && !data.options.paint.colorNameEl) {
+            return alert("CUSTOM ΒΑΦΗ: συμπλήρωσε όνομα χρώματος (ή διάλεξε έτοιμο) πριν την αποθήκευση.");
+        }
+
         const url = editId ? `${API}/drops/${editId}` : `${API}/drops`;
         const method = editId ? 'PUT' : 'POST';
         
@@ -222,7 +295,20 @@ const data = {
             const config = await res.json();
             document.getElementById('maint-toggle').checked = !!config.maintenanceMode;
             document.getElementById('maint-message').value = config.maintenanceMessage || '';
+            document.getElementById('proconfig-price').value = config.proConfigPrice ?? 30;
         } catch(e) { console.log("Maintenance config load error", e); }
+    }
+
+    // Pro Config is priced once for the whole shop; the storefront reads it from /api/status.
+    async function saveProConfigPrice() {
+        const proConfigPrice = parseInt(document.getElementById('proconfig-price').value);
+        if (Number.isNaN(proConfigPrice) || proConfigPrice < 0) return alert("Βάλε έγκυρη τιμή.");
+        const res = await fetch(`${API}/site-config`, {
+            method:'POST',
+            headers:{'Content-Type':'application/json', 'x-admin-auth':TOKEN},
+            body:JSON.stringify({ proConfigPrice })
+        });
+        alert(res.ok ? `PRO CONFIG PRICE: €${proConfigPrice}` : "ERROR SAVING PRICE");
     }
 
     async function saveMaintenance() {

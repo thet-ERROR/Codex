@@ -10,8 +10,26 @@ const translations = {
         armoryLocked: "Οπλοστάσιο κλειδωμένο", voteCommunityDrop: "Κοινοτικό drop!", voteProgressLabel: "Πρόοδος",
         vsModeReady: "Λειτουργία VS έτοιμη", chatTop: "CODEX AI",
 
+        extrasLabel: "Επιπλέον επιλογές",
         storageLabel: "Επέκταση αποθηκευτικού χώρου", storageOptStandard: "Στάνταρ (χωρίς επιπλέον)",
-        storageOptHdd: "+ 1TB HDD (€50)", storageOptSsd: "+ 1TB SSD (€80)",
+        storageOptHdd: "+ 1TB HDD", storageOptSsd: "+ 1TB SSD",
+
+        proConfigTitle: "Pro Configuration",
+        proConfigShort: "Βελτιστοποίηση συστήματος πριν την αποστολή",
+        proConfigInfoTitle: "Τι περιλαμβάνει το Pro Configuration",
+        proConfigInfoText: "Το σύστημα παραδίδεται ρυθμισμένο από εμάς, έτοιμο για χρήση:<br><br>✓ <strong>Ενεργοποίηση XMP/EXPO</strong> — η μνήμη RAM τρέχει στην πραγματική της ταχύτητα και όχι στην υποβαθμισμένη προεπιλογή.<br>✓ <strong>Καθαρισμός startup</strong> — αφαίρεση περιττών προγραμμάτων εκκίνησης για γρηγορότερο άνοιγμα.<br>✓ <strong>Πλάνο High Performance</strong> — ενεργοποίηση του σχεδίου υψηλών επιδόσεων στις ρυθμίσεις ενέργειας.<br>✓ <strong>Αφαίρεση διαφημίσεων Windows</strong> — απενεργοποίηση προτεινόμενου περιεχομένου και ειδοποιήσεων προώθησης.<br><br><em>Καμία αλλαγή δεν επηρεάζει την εγγύηση του συστήματος.</em>",
+
+        paintTitle: "Custom βαφή",
+        paintLeadTime: "⏱ Χρόνος προετοιμασίας: +{hours} ώρες για τη σωστή σκλήρυνση της βαφής (+2–3 εργάσιμες στην παράδοση).",
+        paintNoReturnText: "⚠ Εξατομικευμένο προϊόν: κατασκευάζεται βάσει της δικής σου επιλογής. Σύμφωνα με τον ν. 2251/1994 και την Οδηγία 2011/83/ΕΕ, τα προϊόντα κατά παραγγελία <strong>εξαιρούνται από το δικαίωμα αναιτιολόγητης υπαναχώρησης 14 ημερών</strong>. Η <strong>νόμιμη εγγύηση 2 ετών για ελαττώματα ισχύει κανονικά</strong>.",
+        paintAckLabel: "Διάβασα και αποδέχομαι τους όρους της custom βαφής.",
+        alertPaintAck: "Για να συνεχίσεις με custom βαφή, αποδέξου πρώτα τους όρους εξατομίκευσης.",
+
+        priceBaseLabel: "Βάση", priceTotalLabel: "Σύνολο",
+        cartOptStandard: "Στάνταρ",
+        orderMsgIntro: "Γεια σας! Θέλω να παραγγείλω από το PHOENIX CODEX:",
+        orderMsgTotal: "ΣΥΝΟΛΟ",
+        orderMsgPaintAck: "Αποδέχομαι τους όρους εξατομίκευσης για τη custom βαφή (εξαίρεση από υπαναχώρηση 14 ημερών).",
 
         wheelTitle: "Γύρισε τον τροχό", wheelLegendTitle: "Πιθανά έπαθλα",
         rewardCyberGold: "Skin Cyber Gold", rewardToxicOrange: "Skin Toxic Orange", rewardNeonPink: "Skin Neon Pink",
@@ -55,7 +73,8 @@ const translations = {
         rules1: "1. Οι διαθέσιμες ποσότητες εμφανίζονται σε πραγματικό χρόνο· η παραγγελία ολοκληρώνεται με την επιβεβαίωση πληρωμής.",
         rules2: "2. Οι τιμές περιλαμβάνουν ΦΠΑ, εκτός αν αναφέρεται διαφορετικά.",
         rules3: "3. Ισχύει δικαίωμα υπαναχώρησης 14 ημερών και νόμιμη εγγύηση 2 ετών (βλ. Trust Protocols).",
-        rules4: "4. Για πλήρεις όρους χρήσης και πολιτική απορρήτου, επικοινωνήστε μαζί μας.",
+        rules4: "4. Σε περιπτώσεις custom βαφής ή άλλης τροποποίησης κατόπιν επιλογής του πελάτη, το προϊόν θεωρείται εξατομικευμένο και κατασκευάζεται κατά παραγγελία. Δεν γίνεται δεκτή επιστροφή χρημάτων λόγω αλλαγής γνώμης (εξαίρεση από το δικαίωμα υπαναχώρησης 14 ημερών, ν. 2251/1994 & Οδηγία 2011/83/ΕΕ). Η νόμιμη εγγύηση 2 ετών για ελαττώματα ισχύει κανονικά.",
+        rules5: "5. Για πλήρεις όρους χρήσης και πολιτική απορρήτου, επικοινωνήστε μαζί μας.",
 
         helpTitle: "Υποστήριξη",
         helpText: "Για ερωτήσεις σχετικά με παραγγελίες, εγγύηση ή τεχνική υποστήριξη, επικοινωνήστε στο <strong>d.codexphoenix@gmail.com</strong> ή μέσω του chat κάτω αριστερά.",
@@ -93,8 +112,26 @@ const translations = {
         armoryLocked: "ARMORY LOCKED", voteCommunityDrop: "COMMUNITY DROP!", voteProgressLabel: "PROGRESS",
         vsModeReady: "VS MODE READY", chatTop: "CODEX AI",
 
+        extrasLabel: "EXTRAS",
         storageLabel: "Storage Expansion", storageOptStandard: "Standard (No Extra)",
-        storageOptHdd: "+ 1TB HDD (€50)", storageOptSsd: "+ 1TB SSD (€80)",
+        storageOptHdd: "+ 1TB HDD", storageOptSsd: "+ 1TB SSD",
+
+        proConfigTitle: "Pro Configuration",
+        proConfigShort: "System optimised before it ships",
+        proConfigInfoTitle: "What Pro Configuration includes",
+        proConfigInfoText: "The system ships already tuned by us, ready to use:<br><br>✓ <strong>XMP/EXPO enabled</strong> — your RAM runs at its rated speed instead of the downclocked default.<br>✓ <strong>Startup cleanup</strong> — unnecessary startup programs removed for a faster boot.<br>✓ <strong>High Performance power plan</strong> — the high performance profile enabled in power settings.<br>✓ <strong>Windows ads removed</strong> — suggested content and promotional notifications turned off.<br><br><em>None of these changes affect your system warranty.</em>",
+
+        paintTitle: "Custom Paint",
+        paintLeadTime: "⏱ Preparation time: +{hours} hours for the paint to cure properly (+2–3 working days on delivery).",
+        paintNoReturnText: "⚠ Personalised product: built to your own specification. Under Greek law 2251/1994 and EU Directive 2011/83/EU, made-to-order goods are <strong>exempt from the 14-day right of withdrawal</strong>. The <strong>2-year statutory warranty against defects still applies in full</strong>.",
+        paintAckLabel: "I have read and accept the custom paint terms.",
+        alertPaintAck: "To continue with custom paint, please accept the personalisation terms first.",
+
+        priceBaseLabel: "Base", priceTotalLabel: "Total",
+        cartOptStandard: "Standard",
+        orderMsgIntro: "Hello! I'd like to order from PHOENIX CODEX:",
+        orderMsgTotal: "TOTAL",
+        orderMsgPaintAck: "I accept the personalisation terms for the custom paint (exempt from the 14-day withdrawal right).",
 
         wheelTitle: "SPIN THE WHEEL", wheelLegendTitle: "POSSIBLE REWARDS",
         rewardCyberGold: "CYBER GOLD SKIN", rewardToxicOrange: "TOXIC ORANGE SKIN", rewardNeonPink: "NEON PINK SKIN",
@@ -138,7 +175,8 @@ const translations = {
         rules1: "1. Available quantities are shown in real time; an order is completed once payment is confirmed.",
         rules2: "2. Prices include VAT unless stated otherwise.",
         rules3: "3. A 14-day right of withdrawal and a 2-year statutory warranty apply (see Trust Protocols).",
-        rules4: "4. For full terms of use and our privacy policy, please contact us.",
+        rules4: "4. Where a custom paint job or any other customer-specified modification is ordered, the product is considered personalised and made to order. Refunds for change of mind are not accepted (exempt from the 14-day right of withdrawal under Greek law 2251/1994 & EU Directive 2011/83/EU). The 2-year statutory warranty against defects still applies in full.",
+        rules5: "5. For full terms of use and our privacy policy, please contact us.",
 
         helpTitle: "SUPPORT",
         helpText: "For questions about orders, warranty, or technical support, contact us at <strong>d.codexphoenix@gmail.com</strong> or via the chat in the bottom left.",
@@ -230,14 +268,21 @@ export function applyLanguage(lang) {
     if (window.renderCard) window.renderCard();
     if (window.updateAuthUI) window.updateAuthUI(localStorage.getItem('codex_username'));
     if (window.renderGlobalReviews) window.renderGlobalReviews();
+    // Extras rows carry prices/hours baked into their text, so they're built in JS, not data-i18n
+    if (window.renderExtras) window.renderExtras();
+    if (window.updateCartUI) window.updateCartUI();
 }
 
 export function toggleLanguage() {
     applyLanguage(currentLang === 'el' ? 'en' : 'el');
 }
 
-export function t(key) {
-    return translations[currentLang]?.[key] ?? translations.el[key] ?? key;
+// t('paintLeadTime', { hours: 48 }) fills {hours} in the string. Values are inserted as-is, so
+// only pass numbers/trusted labels — never raw user input into a key rendered with innerHTML.
+export function t(key, vars) {
+    const str = translations[currentLang]?.[key] ?? translations.el[key] ?? key;
+    if (!vars) return str;
+    return str.replace(/\{(\w+)\}/g, (m, name) => (vars[name] !== undefined ? vars[name] : m));
 }
 
 window.toggleLanguage = toggleLanguage;

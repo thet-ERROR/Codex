@@ -25,6 +25,11 @@ export const state = {
     currentTheme: localStorage.getItem('codex_theme') || CONFIG.DEFAULT_THEME,
     matrixEnabled: false,
     isHacked: false,
+    // Global price of the Pro Config extra, refreshed from /api/status at boot.
+    proConfigPrice: CONFIG.DEFAULT_PRO_CONFIG_PRICE,
+    // Extras chosen for the PC currently open in the gallery. Reset on every openGallery().
+    // Single source of truth for pricing, the image set shown, and what lands in the cart.
+    build: { storage: '', proConfig: false, paint: false, paintAck: false },
     bgVolume: 0.1,
     unlockedColors: JSON.parse(localStorage.getItem('codex_unlocked_colors')) || []
 };
