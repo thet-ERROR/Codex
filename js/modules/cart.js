@@ -2,7 +2,7 @@
 import { state } from '../state.js';
 import { CONFIG } from '../config.js';
 import { t } from '../i18n.js';
-import { getBreakdown, getActiveImages, needsPaintAck } from './gallery.js';
+import { getBreakdown, getActiveImages } from './gallery.js';
 
 function esc(s) {
     return String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -51,8 +51,6 @@ export function addToCart() {
     const pc = state.currentGalleryPC;
     if(!pc) return;
     if(pc.stock === 0) return alert(t('alertSoldOut'));
-    // Made-to-order paint can't be ordered without accepting the personalisation terms
-    if(needsPaintAck()) return alert(t('alertPaintAck'));
 
     const { base, lines, total } = getBreakdown();
 
@@ -61,7 +59,8 @@ export function addToCart() {
         basePrice: base,
         price: total,
         options: lines.map(l => ({ label: l.label, price: l.price })),
-        // Recorded so the order message can state the terms were accepted
+        // build.paint only ever goes true through the consent modal's Accept button, so this
+        // doubles as "the personalisation terms were accepted" for the order message.
         paintAck: !!state.build.paint,
         // The painted photo when paint is on, so the cart shows what was actually ordered
         img: getActiveImages(pc)[0] || ''

@@ -252,53 +252,13 @@ body.night-mode .yg-card-front, body.night-mode .yg-card-back { background: var(
     display: inline-block;
 }
 
-/* Made-to-order notice — visible only while paint is selected */
-.yg-paint-notice {
-    background: rgba(255, 170, 0, 0.07);
-    border: 1px solid rgba(255, 170, 0, 0.35);
-    border-radius: 8px;
-    padding: 10px 12px;
-    display: flex;
-    flex-direction: column;
-    gap: 9px;
-}
-.yg-paint-notice[hidden] { display: none; }
-.yg-paint-legal { font-size: 0.68rem; color: #d8b271; line-height: 1.5; margin: 0; }
+/* Made-to-order consent — a modal (#paint-consent-modal in index.html), not inline, so
+   accepting/declining never changes the extras block's height and shoves the card photo out of
+   view (that's what an inline notice used to do). */
+.yg-paint-legal { font-size: 0.8rem; color: #d8b271; line-height: 1.6; text-align: left; margin: 0 0 20px 0; }
 .yg-paint-legal strong { color: #ffc14d; }
-.yg-paint-ack {
-    display: flex;
-    align-items: flex-start;
-    gap: 8px;
-    font-size: 0.72rem;
-    color: #fff;
-    cursor: pointer;
-    line-height: 1.4;
-}
-.yg-paint-ack input[type="checkbox"] {
-    appearance: none;
-    -webkit-appearance: none;
-    width: 16px;
-    height: 16px;
-    flex-shrink: 0;
-    margin: 1px 0 0 0;
-    border: 1px solid #ffaa00;
-    border-radius: 3px;
-    background: #000;
-    cursor: pointer;
-    position: relative;
-}
-.yg-paint-ack input[type="checkbox"]:checked { background: #ffaa00; }
-.yg-paint-ack input[type="checkbox"]:checked::after {
-    content: "✓";
-    position: absolute;
-    inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #000;
-    font-size: 0.72rem;
-    font-weight: bold;
-}
+.yg-paint-consent-actions { display: flex; gap: 12px; }
+.yg-paint-consent-actions .yg-btn { flex: 1; }
 
 /* Price breakdown — base + each extra, so the total is never a mystery number */
 .yg-price-breakdown {

@@ -128,14 +128,7 @@ export function renderExtras() {
                 <span class="yg-extra-sub">${esc(t('paintLeadTime', { hours: opts.paint.leadTimeHours }))}</span>
             </span>
             <span class="yg-extra-price">+€${opts.paint.price}</span>
-        </label>
-        <div class="yg-paint-notice" id="paint-notice" ${state.build.paint ? '' : 'hidden'}>
-            <p class="yg-paint-legal">${t('paintNoReturnText')}</p>
-            <label class="yg-paint-ack">
-                <input type="checkbox" id="opt-paint-ack" ${state.build.paintAck ? 'checked' : ''} onchange="onPaintAckChange(this.checked)">
-                <span>${esc(t('paintAckLabel'))}</span>
-            </label>
-        </div>`;
+        </label>`;
     }
 
     html += `<div class="yg-price-breakdown" id="yg-price-breakdown"></div>`;
@@ -153,31 +146,45 @@ export function onProConfigChange(checked) {
     updatePrice();
 }
 
+// Checking the box doesn't commit anything yet — it opens the consent modal (made-to-order,
+// no 14-day withdrawal) and only acceptPaintConsent()/declinePaintConsent() decide the outcome.
+// This also keeps the extras block a fixed height: nothing expands inline and shoves the photo
+// out of view, which is what an inline notice used to do.
 export function onPaintChange(checked) {
-    state.build.paint = !!checked;
-    if (!checked) state.build.paintAck = false;
+    if (checked) {
+        const pc = state.currentGalleryPC;
+        if (!pc) return;
+        const opts = getOptions(pc);
+        const leadEl = document.getElementById('paint-consent-lead');
+        if (leadEl) leadEl.textContent = t('paintLeadTime', { hours: opts.paint.leadTimeHours });
+        const legalEl = document.getElementById('paint-consent-legal');
+        if (legalEl) legalEl.innerHTML = t('paintNoReturnText');
+        if (window.openModal) window.openModal('paint-consent-modal');
+    } else {
+        state.build.paint = false;
+        state.galleryIndex = 0;
+        updateGalleryImage();
+        updateGalleryArrows();
+        updatePrice();
+    }
+}
 
-    const notice = document.getElementById('paint-notice');
-    if (notice) notice.hidden = !checked;
-    const ackBox = document.getElementById('opt-paint-ack');
-    if (ackBox && !checked) ackBox.checked = false;
-
-    // Swap to (or back from) the painted photo set and restart the carousel at its first frame
+export function acceptPaintConsent() {
+    state.build.paint = true;
     state.galleryIndex = 0;
     updateGalleryImage();
     updateGalleryArrows();
     updatePrice();
+    if (window.closeModal) window.closeModal('paint-consent-modal');
 }
 
-export function onPaintAckChange(checked) {
-    state.build.paintAck = !!checked;
-    updatePrice();
-}
-
-// Custom paint is a made-to-order product, so the personalisation terms must be accepted before
-// the build can be ordered. Enforced here and again in addToCart.
-export function needsPaintAck() {
-    return state.build.paint && !state.build.paintAck;
+// Also wired to the modal's own X button, so dismissing it any way reverts the checkbox rather
+// than leaving it visually checked while state.build.paint is still false.
+export function declinePaintConsent() {
+    state.build.paint = false;
+    const cb = document.getElementById('opt-paint');
+    if (cb) cb.checked = false;
+    if (window.closeModal) window.closeModal('paint-consent-modal');
 }
 
 export function openProConfigInfo() {
@@ -194,7 +201,7 @@ export function openGallery() {
     if (benchBtnReset) benchBtnReset.innerHTML = '<i class="ph-bold ph-crosshair"></i> SHOW FPS';
     state.galleryIndex = 0;
     // Every build starts unconfigured — extras never leak from the previously viewed PC
-    state.build = { storage: '', proConfig: false, paint: false, paintAck: false };
+    state.build = { storage: '', proConfig: false, paint: false };
 
     const cardInner = document.getElementById('yg-card');
     if(cardInner) cardInner.classList.remove('flipped');
@@ -402,13 +409,6 @@ export function updatePrice() {
             `<div class="yg-bd-row yg-bd-total"><span>${esc(t('priceTotalLabel'))}</span><span>€${total}</span></div>`;
     }
 
-    // A painted build can't be ordered until the personalisation terms are accepted.
-    // Guarded on stock so this never re-enables the button on a sold-out system.
-    const addBtn = document.getElementById('yg-add-cart');
-    if (addBtn && (state.currentGalleryPC.stock || 0) > 0) {
-        addBtn.disabled = needsPaintAck();
-        addBtn.classList.toggle('needs-ack', needsPaintAck());
-    }
 }
 
 export function toggleCardFlip() {
@@ -472,5 +472,6 @@ window.renderExtras = renderExtras;
 window.onStorageChange = onStorageChange;
 window.onProConfigChange = onProConfigChange;
 window.onPaintChange = onPaintChange;
-window.onPaintAckChange = onPaintAckChange;
+window.acceptPaintConsent = acceptPaintConsent;
+window.declinePaintConsent = declinePaintConsent;
 window.openProConfigInfo = openProConfigInfo;

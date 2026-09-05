@@ -29,7 +29,9 @@ export const state = {
     proConfigPrice: CONFIG.DEFAULT_PRO_CONFIG_PRICE,
     // Extras chosen for the PC currently open in the gallery. Reset on every openGallery().
     // Single source of truth for pricing, the image set shown, and what lands in the cart.
-    build: { storage: '', proConfig: false, paint: false, paintAck: false },
+    // paint only ever goes true through the consent modal's Accept button (js/modules/gallery.js
+    // acceptPaintConsent), so it never needs a separate "did they ack it" flag.
+    build: { storage: '', proConfig: false, paint: false },
     bgVolume: 0.1,
     unlockedColors: JSON.parse(localStorage.getItem('codex_unlocked_colors')) || []
 };
