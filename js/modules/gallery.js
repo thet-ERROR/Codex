@@ -109,7 +109,6 @@ export function renderExtras() {
                         <i class="ph-bold ph-info"></i>
                     </span>
                 </span>
-                <span class="yg-extra-sub">${esc(t('proConfigShort'))}</span>
             </span>
             <span class="yg-extra-price">+€${state.proConfigPrice}</span>
         </label>`;
@@ -125,7 +124,6 @@ export function renderExtras() {
                     <span class="yg-paint-swatch" style="background:${esc(opts.paint.colorHex || '#1a1a1a')}"></span>
                     ${esc(t('paintTitle'))}${name ? ' — ' + esc(name) : ''}
                 </span>
-                <span class="yg-extra-sub">${esc(t('paintLeadTime', { hours: opts.paint.leadTimeHours }))}</span>
             </span>
             <span class="yg-extra-price">+€${opts.paint.price}</span>
         </label>`;
@@ -144,6 +142,9 @@ export function onStorageChange(value) {
 export function onProConfigChange(checked) {
     state.build.proConfig = !!checked;
     updatePrice();
+    // Unlike paint this isn't a consent gate — the toggle applies immediately either way — but
+    // turning it on surfaces what it actually does now that the subtitle line is gone.
+    if (checked) openProConfigInfo();
 }
 
 // Checking the box doesn't commit anything yet — it opens the consent modal (made-to-order,

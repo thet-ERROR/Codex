@@ -15,7 +15,6 @@ const translations = {
         storageOptHdd: "+ 1TB HDD", storageOptSsd: "+ 1TB SSD",
 
         proConfigTitle: "Pro Configuration",
-        proConfigShort: "Βελτιστοποίηση συστήματος πριν την αποστολή",
         proConfigInfoTitle: "Τι περιλαμβάνει το Pro Configuration",
         proConfigInfoText: "Το σύστημα παραδίδεται ρυθμισμένο από εμάς, έτοιμο για χρήση:<br><br>✓ <strong>Ενεργοποίηση XMP/EXPO</strong> — η μνήμη RAM τρέχει στην πραγματική της ταχύτητα και όχι στην υποβαθμισμένη προεπιλογή.<br>✓ <strong>Καθαρισμός startup</strong> — αφαίρεση περιττών προγραμμάτων εκκίνησης για γρηγορότερο άνοιγμα.<br>✓ <strong>Πλάνο High Performance</strong> — ενεργοποίηση του σχεδίου υψηλών επιδόσεων στις ρυθμίσεις ενέργειας.<br>✓ <strong>Αφαίρεση διαφημίσεων Windows</strong> — απενεργοποίηση προτεινόμενου περιεχομένου και ειδοποιήσεων προώθησης.<br><br><em>Καμία αλλαγή δεν επηρεάζει την εγγύηση του συστήματος.</em>",
 
@@ -116,7 +115,6 @@ const translations = {
         storageOptHdd: "+ 1TB HDD", storageOptSsd: "+ 1TB SSD",
 
         proConfigTitle: "Pro Configuration",
-        proConfigShort: "System optimised before it ships",
         proConfigInfoTitle: "What Pro Configuration includes",
         proConfigInfoText: "The system ships already tuned by us, ready to use:<br><br>✓ <strong>XMP/EXPO enabled</strong> — your RAM runs at its rated speed instead of the downclocked default.<br>✓ <strong>Startup cleanup</strong> — unnecessary startup programs removed for a faster boot.<br>✓ <strong>High Performance power plan</strong> — the high performance profile enabled in power settings.<br>✓ <strong>Windows ads removed</strong> — suggested content and promotional notifications turned off.<br><br><em>None of these changes affect your system warranty.</em>",
 
