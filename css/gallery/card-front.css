@@ -221,11 +221,6 @@ body.night-mode .yg-card-front, body.night-mode .yg-card-back { background: var(
     font-size: 0.85rem;
     color: #fff;
 }
-.yg-extra-sub {
-    font-size: 0.68rem;
-    color: #888;
-    line-height: 1.35;
-}
 .yg-extra-price {
     font-family: var(--font-ui);
     font-size: 0.9rem;
