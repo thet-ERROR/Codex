@@ -599,6 +599,22 @@ Type 'help' for a list of commands.
         </div>
     </div>
 
+    <!-- Opened by onPaintChange() in js/modules/gallery.js when the Custom Paint box is ticked.
+         Accept commits state.build.paint (and swaps to the painted photos); Decline/X reverts
+         the checkbox. Nothing about custom paint takes effect until one of those runs. -->
+    <div class="modal-overlay" id="paint-consent-modal">
+        <div class="modal-content" style="width:520px;">
+            <span class="close-modal" onclick="declinePaintConsent()">X</span>
+            <h2 style="color:#ffaa00; margin-bottom:15px;" data-i18n="paintTitle">Custom Paint</h2>
+            <p id="paint-consent-lead" style="color:#ccc; font-size:0.85rem; margin-bottom:15px;"></p>
+            <p class="yg-paint-legal" id="paint-consent-legal"></p>
+            <div class="yg-paint-consent-actions">
+                <button class="yg-btn yg-btn-specs" onclick="playClick(); declinePaintConsent()" data-i18n="paintDeclineBtn">CANCEL</button>
+                <button class="yg-btn yg-btn-cart" onclick="playClick(); acceptPaintConsent()" data-i18n="paintAcceptBtn">ACCEPT & APPLY</button>
+            </div>
+        </div>
+    </div>
+
     <div class="modal-overlay" id="help-modal">
         <div class="modal-content">
             <span class="close-modal" onclick="closeModal('help-modal')">X</span>

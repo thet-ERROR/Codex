@@ -22,8 +22,7 @@ const translations = {
         paintTitle: "Custom βαφή",
         paintLeadTime: "⏱ Χρόνος προετοιμασίας: +{hours} ώρες για τη σωστή σκλήρυνση της βαφής (+2–3 εργάσιμες στην παράδοση).",
         paintNoReturnText: "⚠ Εξατομικευμένο προϊόν: κατασκευάζεται βάσει της δικής σου επιλογής. Σύμφωνα με τον ν. 2251/1994 και την Οδηγία 2011/83/ΕΕ, τα προϊόντα κατά παραγγελία <strong>εξαιρούνται από το δικαίωμα αναιτιολόγητης υπαναχώρησης 14 ημερών</strong>. Η <strong>νόμιμη εγγύηση 2 ετών για ελαττώματα ισχύει κανονικά</strong>.",
-        paintAckLabel: "Διάβασα και αποδέχομαι τους όρους της custom βαφής.",
-        alertPaintAck: "Για να συνεχίσεις με custom βαφή, αποδέξου πρώτα τους όρους εξατομίκευσης.",
+        paintDeclineBtn: "ΑΚΥΡΩΣΗ", paintAcceptBtn: "ΑΠΟΔΟΧΗ & ΕΦΑΡΜΟΓΗ",
 
         priceBaseLabel: "Βάση", priceTotalLabel: "Σύνολο",
         cartOptStandard: "Στάνταρ",
@@ -124,8 +123,7 @@ const translations = {
         paintTitle: "Custom Paint",
         paintLeadTime: "⏱ Preparation time: +{hours} hours for the paint to cure properly (+2–3 working days on delivery).",
         paintNoReturnText: "⚠ Personalised product: built to your own specification. Under Greek law 2251/1994 and EU Directive 2011/83/EU, made-to-order goods are <strong>exempt from the 14-day right of withdrawal</strong>. The <strong>2-year statutory warranty against defects still applies in full</strong>.",
-        paintAckLabel: "I have read and accept the custom paint terms.",
-        alertPaintAck: "To continue with custom paint, please accept the personalisation terms first.",
+        paintDeclineBtn: "CANCEL", paintAcceptBtn: "ACCEPT & APPLY",
 
         priceBaseLabel: "Base", priceTotalLabel: "Total",
         cartOptStandard: "Standard",

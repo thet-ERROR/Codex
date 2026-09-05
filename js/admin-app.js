@@ -72,6 +72,25 @@
     // --- EXTRAS HELPERS ---
     const $ = id => document.getElementById(id);
 
+    // <input type="datetime-local"> has no timezone of its own — "2024-01-01T10:00" is read/written
+    // as the BROWSER's local time. Sending that raw string to the backend meant Mongoose re-parsed
+    // it with `new Date(...)` on the server (Render runs in UTC), silently shifting every vote
+    // window by the admin's UTC offset (+2/+3h for Greece) — this is why the vote timer/button
+    // could look locked or expired at times that felt wrong. Converting through toISOString() here
+    // pins the moment to a real instant before it ever leaves the browser.
+    function localInputToISO(value) {
+        if (!value) return null;
+        const d = new Date(value);
+        return isNaN(d) ? null : d.toISOString();
+    }
+    function isoToLocalInput(iso) {
+        if (!iso) return '';
+        const d = new Date(iso);
+        if (isNaN(d)) return '';
+        const pad = n => String(n).padStart(2, '0');
+        return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+    }
+
     // Preset dropdown just fills the fields — you can always type your own colour over it.
     function applyPaintPreset(value) {
         if (!value) return;
@@ -237,6 +256,7 @@ const data = {
                 document.getElementById('v-target').value=v.targetVotes;
                 document.getElementById('v-days').value=v.durationDays;
                 document.getElementById('v-imageUrl').value = v.image || '';
+                document.getElementById('v-start').value = isoToLocalInput(v.startDate);
                 const specs = v.specs || {};
                 ['cpu','gpu','ram','ssd','mobo','psu','case'].forEach(k => {
                     const el = document.getElementById('v-' + k);
@@ -249,13 +269,15 @@ const data = {
     async function uploadVote() {
         // Παίρνουμε το Link απευθείας από το Text Box για το Vote Event!
         const imgInput = document.getElementById('v-imageUrl').value.trim();
-        
+        const startISO = localInputToISO(document.getElementById('v-start').value);
+        if (!startISO) return alert("Βάλε ημερομηνία/ώρα έναρξης — χωρίς αυτήν το countdown δεν ξεκινάει ποτέ.");
+
         const data = {
             title: document.getElementById('v-title').value,
             price: document.getElementById('v-price').value,
             image: imgInput,
             targetVotes: document.getElementById('v-target').value,
-            startDate: document.getElementById('v-start').value,
+            startDate: startISO,
             durationDays: document.getElementById('v-days').value,
             specs: {
                 cpu: document.getElementById('v-cpu').value,
