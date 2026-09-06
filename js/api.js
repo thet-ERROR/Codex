@@ -10,7 +10,12 @@ export const api = {
         return await res.json();
     },
     async fetchVoteEvent() {
-        const res = await fetch(`${CONFIG.API_URL}/vote-event`);
+        // Token is sent when we have one so the server can answer "has THIS agent already
+        // voted?". The route is public — guests just get hasVoted: false.
+        const token = localStorage.getItem('codex_token');
+        const res = await fetch(`${CONFIG.API_URL}/vote-event`, {
+            headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+        });
         return await res.json();
     },
     async checkMissionCode(code) {

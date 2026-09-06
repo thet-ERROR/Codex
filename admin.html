@@ -199,6 +199,22 @@
                     <div><label>Duration (Days)</label><input type="number" id="v-days" placeholder="3"></div>
                 </div>
                 <label>Start Date</label><input type="datetime-local" id="v-start">
+
+                <label style="color:#ffc43d; margin-top:15px;">INSPECT CARD CONTENT</label>
+                <p class="extras-hint">Εμφανίζονται όταν ο επισκέπτης πατήσει INSPECT SYSTEM στην κάρτα του vote.</p>
+                <label>Description</label><textarea id="v-description" placeholder="System details..." style="height:55px;"></textarea>
+                <label>Classified Brief (Lore) — EN</label><textarea id="v-lore" placeholder="Mini story..." style="height:55px;"></textarea>
+                <label>Classified Brief (Lore) — EL</label><textarea id="v-loreEl" placeholder="Ίδιο κείμενο στα ελληνικά..." style="height:55px;"></textarea>
+                <label>Multitasking (0-100)</label><input type="number" id="v-multitasking" placeholder="0">
+
+                <label style="color:#ccff00; margin-top:15px;">PERFORMANCE (FPS)</label>
+                <div class="add-row">
+                    <select id="v-fps-game"><option>Fortnite</option><option>Warzone</option><option>GTA V</option><option>Valorant</option><option>LoL</option></select>
+                    <input type="number" id="v-fps-score" placeholder="FPS" style="width:80px;">
+                    <button class="btn-sm edit-btn" onclick="addVoteFPS()">+</button>
+                </div>
+                <div id="v-fps-area" class="tags-container"></div>
+
                 <label style="color:#00f0ff; margin-top:15px;">HARDWARE SPECS</label>
                 <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
                     <input type="text" id="v-cpu" placeholder="CPU (e.g. Ryzen 5)">

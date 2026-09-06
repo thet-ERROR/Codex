@@ -145,44 +145,41 @@ Type 'help' for a list of commands.
             </div>
         </div>
 
+        <!-- Specs / FPS / lore all live in the shared inspect card (openVoteGallery in
+             js/modules/vote.js) so this drop behaves like every other card — it just can't be
+             configured or added to the cart. -->
         <div id="vote-view" class="hidden">
-            <div class="vote-flip-wrap" id="vote-flip-wrap">
-                <div class="vote-container vote-face-front">
-                    <i class="ph-fill ph-diamond vote-diamond-badge"></i>
-                    <div class="vote-header-row">
-                        <span style="font-family:var(--font-ui); font-weight:800; color:var(--neon-purple); font-size:1.2rem;" data-i18n="voteCommunityDrop">COMMUNITY DROP!</span>
-                        <div class="info-icon" onclick="openModal('vote-info-modal')">?</div>
-                    </div>
-                    <h2 id="v-title" style="color:#fff; margin-bottom:5px; font-size:2rem; text-transform:uppercase;">LOADING...</h2>
-                    <div id="v-price-display" style="color:var(--neon-green); font-family:var(--font-ui); font-weight:bold; font-size:1.5rem; margin-bottom:20px;"></div>
-                    <div class="mystery-img-wrap">
-                        <img id="v-img" src="" class="mystery-img" alt="Vote Event Image">
-                        <i class="ph-fill ph-lock-key lock-icon" id="v-lock"></i>
-                    </div>
-                    <div style="display:flex; justify-content:space-between; font-size:0.8rem; color:#ccc;">
-                        <span data-i18n="voteProgressLabel">PROGRESS</span>
-                        <span id="v-count">0 / 0 VOTES</span>
-                    </div>
-                    <div class="vote-progress-wrap">
-                        <div class="vote-progress-fill" id="v-fill"></div>
-                    </div>
-                    <div id="v-remaining-chip" class="vote-remaining-chip hidden"></div>
-                    <button class="vote-btn" id="v-btn" onclick="castVote()">AUTHORIZE DROP</button>
-                    <button class="vote-btn hidden" id="v-buy-btn" onclick="buyVotePC()" style="background:#ccff00; color:#000; margin-top:10px;">SECURE NOW</button>
-                    <div class="timer-text" id="v-timer">CALCULATING TIME...</div>
+            <div class="vote-container" id="vote-container">
+                <i class="ph-fill ph-diamond vote-diamond-badge"></i>
+                <div class="vote-header-row">
+                    <span class="vote-kicker" data-i18n="voteCommunityDrop">COMMUNITY DROP!</span>
+                    <div class="info-icon" onclick="openModal('vote-info-modal')">?</div>
+                </div>
 
-                    <button class="vote-flip-btn hidden" id="v-specs-toggle" onclick="playClick(); toggleVoteSpecs()">
-                        <i class="ph-bold ph-diamond"></i> <span data-i18n="voteSpecsBtn">VIEW SPECS</span>
-                    </button>
+                <h2 id="v-title" class="vote-title">LOADING...</h2>
+                <div id="v-price-display" class="vote-price"></div>
+
+                <div class="mystery-img-wrap" onclick="playClick(); openVoteGallery()" title="Inspect">
+                    <img id="v-img" src="" class="mystery-img" alt="Vote Event Image">
+                    <i class="ph-fill ph-lock-key lock-icon" id="v-lock"></i>
                 </div>
-                <div class="vote-container vote-face-back">
-                    <i class="ph-fill ph-diamond vote-diamond-badge"></i>
-                    <div class="vote-back-header"><i class="ph-fill ph-diamond"></i> <span data-i18n="voteSpecsHeading">CLASSIFIED SPECS</span></div>
-                    <div class="vote-specs-grid" id="v-specs-grid"></div>
-                    <button class="vote-flip-btn" onclick="playClick(); toggleVoteSpecs()">
-                        <i class="ph-bold ph-arrow-u-up-left"></i> <span data-i18n="voteBackBtn">BACK</span>
-                    </button>
+
+                <div class="vote-progress-row">
+                    <span data-i18n="voteProgressLabel">PROGRESS</span>
+                    <span id="v-count">0 / 0 VOTES</span>
                 </div>
+                <div class="vote-progress-wrap">
+                    <div class="vote-progress-fill" id="v-fill"></div>
+                </div>
+                <div id="v-remaining-chip" class="vote-remaining-chip hidden"></div>
+
+                <button class="vote-btn" id="v-btn" onclick="castVote()">AUTHORIZE DROP</button>
+                <button class="vote-btn hidden" id="v-buy-btn" onclick="buyVotePC()" style="background:#ccff00; color:#000; margin-top:10px;">SECURE NOW</button>
+                <div class="timer-text" id="v-timer">CALCULATING TIME...</div>
+
+                <button class="vote-flip-btn" id="v-inspect-btn" onclick="playClick(); openVoteGallery()">
+                    <i class="ph-bold ph-magnifying-glass"></i> <span data-i18n="inspectSystemBtn">INSPECT SYSTEM</span>
+                </button>
             </div>
         </div>
     </div>

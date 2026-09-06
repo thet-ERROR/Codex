@@ -102,13 +102,7 @@ export function renderExtras() {
         <label class="yg-extra-toggle">
             <input type="checkbox" id="opt-proconfig" ${state.build.proConfig ? 'checked' : ''} onchange="onProConfigChange(this.checked)">
             <span class="yg-extra-body">
-                <span class="yg-extra-title">
-                    ${esc(t('proConfigTitle'))}
-                    <span class="yg-extra-info" role="button" tabindex="0" title="${esc(t('proConfigInfoTitle'))}"
-                          onclick="event.preventDefault(); event.stopPropagation(); playClick(); openProConfigInfo();">
-                        <i class="ph-bold ph-info"></i>
-                    </span>
-                </span>
+                <span class="yg-extra-title">${esc(t('proConfigTitle'))}</span>
             </span>
             <span class="yg-extra-price">+€${state.proConfigPrice}</span>
         </label>`;
@@ -192,9 +186,19 @@ export function openProConfigInfo() {
     if (window.openModal) window.openModal('proconfig-info-modal');
 }
 
-export function openGallery() {
-    state.currentGalleryPC = state.filtered[state.index]; 
+// pc is passed explicitly only by the community drop (js/modules/vote.js openVoteGallery);
+// catalog cards call this with no argument and get the currently carousel-selected build.
+export function openGallery(pc) {
+    state.currentGalleryPC = pc || state.filtered[state.index];
     if(!state.currentGalleryPC) return;
+
+    // Vote mode: gold/purple dress, and nothing configurable — the drop isn't for sale yet
+    const isVote = !!state.currentGalleryPC.isVoteEvent;
+    const cardEl = document.getElementById('yg-card');
+    if (cardEl) {
+        cardEl.classList.toggle('vote-mode', isVote);
+        cardEl.classList.toggle('vote-locked', isVote && !state.currentGalleryPC.voteSecured);
+    }
     // Reset FPS panel state σε κάθε άνοιγμα κάρτας
     const fpsPanelReset = document.getElementById('fps-panel');
     if (fpsPanelReset) fpsPanelReset.classList.remove('active');
@@ -226,8 +230,14 @@ export function openGallery() {
     const elOldPrice = document.getElementById('yg-price-old');
     if(elOldPrice) elOldPrice.innerText = "€" + Math.floor(basePrice * 1.2);
 
-    // Builds the extras this particular PC offers, then prices them (sets #yg-price-live)
-    renderExtras();
+    // Builds the extras this particular PC offers, then prices them (sets #yg-price-live).
+    // Skipped for the vote drop, which has nothing to configure.
+    if (isVote) {
+        const extrasHost = document.getElementById('yg-extras-section');
+        if (extrasHost) extrasHost.innerHTML = '';
+    } else {
+        renderExtras();
+    }
 
     // 2. Power Bar & Tier Badge
     let mScore = state.currentGalleryPC.multitasking || 0;
