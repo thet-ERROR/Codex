@@ -228,15 +228,6 @@ body.night-mode .yg-card-front, body.night-mode .yg-card-back { background: var(
     white-space: nowrap;
     flex-shrink: 0;
 }
-.yg-extra-info {
-    color: var(--neon-purple);
-    cursor: pointer;
-    display: inline-flex;
-    font-size: 0.95rem;
-    line-height: 1;
-    transition: 0.2s;
-}
-.yg-extra-info:hover { transform: scale(1.2); filter: brightness(1.4); }
 
 .yg-paint-swatch {
     width: 13px;

@@ -3,6 +3,7 @@
     
     let TOKEN = null, inventory = [], editId = null;
     let currentImgs = [], currentFPS = [], currentReviews = [], currentVoteImg = "";
+    let currentVoteFPS = [];
 
     async function tryLogin() {
         const p = document.getElementById('admin-pass').value;
@@ -247,6 +248,16 @@ const data = {
     async function del(id) { if(confirm('Delete?')) { await fetch(`${API}/drops/${id}`, {method:'DELETE', headers:{'x-admin-auth':TOKEN}}); loadInv(); } }
 
     // --- TOOLS ---
+    function addVoteFPS() {
+        const g = $('v-fps-game').value, s = $('v-fps-score').value;
+        if (s) { currentVoteFPS.push({ game: g, score: s }); renderVoteFPS(); }
+    }
+    function renderVoteFPS() {
+        $('v-fps-area').innerHTML = currentVoteFPS.map((f, i) =>
+            `<div class="tag">${f.game}:${f.score} <span onclick="currentVoteFPS.splice(${i},1);renderVoteFPS()">x</span></div>`
+        ).join('');
+    }
+
     async function loadVote() {
         try {
             const res=await fetch(`${API}/vote-event`, { headers:{'x-admin-auth':TOKEN} }); const v=await res.json();
@@ -257,6 +268,12 @@ const data = {
                 document.getElementById('v-days').value=v.durationDays;
                 document.getElementById('v-imageUrl').value = v.image || '';
                 document.getElementById('v-start').value = isoToLocalInput(v.startDate);
+                $('v-description').value = v.description || '';
+                $('v-lore').value = v.lore || '';
+                $('v-loreEl').value = v.loreEl || '';
+                $('v-multitasking').value = v.multitasking || 0;
+                currentVoteFPS = v.fps || [];
+                renderVoteFPS();
                 const specs = v.specs || {};
                 ['cpu','gpu','ram','ssd','mobo','psu','case'].forEach(k => {
                     const el = document.getElementById('v-' + k);
@@ -272,6 +289,10 @@ const data = {
         const startISO = localInputToISO(document.getElementById('v-start').value);
         if (!startISO) return alert("Βάλε ημερομηνία/ώρα έναρξης — χωρίς αυτήν το countdown δεν ξεκινάει ποτέ.");
 
+        // The API replaces the event wholesale, which now also clears the one-vote-per-account
+        // ledger. Worth an explicit yes before wiping real votes over a typo fix.
+        if (!confirm("Η αποθήκευση ΑΝΤΙΚΑΘΙΣΤΑ το τρέχον event και ΜΗΔΕΝΙΖΕΙ όλες τις ψήφους. Συνέχεια;")) return;
+
         const data = {
             title: document.getElementById('v-title').value,
             price: document.getElementById('v-price').value,
@@ -279,6 +300,11 @@ const data = {
             targetVotes: document.getElementById('v-target').value,
             startDate: startISO,
             durationDays: document.getElementById('v-days').value,
+            description: $('v-description').value,
+            lore: $('v-lore').value,
+            loreEl: $('v-loreEl').value,
+            multitasking: parseInt($('v-multitasking').value) || 0,
+            fps: currentVoteFPS,
             specs: {
                 cpu: document.getElementById('v-cpu').value,
                 gpu: document.getElementById('v-gpu').value,

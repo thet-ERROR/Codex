@@ -97,8 +97,7 @@ const translations = {
         alertAllFieldsReview: "Προσοχή: Όλα τα πεδία είναι υποχρεωτικά", alertTransmissionFailed: "Η αποστολή απέτυχε",
         alertServerError: "Σφάλμα διακομιστή", alertSelectErrorProtocol: "⚠️ Προσοχή: Επίλεξε έγκυρο πρωτόκολλο σφάλματος.",
         loreFallback: "Σύστημα τακτικών επιχειρήσεων. Οι πλήρεις προδιαγραφές βρίσκονται στον φάκελο INSPECT. Απαιτείται εξουσιοδότηση.",
-        backToPacksBtn: "Πίσω στα packs", voteSpecsBtn: "Δες τα specs", voteAlmostThere: "ΚΟΝΤΑ ΣΤΟ ΣΤΟΧΟ",
-        voteRemaining: "ψήφοι ακόμα", voteSpecsHeading: "Απόρρητα specs", voteBackBtn: "Πίσω"
+        backToPacksBtn: "Πίσω στα packs", voteAlmostThere: "ΚΟΝΤΑ ΣΤΟ ΣΤΟΧΟ", voteRemaining: "ψήφοι ακόμα"
     },
     en: {
         sideSettings: "System Settings", sideTrust: "Warranty & Trust", sideRules: "Rules", sideHelp: "Help",
@@ -197,8 +196,7 @@ const translations = {
         alertAllFieldsReview: "SYSTEM ALERT: ALL FIELDS REQUIRED", alertTransmissionFailed: "TRANSMISSION FAILED",
         alertServerError: "SERVER ERROR", alertSelectErrorProtocol: "⚠️ SYSTEM ALERT: Please select a valid Error Protocol.",
         loreFallback: "Tactical operations system. Full specifications are available in the INSPECT file. Authorization required.",
-        backToPacksBtn: "BACK TO PACKS", voteSpecsBtn: "VIEW SPECS", voteAlmostThere: "ALMOST THERE",
-        voteRemaining: "votes to go", voteSpecsHeading: "CLASSIFIED SPECS", voteBackBtn: "BACK"
+        backToPacksBtn: "BACK TO PACKS", voteAlmostThere: "ALMOST THERE", voteRemaining: "votes to go"
     }
 };
 

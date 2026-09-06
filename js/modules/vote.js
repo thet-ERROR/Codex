@@ -11,8 +11,6 @@ export function renderVoteState() {
     if (state.activeEvent.title !== lastEventTitle) {
         lastEventTitle = state.activeEvent.title;
         notifiedAlmostThere = false;
-        const flipWrap = document.getElementById('vote-flip-wrap');
-        if (flipWrap) flipWrap.classList.remove('flipped');
     }
 
     const title = document.getElementById('v-title');
@@ -48,26 +46,37 @@ export function renderVoteState() {
         if (window.showToast) window.showToast(`🔥 ${t('voteAlmostThere')} — ${remaining} ${t('voteRemaining')}`, 'achievement');
     }
 
-    renderVoteSpecs();
-
     if(state.activeEvent.currentVotes >= state.activeEvent.targetVotes) unlockVisuals();
+    updateTimer(); // keeps the button in step with hasVoted right after a vote lands
 }
 
-function renderVoteSpecs() {
-    const toggle = document.getElementById('v-specs-toggle');
-    const grid = document.getElementById('v-specs-grid');
-    const specs = state.activeEvent?.specs;
-    const hasSpecs = specs && Object.values(specs).some(v => v);
-    if (toggle) toggle.classList.toggle('hidden', !hasSpecs);
-    if (!hasSpecs || !grid) return;
-    grid.innerHTML = Object.entries(specs).filter(([, v]) => v).map(([k, v]) => `
-        <div class="vote-spec-chip"><div class="label">${k}</div><div class="value">${v}</div></div>
-    `).join('');
+// The vote drop opens in the same inspect card as every other build, so it gets flip-to-specs,
+// SHOW FPS and the lore panel for free. isVoteEvent puts that card in vote mode: gold/purple,
+// and nothing configurable (no extras, no cart, no wishlist).
+function voteEventAsPC(ev) {
+    return {
+        _id: 'vote-event',
+        name: ev.title || '',
+        price: ev.price || '0',
+        description: ev.description || '',
+        lore: ev.lore || '',
+        loreEl: ev.loreEl || '',
+        images: ev.image ? [ev.image] : [],
+        specs: ev.specs || {},
+        specDetails: {},
+        fps: ev.fps || [],
+        multitasking: ev.multitasking || 0,
+        stock: 1,
+        isVoteEvent: true,
+        // Keeps the mystery intact: INSPECT must not hand over an unblurred photo of a drop the
+        // community hasn't unlocked yet.
+        voteSecured: (ev.currentVotes || 0) >= (ev.targetVotes || 0)
+    };
 }
 
-export function toggleVoteSpecs() {
-    const flipWrap = document.getElementById('vote-flip-wrap');
-    if (flipWrap) flipWrap.classList.toggle('flipped');
+export function openVoteGallery() {
+    if (!state.activeEvent || !state.activeEvent.title) return;
+    if (window.openGallery) window.openGallery(voteEventAsPC(state.activeEvent));
 }
 
 export function formatTime(ms) { 
@@ -96,13 +105,23 @@ export function updateTimer() {
         timer.style.color = "red"; 
         btn.innerText = "FAILED"; 
         btn.disabled = true; 
-    } else { 
-        timer.innerText = `TIME REMAINING: ${formatTime(end - now)}`; 
-        if(state.activeEvent.currentVotes < state.activeEvent.targetVotes) { 
-            btn.disabled = false; 
-            btn.innerText = "AUTHORIZE DROP"; 
-        } 
-    } 
+    } else {
+        timer.innerText = `TIME REMAINING: ${formatTime(end - now)}`;
+
+        // Once the target is hit, unlockVisuals() owns the button ("DROP SECURED") — this runs
+        // on a 1s interval and would otherwise overwrite it every tick.
+        if (state.activeEvent.currentVotes >= state.activeEvent.targetVotes) return;
+
+        if (state.activeEvent.hasVoted) {
+            btn.innerText = "VOTE REGISTERED";
+            btn.disabled = true;
+            btn.classList.add('voted');
+        } else {
+            btn.innerText = "AUTHORIZE DROP";
+            btn.disabled = false;
+            btn.classList.remove('voted');
+        }
+    }
 }
 
 export async function castVote() {
@@ -117,16 +136,25 @@ export async function castVote() {
             headers: { 'Authorization': `Bearer ${localStorage.getItem('codex_token')}` }
         });
         const data = await res.json();
-        if(data.votes) {
+
+        if (res.ok) {
             state.activeEvent.currentVotes = data.votes;
+            state.activeEvent.hasVoted = true;
             renderVoteState();
             if(window.showToast) window.showToast("VOTE REGISTERED", "normal");
             if(window.checkAchievement) window.checkAchievement('vote');
-        } else if (!res.ok) {
+        } else if (res.status === 409) {
+            // Already voted on another device/session — sync the UI to the truth
+            state.activeEvent.hasVoted = true;
+            if (typeof data.votes === 'number') state.activeEvent.currentVotes = data.votes;
+            renderVoteState();
+            if(window.showToast) window.showToast("YOU HAVE ALREADY VOTED", "error");
+        } else {
             if(window.showToast) window.showToast(data.error || "VOTE FAILED", "error");
         }
-    } catch(e) { 
-        console.error("Vote failed.", e); 
+    } catch(e) {
+        console.error("Vote failed.", e);
+        if(window.showToast) window.showToast("CONNECTION ERROR", "error");
     }
 }
 
@@ -159,4 +187,4 @@ window.updateTimer = updateTimer;
 window.castVote = castVote;
 window.unlockVisuals = unlockVisuals;
 window.buyVotePC = buyVotePC;
-window.toggleVoteSpecs = toggleVoteSpecs;
+window.openVoteGallery = openVoteGallery;
