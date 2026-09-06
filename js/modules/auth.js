@@ -210,9 +210,61 @@ export function logout() {
 }
 
 // --- PASSWORD RECOVERY ---
-export function openRecovery() { 
-    if(window.closeModal) window.closeModal('login-modal'); 
-    if(window.openModal) window.openModal('forgot-modal'); 
+export function openRecovery() {
+    if(window.closeModal) window.closeModal('login-modal');
+    if(window.openModal) window.openModal('forgot-modal');
+}
+
+// Step 1: ask for a reset token by email. index.html has always called this from the "SEND TOKEN"
+// button, but it was never actually implemented — the whole recovery flow was dead on the
+// frontend even though both backend routes existed.
+export async function requestReset() {
+    const emailEl = document.getElementById('forgot-email');
+    const email = emailEl ? emailEl.value.trim() : '';
+    const t = window.t || (k => k);
+
+    if (!email) {
+        alert(t('alertEnterEmail'));
+        return;
+    }
+
+    try {
+        await api.forgotPassword(email);
+        // The backend answers identically whether or not the address has an account (so nobody
+        // can probe for registered emails), so this wording must not imply one exists either.
+        if (window.showToast) window.showToast(t('toastResetSent'), 'normal');
+        if (window.closeModal) window.closeModal('forgot-modal');
+        if (window.openModal) window.openModal('reset-modal');
+    } catch (e) {
+        console.error("Password reset request failed:", e);
+        alert(t('connectionErrorAlert'));
+    }
+}
+
+// Step 2: exchange that token plus a new password for a working login.
+export async function completeReset() {
+    const tokenEl = document.getElementById('reset-token');
+    const passEl = document.getElementById('new-pass');
+    const token = tokenEl ? tokenEl.value.trim() : '';
+    const newPass = passEl ? passEl.value : '';
+    const t = window.t || (k => k);
+
+    if (!token || !newPass) {
+        alert(t('alertTokenAndPassword'));
+        return;
+    }
+
+    try {
+        await api.resetPassword(token, newPass);
+        if (window.showToast) window.showToast(t('toastPasswordUpdated'), 'achievement');
+        if (tokenEl) tokenEl.value = '';
+        if (passEl) passEl.value = '';
+        if (window.closeModal) window.closeModal('reset-modal');
+        if (window.openModal) window.openModal('login-modal');
+    } catch (e) {
+        // Surfaces the backend's own reason (expired/invalid token, password too short)
+        alert(e && e.error ? e.error : t('connectionErrorAlert'));
+    }
 }
 
 // Εξαγωγή στο window για να λειτουργούν τα onclick στο HTML
@@ -223,3 +275,5 @@ window.handleSignup = handleSignup;
 window.logout = logout;
 window.openRecovery = openRecovery;
 window.resendVerification = resendVerification;
+window.requestReset = requestReset;
+window.completeReset = completeReset;

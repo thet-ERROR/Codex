@@ -89,6 +89,11 @@ const translations = {
         rankOperative: "Πράκτορας", rankRecruit: "Νεοσύλλεκτος", unknownUser: "Άγνωστος χρήστης", agentFallback: "Πράκτορας",
         purchasedLabel: "Αγορασμένο",
 
+        alertEnterEmail: "Συμπλήρωσε το email σου.",
+        alertTokenAndPassword: "Συμπλήρωσε και τον κωδικό ανάκτησης και τον νέο κωδικό πρόσβασης.",
+        toastResetSent: "📧 Αν υπάρχει λογαριασμός με αυτό το email, στάλθηκε κωδικός ανάκτησης",
+        toastPasswordUpdated: "✅ Ο κωδικός ενημερώθηκε — συνδέσου με τον νέο",
+
         toastVerifyReminder: "⚠ Επιβεβαίωσε το email σου για να ξεκλειδώσεις wishlist, επιτεύγματα & ψηφοφορία",
         toastCheckEmailToVerify: "📧 Έλεγξε το email σου για να επιβεβαιώσεις τον λογαριασμό σου",
         toastAlreadyVerified: "Το email σου είναι ήδη επιβεβαιωμένο",
@@ -193,6 +198,11 @@ const translations = {
         menuVerifyEmail: "VERIFY EMAIL",
         rankOperative: "OPERATIVE", rankRecruit: "RECRUIT", unknownUser: "UNKNOWN_USER", agentFallback: "AGENT",
         purchasedLabel: "PURCHASED",
+
+        alertEnterEmail: "Please enter your email address.",
+        alertTokenAndPassword: "Please enter both the recovery token and your new password.",
+        toastResetSent: "📧 IF AN ACCOUNT EXISTS FOR THAT EMAIL, A RECOVERY TOKEN HAS BEEN SENT",
+        toastPasswordUpdated: "✅ PASSWORD UPDATED — SIGN IN WITH YOUR NEW ONE",
 
         toastVerifyReminder: "⚠ VERIFY YOUR EMAIL TO UNLOCK WISHLIST, ACHIEVEMENTS & VOTING",
         toastCheckEmailToVerify: "📧 CHECK YOUR EMAIL TO VERIFY YOUR ACCOUNT",
