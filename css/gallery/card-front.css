@@ -138,12 +138,6 @@ body.night-mode .yg-card-front, body.night-mode .yg-card-back { background: var(
     color: var(--neon-green);
     text-shadow: 0 0 10px rgba(204,255,0,0.3);
 }
-.yg-old-price {
-    font-family: var(--font-ui);
-    font-size: clamp(0.85rem, 3.5vw, 1.1rem);
-    color: #666;
-    text-decoration: line-through;
-}
 
 /* --- EXTRAS (storage / pro config / custom paint) --- */
 .yg-extras-section {

@@ -1,5 +1,6 @@
 // js/modules/compare.js
 import { state } from '../state.js';
+import { esc, escUrl } from '../utils.js';
 
 export function toggleCompare(id, btnElement) { 
     // Παίρνουμε το τρέχον PC που βλέπει ο χρήστης
@@ -42,18 +43,18 @@ export function openCompareModal() {
     
     const renderCol = (p) => `
         <div class="compare-col">
-            <img src="${p.images[0]}" class="compare-img">
-            <h3>${p.name}</h3>
-            <div style="color:var(--neon-green); font-weight:bold; margin-bottom:10px;">${p.price}</div>
-            <div class="gallery-desc-box">${p.description || (window.t ? window.t('systemDetailsFallback') : 'System Details')}</div>
-            ${Object.keys(p.specs).map(k => `
+            <img src="${escUrl((p.images || [])[0])}" class="compare-img">
+            <h3>${esc(p.name)}</h3>
+            <div style="color:var(--neon-green); font-weight:bold; margin-bottom:10px;">${esc(p.price)}</div>
+            <div class="gallery-desc-box">${esc(p.description || (window.t ? window.t('systemDetailsFallback') : 'System Details'))}</div>
+            ${Object.keys(p.specs || {}).map(k => `
                 <div class="compare-spec-row">
-                    <span class="compare-spec-label">${k.toUpperCase()}</span>
-                    <span class="compare-spec-val">${p.specs[k]}</span>
+                    <span class="compare-spec-label">${esc(k.toUpperCase())}</span>
+                    <span class="compare-spec-val">${esc(p.specs[k])}</span>
                 </div>
             `).join('')}
         </div>
-    `; 
+    `;
     
     const grid = document.getElementById('compare-grid');
     if(grid) {

@@ -3,10 +3,7 @@ import { state } from '../state.js';
 import { CONFIG } from '../config.js';
 import { t } from '../i18n.js';
 import { getBreakdown, getActiveImages } from './gallery.js';
-
-function esc(s) {
-    return String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-}
+import { esc, escUrl } from '../utils.js';
 
 export function toggleCartDropdown() { 
     const d = document.getElementById('cart-dropdown'); 
@@ -33,7 +30,7 @@ export function updateCartUI() {
                 : `<div class="mc-opt">${esc(item.option || t('cartOptStandard'))}</div>`;
 
             return `<div class="mini-cart-item">
-                        <img src="${esc(item.img)}" class="mc-img">
+                        <img src="${escUrl(item.img)}" class="mc-img">
                         <div class="mc-details">
                             <div class="mc-name">${esc(item.name)}</div>
                             ${optHTML}

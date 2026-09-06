@@ -2,24 +2,45 @@
     const API = 'https://phoenix-codex.onrender.com/api';
     
     let TOKEN = null, inventory = [], editId = null;
-    let currentImgs = [], currentFPS = [], currentReviews = [], currentVoteImg = "";
-    let currentVoteFPS = [];
+    let currentFPS = [], currentReviews = [], currentVoteFPS = [];
 
     async function tryLogin() {
         const p = document.getElementById('admin-pass').value;
-        const res = await fetch(`${API}/login`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({password:p}) });
-        const d = await res.json();
-        if(d.success) { 
-            TOKEN=p; 
-            document.getElementById('login-ui').style.display='none'; 
-            document.getElementById('dashboard-ui').style.display='grid'; 
-            loadInv(); loadVote(); loadTickets(); loadEmails(); loadUserCount(); loadMaintenance();
-        } else alert('WRONG PASSWORD');
+        try {
+            const res = await fetch(`${API}/login`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({password:p}) });
+            const d = await res.json();
+            if (d.success && d.token) {
+                // Holds a short-lived scoped token, never the password itself — it used to keep
+                // the admin password in memory and resend it on every single request.
+                TOKEN = d.token;
+                document.getElementById('admin-pass').value = '';
+                document.getElementById('login-ui').style.display='none';
+                document.getElementById('dashboard-ui').style.display='grid';
+                loadInv(); loadVote(); loadTickets(); loadEmails(); loadUserCount(); loadMaintenance();
+            } else {
+                alert(d.error || 'WRONG PASSWORD');
+            }
+        } catch(e) {
+            console.error("Admin login failed:", e);
+            alert('NETWORK ERROR');
+        }
+    }
+
+    // The admin token expires after 8h — say so plainly instead of letting panels silently blank
+    function handleAuthError(res) {
+        if (res.status === 401 || res.status === 403) {
+            alert('Η διαχειριστική συνεδρία έληξε. Κάνε ξανά login.');
+            location.reload();
+            return true;
+        }
+        return false;
     }
 
     // --- LOAD DATA ---
     async function loadInv() {
-        const res = await fetch(`${API}/drops`, { headers:{'x-admin-auth':TOKEN} }); inventory = await res.json();
+        const res = await fetch(`${API}/drops`, { headers:{'Authorization':`Bearer ${TOKEN}`} });
+        if (handleAuthError(res)) return;
+        inventory = await res.json();
         
         // 1. Fill Inventory List
         document.getElementById('inventory-list').innerHTML = inventory.map(pc => {
@@ -50,7 +71,7 @@
 
     async function loadUserCount() {
         try {
-            const res = await fetch(`${API}/users/count`, { headers:{'x-admin-auth':TOKEN} });
+            const res = await fetch(`${API}/users/count`, { headers:{'Authorization':`Bearer ${TOKEN}`} });
             const data = await res.json();
             document.getElementById('user-count').innerText = data.count;
         } catch(e) { console.log("User count error", e); }
@@ -232,7 +253,7 @@ const data = {
         const method = editId ? 'PUT' : 'POST';
         
         try {
-            const res = await fetch(url, { method: method, headers:{'Content-Type':'application/json', 'x-admin-auth':TOKEN}, body:JSON.stringify(data) });
+            const res = await fetch(url, { method: method, headers:{'Content-Type':'application/json', 'Authorization':`Bearer ${TOKEN}`}, body:JSON.stringify(data) });
             if(res.ok) {
                 alert("SYSTEM SAVED!");
                 resetForm(); loadInv();
@@ -245,7 +266,7 @@ const data = {
         }
     }
 
-    async function del(id) { if(confirm('Delete?')) { await fetch(`${API}/drops/${id}`, {method:'DELETE', headers:{'x-admin-auth':TOKEN}}); loadInv(); } }
+    async function del(id) { if(confirm('Delete?')) { await fetch(`${API}/drops/${id}`, {method:'DELETE', headers:{'Authorization':`Bearer ${TOKEN}`}}); loadInv(); } }
 
     // --- TOOLS ---
     function addVoteFPS() {
@@ -260,7 +281,7 @@ const data = {
 
     async function loadVote() {
         try {
-            const res=await fetch(`${API}/vote-event`, { headers:{'x-admin-auth':TOKEN} }); const v=await res.json();
+            const res=await fetch(`${API}/vote-event`, { headers:{'Authorization':`Bearer ${TOKEN}`} }); const v=await res.json();
             if(v.title) {
                 document.getElementById('v-title').value=v.title;
                 document.getElementById('v-price').value=v.price || '';
@@ -315,11 +336,11 @@ const data = {
                 case: document.getElementById('v-case').value
             }
         };
-        await fetch(`${API}/vote-event`, { method: 'POST', headers:{'Content-Type':'application/json', 'x-admin-auth':TOKEN}, body:JSON.stringify(data) }); alert('VOTE LIVE');
+        await fetch(`${API}/vote-event`, { method: 'POST', headers:{'Content-Type':'application/json', 'Authorization':`Bearer ${TOKEN}`}, body:JSON.stringify(data) }); alert('VOTE LIVE');
     }
 
     async function loadTickets() {
-        const res = await fetch(`${API}/tickets`, { headers:{'x-admin-auth':TOKEN} }); const tickets = await res.json();
+        const res = await fetch(`${API}/tickets`, { headers:{'Authorization':`Bearer ${TOKEN}`} }); const tickets = await res.json();
         document.getElementById('tickets-list').innerHTML = tickets.map(t => {
             let action = t.status==='pending' ? `<button onclick="activateCode('${t._id}')" class="btn-sm btn-cyan" style="width:100%; margin-top:5px;">DELIVER</button>` : '';
             return `<div class="ticket"><div><span class="t-code">${t.code}</span> <span style="float:right; color:${t.status==='active'?'#ccff00':'orange'}">${t.status}</span></div><div style="color:#888;">${t.pcName}</div>${action}</div>`;
@@ -327,19 +348,19 @@ const data = {
     }
     async function generateCode() {
         const pcId = document.getElementById('sold-pc-select').value; const pc = inventory.find(p => p._id === pcId);
-        await fetch(`${API}/generate-code`, { method: 'POST', headers:{'Content-Type':'application/json', 'x-admin-auth':TOKEN}, body:JSON.stringify({ pcId: pc._id, pcName: pc.name }) }); loadTickets();
+        await fetch(`${API}/generate-code`, { method: 'POST', headers:{'Content-Type':'application/json', 'Authorization':`Bearer ${TOKEN}`}, body:JSON.stringify({ pcId: pc._id, pcName: pc.name }) }); loadTickets();
     }
-    async function activateCode(id) { if(confirm("Confirm?")) { await fetch(`${API}/activate-ticket/${id}`, { method: 'POST', headers:{'x-admin-auth':TOKEN} }); loadTickets(); } }
+    async function activateCode(id) { if(confirm("Confirm?")) { await fetch(`${API}/activate-ticket/${id}`, { method: 'POST', headers:{'Authorization':`Bearer ${TOKEN}`} }); loadTickets(); } }
 
     async function loadEmails() {
-        const res = await fetch(`${API}/newsletter`, { headers:{'x-admin-auth':TOKEN} }); const emails = await res.json();
+        const res = await fetch(`${API}/newsletter`, { headers:{'Authorization':`Bearer ${TOKEN}`} }); const emails = await res.json();
         document.getElementById('email-list').innerHTML = emails.map(e => `<div style="border-bottom:1px solid #222; padding:5px;">${e.email} <span style="float:right; font-size:0.7rem;">${new Date(e.date).toLocaleDateString()}</span></div>`).join('');
     }
 
     // --- MAINTENANCE KILL SWITCH ---
     async function loadMaintenance() {
         try {
-            const res = await fetch(`${API}/site-config`, { headers:{'x-admin-auth':TOKEN} });
+            const res = await fetch(`${API}/site-config`, { headers:{'Authorization':`Bearer ${TOKEN}`} });
             const config = await res.json();
             document.getElementById('maint-toggle').checked = !!config.maintenanceMode;
             document.getElementById('maint-message').value = config.maintenanceMessage || '';
@@ -353,7 +374,7 @@ const data = {
         if (Number.isNaN(proConfigPrice) || proConfigPrice < 0) return alert("Βάλε έγκυρη τιμή.");
         const res = await fetch(`${API}/site-config`, {
             method:'POST',
-            headers:{'Content-Type':'application/json', 'x-admin-auth':TOKEN},
+            headers:{'Content-Type':'application/json', 'Authorization':`Bearer ${TOKEN}`},
             body:JSON.stringify({ proConfigPrice })
         });
         alert(res.ok ? `PRO CONFIG PRICE: €${proConfigPrice}` : "ERROR SAVING PRICE");
@@ -362,6 +383,6 @@ const data = {
     async function saveMaintenance() {
         const maintenanceMode = document.getElementById('maint-toggle').checked;
         const maintenanceMessage = document.getElementById('maint-message').value;
-        await fetch(`${API}/site-config`, { method:'POST', headers:{'Content-Type':'application/json', 'x-admin-auth':TOKEN}, body:JSON.stringify({ maintenanceMode, maintenanceMessage }) });
+        await fetch(`${API}/site-config`, { method:'POST', headers:{'Content-Type':'application/json', 'Authorization':`Bearer ${TOKEN}`}, body:JSON.stringify({ maintenanceMode, maintenanceMessage }) });
         alert(maintenanceMode ? "⚠ MAINTENANCE MODE ACTIVE" : "SITE LIVE");
     }

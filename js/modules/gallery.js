@@ -1,6 +1,7 @@
 // js/modules/gallery.js
 import { state } from '../state.js';
 import { t } from '../i18n.js';
+import { esc } from '../utils.js';
 
 // --- EXTRAS: normalisation, pricing, image sets ---
 
@@ -11,10 +12,6 @@ const DEFAULT_OPTIONS = {
     proConfig: { enabled: false },
     paint: { enabled: false, colorName: '', colorNameEl: '', colorHex: '#1a1a1a', price: 40, leadTimeHours: 48, images: [] }
 };
-
-function esc(s) {
-    return String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-}
 
 export function getOptions(pc) {
     const o = (pc && pc.options) || {};
@@ -227,9 +224,6 @@ export function openGallery(pc) {
     const elLivePrice = document.getElementById('yg-price-live');
     if(elLivePrice) elLivePrice.innerText = "€" + basePrice; 
     
-    const elOldPrice = document.getElementById('yg-price-old');
-    if(elOldPrice) elOldPrice.innerText = "€" + Math.floor(basePrice * 1.2);
-
     // Builds the extras this particular PC offers, then prices them (sets #yg-price-live).
     // Skipped for the vote drop, which has nothing to configure.
     if (isVote) {
@@ -246,8 +240,6 @@ export function openGallery(pc) {
     if(powerFill) powerFill.style.width = mScore + "%";
 
     let tier = mScore > 80 ? 'S-TIER' : (mScore > 50 ? 'A-TIER' : 'B-TIER');
-    let tierColor = mScore > 80 ? '#a855f7' : (mScore > 50 ? '#ec48d9' : '#bef264');
-
 
     // 3. Image & Watermark
     const elImg = document.getElementById('yg-main-img');
@@ -313,22 +305,22 @@ export function openGallery(pc) {
         // CPU/GPU σε ξεχωριστά "stat boxes" (ATK/DEF style)
         if (specs.cpu || specs.gpu) {
             backH += `<div class="yg-stat-highlight">`;
-            if (specs.cpu) backH += `<div class="yg-stat-box"><div class="label">CPU POWER</div><div class="value">${specs.cpu}</div></div>`;
-            if (specs.gpu) backH += `<div class="yg-stat-box"><div class="label">GPU POWER</div><div class="value">${specs.gpu}</div></div>`;
+            if (specs.cpu) backH += `<div class="yg-stat-box"><div class="label">CPU POWER</div><div class="value">${esc(specs.cpu)}</div></div>`;
+            if (specs.gpu) backH += `<div class="yg-stat-box"><div class="label">GPU POWER</div><div class="value">${esc(specs.gpu)}</div></div>`;
             backH += `</div>`;
         }
 
         // Τα υπόλοιπα specs (εκτός cpu/gpu που ήδη δείξαμε πάνω)
         for (const [k, v] of Object.entries(specs)) {
             if (k === 'cpu' || k === 'gpu') continue;
-            const safeKey = k.replace(/'/g, "\\'");
+            const safeKey = esc(k).replace(/'/g, "\\'");
             backH += `
             <div class="yg-spec-item">
                 <div class="yg-spec-label">
-                    ${k.toUpperCase()}
+                    ${esc(k.toUpperCase())}
                     <i class="ph-bold ph-info yg-info-btn" onclick="playClick(); openSpecInfo('${safeKey}')"></i>
                 </div>
-                <div class="yg-spec-value">${v}</div>
+                <div class="yg-spec-value">${esc(v)}</div>
             </div>`;
         }
     }
@@ -353,7 +345,7 @@ export function openGallery(pc) {
         const pool = flavorPool[tier] || flavorPool['B-TIER'];
         flavor = pool[Math.floor(Math.random() * pool.length)];
     }
-    backH += `<div class="yg-flavor-text">${flavor}</div>`;
+    backH += `<div class="yg-flavor-text">${esc(flavor)}</div>`;
 
     const elSpecsBack = document.getElementById('yg-specs-back');
     if(elSpecsBack) elSpecsBack.innerHTML = backH;
@@ -363,16 +355,17 @@ export function openGallery(pc) {
     if (fpsData.length > 0) {
         const sorted = [...fpsData].sort((a, b) => parseInt(b.score) - parseInt(a.score));
         sorted.forEach((f, idx) => {
+            const game = String(f.game || '');
             let settings = "Competitive / Low";
-            if (f.game.toLowerCase().includes('cyberpunk') || f.game.toLowerCase().includes('gta')) settings = "High / Ultra";
+            if (game.toLowerCase().includes('cyberpunk') || game.toLowerCase().includes('gta')) settings = "High / Ultra";
             const bestBadge = idx === 0 ? '<span class="yg-fps-best-badge">BEST</span>' : '';
             benchH += `
             <div class="yg-fps-row ${idx === 0 ? 'yg-fps-top' : ''}">
                 <div>
-                    <div class="yg-fps-game">${f.game}${bestBadge}</div>
+                    <div class="yg-fps-game">${esc(game)}${bestBadge}</div>
                     <div class="yg-fps-settings">${settings}</div>
                 </div>
-                <div class="yg-fps-score">${f.score}<span class="yg-fps-unit"> FPS</span></div>
+                <div class="yg-fps-score">${Number(f.score) || 0}<span class="yg-fps-unit"> FPS</span></div>
             </div>`;
         });
     } else {
@@ -408,8 +401,6 @@ export function updatePrice() {
 
     const liveP = document.getElementById('yg-price-live');
     if(liveP) liveP.innerText = "€" + total;
-    const oldP = document.getElementById('yg-price-old');
-    if(oldP) oldP.innerText = "€" + Math.floor(total * 1.2);
 
     const bd = document.getElementById('yg-price-breakdown');
     if (bd) {

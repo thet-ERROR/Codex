@@ -143,7 +143,11 @@ function resolveSpin(slice, attemptsLeftAfterSpin) {
             ? `> SKIN ALREADY UNLOCKED: ${slice.label}. RE-APPLIED TO SYSTEM THEME.`
             : `> SKIN UNLOCKED: ${slice.label}. AUTO-APPLIED TO SYSTEM THEME.`;
     } else if (slice.type === 'coupon') {
-        if (resultEl) resultEl.textContent = '> ENCRYPTED REWARD FOUND. CONTACT ADMIN DIRECTLY WITH SECURE CODE: PHOENIX-5 TO CLAIM 5% DISCOUNT.';
+        // No fixed code here on purpose: the spin is decided client-side, so any literal string
+        // in this file would be readable in devtools and claimable without ever spinning.
+        // Quoting the agent name instead means you verify the claim on your side.
+        const agent = (localStorage.getItem('codex_username') || '').toUpperCase();
+        if (resultEl) resultEl.textContent = `> REWARD UNLOCKED: 5% DISCOUNT. MESSAGE US ON WHATSAPP AS AGENT ${agent} TO CLAIM IT.`;
     } else {
         if (resultEl) resultEl.textContent = attemptsLeftAfterSpin > 0
             ? '> HACK FAILED. NO REWARD EXTRACTED. TRY AGAIN.'

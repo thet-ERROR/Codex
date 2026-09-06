@@ -2,6 +2,7 @@
 import { state } from '../state.js';
 import { api } from '../api.js';
 import { CONFIG } from '../config.js';
+import { esc, escUrl } from '../utils.js';
 
 export function checkAchievement(id) {
     if (!state.achievements.includes(id)) {
@@ -95,12 +96,12 @@ export function openAgentDashboard() {
         } else {
             wishlistContainer.innerHTML = state.wishlist.map(pc => `
                 <div style="display:flex; align-items:center; gap:15px; background:rgba(0,0,0,0.5); padding:10px; border:1px solid #333; border-radius:6px; width:100%; box-sizing:border-box; margin-bottom:10px;">
-                    <img src="${pc.images[0]}" style="width:50px; height:50px; object-fit:cover; border-radius:4px; border:1px solid var(--neon-purple);">
+                    <img src="${escUrl((pc.images || [])[0])}" style="width:50px; height:50px; object-fit:cover; border-radius:4px; border:1px solid var(--neon-purple);">
                     <div>
-                        <div style="color:#fff; font-family:var(--font-ui); font-size:0.9rem;">${pc.name}</div>
-                        <div style="color:var(--neon-green); font-size:0.8rem; font-family:monospace;">${pc.price}</div>
+                        <div style="color:#fff; font-family:var(--font-ui); font-size:0.9rem;">${esc(pc.name)}</div>
+                        <div style="color:var(--neon-green); font-size:0.8rem; font-family:monospace;">${esc(pc.price)}</div>
                     </div>
-                    <button onclick="toggleWishlist('${pc._id || pc.id}')" style="margin-left:auto; background:transparent; border:none; color:#ff3333; cursor:pointer; font-size:1.2rem; transition:0.2s;">
+                    <button onclick="toggleWishlist('${esc(pc._id || pc.id)}')" style="margin-left:auto; background:transparent; border:none; color:#ff3333; cursor:pointer; font-size:1.2rem; transition:0.2s;">
                         <i class="ph-bold ph-trash"></i>
                     </button>
                 </div>

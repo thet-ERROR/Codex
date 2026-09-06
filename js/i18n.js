@@ -8,7 +8,7 @@ const translations = {
         reviewsLabel: "Κριτικές", writeReviewBtn: "[+] Γράψε κριτική", cartLabel: "Καλάθι",
         packGaming: "GAMING", packStreaming: "STREAMING", packCoding: "CODING",
         armoryLocked: "Οπλοστάσιο κλειδωμένο", voteCommunityDrop: "Κοινοτικό drop!", voteProgressLabel: "Πρόοδος",
-        vsModeReady: "Λειτουργία VS έτοιμη", chatTop: "CODEX AI",
+        vsModeReady: "Λειτουργία VS έτοιμη", chatTop: "ΥΠΟΣΤΗΡΙΞΗ CODEX",
 
         extrasLabel: "Επιπλέον επιλογές",
         storageLabel: "Επέκταση αποθηκευτικού χώρου", storageOptStandard: "Στάνταρ (χωρίς επιπλέον)",
@@ -107,7 +107,7 @@ const translations = {
         reviewsLabel: "REVIEWS", writeReviewBtn: "[+] WRITE REVIEW", cartLabel: "CART",
         packGaming: "GAMING", packStreaming: "STREAMING", packCoding: "CODING",
         armoryLocked: "ARMORY LOCKED", voteCommunityDrop: "COMMUNITY DROP!", voteProgressLabel: "PROGRESS",
-        vsModeReady: "VS MODE READY", chatTop: "CODEX AI",
+        vsModeReady: "VS MODE READY", chatTop: "CODEX SUPPORT",
 
         extrasLabel: "EXTRAS",
         storageLabel: "Storage Expansion", storageOptStandard: "Standard (No Extra)",
