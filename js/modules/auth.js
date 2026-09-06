@@ -110,7 +110,17 @@ export async function handleLogin() {
     }
 
     // Κλήση στο backend μέσω του api.js
-    const d = await api.loginUser(user, pass);
+    let d;
+    try {
+        d = await api.loginUser(user, pass);
+    } catch (e) {
+        // A network/CORS failure here used to leave the button looking like it did nothing —
+        // the request can still reach and be processed by the server even when the browser
+        // then blocks reading the response, so silence here is actively misleading.
+        console.error("Login request failed:", e);
+        alert(window.t ? window.t('connectionErrorAlert') : "⚠️ CONNECTION ERROR!\nThe server is not responding.");
+        return;
+    }
 
     if (d && d.success) {
         localStorage.setItem('codex_username', d.username);
@@ -142,8 +152,18 @@ export async function handleSignup() {
         return;
     }
 
-    const d = await api.registerUser(user, email, pass, subscribed);
-    
+    let d;
+    try {
+        d = await api.registerUser(user, email, pass, subscribed);
+    } catch (e) {
+        // Same reasoning as handleLogin: a network/CORS failure must not look like the button
+        // silently did nothing, especially here — the account can still end up created
+        // server-side even though the browser never let this code see the response.
+        console.error("Register request failed:", e);
+        alert(window.t ? window.t('connectionErrorAlert') : "⚠️ CONNECTION ERROR!\nThe server is not responding.");
+        return;
+    }
+
     if(d && d.success) {
         localStorage.setItem('codex_username', d.username);
         if (d.token) localStorage.setItem('codex_token', d.token);
