@@ -93,6 +93,26 @@ export const api = {
             headers: { 'Authorization': `Bearer ${localStorage.getItem('codex_token')}` }
         });
         return await res.json();
+    },
+    // Always resolves to { success: true } by design — the backend deliberately gives the same
+    // answer whether or not the address has an account, so nobody can probe for registered emails.
+    async forgotPassword(email) {
+        const res = await fetch(`${CONFIG.API_URL}/forgot-password`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email })
+        });
+        return await res.json();
+    },
+    async resetPassword(token, newPass) {
+        const res = await fetch(`${CONFIG.API_URL}/reset-password`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ token, newPass })
+        });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) throw { status: res.status, ...data };
+        return data;
     }
 };
 
