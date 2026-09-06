@@ -10,18 +10,26 @@ export async function checkMissionCode() {
     if(!code) return;
 
     try {
-        // Κλήση μέσω του κεντρικού api.js
-        const data = await api.checkMissionCode(code);
+        // Κλήση μέσω του κεντρικού api.js — read-only, δεν ξεκινάει ακόμα το 48ωρο
+        let data = await api.checkMissionCode(code);
 
         if (!data.valid) {
             alert("❌ " + data.msg);
             return;
         }
+
+        // Πρώτη φορά που μπαίνει αυτός ο κωδικός: αυτό το τσεκάρισμα (ρητή ενέργεια του χρήστη,
+        // όχι κάποιο αυτόματο GET) είναι που ξεκινάει επίσημα το 48ωρο παράθυρο επικύρωσης.
+        if (!data.activated) {
+            data = await api.activateMissionCode(code);
+            if (!data.valid) { alert("❌ " + (data.msg || t('connectionErrorAlert'))); return; }
+        }
+
         if (data.expired) {
             alert(t('missionExpiredAlert'));
             return;
         }
-        
+
         // Αποθηκεύουμε τον κωδικό στο state
         state.currentTicketCode = code;
         

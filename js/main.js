@@ -78,6 +78,28 @@ const initApp = async () => {
         // Network/API error: fail open, proceed with normal boot (state keeps the CONFIG default)
     }
 
+    // 0.5 Email verification — the emailed link points here with ?verify=<token>. This POSTs the
+    // token itself rather than the link being a GET straight to the API: a mail client's
+    // automatic link-preview scan fetches the raw URL but never executes page JavaScript, so it
+    // can't silently verify an account nobody asked it to (same reasoning as the mission-code fix).
+    const verifyToken = new URLSearchParams(location.search).get('verify');
+    if (verifyToken) {
+        try {
+            const result = await api.verifyEmail(verifyToken);
+            if (result.success) {
+                state.emailVerified = true;
+                if (window.showToast) window.showToast('✅ EMAIL VERIFIED — FULL ACCESS UNLOCKED', 'achievement');
+            } else if (window.showToast) {
+                window.showToast('❌ ' + (result.error || 'VERIFICATION LINK INVALID OR EXPIRED'), 'error');
+            }
+        } catch (e) {
+            if (window.showToast) window.showToast('CONNECTION ERROR DURING VERIFICATION', 'error');
+        }
+        // Strip the token from the URL — a refresh, share, or browser-history entry shouldn't
+        // keep resubmitting (or exposing) it once it's been used.
+        history.replaceState({}, '', location.pathname);
+    }
+
     // 1. Setup Auth & Listeners
     await checkSavedSession();
     initTerminal();

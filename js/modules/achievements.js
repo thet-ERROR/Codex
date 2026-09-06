@@ -59,6 +59,11 @@ export function openAgentDashboard() {
     const rankEl = document.getElementById('dossier-rank');
     if(rankEl) rankEl.innerText = rank;
 
+    // Backend hard-gates dossier data behind a verified email — this banner is the difference
+    // between that showing up as a blank/broken profile and a clear next step.
+    const verifyBanner = document.getElementById('dossier-verify-banner');
+    if (verifyBanner) verifyBanner.classList.toggle('hidden', !!state.emailVerified);
+
     const totalAchievements = CONFIG.ACHIEVEMENTS_LIST.length;
     const rankFillEl = document.getElementById('dossier-rank-fill');
     if(rankFillEl) rankFillEl.style.width = Math.min((unlockedCount / totalAchievements) * 100, 100) + '%';

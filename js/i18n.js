@@ -85,8 +85,14 @@ const translations = {
         descFallback: "Αναλυτικές προδιαγραφές για αυτό το σύστημα.", taglineFallback: "Εξουσιοδοτημένη κατασκευή συστήματος", systemDetailsFallback: "Στοιχεία συστήματος",
 
         menuDashboard: "Πίνακας ελέγχου", menuSignOut: "Αποσύνδεση", menuSignIn: "Σύνδεση", menuRegister: "Εγγραφή",
+        menuVerifyEmail: "Επιβεβαίωση email",
         rankOperative: "Πράκτορας", rankRecruit: "Νεοσύλλεκτος", unknownUser: "Άγνωστος χρήστης", agentFallback: "Πράκτορας",
         purchasedLabel: "Αγορασμένο",
+
+        toastVerifyReminder: "⚠ Επιβεβαίωσε το email σου για να ξεκλειδώσεις wishlist, επιτεύγματα & ψηφοφορία",
+        toastCheckEmailToVerify: "📧 Έλεγξε το email σου για να επιβεβαιώσεις τον λογαριασμό σου",
+        toastAlreadyVerified: "Το email σου είναι ήδη επιβεβαιωμένο",
+        toastVerificationSent: "📧 Το email επιβεβαίωσης στάλθηκε — έλεγξε τα εισερχόμενά σου",
 
         alertBothFields: "Προσοχή: Συμπλήρωσε όνομα χρήστη και κωδικό", alertInvalidCreds: "Λανθασμένα στοιχεία σύνδεσης",
         alertAllFieldsRecruit: "Προσοχή: Όλα τα πεδία είναι υποχρεωτικά", alertRegistrationFailed: "Η εγγραφή απέτυχε",
@@ -184,8 +190,14 @@ const translations = {
         descFallback: "Detailed specifications for this system.", taglineFallback: "AUTHORIZED SYSTEM BUILD", systemDetailsFallback: "System Details",
 
         menuDashboard: "DASHBOARD", menuSignOut: "SIGN OUT", menuSignIn: "SIGN IN", menuRegister: "REGISTER",
+        menuVerifyEmail: "VERIFY EMAIL",
         rankOperative: "OPERATIVE", rankRecruit: "RECRUIT", unknownUser: "UNKNOWN_USER", agentFallback: "AGENT",
         purchasedLabel: "PURCHASED",
+
+        toastVerifyReminder: "⚠ VERIFY YOUR EMAIL TO UNLOCK WISHLIST, ACHIEVEMENTS & VOTING",
+        toastCheckEmailToVerify: "📧 CHECK YOUR EMAIL TO VERIFY YOUR ACCOUNT",
+        toastAlreadyVerified: "YOUR EMAIL IS ALREADY VERIFIED",
+        toastVerificationSent: "📧 VERIFICATION EMAIL SENT — CHECK YOUR INBOX",
 
         alertBothFields: "SYSTEM ALERT: ENTER BOTH USERNAME & PASSWORD", alertInvalidCreds: "ACCESS DENIED: INVALID CREDENTIALS",
         alertAllFieldsRecruit: "SYSTEM ALERT: ALL FIELDS REQUIRED FOR RECRUITMENT", alertRegistrationFailed: "REGISTRATION FAILED",

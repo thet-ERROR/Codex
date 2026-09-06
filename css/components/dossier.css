@@ -15,6 +15,19 @@
 .dossier-rank-bar { background: #222; height: 6px; border-radius: 3px; margin: 6px 0 10px 0; overflow: hidden; }
 .dossier-rank-fill { background: var(--neon-purple); height: 100%; width: 0%; transition: 0.5s; box-shadow: 0 0 8px var(--neon-purple); }
 
+.dossier-verify-banner {
+    display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap;
+    background: rgba(255, 170, 0, 0.1); border: 1px solid #ffaa00; border-radius: 8px;
+    padding: 8px 12px; margin-top: 10px;
+}
+.dossier-verify-banner span { color: #ffc14d; font-size: 0.75rem; font-family: var(--font-ui); font-weight: 600; }
+.dossier-verify-banner button {
+    background: #ffaa00; color: #000; border: none; border-radius: 6px; padding: 6px 12px;
+    font-family: var(--font-ui); font-weight: 800; font-size: 0.7rem; letter-spacing: 0.5px; cursor: pointer;
+    white-space: nowrap;
+}
+.dossier-verify-banner button:hover { filter: brightness(1.1); }
+
 .dossier-stats { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
 .dossier-stat-chip { font-family: var(--font-ui); font-size: 0.7rem; font-weight: bold; letter-spacing: 0.5px; padding: 4px 10px; border-radius: 6px; background: rgba(204, 255, 0, 0.1); color: var(--neon-green); border: 1px solid var(--neon-green); }
 
