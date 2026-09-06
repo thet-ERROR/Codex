@@ -170,6 +170,16 @@
                 <div id="user-count" style="font-size:2rem; font-weight:bold; color:#fff; text-align:center;">0</div>
             </div>
 
+            <div class="tool-box" style="border-color:#00f0ff;">
+                <h3 style="color:#00f0ff;">👥 AGENT ACCOUNTS</h3>
+                <p style="font-size:0.75rem; color:#888; margin:-5px 0 10px 0;">
+                    Register κρατάει μόνιμα το username/email — ένας διαγραμμένος λογαριασμός εδώ
+                    ελευθερώνει και τα δύο για νέα εγγραφή. Χρήσιμο για test/διπλούς λογαριασμούς.
+                </p>
+                <input type="text" id="user-search" placeholder="Αναζήτηση username ή email..." oninput="renderUserList()">
+                <div id="users-list" style="margin-top:10px; max-height:320px; overflow-y:auto;">LOADING...</div>
+            </div>
+
             <div class="tool-box" style="border-color:#ff3333;">
                 <h3 style="color:#ff3333;">⚠ MAINTENANCE KILL SWITCH</h3>
                 <label style="display:flex; align-items:center; gap:8px; text-transform:none; font-size:0.9rem; color:#fff;">
