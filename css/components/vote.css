@@ -60,7 +60,6 @@
 }
 /* No extras, no cart, no wishlist, no fake anchor price on a drop that isn't for sale yet */
 .yg-card.vote-mode .yg-extras-section,
-.yg-card.vote-mode .yg-old-price,
 .yg-card.vote-mode .yg-target-lock,
 .yg-card.vote-mode #yg-add-cart { display: none !important; }
 .yg-card.vote-mode .yg-buttons-section { grid-template-columns: 1fr !important; }

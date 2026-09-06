@@ -91,7 +91,9 @@ export function initTerminal() {
                     toggleHackMode(); 
                     output.innerText += state.isHacked ? ">> SYSTEM COMPROMISED. ACCESS GRANTED.\n" : ">> SYSTEM RESTORED. PROTOCOLS NORMAL.\n"; 
                 } else if (cmd === 'loot') {
-                    output.innerText += ">> DECRYPTING VAULT...\n>> HIDDEN COMMUNIQUE FOUND:\n>> TELL THE ADMIN THE CODE 'CYBER10' ON WHATSAPP FOR A SURPRISE.\n";
+                    // Same reasoning as the wheel: a literal code in client-side source is
+                    // public the moment anyone opens devtools.
+                    output.innerText += ">> DECRYPTING VAULT...\n>> HIDDEN COMMUNIQUE FOUND:\n>> MENTION 'THE VAULT IS OPEN' ON WHATSAPP FOR A SURPRISE.\n";
                 } else if (cmd === 'codex') {
                     output.innerText += ">> ACCESSING MAINFRAME...\n>> WAKE UP, AGENT.\n>> THE MATRIX HAS YOU.\n";
                 } else if (cmd !== "") { 

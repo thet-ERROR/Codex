@@ -2,6 +2,7 @@
 import { state } from '../state.js';
 import { api } from '../api.js';
 import { CONFIG } from '../config.js';
+import { esc } from '../utils.js';
 
 export async function checkMissionCode() {
     const t = window.t || (k => k);
@@ -138,15 +139,18 @@ export function renderGlobalReviews() {
     if(allReviews.length === 0) { 
         rList.innerHTML = '<div style="color:#666;text-align:center;margin-top:50px; font-size:0.8rem;">NO TRANSMISSIONS YET</div>'; 
     } else { 
-        rList.innerHTML = allReviews.map(r => { 
-            const date = r.date ? new Date(r.date).toLocaleDateString() : 'RECENT'; 
+        // r.user and r.text come from whoever redeemed a mission code — the one place on the
+        // site where a stranger's text reaches every visitor's DOM. Never interpolate them raw.
+        rList.innerHTML = allReviews.map(r => {
+            const date = r.date ? new Date(r.date).toLocaleDateString() : 'RECENT';
+            const rating = Number(r.rating) || 0;
             return `<div class="review-card">
-                        <span class="r-date">${date}</span>
-                        <div class="r-user">${r.user} <span class="r-stars">★${r.rating}</span></div>
-                        <div style="font-size:0.7rem; color:var(--neon-purple); margin-bottom:4px; font-weight:bold;">${window.t ? window.t('purchasedLabel') : 'PURCHASED'}: ${r.pcName}</div>
-                        <div class="r-text">"${r.text}"</div>
-                    </div>`; 
-        }).join(''); 
+                        <span class="r-date">${esc(date)}</span>
+                        <div class="r-user">${esc(r.user)} <span class="r-stars">★${rating}</span></div>
+                        <div style="font-size:0.7rem; color:var(--neon-purple); margin-bottom:4px; font-weight:bold;">${esc(window.t ? window.t('purchasedLabel') : 'PURCHASED')}: ${esc(r.pcName)}</div>
+                        <div class="r-text">"${esc(r.text)}"</div>
+                    </div>`;
+        }).join('');
     }
 }
 

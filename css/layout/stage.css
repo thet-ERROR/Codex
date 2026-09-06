@@ -19,7 +19,6 @@ body.night-mode #main-card, body.night-mode .holo-card { background: var(--card-
 .pc-title { font-family: var(--font-ui); font-size: 2.5rem; font-weight: 800; line-height: 1; text-transform: uppercase; margin-bottom: 5px; color: #fff; }
 .card-price-row { display: flex; justify-content: center; align-items: baseline; gap: 10px; margin-bottom: 15px; }
 .pc-price { font-family: var(--font-ui); font-size: 2rem; color: var(--neon-green); font-weight: bold; }
-.pc-price-old { font-family: var(--font-ui); font-size: 1.2rem; color: #666; text-decoration: line-through; }
 
 .stock-badge { padding: 4px 10px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; display: inline-block; margin-bottom: 10px; letter-spacing: 1px; }
 .stock-badge.low { background: rgba(255, 170, 0, 0.2); color: var(--legendary-orange); border: 1px solid var(--legendary-orange); }

@@ -5,7 +5,7 @@ A high-end custom PC retail platform featuring a cyberpunk aesthetic and AI inte
 ## 🚀 Features
 - **Cyberpunk UI:** Built with CSS Grid and Flexbox for a full "Matrix" experience.
 - Secure API Communication
-- **AI Chatbot:** Integrated assistant (Codex AI) for real-time customer support.
+- **Support Assistant:** Guided help menu (Codex Support) covering the most common customer questions.
 - **Holographic Effects** Dynamic product showcase with hover effects.
 - **Mobile Optimized:** Fully responsive layout for smartphones and tablets.
 
