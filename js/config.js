@@ -1,5 +1,5 @@
 export const CONFIG = {
-    API_URL: 'https://phoenix-codex.onrender.com/api',
+    API_URL: 'https://codex-backend-9kij.onrender.com/api',
     WHATSAPP_NUM: '306912345678',
     INSTAGRAM_URL: 'https://instagram.com/codex_rigs',
     DEFAULT_THEME: '#ccff00',
