@@ -16,7 +16,7 @@
                 document.getElementById('admin-pass').value = '';
                 document.getElementById('login-ui').style.display='none';
                 document.getElementById('dashboard-ui').style.display='grid';
-                loadInv(); loadVote(); loadTickets(); loadEmails(); loadUserCount(); loadMaintenance();
+                loadInv(); loadVote(); loadTickets(); loadEmails(); loadUserCount(); loadMaintenance(); loadUsers();
             } else {
                 alert(d.error || 'WRONG PASSWORD');
             }
@@ -75,6 +75,56 @@
             const data = await res.json();
             document.getElementById('user-count').innerText = data.count;
         } catch(e) { console.log("User count error", e); }
+    }
+
+    // --- AGENT ACCOUNTS (users) ---
+    let allUsers = [];
+
+    async function loadUsers() {
+        try {
+            const res = await fetch(`${API}/users`, { headers:{'Authorization':`Bearer ${TOKEN}`} });
+            if (handleAuthError(res)) return;
+            allUsers = await res.json();
+            renderUserList();
+        } catch(e) { console.log("Load users error", e); }
+    }
+
+    function renderUserList() {
+        const q = (document.getElementById('user-search')?.value || '').trim().toLowerCase();
+        const filtered = q
+            ? allUsers.filter(u => u.username.toLowerCase().includes(q) || u.email.toLowerCase().includes(q))
+            : allUsers;
+
+        const list = document.getElementById('users-list');
+        if (!list) return;
+        if (filtered.length === 0) {
+            list.innerHTML = `<div style="color:#666; text-align:center; padding:15px; font-size:0.85rem;">${allUsers.length === 0 ? 'NO AGENTS YET' : 'NO MATCHES'}</div>`;
+            return;
+        }
+
+        list.innerHTML = filtered.map(u => {
+            const verified = !!u.emailVerified;
+            const joined = u.joined ? new Date(u.joined).toLocaleDateString() : '?';
+            return `<div class="ticket">
+                <div>
+                    <span class="t-code">${u.username}</span>
+                    <span style="float:right; color:${verified ? '#ccff00' : 'orange'};">${verified ? 'VERIFIED' : 'UNVERIFIED'}</span>
+                </div>
+                <div style="color:#888;">${u.email}</div>
+                <div style="color:#555; font-size:0.7rem; margin-top:2px;">Joined ${joined} · ${(u.wishlist||[]).length} wishlist · ${(u.achievements||[]).length} achievements</div>
+                <button class="btn-sm del-btn" style="width:100%; margin-top:6px;" onclick="deleteUser('${u._id}', '${u.username.replace(/'/g,"\\'")}')">DELETE</button>
+            </div>`;
+        }).join('');
+    }
+
+    async function deleteUser(id, username) {
+        if (!confirm(`Delete agent "${username}"? Frees up their username/email for re-registration. Cannot be undone.`)) return;
+        try {
+            const res = await fetch(`${API}/users/${id}`, { method:'DELETE', headers:{'Authorization':`Bearer ${TOKEN}`} });
+            if (handleAuthError(res)) return;
+            if (res.ok) { await loadUsers(); loadUserCount(); }
+            else alert('DELETE FAILED');
+        } catch(e) { alert('NETWORK ERROR'); }
     }
 
     // --- FORM LOGIC ---
