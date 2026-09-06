@@ -471,6 +471,11 @@ Type 'help' for a list of commands.
                 <div class="agent-rank">RANK: <span id="dossier-rank" class="neon-purple-text">RECRUIT</span></div>
                 <div class="dossier-rank-bar"><div class="dossier-rank-fill" id="dossier-rank-fill"></div></div>
                 <div class="network-status"><div class="live-dot"></div> STATUS: <span class="neon-green-text">ONLINE</span></div>
+                <!-- Filled/shown only when state.emailVerified is false — see openAgentDashboard() -->
+                <div class="dossier-verify-banner hidden" id="dossier-verify-banner">
+                    <span>⚠ EMAIL NOT VERIFIED — wishlist, achievements & voting are locked</span>
+                    <button onclick="playClick(); resendVerification();">RESEND EMAIL</button>
+                </div>
                 <div class="dossier-stats" id="dossier-stats"></div>
             </div>
 

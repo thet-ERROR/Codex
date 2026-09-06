@@ -50,8 +50,13 @@ export function toggleWishlist(param) {
 
     // 4b. Συγχρονισμός με τον λογαριασμό, αν είναι συνδεδεμένος (best-effort, δεν μπλοκάρει το UI)
     if (state.isLoggedIn) {
-        api.saveWishlist(pcId, added ? 'add' : 'remove').catch(() => {
-            if (window.showToast) window.showToast("WISHLIST SYNC FAILED — SAVED LOCALLY ONLY", "error");
+        api.saveWishlist(pcId, added ? 'add' : 'remove').catch((e) => {
+            if (!window.showToast) return;
+            if (e && e.code === 'EMAIL_NOT_VERIFIED') {
+                window.showToast("⚠ VERIFY YOUR EMAIL TO SYNC WISHLIST TO YOUR ACCOUNT", "error");
+            } else {
+                window.showToast("WISHLIST SYNC FAILED — SAVED LOCALLY ONLY", "error");
+            }
         });
     }
 

@@ -18,6 +18,9 @@ export const state = {
     cart: JSON.parse(localStorage.getItem('codex_cart')) || [],
     activeEvent: null,
     isLoggedIn: false, // Αρχικά false, θα ελέγχεται στο auth.js
+    // Hard gate on the backend: dossier/wishlist/achievements/vote all 403 until this is true.
+    // Set from register/login responses and from /api/me; never assume true by default.
+    emailVerified: false,
     currentTicketCode: "",
     achievements: loadAchievements(),
     wishlist: JSON.parse(localStorage.getItem('codex_wishlist')) || [],

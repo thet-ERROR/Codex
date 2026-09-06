@@ -25,7 +25,13 @@ export function updateAuthUI(username) {
         if (logoutBtn) logoutBtn.style.display = 'block';
 
         if (menu) {
+            // Backend hard-gates dossier/wishlist/achievements/vote behind a verified email —
+            // surface that here so it's not a silent dead end the first time something 403s.
+            const verifyItem = !state.emailVerified
+                ? `<div class="p-item" onclick="playClick(); resendVerification(); toggleProfileMenu();" style="color: #ffaa00;">⚠ ${t('menuVerifyEmail')}</div>`
+                : '';
             menu.innerHTML = `
+                ${verifyItem}
                 <div class="p-item" onclick="playClick(); toggleProfileMenu(); openAgentDashboard();" style="color: var(--neon-green);">📊 ${t('menuDashboard')}</div>
                 <div class="p-item" onclick="playClick(); logout(); toggleProfileMenu();" style="color: #ff3333;">❌ ${t('menuSignOut')}</div>
             `;
@@ -68,6 +74,8 @@ export async function checkSavedSession() {
 
     try {
         const me = await api.getMe();
+        // Reaching here at all means requireVerified passed on the backend
+        state.emailVerified = true;
         state.wishlist = me.wishlist || [];
         state.achievements = Array.isArray(me.achievements) ? me.achievements : [];
         localStorage.setItem('codex_wishlist', JSON.stringify(state.wishlist));
@@ -81,6 +89,11 @@ export async function checkSavedSession() {
             localStorage.removeItem('codex_username');
             state.isLoggedIn = false;
             updateAuthUI(null);
+        } else if (e && e.code === 'EMAIL_NOT_VERIFIED') {
+            // Valid session, just gated — reflect that in the menu instead of pretending the
+            // stale (usually empty, pre-this-feature) cached wishlist/achievements are current.
+            state.emailVerified = false;
+            updateAuthUI(savedUser);
         }
         // Any other error (network, etc.): fail open, keep using cached local data.
     }
@@ -102,8 +115,14 @@ export async function handleLogin() {
     if (d && d.success) {
         localStorage.setItem('codex_username', d.username);
         if (d.token) localStorage.setItem('codex_token', d.token);
+        state.emailVerified = !!d.emailVerified;
         updateAuthUI(d.username);
-        if(window.showToast) window.showToast('WELCOME BACK, AGENT ' + d.username.toUpperCase(), 'normal');
+        if(window.showToast) {
+            window.showToast('WELCOME BACK, AGENT ' + d.username.toUpperCase(), 'normal');
+            if (!state.emailVerified) {
+                window.showToast(window.t ? window.t('toastVerifyReminder') : '⚠ VERIFY YOUR EMAIL TO UNLOCK WISHLIST, ACHIEVEMENTS & VOTING', 'error');
+            }
+        }
         if(window.closeModal) window.closeModal('login-modal');
         if(window.checkAchievement) window.checkAchievement('login');
     } else {
@@ -128,8 +147,13 @@ export async function handleSignup() {
     if(d && d.success) {
         localStorage.setItem('codex_username', d.username);
         if (d.token) localStorage.setItem('codex_token', d.token);
+        state.emailVerified = !!d.emailVerified;
         updateAuthUI(d.username);
-        if(window.showToast) window.showToast("WELCOME AGENT: " + d.username.toUpperCase(), "achievement");
+        if(window.showToast) {
+            window.showToast("WELCOME AGENT: " + d.username.toUpperCase(), "achievement");
+            // New accounts always start unverified — this is the very first thing they need to know
+            window.showToast(window.t ? window.t('toastCheckEmailToVerify') : '📧 CHECK YOUR EMAIL TO VERIFY YOUR ACCOUNT', 'normal');
+        }
         if(window.closeModal) window.closeModal('signup-modal');
         if(window.checkAchievement) window.checkAchievement('login');
     } else {
@@ -137,9 +161,28 @@ export async function handleSignup() {
     }
 }
 
+// --- EMAIL VERIFICATION ---
+export async function resendVerification() {
+    try {
+        const d = await api.resendVerification();
+        if (d.alreadyVerified) {
+            state.emailVerified = true;
+            updateAuthUI(localStorage.getItem('codex_username'));
+            if (window.showToast) window.showToast(window.t ? window.t('toastAlreadyVerified') : 'YOUR EMAIL IS ALREADY VERIFIED', 'normal');
+        } else if (d.success) {
+            if (window.showToast) window.showToast(window.t ? window.t('toastVerificationSent') : '📧 VERIFICATION EMAIL SENT — CHECK YOUR INBOX', 'achievement');
+        } else {
+            if (window.showToast) window.showToast(d.error || 'FAILED TO SEND VERIFICATION EMAIL', 'error');
+        }
+    } catch (e) {
+        if (window.showToast) window.showToast('CONNECTION ERROR', 'error');
+    }
+}
+
 // --- LOGOUT LOGIC ---
 export function logout() {
     state.isLoggedIn = false;
+    state.emailVerified = false;
     localStorage.removeItem('codex_username');
     localStorage.removeItem('codex_token');
     updateAuthUI(null);
@@ -159,3 +202,4 @@ window.handleLogin = handleLogin;
 window.handleSignup = handleSignup;
 window.logout = logout;
 window.openRecovery = openRecovery;
+window.resendVerification = resendVerification;

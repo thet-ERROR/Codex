@@ -149,6 +149,10 @@ export async function castVote() {
             if (typeof data.votes === 'number') state.activeEvent.currentVotes = data.votes;
             renderVoteState();
             if(window.showToast) window.showToast("YOU HAVE ALREADY VOTED", "error");
+        } else if (data.code === 'EMAIL_NOT_VERIFIED') {
+            // One-vote-per-account only means anything if an account costs something to create —
+            // this is what enforces that, so make the reason unmistakable rather than a bare "vote failed".
+            if(window.showToast) window.showToast("⚠ VERIFY YOUR EMAIL FIRST — CHECK YOUR PROFILE MENU TO RESEND", "error");
         } else {
             if(window.showToast) window.showToast(data.error || "VOTE FAILED", "error");
         }
