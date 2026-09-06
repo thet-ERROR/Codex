@@ -1,6 +1,5 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "_comment_csp": "script-src keeps 'unsafe-inline' because the whole UI is wired with inline onclick= attributes; removing it would break every button. Converting those to addEventListener is the follow-up that lets this be tightened — until then the real XSS defence is the escaping in js/utils.js. connect-src pins the API to the Render backend, so injected code cannot exfiltrate to an attacker's server.",
   "headers": [
     {
       "source": "/(.*)",
