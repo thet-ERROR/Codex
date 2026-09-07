@@ -21,3 +21,15 @@ A high-end custom PC retail platform featuring a cyberpunk aesthetic and AI inte
 
 ## 👷 Development Workflow
 This project follows the **Git Flow** model. All development and testing occur in the `main-test` branch before merging into `main`.
+
+Vercel is wired to match: a push to `main-test` builds a **Preview** deployment, and merging the
+pull request into `main` is what promotes it to **Production**. The API lives in the separate
+[codex-backend](https://github.com/thet-ERROR/codex-backend) repository and follows the same flow,
+deployed on Render.
+
+## 🚢 Deploy order
+A single feature often touches both repositories, and they deploy independently. **Deploy the
+backend first**, wait for Render to report *Live*, and only then merge the frontend pull request.
+
+An older frontend works fine against a newer API, because backend changes are additive. A frontend
+that ships first calls routes that do not exist yet and breaks production.
