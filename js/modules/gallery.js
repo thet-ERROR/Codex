@@ -424,7 +424,9 @@ export function toggleCardFlip() {
     }
 
     if (cardInner) {
-        cardInner.classList.toggle('flipped');
+        const nowFlipped = cardInner.classList.toggle('flipped');
+        // Only the flip *to* the spec side counts as reading them
+        if (nowFlipped && window.checkAchievement) window.checkAchievement('deep_scan');
     }
 }
 
@@ -458,6 +460,7 @@ export function toggleBenchmarksView() {
 
     if (isShowing) {
         btn.innerHTML = '<i class="ph-bold ph-arrow-down"></i> CLOSE FPS';
+        if (window.checkAchievement) window.checkAchievement('benchmarker');
     } else {
         btn.innerHTML = '<i class="ph-bold ph-crosshair"></i> SHOW FPS';
     }

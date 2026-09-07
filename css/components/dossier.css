@@ -12,8 +12,12 @@
 .neon-purple-text { color: var(--neon-purple); font-weight: bold; }
 .neon-green-text { color: var(--neon-green); font-weight: bold; text-shadow: 0 0 5px rgba(0,255,0,0.5); }
 
-.dossier-rank-bar { background: #222; height: 6px; border-radius: 3px; margin: 6px 0 10px 0; overflow: hidden; }
+/* The bar measures progress across the CURRENT rank band, not from zero — the API sends that
+   percentage ready-made, so a promotion visibly resets it instead of it creeping toward a
+   far-off maximum. See rankFor() in the backend. */
+.dossier-rank-bar { background: #222; height: 6px; border-radius: 3px; margin: 6px 0 6px 0; overflow: hidden; }
 .dossier-rank-fill { background: var(--neon-purple); height: 100%; width: 0%; transition: 0.5s; box-shadow: 0 0 8px var(--neon-purple); }
+.dossier-xp { font-family: monospace; font-size: 0.72rem; color: #888; letter-spacing: 0.5px; margin-bottom: 8px; }
 
 .dossier-verify-banner {
     display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap;
@@ -42,14 +46,40 @@
 .dossier-list::-webkit-scrollbar-thumb, .wishlist-grid::-webkit-scrollbar-thumb { background: var(--neon-green); border-radius: 4px; }
 .dossier-empty { font-family: monospace; color: #666; font-size: 0.8rem; text-align: center; width: 100%; }
 
-#dossier-achievements .ach-card { background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 12px; padding: 12px; display: flex; align-items: center; gap: 15px; transition: all 0.3s ease; }
-#dossier-achievements .ach-card.unlocked { border-color: var(--neon-green); box-shadow: inset 0 0 10px rgba(0, 255, 0, 0.05); }
-#dossier-achievements .ach-icon { font-size: 1.8rem; color: #444; }
-#dossier-achievements .ach-card.unlocked .ach-icon { color: var(--neon-green); }
-#dossier-achievements .ach-info h4 { margin: 0 0 4px 0; color: #666; font-family: var(--font-ui); font-size: 0.85rem; }
-#dossier-achievements .ach-card.unlocked .ach-info h4 { color: var(--neon-green); }
-#dossier-achievements .ach-status { margin-left: auto; font-family: monospace; font-weight: bold; color: #444; }
-#dossier-achievements .ach-card.unlocked .ach-status { color: var(--neon-green); }
+/* Badge cards render in two places from the same markup (badgeCards() in modules/achievements.js):
+   the dossier's narrow column and the full-size #achievements-modal grid. These rules were scoped
+   to #dossier-achievements, which is why the modal's copy came out unstyled — unscoped now, with
+   the dossier only overriding what has to shrink. */
+.ach-card { background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 12px; padding: 12px; display: flex; align-items: center; gap: 15px; transition: all 0.3s ease; width: 100%; box-sizing: border-box; }
+.ach-card.unlocked { border-color: var(--neon-green); box-shadow: inset 0 0 10px rgba(0, 255, 0, 0.05); }
+.ach-icon { font-size: 1.8rem; color: #444; flex-shrink: 0; }
+.ach-card.unlocked .ach-icon { color: var(--neon-green); }
+.ach-info h4 { margin: 0 0 4px 0; color: #666; font-family: var(--font-ui); font-size: 0.85rem; }
+.ach-card.unlocked .ach-info h4 { color: var(--neon-green); }
+.ach-info p { margin: 0; font-size: 0.75rem; color: #777; }
+.ach-status { margin-left: auto; font-family: monospace; font-weight: bold; color: #444; font-size: 0.75rem; white-space: nowrap; }
+.ach-card.unlocked .ach-status { color: var(--neon-green); }
+
+/* Nineteen badges in a 200px scroller — tighten the type so a row still fits on one line */
+#dossier-achievements .ach-info p { font-size: 0.7rem; color: #888; }
+#dossier-achievements .ach-status { font-size: 0.7rem; }
+
+.ach-grid { display: flex; flex-direction: column; gap: 10px; max-height: 60vh; overflow-y: auto; padding-right: 4px; }
+.ach-grid::-webkit-scrollbar { width: 4px; }
+.ach-grid::-webkit-scrollbar-thumb { background: var(--neon-purple); border-radius: 4px; }
+
+.ach-viewall-btn { margin-top: 10px; width: 100%; background: transparent; border: 1px solid var(--neon-purple); color: var(--neon-purple); font-family: var(--font-ui); font-size: 0.7rem; font-weight: 800; letter-spacing: 1px; padding: 8px; border-radius: 8px; cursor: pointer; transition: 0.2s; }
+.ach-viewall-btn:hover { background: rgba(176, 38, 255, 0.15); box-shadow: 0 0 10px rgba(176, 38, 255, 0.3); }
+
+/* Was a stack of inline styles inside the JS template. Moved here so the wishlist rows can be
+   restyled without touching openAgentDashboard(), and so the remove button can be a real element
+   with a listener rather than an inline onclick. */
+.dossier-wish-row { display: flex; align-items: center; gap: 15px; background: rgba(0, 0, 0, 0.5); padding: 10px; border: 1px solid #333; border-radius: 6px; width: 100%; box-sizing: border-box; }
+.dossier-wish-row img { width: 50px; height: 50px; object-fit: cover; border-radius: 4px; border: 1px solid var(--neon-purple); flex-shrink: 0; }
+.dossier-wish-row .dw-name { color: #fff; font-family: var(--font-ui); font-size: 0.9rem; }
+.dossier-wish-row .dw-price { color: var(--neon-green); font-size: 0.8rem; font-family: monospace; }
+.dossier-wish-row .dw-remove { margin-left: auto; background: transparent; border: none; color: #ff3333; cursor: pointer; font-size: 1.2rem; padding: 4px; transition: 0.2s; }
+.dossier-wish-row .dw-remove:hover { transform: scale(1.15); }
 
 .dossier-auth-actions { display: flex; gap: 10px; margin-top: 5px; }
 .dossier-auth-actions .yg-btn { flex: 1; }

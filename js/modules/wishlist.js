@@ -50,7 +50,11 @@ export function toggleWishlist(param) {
 
     // 4b. Συγχρονισμός με τον λογαριασμό, αν είναι συνδεδεμένος (best-effort, δεν μπλοκάρει το UI)
     if (state.isLoggedIn) {
-        api.saveWishlist(pcId, added ? 'add' : 'remove').catch((e) => {
+        api.saveWishlist(pcId, added ? 'add' : 'remove').then((res) => {
+            // Three badges are wishlist-size thresholds, so the reply carries the recomputed
+            // profile — crossing one lights up immediately instead of after the next reload.
+            if (window.applyProfile) window.applyProfile(res);
+        }).catch((e) => {
             if (!window.showToast) return;
             if (e && e.code === 'EMAIL_NOT_VERIFIED') {
                 window.showToast("⚠ VERIFY YOUR EMAIL TO SYNC WISHLIST TO YOUR ACCOUNT", "error");

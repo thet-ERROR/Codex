@@ -79,8 +79,13 @@ export function initTerminal() {
                 const output = document.getElementById('cli-output'); 
                 this.value = ''; 
                 
-                output.innerText += `\nvisitor@codex:~$ ${cmd}\n`; 
-                
+                output.innerText += `\nvisitor@codex:~$ ${cmd}\n`;
+
+                // Running something — anything — is the badge. Opening the terminal isn't enough:
+                // the backtick key hits it by accident often enough to be meaningless.
+                if (cmd && window.checkAchievement) window.checkAchievement('terminal_access');
+
+
                 if (cmd === 'help') { 
                     output.innerText += "AVAILABLE COMMANDS:\n  help        - Show this list\n  clear       - Clear terminal\n  hack        - Toggle SYSTEM OVERRIDE\n  loot        - [CLASSIFIED]\n  codex       - [CLASSIFIED]\n  exit        - Close terminal\n"; 
                 } else if (cmd === 'clear') { 

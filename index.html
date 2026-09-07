@@ -470,6 +470,9 @@ Type 'help' for a list of commands.
                 </div>
                 <div class="agent-rank">RANK: <span id="dossier-rank" class="neon-purple-text">RECRUIT</span></div>
                 <div class="dossier-rank-bar"><div class="dossier-rank-fill" id="dossier-rank-fill"></div></div>
+                <!-- XP total and the gap to the next rank. Both come from /api/me — the client
+                     never computes them. See refreshProgressionUI() in modules/achievements.js. -->
+                <div class="dossier-xp" id="dossier-xp">0 XP</div>
                 <div class="network-status"><div class="live-dot"></div> STATUS: <span class="neon-green-text">ONLINE</span></div>
                 <!-- Filled/shown only when state.emailVerified is false — see openAgentDashboard() -->
                 <div class="dossier-verify-banner hidden" id="dossier-verify-banner">
@@ -501,6 +504,10 @@ Type 'help' for a list of commands.
                     <div class="dossier-list" id="dossier-achievements">
                         <div class="dossier-empty">> NO ACHIEVEMENTS UNLOCKED.</div>
                     </div>
+                    <!-- #achievements-modal already existed but nothing ever opened it. With
+                         nineteen badges the 200px column above is a keyhole, so this is the way in
+                         to the full-size grid. -->
+                    <button class="ach-viewall-btn" onclick="playClick(); openAchievements();" data-i18n="achViewAll">> VIEW ALL RECORDS</button>
                 </div>
             </div>
             
