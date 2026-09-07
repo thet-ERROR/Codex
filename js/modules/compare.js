@@ -35,9 +35,13 @@ export function toggleCompare(id, btnElement) {
     }
 }
 
-export function openCompareModal() { 
-    if(state.compareList.length !== 2) return; 
-    
+export function openCompareModal() {
+    if(state.compareList.length !== 2) return;
+
+    // Actually opening the side-by-side is the moment VS mode was used — adding to the list isn't
+    if (window.checkAchievement) window.checkAchievement('comparator');
+
+
     const c1 = state.compareList[0];
     const c2 = state.compareList[1]; 
     

@@ -75,7 +75,7 @@ export function addToCart() {
     // Κλήση σε global functions (που υπάρχουν ήδη στο window)
     if(window.closeModal) window.closeModal('gallery-overlay'); 
     if(window.showToast) window.showToast("ITEM ADDED TO CART", "normal"); 
-    if(window.checkAchievement) window.checkAchievement('cart'); 
+    if(window.checkAchievement) window.checkAchievement('first_loot');
 }
 
 export function removeFromCart(i) {

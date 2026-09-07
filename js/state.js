@@ -1,10 +1,17 @@
 import { CONFIG } from './config.js';
 
+// The three ids the site used before the achievement rewrite. The API maps these too, but a
+// browser holding an old cache renders before /api/me ever answers, so the same mapping has to
+// exist here or a returning agent briefly sees their badges missing.
+const LEGACY_ACHIEVEMENT_IDS = { login: 'recruited', cart: 'first_loot', vote: 'vote_caster' };
+
 function loadAchievements() {
-    const raw = JSON.parse(localStorage.getItem('codex_achievements'));
-    if (Array.isArray(raw)) return raw;
-    if (raw && typeof raw === 'object') return Object.keys(raw).filter(k => raw[k]); // migrate old {id: bool} shape
-    return [];
+    let raw;
+    try { raw = JSON.parse(localStorage.getItem('codex_achievements')); } catch (e) { return []; }
+    let list = [];
+    if (Array.isArray(raw)) list = raw;
+    else if (raw && typeof raw === 'object') list = Object.keys(raw).filter(k => raw[k]); // old {id: bool} shape
+    return list.map(id => LEGACY_ACHIEVEMENT_IDS[id] || id);
 }
 
 export const state = {
@@ -23,6 +30,14 @@ export const state = {
     emailVerified: false,
     currentTicketCode: "",
     achievements: loadAchievements(),
+    // XP and rank are reported by the API, never computed here — see CONFIG.ACHIEVEMENTS_LIST.
+    // These defaults are what a logged-out or offline agent sees; applyProfile() overwrites them
+    // with the server's answer the moment one arrives.
+    xp: 0,
+    rank: 'recruit',
+    nextRank: null,
+    nextRankXp: null,
+    rankProgress: 0,
     wishlist: JSON.parse(localStorage.getItem('codex_wishlist')) || [],
     audioEnabled: localStorage.getItem('codex_audio') !== 'false',
     currentTheme: localStorage.getItem('codex_theme') || CONFIG.DEFAULT_THEME,

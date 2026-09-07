@@ -142,7 +142,9 @@ export async function castVote() {
             state.activeEvent.hasVoted = true;
             renderVoteState();
             if(window.showToast) window.showToast("VOTE REGISTERED", "normal");
-            if(window.checkAchievement) window.checkAchievement('vote');
+            // 'vote_caster'/'kingmaker' are counted on the account by the API, which returns the
+            // recomputed profile with the vote — nothing to report from here.
+            if(window.applyProfile) window.applyProfile(data.profile);
         } else if (res.status === 409) {
             // Already voted on another device/session — sync the UI to the truth
             state.activeEvent.hasVoted = true;

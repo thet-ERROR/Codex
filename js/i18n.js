@@ -57,6 +57,14 @@ const translations = {
         dossierProfileLabel: "[Προφίλ]", dossierOrdersHeading: ">// Οι παραγγελίες μου", dossierNoOrders: "> Δεν υπάρχουν παραγγελίες ακόμα.",
         dossierWishlistHeading: ">// Λίστα επιθυμιών", dossierWishlistSub: "(Αποθηκευμένα συστήματα)",
         dossierAchievementsHeading: ">// Επιτεύγματα", dossierSignIn: "> Σύνδεση", dossierRegister: "> Εγγραφή", dossierSignOut: "> Αποσύνδεση",
+        dossierNoTargets: "> Κανένας στόχος κλειδωμένος.", dossierRemoveTarget: "Αφαίρεση από τη λίστα",
+
+        // Προόδος πράκτορα. Τα ονόματα των βαθμίδων ζουν στο CONFIG.RANK_NAMES, όχι εδώ — τα
+        // κατεβάζει ο server με το id τους και το config κρατά μόνο την εμφάνιση.
+        achUnlocked: "ΞΕΚΛΕΙΔΩΤΟ", achLocked: "ΚΛΕΙΔΩΜΕΝΟ", achUnlockedPrefix: "ΕΠΙΤΕΥΓΜΑ",
+        xpToNextRank: "{xp} XP — {next} XP για {rank}", xpMaxRank: "{xp} XP — ανώτατη βαθμίδα",
+        chipWishlist: "ΛΙΣΤΑ", chipAchievements: "ΕΠΙΤΕΥΓΜΑΤΑ", chipInCart: "ΣΤΟ ΚΑΛΑΘΙ",
+        achViewAll: "> ΟΛΑ ΤΑ ΕΠΙΤΕΥΓΜΑΤΑ",
 
         signupTitle: "Νέα εγγραφή", emailPlaceholder: "Email",
         regSubscribeLabel: "🔔 Θέλω ειδοποιήσεις για νέα drops", signupBtn: "Εγγραφή",
@@ -86,7 +94,10 @@ const translations = {
 
         menuDashboard: "Πίνακας ελέγχου", menuSignOut: "Αποσύνδεση", menuSignIn: "Σύνδεση", menuRegister: "Εγγραφή",
         menuVerifyEmail: "Επιβεβαίωση email",
-        rankOperative: "Πράκτορας", rankRecruit: "Νεοσύλλεκτος", unknownUser: "Άγνωστος χρήστης", agentFallback: "Πράκτορας",
+        // rankOperative/rankRecruit lived here and were written straight into the dossier for
+        // anyone logged in. Ranks now come from the API's XP total, so their display names sit in
+        // CONFIG.RANK_NAMES next to the rest of the ladder.
+        unknownUser: "Άγνωστος χρήστης", agentFallback: "Πράκτορας",
         purchasedLabel: "Αγορασμένο",
 
         alertEnterEmail: "Συμπλήρωσε το email σου.",
@@ -167,6 +178,14 @@ const translations = {
         dossierProfileLabel: "[AGENT PROFILE]", dossierOrdersHeading: ">// MY ORDERS", dossierNoOrders: "> NO ORDERS YET.",
         dossierWishlistHeading: ">// WISHLIST", dossierWishlistSub: "(SAVED SYSTEMS)",
         dossierAchievementsHeading: ">// ACHIEVEMENTS", dossierSignIn: "> SIGN IN", dossierRegister: "> REGISTER", dossierSignOut: "> SIGN OUT",
+        dossierNoTargets: "> NO TARGETS LOCKED.", dossierRemoveTarget: "Remove from wishlist",
+
+        // Agent progression. Rank display names live in CONFIG.RANK_NAMES, not here — the API
+        // reports a rank by id and the config holds only its presentation.
+        achUnlocked: "UNLOCKED", achLocked: "LOCKED", achUnlockedPrefix: "ACHIEVEMENT UNLOCKED",
+        xpToNextRank: "{xp} XP — {next} XP for {rank}", xpMaxRank: "{xp} XP — max rank",
+        chipWishlist: "WISHLIST", chipAchievements: "ACHIEVEMENTS", chipInCart: "IN CART",
+        achViewAll: "> VIEW ALL RECORDS",
 
         signupTitle: "AGENT REGISTRATION", emailPlaceholder: "EMAIL",
         regSubscribeLabel: "🔔 I WANT NOTIFICATIONS FOR NEW DROPS", signupBtn: "REGISTER",
@@ -196,7 +215,8 @@ const translations = {
 
         menuDashboard: "DASHBOARD", menuSignOut: "SIGN OUT", menuSignIn: "SIGN IN", menuRegister: "REGISTER",
         menuVerifyEmail: "VERIFY EMAIL",
-        rankOperative: "OPERATIVE", rankRecruit: "RECRUIT", unknownUser: "UNKNOWN_USER", agentFallback: "AGENT",
+        // Rank names moved to CONFIG.RANK_NAMES — see the note in the el block above.
+        unknownUser: "UNKNOWN_USER", agentFallback: "AGENT",
         purchasedLabel: "PURCHASED",
 
         alertEnterEmail: "Please enter your email address.",
@@ -284,6 +304,9 @@ export function applyLanguage(lang) {
     if (window.renderCard) window.renderCard();
     if (window.updateAuthUI) window.updateAuthUI(localStorage.getItem('codex_username'));
     if (window.renderGlobalReviews) window.renderGlobalReviews();
+    // Badge titles/descriptions come from CONFIG.ACHIEVEMENTS_LIST rather than data-i18n, so the
+    // grids and the rank line have to be rebuilt by hand on a language switch.
+    if (window.refreshProgressionUI) window.refreshProgressionUI();
     // Extras rows carry prices/hours baked into their text, so they're built in JS, not data-i18n
     if (window.renderExtras) window.renderExtras();
     if (window.updateCartUI) window.updateCartUI();
@@ -291,7 +314,13 @@ export function applyLanguage(lang) {
 
 export function toggleLanguage() {
     applyLanguage(currentLang === 'el' ? 'en' : 'el');
+    // Switching the language is one of the badges the API can't observe for itself
+    if (window.checkAchievement) window.checkAchievement('polyglot');
 }
+
+// For the few places that hold their own {en, el} tables rather than i18n keys — the achievement
+// catalogue in config.js is tabular data tied to an id, so it can't go through t().
+export function getLang() { return currentLang; }
 
 // t('paintLeadTime', { hours: 48 }) fills {hours} in the string. Values are inserted as-is, so
 // only pass numbers/trusted labels — never raw user input into a key rendered with innerHTML.

@@ -170,6 +170,10 @@ export function spinWheel() {
     const resultEl = document.getElementById('wheel-result');
     if (resultEl) resultEl.textContent = '';
 
+    // Earned for spinning, not for winning — the outcome is decided client-side, so tying a badge
+    // to the prize would mean tying it to something anyone can fake.
+    if (window.checkAchievement) window.checkAchievement('hacker');
+
     const chosenIndex = Math.floor(Math.random() * SLICES.length);
     const targetCenterAngle = chosenIndex * SLICE_DEG + SLICE_DEG / 2;
 

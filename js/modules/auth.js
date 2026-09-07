@@ -1,12 +1,12 @@
 // js/modules/auth.js
 import { state } from '../state.js';
 import { api } from '../api.js';
+import { applyProfile, pushLocalAchievements } from './achievements.js';
 
 // --- AUTHENTICATION UI UPDATER ---
 export function updateAuthUI(username) {
     const menu = document.getElementById('profile-menu');
     const dossierName = document.getElementById('dossier-username');
-    const dossierRank = document.getElementById('dossier-rank');
     const signInBtn = document.getElementById('dossier-signin-btn');
     const signUpBtn = document.getElementById('dossier-signup-btn');
     const logoutBtn = document.getElementById('dossier-logout-btn');
@@ -18,7 +18,8 @@ export function updateAuthUI(username) {
         state.isLoggedIn = true;
         if (dossierName) dossierName.innerText = username.toUpperCase();
         if (userDisplay) userDisplay.innerText = username.toUpperCase();
-        if (dossierRank) dossierRank.innerText = t('rankOperative');
+        // The rank line is owned by refreshProgressionUI() — it comes from the API's XP total now,
+        // and hardcoding "OPERATIVE" for anyone logged in used to overwrite the real one.
 
         if (signInBtn) signInBtn.style.display = 'none';
         if (signUpBtn) signUpBtn.style.display = 'none';
@@ -40,7 +41,6 @@ export function updateAuthUI(username) {
         state.isLoggedIn = false;
         if (dossierName) dossierName.innerText = t('unknownUser');
         if (userDisplay) userDisplay.innerText = t('agentFallback');
-        if (dossierRank) dossierRank.innerText = t('rankRecruit');
 
         if (signInBtn) signInBtn.style.display = 'block';
         if (signUpBtn) signUpBtn.style.display = 'block';
@@ -53,6 +53,21 @@ export function updateAuthUI(username) {
             `;
         }
     }
+}
+
+// Pulls wishlist + progression from the account. Shared by the boot-time session check and by a
+// fresh login, which need exactly the same thing — keeping one copy is what stops the two paths
+// from drifting into showing different profiles for the same agent.
+async function hydrateProfile() {
+    const me = await api.getMe();
+    state.wishlist = me.wishlist || [];
+    localStorage.setItem('codex_wishlist', JSON.stringify(state.wishlist));
+    // Badges earned while logged out (or while the account was still unverified) live only in
+    // localStorage. Hand them over before trusting the server's list, or applying it would simply
+    // erase them. Whatever comes back last is the authoritative profile.
+    const merged = await pushLocalAchievements(me.achievements);
+    applyProfile(merged || me);
+    return me;
 }
 
 // --- SESSION CHECK ---
@@ -73,13 +88,9 @@ export async function checkSavedSession() {
     if (!token) return; // pre-JWT session on this browser: stay on local-only data
 
     try {
-        const me = await api.getMe();
+        await hydrateProfile();
         // Reaching here at all means requireVerified passed on the backend
         state.emailVerified = true;
-        state.wishlist = me.wishlist || [];
-        state.achievements = Array.isArray(me.achievements) ? me.achievements : [];
-        localStorage.setItem('codex_wishlist', JSON.stringify(state.wishlist));
-        localStorage.setItem('codex_achievements', JSON.stringify(state.achievements));
         updateAuthUI(savedUser);
         if (window.refreshColorLocks) window.refreshColorLocks();
     } catch (e) {
@@ -134,7 +145,11 @@ export async function handleLogin() {
             }
         }
         if(window.closeModal) window.closeModal('login-modal');
-        if(window.checkAchievement) window.checkAchievement('login');
+        // 'recruited' is granted by the API itself now, so there's nothing to report here — but
+        // the profile does have to be pulled in, otherwise rank and XP stay at their logged-out
+        // defaults until the next page load.
+        // Not awaited: the modal should close on the login, not on a cold dyno's first response.
+        if (state.emailVerified) hydrateProfile().catch(() => {});
     } else {
         alert(d?.error || (window.t ? window.t('alertInvalidCreds') : "ACCESS DENIED: INVALID CREDENTIALS"));
     }
@@ -175,7 +190,8 @@ export async function handleSignup() {
             window.showToast(window.t ? window.t('toastCheckEmailToVerify') : '📧 CHECK YOUR EMAIL TO VERIFY YOUR ACCOUNT', 'normal');
         }
         if(window.closeModal) window.closeModal('signup-modal');
-        if(window.checkAchievement) window.checkAchievement('login');
+        // No achievement to report: a brand-new account is unverified, so every account-bound
+        // badge stays locked until the email link is used — which is the whole point of the gate.
     } else {
         alert(d?.error || (window.t ? window.t('alertRegistrationFailed') : "REGISTRATION FAILED"));
     }
@@ -188,6 +204,8 @@ export async function resendVerification() {
         if (d.alreadyVerified) {
             state.emailVerified = true;
             updateAuthUI(localStorage.getItem('codex_username'));
+            // The gate just came off, so the account's real profile is now readable
+            hydrateProfile().catch(() => {});
             if (window.showToast) window.showToast(window.t ? window.t('toastAlreadyVerified') : 'YOUR EMAIL IS ALREADY VERIFIED', 'normal');
         } else if (d.success) {
             if (window.showToast) window.showToast(window.t ? window.t('toastVerificationSent') : '📧 VERIFICATION EMAIL SENT — CHECK YOUR INBOX', 'achievement');
@@ -203,9 +221,17 @@ export async function resendVerification() {
 export function logout() {
     state.isLoggedIn = false;
     state.emailVerified = false;
+    // Progression belongs to the account, not the browser — leaving the old rank and XP on screen
+    // after signing out would show the next person someone else's profile.
+    state.xp = 0;
+    state.rank = 'recruit';
+    state.nextRank = null;
+    state.nextRankXp = null;
+    state.rankProgress = 0;
     localStorage.removeItem('codex_username');
     localStorage.removeItem('codex_token');
     updateAuthUI(null);
+    if (window.refreshProgressionUI) window.refreshProgressionUI();
     if(window.showToast) window.showToast("AGENT DISCONNECTED", "error");
 }
 

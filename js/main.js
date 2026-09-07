@@ -101,7 +101,14 @@ const initApp = async () => {
     }
 
     // 1. Setup Auth & Listeners
+    // Runs after the ?verify= step above, so an agent who just confirmed their email has
+    // 'identity_confirmed' in the profile this call fetches rather than one page load later.
     await checkSavedSession();
+
+    // Local clock on purpose — the badge is about when the agent is browsing, not about UTC
+    const hour = new Date().getHours();
+    if (hour < 5 && window.checkAchievement) window.checkAchievement('night_owl');
+
     initTerminal();
     initDayNightCycle();
 
