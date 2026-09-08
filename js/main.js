@@ -2,7 +2,7 @@
 import { state } from './state.js';
 import { api } from './api.js';
 
-import { checkSavedSession } from './modules/auth.js';
+import { checkSavedSession, hydrateProfile } from './modules/auth.js';
 import { updateCartUI } from './modules/cart.js';
 import { filterInv } from './modules/catalog.js';
 import { renderVoteState, updateTimer } from './modules/vote.js';
@@ -100,6 +100,27 @@ const initApp = async () => {
         history.replaceState({}, '', location.pathname);
     }
 
+    // 0.6 "Wasn't you?" — the same email's second button, ?report=<token>. Same POST-not-GET
+    // reasoning as verification above. Deliberately public: whoever clicks this almost certainly
+    // has no session on this device (they didn't create the account), so it can't be gated behind
+    // being logged in.
+    const reportToken = new URLSearchParams(location.search).get('report');
+    if (reportToken) {
+        try {
+            const result = await api.reportUnauthorizedSignup(reportToken);
+            if (result.success && result.alreadyVerified) {
+                if (window.showToast) window.showToast('THIS ACCOUNT IS ALREADY VERIFIED — NO ACTION NEEDED', 'normal');
+            } else if (result.success) {
+                if (window.showToast) window.showToast('🔒 ACCOUNT SECURED — LOCKED FOR 5 DAYS', 'achievement');
+            } else if (window.showToast) {
+                window.showToast('❌ ' + (result.error || 'INVALID OR EXPIRED SECURITY LINK'), 'error');
+            }
+        } catch (e) {
+            if (window.showToast) window.showToast('CONNECTION ERROR', 'error');
+        }
+        history.replaceState({}, '', location.pathname);
+    }
+
     // 1. Setup Auth & Listeners
     // Runs after the ?verify= step above, so an agent who just confirmed their email has
     // 'identity_confirmed' in the profile this call fetches rather than one page load later.
@@ -163,3 +184,29 @@ const initApp = async () => {
 
 // Εκκίνηση μόλις το DOM είναι έτοιμο
 document.addEventListener('DOMContentLoaded', initApp);
+
+// Verification frequently completes in a browser context this tab knows nothing about — a mail
+// app's in-app browser is the common case, opened by tapping the button in the confirmation email,
+// which has no relation to the tab where someone registered and is now sitting waiting. That
+// original tab has no event to react to, so without this it looks "stuck" until a manual reload.
+// Re-checking on focus (rather than polling on a timer) means this costs nothing while the tab
+// isn't being watched, and reacts the moment someone actually looks back at it.
+document.addEventListener('visibilitychange', async () => {
+    if (document.visibilityState !== 'visible') return;
+    if (!state.isLoggedIn || state.emailVerified) return;
+    try {
+        await hydrateProfile();
+        // hydrateProfile() only succeeds past the backend's requireVerified gate if this JUST
+        // became true — reaching here at all means it did.
+        state.emailVerified = true;
+        if (window.updateAuthUI) window.updateAuthUI(localStorage.getItem('codex_username'));
+        if (window.showToast) window.showToast('✅ EMAIL VERIFIED — FULL ACCESS UNLOCKED', 'achievement');
+        // If the dossier happens to be open right now, its banner and RESEND button are stale too
+        const dashboard = document.getElementById('agent-dashboard-modal');
+        if (dashboard && dashboard.classList.contains('active') && window.openAgentDashboard) {
+            window.openAgentDashboard();
+        }
+    } catch (e) {
+        // Still unverified, or offline — stay quiet, this fires every time the tab regains focus
+    }
+});

@@ -55,10 +55,12 @@ export function updateAuthUI(username) {
     }
 }
 
-// Pulls wishlist + progression from the account. Shared by the boot-time session check and by a
-// fresh login, which need exactly the same thing — keeping one copy is what stops the two paths
-// from drifting into showing different profiles for the same agent.
-async function hydrateProfile() {
+// Pulls wishlist + progression from the account. Shared by the boot-time session check, a fresh
+// login, and main.js's focus-triggered re-check (verification often finishes in a different
+// browser context — a mail app's in-app browser — so the tab someone is actually watching has no
+// way to know until it asks again). Keeping one copy is what stops these paths from drifting into
+// showing different profiles for the same agent.
+export async function hydrateProfile() {
     const me = await api.getMe();
     state.wishlist = me.wishlist || [];
     localStorage.setItem('codex_wishlist', JSON.stringify(state.wishlist));
@@ -198,7 +200,58 @@ export async function handleSignup() {
 }
 
 // --- EMAIL VERIFICATION ---
+
+// Client-side cooldown, purely for UI (disabling the button, showing a countdown) so a bored click
+// doesn't queue several emails before the server's own 60s cooldown ever gets a chance to answer.
+// The server is still the real enforcement — see the 429/retryAfterMs handling below, which
+// resyncs this to the server's clock whenever they disagree (multi-tab, multi-device, or just a
+// browser clock that drifted).
+const RESEND_COOLDOWN_KEY = 'codex_verify_resend_until';
+const RESEND_COOLDOWN_MS = 60 * 1000;
+
+function resendCooldownRemainingMs() {
+    const until = parseInt(localStorage.getItem(RESEND_COOLDOWN_KEY)) || 0;
+    return Math.max(0, until - Date.now());
+}
+
+let resendCooldownInterval = null;
+
+// Ties the dossier's RESEND EMAIL button to whatever cooldown is currently active. Called after
+// every send attempt and again whenever the dossier opens, since a cooldown started from one
+// place (say, the profile-menu shortcut) has to be reflected the next time this button renders.
+export function refreshResendCooldownUI() {
+    const btn = document.getElementById('dossier-resend-btn');
+    if (!btn) return;
+    clearInterval(resendCooldownInterval);
+
+    const tick = () => {
+        const remaining = resendCooldownRemainingMs();
+        if (remaining <= 0) {
+            btn.disabled = false;
+            btn.textContent = window.t ? window.t('dossierResendBtn') : 'RESEND EMAIL';
+            clearInterval(resendCooldownInterval);
+            return;
+        }
+        btn.disabled = true;
+        const s = Math.ceil(remaining / 1000);
+        btn.textContent = window.t ? window.t('dossierResendCountdown', { s }) : `RESEND IN ${s}s`;
+    };
+    tick();
+    resendCooldownInterval = setInterval(tick, 1000);
+}
+
+function startResendCooldown(ms) {
+    localStorage.setItem(RESEND_COOLDOWN_KEY, String(Date.now() + ms));
+    refreshResendCooldownUI();
+}
+
 export async function resendVerification() {
+    const remaining = resendCooldownRemainingMs();
+    if (remaining > 0) {
+        const s = Math.ceil(remaining / 1000);
+        if (window.showToast) window.showToast(window.t ? window.t('toastResendCooldown', { s }) : `WAIT ${s}s BEFORE RESENDING`, 'error');
+        return;
+    }
     try {
         const d = await api.resendVerification();
         if (d.alreadyVerified) {
@@ -208,8 +261,12 @@ export async function resendVerification() {
             hydrateProfile().catch(() => {});
             if (window.showToast) window.showToast(window.t ? window.t('toastAlreadyVerified') : 'YOUR EMAIL IS ALREADY VERIFIED', 'normal');
         } else if (d.success) {
+            startResendCooldown(RESEND_COOLDOWN_MS);
             if (window.showToast) window.showToast(window.t ? window.t('toastVerificationSent') : '📧 VERIFICATION EMAIL SENT — CHECK YOUR INBOX', 'achievement');
         } else {
+            // A 429 here means another tab/device already started a cooldown this one didn't know
+            // about — sync to the server's authoritative remaining time instead of guessing.
+            if (d.retryAfterMs) startResendCooldown(d.retryAfterMs);
             if (window.showToast) window.showToast(d.error || 'FAILED TO SEND VERIFICATION EMAIL', 'error');
         }
     } catch (e) {
@@ -301,5 +358,6 @@ window.handleSignup = handleSignup;
 window.logout = logout;
 window.openRecovery = openRecovery;
 window.resendVerification = resendVerification;
+window.refreshResendCooldownUI = refreshResendCooldownUI;
 window.requestReset = requestReset;
 window.completeReset = completeReset;

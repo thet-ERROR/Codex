@@ -87,10 +87,23 @@ export const api = {
         });
         return await res.json();
     },
+    // Deliberately never throws on a non-2xx: a 429 here carries { error, retryAfterMs }, which the
+    // caller needs to read to sync its cooldown countdown, not treat as a generic failure.
     async resendVerification() {
         const res = await fetch(`${CONFIG.API_URL}/resend-verification`, {
             method: 'POST',
             headers: { 'Authorization': `Bearer ${localStorage.getItem('codex_token')}` }
+        });
+        return await res.json();
+    },
+    // Called by the frontend's own load-time script when it sees ?report=<token> in the URL —
+    // same reasoning as verifyEmail: a mail client's link-preview scan can GET the raw URL but
+    // never runs page JavaScript, so it can't trigger this on an account nobody asked it to lock.
+    async reportUnauthorizedSignup(token) {
+        const res = await fetch(`${CONFIG.API_URL}/report-unauthorized-signup`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ token })
         });
         return await res.json();
     },
