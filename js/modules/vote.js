@@ -5,6 +5,19 @@ import { CONFIG } from '../config.js';
 let notifiedAlmostThere = false;
 let lastEventTitle = null;
 
+// Admin-editable via GLOBAL SETTINGS in the admin panel (SiteConfig.voteInfoText/-El) — replaces
+// what used to be a static i18n string. Set via .innerText, not .innerHTML: this is free-form
+// admin input, and .innerText renders \n as literal line breaks under the modal's
+// `white-space: pre-line` (see .vote-info-text in vote.css) without ever parsing markup, the same
+// pattern already used for PC.description/specDetails elsewhere in this codebase.
+export function openVoteInfo() {
+    const isGreek = (localStorage.getItem('codex_lang') || 'en') === 'el';
+    const text = (isGreek && state.voteInfoTextEl) ? state.voteInfoTextEl : (state.voteInfoText || '');
+    const el = document.getElementById('vote-info-text');
+    if (el) el.innerText = text;
+    if (window.openModal) window.openModal('vote-info-modal');
+}
+
 export function renderVoteState() {
     if(!state.activeEvent) return;
 
@@ -46,6 +59,13 @@ export function renderVoteState() {
         if (window.showToast) window.showToast(`🔥 ${t('voteAlmostThere')} — ${remaining} ${t('voteRemaining')}`, 'achievement');
     }
 
+    // Reset to the pre-secured shape first, then let unlockVisuals() re-hide what needs hiding —
+    // otherwise a fresh event replacing an already-secured one (rare, but possible without a full
+    // reload in between) would render with AUTHORIZE DROP still hidden from the previous one.
+    const authorizeBtn = document.getElementById('v-btn');
+    const buyBtn = document.getElementById('v-buy-btn');
+    if (authorizeBtn) authorizeBtn.classList.remove('hidden');
+    if (buyBtn) buyBtn.classList.add('hidden');
     if(state.activeEvent.currentVotes >= state.activeEvent.targetVotes) unlockVisuals();
     updateTimer(); // keeps the button in step with hasVoted right after a vote lands
 }
@@ -164,20 +184,18 @@ export async function castVote() {
     }
 }
 
-export function unlockVisuals() { 
+export function unlockVisuals() {
     const img = document.getElementById('v-img');
     const lock = document.getElementById('v-lock');
     const btn = document.getElementById('v-btn');
     const buyBtn = document.getElementById('v-buy-btn');
 
-    if(img) img.classList.add('unlocked'); 
-    if(lock) lock.style.opacity = '0'; 
-    if(btn) {
-        btn.innerText = "DROP SECURED"; 
-        btn.style.background = "#333"; 
-        btn.style.color = "#888"; 
-        btn.disabled = true; 
-    }
+    if(img) img.classList.add('unlocked');
+    if(lock) lock.style.opacity = '0';
+    // Used to relabel itself "DROP SECURED" and sit there disabled forever — SECURE NOW already
+    // says everything that needs saying once the target is hit, so this just hides instead and
+    // gives that button the space back.
+    if(btn) btn.classList.add('hidden');
     if(buyBtn) buyBtn.classList.remove('hidden');
 }
 
@@ -194,3 +212,4 @@ window.castVote = castVote;
 window.unlockVisuals = unlockVisuals;
 window.buyVotePC = buyVotePC;
 window.openVoteGallery = openVoteGallery;
+window.openVoteInfo = openVoteInfo;

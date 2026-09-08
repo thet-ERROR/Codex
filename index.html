@@ -154,10 +154,13 @@ Type 'help' for a list of commands.
              configured or added to the cart. -->
         <div id="vote-view" class="hidden">
             <div class="vote-container" id="vote-container">
-                <i class="ph-fill ph-diamond vote-diamond-badge"></i>
                 <div class="vote-header-row">
                     <span class="vote-kicker" data-i18n="voteCommunityDrop">COMMUNITY DROP!</span>
-                    <div class="info-icon" onclick="openModal('vote-info-modal')">?</div>
+                    <!-- Content set by openVoteInfo() (js/modules/vote.js) from SiteConfig
+                         .voteInfoText/-El — admin-editable via the panel's GLOBAL SETTINGS box. -->
+                    <button type="button" class="vote-info-btn" onclick="playClick(); openVoteInfo();" aria-label="How community drops work">
+                        <i class="ph-bold ph-info"></i>
+                    </button>
                 </div>
 
                 <h2 id="v-title" class="vote-title">LOADING...</h2>
@@ -587,7 +590,9 @@ Type 'help' for a list of commands.
         <div class="modal-content">
             <div class="close-btn" onclick="closeModal('vote-info-modal')">X</div>
             <h2 style="color:var(--neon-purple); margin-bottom:15px;" data-i18n="voteInfoTitle">HOW IT WORKS</h2>
-            <p style="color:#ccc; font-size:0.9rem; line-height:1.6;" data-i18n-html="voteInfoText">1. Voting opens at the specified date.<br>2. Reach target votes to unlock drops.</p>
+            <!-- Filled by openVoteInfo(), not data-i18n-html: this is admin-authored free text
+                 from SiteConfig now, not a translation-file string. -->
+            <p class="vote-info-text" id="vote-info-text"></p>
         </div>
     </div>
 

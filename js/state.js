@@ -45,6 +45,12 @@ export const state = {
     isHacked: false,
     // Global price of the Pro Config extra, refreshed from /api/status at boot.
     proConfigPrice: CONFIG.DEFAULT_PRO_CONFIG_PRICE,
+    // Admin-editable "how community drops work" copy behind the vote card's info button, also
+    // refreshed from /api/status at boot. Empty until then — the button just doesn't render text
+    // in the unlikely case a request fails before this is filled in. Split EN/EL like every other
+    // admin-authored PC/vote-event field (lore/loreEl) rather than being the one exception.
+    voteInfoText: '',
+    voteInfoTextEl: '',
     // Extras chosen for the PC currently open in the gallery. Reset on every openGallery().
     // Single source of truth for pricing, the image set shown, and what lands in the cart.
     // paint only ever goes true through the consent modal's Accept button (js/modules/gallery.js

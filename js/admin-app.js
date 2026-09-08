@@ -438,6 +438,10 @@ const data = {
             document.getElementById('maint-toggle').checked = !!config.maintenanceMode;
             document.getElementById('maint-message').value = config.maintenanceMessage || '';
             document.getElementById('proconfig-price').value = config.proConfigPrice ?? 30;
+            // Lives on SiteConfig rather than per-vote-event so it survives uploadVote() replacing
+            // the event wholesale — the admin sets this once, not on every new drop.
+            document.getElementById('vote-info-text').value = config.voteInfoText || '';
+            document.getElementById('vote-info-text-el').value = config.voteInfoTextEl || '';
         } catch(e) { console.log("Maintenance config load error", e); }
     }
 
@@ -451,6 +455,18 @@ const data = {
             body:JSON.stringify({ proConfigPrice })
         });
         alert(res.ok ? `PRO CONFIG PRICE: €${proConfigPrice}` : "ERROR SAVING PRICE");
+    }
+
+    // Behind the vote card's "?" button — read via /api/status by openVoteInfo() (js/modules/vote.js).
+    async function saveVoteInfo() {
+        const voteInfoText = document.getElementById('vote-info-text').value;
+        const voteInfoTextEl = document.getElementById('vote-info-text-el').value;
+        const res = await fetch(`${API}/site-config`, {
+            method:'POST',
+            headers:{'Content-Type':'application/json', 'Authorization':`Bearer ${TOKEN}`},
+            body:JSON.stringify({ voteInfoText, voteInfoTextEl })
+        });
+        alert(res.ok ? "VOTE INFO SAVED" : "ERROR SAVING VOTE INFO");
     }
 
     async function saveMaintenance() {
@@ -495,6 +511,7 @@ const data = {
         on('user-search', 'input', renderUserList);
         on('save-maint-btn', 'click', saveMaintenance);
         on('save-proconfig-btn', 'click', saveProConfigPrice);
+        on('save-vote-info-btn', 'click', saveVoteInfo);
         on('add-vote-fps-btn', 'click', addVoteFPS);
         on('upload-vote-btn', 'click', uploadVote);
         on('generate-code-btn', 'click', generateCode);
