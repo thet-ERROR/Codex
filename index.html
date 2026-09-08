@@ -477,7 +477,9 @@ Type 'help' for a list of commands.
                 <!-- Filled/shown only when state.emailVerified is false — see openAgentDashboard() -->
                 <div class="dossier-verify-banner hidden" id="dossier-verify-banner">
                     <span>⚠ EMAIL NOT VERIFIED — wishlist, achievements & voting are locked</span>
-                    <button onclick="playClick(); resendVerification();">RESEND EMAIL</button>
+                    <!-- Text is overwritten by refreshResendCooldownUI() the moment a cooldown is
+                         active (js/modules/auth.js) — "RESEND EMAIL" here is only the idle state. -->
+                    <button id="dossier-resend-btn" onclick="playClick(); resendVerification();">RESEND EMAIL</button>
                 </div>
                 <div class="dossier-stats" id="dossier-stats"></div>
             </div>

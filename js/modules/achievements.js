@@ -151,6 +151,10 @@ export function openAgentDashboard() {
     // between that showing up as a blank/broken profile and a clear next step.
     const verifyBanner = document.getElementById('dossier-verify-banner');
     if (verifyBanner) verifyBanner.classList.toggle('hidden', !!state.emailVerified);
+    // The RESEND EMAIL button inside that banner may already be mid-cooldown from an earlier
+    // click (e.g. via the profile-menu shortcut) — reflect that the moment the banner is visible
+    // again instead of showing an enabled button that will just 429.
+    if (!state.emailVerified && window.refreshResendCooldownUI) window.refreshResendCooldownUI();
 
     // Rank, XP, chips and both badge grids in one call
     refreshProgressionUI();

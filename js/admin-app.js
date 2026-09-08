@@ -115,13 +115,21 @@
         list.innerHTML = filtered.map(u => {
             const verified = !!u.emailVerified;
             const joined = u.joined ? new Date(u.joined).toLocaleDateString() : '?';
+            // Set by a stranger clicking "wasn't you?" on the verification email — someone
+            // registered with this person's real address without their consent. Flagged here so
+            // the admin can delete the fake account and free the email for the real owner; there
+            // is no other resolution path since the address stays unique-locked until then.
+            const locked = u.securityLockedUntil && new Date(u.securityLockedUntil) > new Date();
+            const lockBadge = locked
+                ? `<span style="color:#ff3333; font-weight:bold;"> 🔒 REPORTED — locked until ${esc(new Date(u.securityLockedUntil).toLocaleString())}</span>`
+                : '';
             return `<div class="ticket">
                 <div>
                     <span class="t-code">${esc(u.username)}</span>
                     <span style="float:right; color:${verified ? '#ccff00' : 'orange'};">${verified ? 'VERIFIED' : 'UNVERIFIED'}</span>
                 </div>
                 <div style="color:#888;">${esc(u.email)}</div>
-                <div style="color:#555; font-size:0.7rem; margin-top:2px;">Joined ${esc(joined)} · ${(u.wishlist||[]).length} wishlist · ${(u.achievements||[]).length} achievements</div>
+                <div style="color:#555; font-size:0.7rem; margin-top:2px;">Joined ${esc(joined)} · ${(u.wishlist||[]).length} wishlist · ${(u.achievements||[]).length} achievements${lockBadge}</div>
                 <button class="btn-sm del-btn" style="width:100%; margin-top:6px;" data-action="delete-user" data-id="${esc(u._id)}" data-username="${esc(u.username)}">DELETE</button>
             </div>`;
         }).join('');

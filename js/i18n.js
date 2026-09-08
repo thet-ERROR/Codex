@@ -109,6 +109,9 @@ const translations = {
         toastCheckEmailToVerify: "📧 Έλεγξε το email σου για να επιβεβαιώσεις τον λογαριασμό σου",
         toastAlreadyVerified: "Το email σου είναι ήδη επιβεβαιωμένο",
         toastVerificationSent: "📧 Το email επιβεβαίωσης στάλθηκε — έλεγξε τα εισερχόμενά σου",
+        // Cooldown πάνω στο "resend" — βλ. RESEND_COOLDOWN_MS στο js/modules/auth.js
+        toastResendCooldown: "Περίμενε {s}s πριν ζητήσεις άλλο email",
+        dossierResendBtn: "ΕΠΑΝΑΠΟΣΤΟΛΗ EMAIL", dossierResendCountdown: "ΕΠΑΝΑΠΟΣΤΟΛΗ ΣΕ {s}s",
 
         alertBothFields: "Προσοχή: Συμπλήρωσε όνομα χρήστη και κωδικό", alertInvalidCreds: "Λανθασμένα στοιχεία σύνδεσης",
         alertAllFieldsRecruit: "Προσοχή: Όλα τα πεδία είναι υποχρεωτικά", alertRegistrationFailed: "Η εγγραφή απέτυχε",
@@ -228,6 +231,9 @@ const translations = {
         toastCheckEmailToVerify: "📧 CHECK YOUR EMAIL TO VERIFY YOUR ACCOUNT",
         toastAlreadyVerified: "YOUR EMAIL IS ALREADY VERIFIED",
         toastVerificationSent: "📧 VERIFICATION EMAIL SENT — CHECK YOUR INBOX",
+        // Cooldown on the "resend" button — see RESEND_COOLDOWN_MS in js/modules/auth.js
+        toastResendCooldown: "WAIT {s}s BEFORE RESENDING",
+        dossierResendBtn: "RESEND EMAIL", dossierResendCountdown: "RESEND IN {s}s",
 
         alertBothFields: "SYSTEM ALERT: ENTER BOTH USERNAME & PASSWORD", alertInvalidCreds: "ACCESS DENIED: INVALID CREDENTIALS",
         alertAllFieldsRecruit: "SYSTEM ALERT: ALL FIELDS REQUIRED FOR RECRUITMENT", alertRegistrationFailed: "REGISTRATION FAILED",
