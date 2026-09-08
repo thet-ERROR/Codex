@@ -73,7 +73,9 @@ const translations = {
         resetTitle: "Νέα στοιχεία πρόσβασης", resetTokenPlaceholder: "Κωδικός", resetNewPassPlaceholder: "Νέος κωδικός", resetBtn: "Ενημέρωση συστήματος",
 
         achievementsTitle: "Αρχείο πράκτορα", compareTitle: "Λειτουργία VS",
-        voteInfoTitle: "Πώς λειτουργεί", voteInfoText: "Το Vote είναι ένα κοινοτικό σύστημα: η ομάδα ψηφίζει ποιο μυστηριώδες PC θα ξεκλειδωθεί για αγορά.<br><br>1. Η ψηφοφορία ανοίγει στην καθορισμένη ημερομηνία.<br>2. Συγκεντρώστε τις απαιτούμενες ψήφους για να ξεκλειδώσει το drop.<br>3. Μόνο συνδεδεμένοι πράκτορες μπορούν να ψηφίσουν.<br>4. Αν το σύστημα δεν εξασφαλιστεί πριν λήξει το χρονόμετρο, μεταφέρεται αυτόματα στα Live Drops.",
+        // The body text moved to SiteConfig.voteInfoTextEl (admin-editable) — only the modal's
+        // title stays a translation-file string, see openVoteInfo() in js/modules/vote.js.
+        voteInfoTitle: "Πώς λειτουργεί",
 
         rulesTitle: "Όροι & προϋποθέσεις",
         rules1: "1. Οι διαθέσιμες ποσότητες εμφανίζονται σε πραγματικό χρόνο· η παραγγελία ολοκληρώνεται με την επιβεβαίωση πληρωμής.",
@@ -197,7 +199,9 @@ const translations = {
         resetTitle: "NEW CREDENTIALS", resetTokenPlaceholder: "Token", resetNewPassPlaceholder: "New Password", resetBtn: "UPDATE SYSTEM",
 
         achievementsTitle: "AGENT RECORD", compareTitle: "VS MODE",
-        voteInfoTitle: "HOW IT WORKS", voteInfoText: "Vote is a community system: the network votes on which mystery PC gets unlocked for purchase.<br><br>1. Voting opens at the specified date.<br>2. Reach target votes to unlock drops.<br>3. Only signed-in agents can vote.<br>4. If the system isn't secured before the timer runs out, it automatically moves to Live Drops.",
+        // The body text moved to SiteConfig.voteInfoText (admin-editable) — only the modal's title
+        // stays a translation-file string, see openVoteInfo() in js/modules/vote.js.
+        voteInfoTitle: "HOW IT WORKS",
 
         rulesTitle: "TERMS & CONDITIONS",
         rules1: "1. Available quantities are shown in real time; an order is completed once payment is confirmed.",

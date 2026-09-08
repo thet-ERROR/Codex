@@ -74,6 +74,8 @@ const initApp = async () => {
             return; // never hides #startup-overlay, never renders the rest of the site
         }
         if (typeof status.proConfigPrice === 'number') state.proConfigPrice = status.proConfigPrice;
+        if (typeof status.voteInfoText === 'string') state.voteInfoText = status.voteInfoText;
+        if (typeof status.voteInfoTextEl === 'string') state.voteInfoTextEl = status.voteInfoTextEl;
     } catch (e) {
         // Network/API error: fail open, proceed with normal boot (state keeps the CONFIG default)
     }
