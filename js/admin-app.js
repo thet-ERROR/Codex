@@ -1,6 +1,12 @@
+    // Loaded as an ES module (see admin.html) so it can share js/utils.js with the storefront
+    // instead of keeping a second copy of the escaping helpers. A module's top-level functions are
+    // NOT global, which is why every control below is wired with addEventListener rather than an
+    // inline onclick — that is also what lets /admin.html run under a CSP with no 'unsafe-inline'.
+    import { esc, escUrl } from './utils.js';
+
     // ⚠️ ΒΑΛΕ ΤΗΝ IP ΣΟΥ ΕΔΩ (π.χ. 'http://192.168.1.15:5000/api') ΓΙΑ ΚΙΝΗΤΟ Ή ΑΦΗΣΕ LOCALHOST
     const API = 'https://codex-backend-9kij.onrender.com/api';
-    
+
     let TOKEN = null, inventory = [], editId = null;
     let currentFPS = [], currentReviews = [], currentVoteFPS = [];
 
@@ -41,32 +47,32 @@
         const res = await fetch(`${API}/drops`, { headers:{'Authorization':`Bearer ${TOKEN}`} });
         if (handleAuthError(res)) return;
         inventory = await res.json();
-        
+
         // 1. Fill Inventory List
         document.getElementById('inventory-list').innerHTML = inventory.map(pc => {
             let statusColor = pc.status === 'available' ? '#ccff00' : pc.status === 'coming' ? '#ffaa00' : '#ff3333';
             let statusText = pc.status === 'coming' ? 'LAST CALL' : pc.status === 'available' ? 'LIVE' : 'SOLD OUT';
-            
+
             return `
             <div class="item">
-                <img src="${pc.images[0]||''}">
+                <img src="${escUrl((pc.images || [])[0])}">
                 <div class="item-info">
-                    <div style="font-weight:bold; color:#fff;">${pc.name}</div>
+                    <div style="font-weight:bold; color:#fff;">${esc(pc.name)}</div>
                     <div style="font-size:0.8rem; color:#888;">
-                        ${pc.category.toUpperCase()} | 
-                        <span style="color:${statusColor}; font-weight:bold;">${statusText}</span> | 
-                        Stock: ${pc.stock}
+                        ${esc(pc.category).toUpperCase()} |
+                        <span style="color:${statusColor}; font-weight:bold;">${statusText}</span> |
+                        Stock: ${esc(pc.stock)}
                     </div>
                 </div>
                 <div class="item-actions">
-                    <button class="btn-sm edit-btn" onclick="edit('${pc._id}')">EDIT</button>
-                    <button class="btn-sm del-btn" onclick="del('${pc._id}')">DEL</button>
+                    <button class="btn-sm edit-btn" data-action="edit" data-id="${esc(pc._id)}">EDIT</button>
+                    <button class="btn-sm del-btn" data-action="del" data-id="${esc(pc._id)}">DEL</button>
                 </div>
             </div>`;
         }).join('');
 
         // 2. Fill Dropdown for Codes
-        document.getElementById('sold-pc-select').innerHTML = inventory.map(pc => `<option value="${pc._id}">${pc.name}</option>`).join('');
+        document.getElementById('sold-pc-select').innerHTML = inventory.map(pc => `<option value="${esc(pc._id)}">${esc(pc.name)}</option>`).join('');
     }
 
     async function loadUserCount() {
@@ -102,17 +108,21 @@
             return;
         }
 
+        // u.email is attacker-chosen: /api/register is public, and the address only has to look
+        // like one and sit on a domain with MX records — "<svg/onload=…>@gmail.com" satisfies both.
+        // The username is safe by construction (the API pins it to [a-zA-Z0-9_.-]) but is escaped
+        // anyway, so nobody has to remember which of the two was the dangerous one.
         list.innerHTML = filtered.map(u => {
             const verified = !!u.emailVerified;
             const joined = u.joined ? new Date(u.joined).toLocaleDateString() : '?';
             return `<div class="ticket">
                 <div>
-                    <span class="t-code">${u.username}</span>
+                    <span class="t-code">${esc(u.username)}</span>
                     <span style="float:right; color:${verified ? '#ccff00' : 'orange'};">${verified ? 'VERIFIED' : 'UNVERIFIED'}</span>
                 </div>
-                <div style="color:#888;">${u.email}</div>
-                <div style="color:#555; font-size:0.7rem; margin-top:2px;">Joined ${joined} · ${(u.wishlist||[]).length} wishlist · ${(u.achievements||[]).length} achievements</div>
-                <button class="btn-sm del-btn" style="width:100%; margin-top:6px;" onclick="deleteUser('${u._id}', '${u.username.replace(/'/g,"\\'")}')">DELETE</button>
+                <div style="color:#888;">${esc(u.email)}</div>
+                <div style="color:#555; font-size:0.7rem; margin-top:2px;">Joined ${esc(joined)} · ${(u.wishlist||[]).length} wishlist · ${(u.achievements||[]).length} achievements</div>
+                <button class="btn-sm del-btn" style="width:100%; margin-top:6px;" data-action="delete-user" data-id="${esc(u._id)}" data-username="${esc(u.username)}">DELETE</button>
             </div>`;
         }).join('');
     }
@@ -128,17 +138,19 @@
     }
 
     // --- FORM LOGIC ---
-    function addFPS() { 
-        const g=document.getElementById('fps-game').value, s=document.getElementById('fps-score').value; 
-        if(s) { currentFPS.push({game:g, score:s}); renderTags(); } 
+    function addFPS() {
+        const g=document.getElementById('fps-game').value, s=document.getElementById('fps-score').value;
+        if(s) { currentFPS.push({game:g, score:s}); renderTags(); }
     }
-    function addReview() { 
-        const u=document.getElementById('rev-user').value, t=document.getElementById('rev-text').value, r=document.getElementById('rev-rating').value; 
-        if(u&&t) { currentReviews.push({user:u, text:t, rating:r, date:new Date()}); renderTags(); } 
+    function addReview() {
+        const u=document.getElementById('rev-user').value, t=document.getElementById('rev-text').value, r=document.getElementById('rev-rating').value;
+        if(u&&t) { currentReviews.push({user:u, text:t, rating:r, date:new Date()}); renderTags(); }
     }
+    // currentReviews is loaded straight from the PC being edited, so r.user is whatever a customer
+    // typed when redeeming a mission code — the same untrusted text the storefront escapes.
     function renderTags() {
-        document.getElementById('fps-area').innerHTML = currentFPS.map((f,i) => `<div class="tag">${f.game}:${f.score} <span onclick="currentFPS.splice(${i},1);renderTags()">x</span></div>`).join('');
-        document.getElementById('review-area').innerHTML = currentReviews.map((r,i) => `<div class="tag" style="border-color:#b026ff;">${r.user} <span onclick="currentReviews.splice(${i},1);renderTags()">x</span></div>`).join('');
+        document.getElementById('fps-area').innerHTML = currentFPS.map((f,i) => `<div class="tag">${esc(f.game)}:${esc(f.score)} <span class="tag-x" data-list="fps" data-index="${i}">x</span></div>`).join('');
+        document.getElementById('review-area').innerHTML = currentReviews.map((r,i) => `<div class="tag" style="border-color:#b026ff;">${esc(r.user)} <span class="tag-x" data-list="review" data-index="${i}">x</span></div>`).join('');
     }
 
     // --- EXTRAS HELPERS ---
@@ -237,7 +249,7 @@
 
         // Load the image URL into the text box
         document.getElementById('imageUrl').value = pc.images[0] || '';
-        
+
         currentFPS = pc.fps || []; currentReviews = pc.reviews || []; renderTags();
         editId = id;
         document.getElementById('submit-btn').innerText = "UPDATE SYSTEM";
@@ -259,25 +271,25 @@
         // Παίρνουμε το Link απευθείας από το Text Box!
         const imgInput = document.getElementById('imageUrl').value.trim();
         const imgs = imgInput ? [imgInput] : [];
-        
+
 const data = {
-            name: document.getElementById('name').value, 
+            name: document.getElementById('name').value,
             price: document.getElementById('price').value,
-            stock: document.getElementById('stock').value, 
+            stock: document.getElementById('stock').value,
             category: document.getElementById('category').value,
-            status: document.getElementById('status').value, 
-            description: document.getElementById('description').value, 
+            status: document.getElementById('status').value,
+            description: document.getElementById('description').value,
             lore: document.getElementById('lore') ? document.getElementById('lore').value : "", // Προσθήκη Lore
             loreEl: document.getElementById('loreEl') ? document.getElementById('loreEl').value : "",
-            multitasking: document.getElementById('multitasking').value, 
+            multitasking: document.getElementById('multitasking').value,
             images: imgs,
-            specs: { 
-                cpu:document.getElementById('cpu').value, 
-                gpu:document.getElementById('gpu').value, 
-                ram:document.getElementById('ram').value, 
-                ssd:document.getElementById('ssd').value, 
-                mobo:document.getElementById('mobo').value, 
-                psu:document.getElementById('psu').value, 
+            specs: {
+                cpu:document.getElementById('cpu').value,
+                gpu:document.getElementById('gpu').value,
+                ram:document.getElementById('ram').value,
+                ssd:document.getElementById('ssd').value,
+                mobo:document.getElementById('mobo').value,
+                psu:document.getElementById('psu').value,
                 case:document.getElementById('case').value
             },
             specDetails: {
@@ -301,7 +313,7 @@ const data = {
 
         const url = editId ? `${API}/drops/${editId}` : `${API}/drops`;
         const method = editId ? 'PUT' : 'POST';
-        
+
         try {
             const res = await fetch(url, { method: method, headers:{'Content-Type':'application/json', 'Authorization':`Bearer ${TOKEN}`}, body:JSON.stringify(data) });
             if(res.ok) {
@@ -325,7 +337,7 @@ const data = {
     }
     function renderVoteFPS() {
         $('v-fps-area').innerHTML = currentVoteFPS.map((f, i) =>
-            `<div class="tag">${f.game}:${f.score} <span onclick="currentVoteFPS.splice(${i},1);renderVoteFPS()">x</span></div>`
+            `<div class="tag">${esc(f.game)}:${esc(f.score)} <span class="tag-x" data-list="vote-fps" data-index="${i}">x</span></div>`
         ).join('');
     }
 
@@ -351,9 +363,9 @@ const data = {
                     if (el) el.value = specs[k] || '';
                 });
             }
-        } catch(e) {} 
+        } catch(e) {}
     }
-    
+
     async function uploadVote() {
         // Παίρνουμε το Link απευθείας από το Text Box για το Vote Event!
         const imgInput = document.getElementById('v-imageUrl').value.trim();
@@ -392,8 +404,8 @@ const data = {
     async function loadTickets() {
         const res = await fetch(`${API}/tickets`, { headers:{'Authorization':`Bearer ${TOKEN}`} }); const tickets = await res.json();
         document.getElementById('tickets-list').innerHTML = tickets.map(t => {
-            let action = t.status==='pending' ? `<button onclick="activateCode('${t._id}')" class="btn-sm btn-cyan" style="width:100%; margin-top:5px;">DELIVER</button>` : '';
-            return `<div class="ticket"><div><span class="t-code">${t.code}</span> <span style="float:right; color:${t.status==='active'?'#ccff00':'orange'}">${t.status}</span></div><div style="color:#888;">${t.pcName}</div>${action}</div>`;
+            let action = t.status==='pending' ? `<button data-action="activate-code" data-id="${esc(t._id)}" class="btn-sm btn-cyan" style="width:100%; margin-top:5px;">DELIVER</button>` : '';
+            return `<div class="ticket"><div><span class="t-code">${esc(t.code)}</span> <span style="float:right; color:${t.status==='active'?'#ccff00':'orange'}">${esc(t.status)}</span></div><div style="color:#888;">${esc(t.pcName)}</div>${action}</div>`;
         }).join('');
     }
     async function generateCode() {
@@ -402,9 +414,12 @@ const data = {
     }
     async function activateCode(id) { if(confirm("Confirm?")) { await fetch(`${API}/activate-ticket/${id}`, { method: 'POST', headers:{'Authorization':`Bearer ${TOKEN}`} }); loadTickets(); } }
 
+    // e.email is the sharpest input on the whole panel: /api/newsletter is public and requires no
+    // account at all, so this list is the one place a complete stranger can put text of their
+    // choosing in front of an authenticated admin.
     async function loadEmails() {
         const res = await fetch(`${API}/newsletter`, { headers:{'Authorization':`Bearer ${TOKEN}`} }); const emails = await res.json();
-        document.getElementById('email-list').innerHTML = emails.map(e => `<div style="border-bottom:1px solid #222; padding:5px;">${e.email} <span style="float:right; font-size:0.7rem;">${new Date(e.date).toLocaleDateString()}</span></div>`).join('');
+        document.getElementById('email-list').innerHTML = emails.map(e => `<div style="border-bottom:1px solid #222; padding:5px;">${esc(e.email)} <span style="float:right; font-size:0.7rem;">${esc(new Date(e.date).toLocaleDateString())}</span></div>`).join('');
     }
 
     // --- MAINTENANCE KILL SWITCH ---
@@ -436,3 +451,65 @@ const data = {
         await fetch(`${API}/site-config`, { method:'POST', headers:{'Content-Type':'application/json', 'Authorization':`Bearer ${TOKEN}`}, body:JSON.stringify({ maintenanceMode, maintenanceMessage }) });
         alert(maintenanceMode ? "⚠ MAINTENANCE MODE ACTIVE" : "SITE LIVE");
     }
+
+    // --- EVENT WIRING ---
+    // Everything below replaces an inline onclick/onchange/oninput attribute. Two reasons, and the
+    // second is the one that matters: inline handlers cannot run under a CSP without
+    // 'unsafe-inline', and 'unsafe-inline' is exactly what would let an injected <svg onload=…>
+    // execute. Removing them is what makes the strict CSP on /admin.html enforceable.
+    //
+    // The rows below are rebuilt on every load, so their buttons are handled by delegation on the
+    // container instead of being re-bound each time. It also means an id never has to be
+    // interpolated into a JavaScript string — it travels as a data attribute.
+    const on = (id, event, handler) => {
+        const el = document.getElementById(id);
+        if (el) el.addEventListener(event, handler);
+    };
+
+    function delegate(containerId, handler) {
+        const el = document.getElementById(containerId);
+        if (el) el.addEventListener('click', (ev) => {
+            const target = ev.target.closest('[data-action], [data-list]');
+            if (target && el.contains(target)) handler(target);
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        on('login-btn', 'click', tryLogin);
+        // Enter in the password box is how anyone actually logs in
+        on('admin-pass', 'keydown', (ev) => { if (ev.key === 'Enter') tryLogin(); });
+
+        on('opt-paint-preset', 'change', (ev) => applyPaintPreset(ev.target.value));
+        on('add-fps-btn', 'click', addFPS);
+        on('add-review-btn', 'click', addReview);
+        on('submit-btn', 'click', handleFormSubmit);
+        on('cancel-btn', 'click', resetForm);
+        on('user-search', 'input', renderUserList);
+        on('save-maint-btn', 'click', saveMaintenance);
+        on('save-proconfig-btn', 'click', saveProConfigPrice);
+        on('add-vote-fps-btn', 'click', addVoteFPS);
+        on('upload-vote-btn', 'click', uploadVote);
+        on('generate-code-btn', 'click', generateCode);
+
+        delegate('inventory-list', (el) => {
+            if (el.dataset.action === 'edit') edit(el.dataset.id);
+            if (el.dataset.action === 'del') del(el.dataset.id);
+        });
+        delegate('users-list', (el) => {
+            if (el.dataset.action === 'delete-user') deleteUser(el.dataset.id, el.dataset.username);
+        });
+        delegate('tickets-list', (el) => {
+            if (el.dataset.action === 'activate-code') activateCode(el.dataset.id);
+        });
+
+        const removeTag = (el) => {
+            const i = Number(el.dataset.index);
+            if (Number.isNaN(i)) return;
+            if (el.dataset.list === 'fps') { currentFPS.splice(i, 1); renderTags(); }
+            if (el.dataset.list === 'review') { currentReviews.splice(i, 1); renderTags(); }
+            if (el.dataset.list === 'vote-fps') { currentVoteFPS.splice(i, 1); renderVoteFPS(); }
+        };
+        delegate('fps-area', removeTag);
+        delegate('review-area', removeTag);
+        delegate('v-fps-area', removeTag);
+    });

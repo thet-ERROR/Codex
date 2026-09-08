@@ -11,7 +11,7 @@
         <div class="login-box">
             <h2 style="color:#fff;">CODEX PANEL v47</h2>
             <input type="password" id="admin-pass" class="login-input" placeholder="ACCESS CODE">
-            <button class="login-btn" onclick="tryLogin()">INITIALIZE</button>
+            <button class="login-btn" id="login-btn">INITIALIZE</button>
         </div>
     </div>
 
@@ -105,7 +105,7 @@
                 <p class="extras-hint">⚠ Εξατομικευμένο προϊόν — ο πελάτης πρέπει να αποδεχτεί τους όρους (εξαίρεση από υπαναχώρηση 14 ημερών) πριν το βάλει στο καλάθι.</p>
 
                 <label>Έτοιμο χρώμα (γεμίζει τα πεδία από κάτω)</label>
-                <select id="opt-paint-preset" onchange="applyPaintPreset(this.value)">
+                <select id="opt-paint-preset">
                     <option value="">— διάλεξε ή γράψε δικό σου —</option>
                     <option value="Matte Black|Ματ Μαύρο|#1a1a1a">⬛ Matte Black / Ματ Μαύρο</option>
                     <option value="Arctic White|Αρκτικό Λευκό|#f2f2f2">⬜ Arctic White / Λευκό</option>
@@ -141,7 +141,7 @@
             <div class="add-row">
                 <select id="fps-game"><option>Fortnite</option><option>Warzone</option><option>GTA V</option><option>Valorant</option><option>LoL</option></select>
                 <input type="number" id="fps-score" placeholder="FPS" style="width:80px;">
-                <button class="btn-sm edit-btn" onclick="addFPS()">+</button>
+                <button class="btn-sm edit-btn" id="add-fps-btn">+</button>
             </div>
             <div id="fps-area" class="tags-container"></div>
 
@@ -149,13 +149,13 @@
             <div class="add-row">
                 <input type="text" id="rev-user" placeholder="User">
                 <input type="number" id="rev-rating" placeholder="5" style="width:50px;">
-                <button class="btn-sm edit-btn" onclick="addReview()">+</button>
+                <button class="btn-sm edit-btn" id="add-review-btn">+</button>
             </div>
             <input type="text" id="rev-text" placeholder="Review text..." style="margin-top:5px;">
             <div id="review-area" class="tags-container"></div>
 
-            <button id="submit-btn" class="btn btn-green" onclick="handleFormSubmit()">UPLOAD SYSTEM</button>
-            <button id="cancel-btn" class="btn btn-cancel" onclick="resetForm()" style="display:none;">CANCEL EDIT</button>
+            <button id="submit-btn" class="btn btn-green">UPLOAD SYSTEM</button>
+            <button id="cancel-btn" class="btn btn-cancel" style="display:none;">CANCEL EDIT</button>
         </div>
 
         <div class="col-center">
@@ -176,7 +176,7 @@
                     Register κρατάει μόνιμα το username/email — ένας διαγραμμένος λογαριασμός εδώ
                     ελευθερώνει και τα δύο για νέα εγγραφή. Χρήσιμο για test/διπλούς λογαριασμούς.
                 </p>
-                <input type="text" id="user-search" placeholder="Αναζήτηση username ή email..." oninput="renderUserList()">
+                <input type="text" id="user-search" placeholder="Αναζήτηση username ή email...">
                 <div id="users-list" style="margin-top:10px; max-height:320px; overflow-y:auto;">LOADING...</div>
             </div>
 
@@ -188,14 +188,14 @@
                 </label>
                 <label>Message shown to visitors</label>
                 <textarea id="maint-message" placeholder="PHOENIX CODEX is currently undergoing scheduled maintenance..."></textarea>
-                <button class="btn btn-red" onclick="saveMaintenance()">SAVE</button>
+                <button class="btn btn-red" id="save-maint-btn">SAVE</button>
             </div>
 
             <div class="tool-box" style="border-color:#ccff00;">
                 <h3 style="color:#ccff00;">⚙ GLOBAL SETTINGS</h3>
                 <label>Τιμή Pro Configuration (€) — ισχύει για όλα τα PC</label>
                 <input type="number" id="proconfig-price" value="30">
-                <button class="btn btn-green" onclick="saveProConfigPrice()">SAVE PRICE</button>
+                <button class="btn btn-green" id="save-proconfig-btn">SAVE PRICE</button>
             </div>
 
             <div class="tool-box">
@@ -221,7 +221,7 @@
                 <div class="add-row">
                     <select id="v-fps-game"><option>Fortnite</option><option>Warzone</option><option>GTA V</option><option>Valorant</option><option>LoL</option></select>
                     <input type="number" id="v-fps-score" placeholder="FPS" style="width:80px;">
-                    <button class="btn-sm edit-btn" onclick="addVoteFPS()">+</button>
+                    <button class="btn-sm edit-btn" id="add-vote-fps-btn">+</button>
                 </div>
                 <div id="v-fps-area" class="tags-container"></div>
 
@@ -235,7 +235,7 @@
                     <input type="text" id="v-psu" placeholder="PSU (e.g. 650W)">
                 </div>
                 <input type="text" id="v-case" placeholder="CASE Model" style="margin-top:10px;">
-                <button class="btn btn-purple" onclick="uploadVote()">START EVENT</button>
+                <button class="btn btn-purple" id="upload-vote-btn">START EVENT</button>
             </div>
 
             <div class="code-box">
@@ -243,7 +243,7 @@
                 <label>Generate for Sold Item:</label>
                 <div class="add-row">
                     <select id="sold-pc-select"></select>
-                    <button class="btn-sm btn-cyan" onclick="generateCode()">GENERATE</button>
+                    <button class="btn-sm btn-cyan" id="generate-code-btn">GENERATE</button>
                 </div>
                 <div id="tickets-list" style="margin-top:15px; max-height:300px; overflow-y:auto;"></div>
             </div>
@@ -257,6 +257,10 @@
 
     </div>
 
-<script src="js/admin-app.js"></script>
+<!-- type="module" so the panel can import the same escaping helpers the storefront uses, instead
+     of keeping a second copy. It also means no function here is global, which is why every control
+     is wired with addEventListener in admin-app.js — and that is what lets this page run under a
+     Content-Security-Policy with no 'unsafe-inline' (see vercel.json). -->
+<script type="module" src="js/admin-app.js"></script>
 </body>
 </html>
