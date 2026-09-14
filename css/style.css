@@ -19,6 +19,5 @@
 @import url('gallery/card-back.css');
 @import url('gallery/ui-lock.css');
 
-@import url('responsive/laptop.css');
 @import url('responsive/tablet.css');
 @import url('responsive/mobile.css');
