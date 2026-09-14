@@ -5,12 +5,47 @@ import { t } from '../i18n.js';
 import { getBreakdown, getActiveImages } from './gallery.js';
 import { esc, escUrl } from '../utils.js';
 
-export function toggleCartDropdown() { 
-    const d = document.getElementById('cart-dropdown'); 
-    const btn = document.querySelector('.nav-btn.cart-btn'); 
-    if(d) d.classList.toggle('show'); 
-    if(btn) btn.classList.toggle('active'); 
+// Matches css/components/cart.css's declared width — the dropdown is display:none until .show
+// is added, so offsetWidth reads 0 at the point this needs it. Keep the two in sync if that ever
+// changes.
+const CART_DROPDOWN_WIDTH = 350;
+
+// .nav-bar (holding the cart button) is centered independently of .right-header-group (profile,
+// terminal) — the dropdown used to sit at a fixed top-right corner offset, which happened to land
+// under THOSE buttons instead of under the one that actually opened it, on every viewport where
+// the nav bar isn't exactly as wide as the header is generous with padding. Anchoring to the
+// button's own rect fixes that at any width, including on resize while it's open.
+function positionCartDropdown(d, btn) {
+    const rect = btn.getBoundingClientRect();
+    const gap = 10;
+    const left = Math.max(10, Math.min(rect.right - CART_DROPDOWN_WIDTH, window.innerWidth - CART_DROPDOWN_WIDTH - 10));
+    d.style.top = `${rect.bottom + gap}px`;
+    d.style.left = `${left}px`;
+    d.style.right = 'auto';
 }
+
+export function toggleCartDropdown() {
+    const d = document.getElementById('cart-dropdown');
+    const btn = document.querySelector('.nav-btn.cart-btn');
+    if (!d || !btn) return;
+
+    // Only worth computing on the way in — closing doesn't need a position, and recomputing then
+    // would just be wasted work the instant before the element hides.
+    if (!d.classList.contains('show')) positionCartDropdown(d, btn);
+
+    d.classList.toggle('show');
+    btn.classList.toggle('active');
+}
+
+// Keeps the dropdown glued to the button across a resize (rotating a tablet, a laptop window
+// being resized) instead of freezing wherever it was computed when opened. The mobile media query
+// in css/responsive/mobile.css still wins on narrow viewports via !important regardless of what
+// inline top/left this sets.
+window.addEventListener('resize', () => {
+    const d = document.getElementById('cart-dropdown');
+    const btn = document.querySelector('.nav-btn.cart-btn');
+    if (d && btn && d.classList.contains('show')) positionCartDropdown(d, btn);
+});
 
 export function updateCartUI() { 
     const cCount = document.getElementById('cart-count');
