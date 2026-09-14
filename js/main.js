@@ -10,6 +10,7 @@ import { renderGlobalReviews } from './modules/reviews.js';
 import { initTerminal, initMatrix } from './modules/terminal.js';
 import { initInteractiveTutorial } from './modules/tutorial.js';
 import { initDayNightCycle } from './modules/time.js';
+import { initStageFit } from './modules/stagefit.js';
 import { applyLanguage } from './i18n.js';
 
 import './modules/gallery.js';
@@ -169,9 +170,14 @@ const initApp = async () => {
     } else { 
         const vTitle = document.getElementById('v-title');
         const vBtn = document.getElementById('v-btn');
-        if (vTitle) vTitle.innerText = "NO ACTIVE VOTE"; 
-        if (vBtn) vBtn.disabled = true; 
+        if (vTitle) vTitle.innerText = "NO ACTIVE VOTE";
+        if (vBtn) vBtn.disabled = true;
     }
+
+    // Last, once the real card content is in the DOM — the layout has no scroll by design, so on a
+    // viewport too short for it (a laptop at 125% OS scale with browser chrome, i.e. anyone not in
+    // fullscreen) this scales the stage down uniformly to fit. No-op when it already fits.
+    initStageFit();
 
     // 6. Remove Splash Screen & Run Tutorial
     const overlay = document.getElementById('startup-overlay');
