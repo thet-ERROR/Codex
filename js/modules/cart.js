@@ -19,7 +19,17 @@ function positionCartDropdown(d, btn) {
     const rect = btn.getBoundingClientRect();
     const gap = 10;
     const left = Math.max(10, Math.min(rect.right - CART_DROPDOWN_WIDTH, window.innerWidth - CART_DROPDOWN_WIDTH - 10));
-    d.style.top = `${rect.bottom + gap}px`;
+
+    // Clear the right-hand controls (achievements / terminal / profile) as well as the cart button
+    // itself. .nav-bar is position:absolute and centred, so it's out of the header's flex flow —
+    // which means as the window narrows it can drift over .right-header-group, taking the cart
+    // button (and anything anchored to it) with it. Measuring that group's real bottom instead of
+    // trusting the cart button's alone keeps the dropdown below those buttons at any width rather
+    // than depending on the two happening to line up.
+    const headerGroup = document.querySelector('.right-header-group');
+    const groupBottom = headerGroup ? headerGroup.getBoundingClientRect().bottom : 0;
+
+    d.style.top = `${Math.max(rect.bottom, groupBottom) + gap}px`;
     d.style.left = `${left}px`;
     d.style.right = 'auto';
 }
