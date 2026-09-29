@@ -6,7 +6,15 @@
 }
 
 @media (max-width: 1024px) {
-    body { overflow-y: auto; overflow-x: hidden; padding-bottom: 80px; }
+    /* One scroll container — the document — instead of two. The base rule is `body { height: 100vh;
+       overflow: hidden }` for the no-scroll desktop layout; this used to add `overflow-y: auto` on
+       top, so the BODY scrolled inside the document. On iPhone 100vh is the height with Safari's
+       toolbar collapsed, so the document scrolled a little too, Safari kept showing and hiding its
+       toolbar mid-scroll, and the fixed bottom bar + ticker jumped and drifted apart. Letting the
+       page scroll normally is what Safari expects. overflow-x: clip (not hidden) still stops
+       sideways scrolling without turning body back into a scroll container; `hidden` stays first as
+       the fallback for browsers that predate clip (iOS < 16). */
+    body { height: auto; min-height: 100vh; overflow: visible; overflow-x: hidden; overflow-x: clip; padding-bottom: 80px; }
     .bg-layer { background-size: cover !important; background-position: center center !important; background-attachment: scroll !important; }
     header { position: relative; height: auto; flex-direction: column; padding: 10px; gap: 10px; }
     .right-header-group { width: 100%; justify-content: center; }

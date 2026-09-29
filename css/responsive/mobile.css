@@ -1,19 +1,30 @@
 @media (max-width: 768px) {
-    body { padding-left: 0 !important; padding-bottom: 100px !important; overflow-x: hidden !important; }
+    body { padding-left: 0 !important; padding-bottom: 100px !important; overflow-x: hidden !important; overflow-x: clip !important; } /* clip: see tablet.css */
+
+    /* The bottom bar and the ticker are two separate fixed elements. While Safari animates its
+       toolbar in and out they were repositioned independently and could lag apart by a frame or two
+       — the visible "tear" between them. Promoting each to its own compositor layer lets the GPU move
+       them in step instead of repainting them. (Nothing inside .left-sidebar is position:fixed any
+       more — the share menu was moved out — so the containing block this creates traps nothing.) */
+    .left-sidebar, .delivery-ticker { transform: translateZ(0) !important; will-change: transform; backface-visibility: hidden; }
 
     /* Tabs on top, then [terminal] [logo] [profile][cart] directly above "SYSTEM SELECT" — two rows
        instead of three, with nothing between the header and the product. display:contents on
        .right-header-group lets its buttons sit in the header's grid directly, either side of the
-       logo, without touching the HTML (so the desktop header is unaffected). The 1fr columns keep the
-       logo exactly centred; profile and cart share the right-hand cell, cart offset by one button
-       (45px) plus the gap. The faint bottom border is dropped — on a phone it only read as a stray
-       line floating in the gap. */
-    header { display: grid !important; grid-template-columns: 1fr auto 1fr !important; grid-template-areas: "nav nav nav" "cli logo right" !important; align-items: center !important; column-gap: 22px !important; row-gap: 4px !important; padding: 10px 10px 4px 10px !important; height: auto !important; position: relative !important; border-bottom: none !important; }
+       logo, without touching the HTML (so the desktop header is unaffected).
+
+       The four sit as ONE evenly spaced group, centred as a whole. Pinning the logo to the exact
+       centre left one button on its left and two on its right, which read as lopsided. The outer 1fr
+       columns soak up the leftover width equally on both sides; the nav strip spans them all, and
+       since items spanning a flexible track don't feed into auto-track sizing, its 100vw width
+       doesn't stretch the four button columns. The faint bottom border is dropped — on a phone it
+       only read as a stray line floating in the gap. */
+    header { display: grid !important; grid-template-columns: 1fr auto auto auto auto 1fr !important; grid-template-areas: "nav nav nav nav nav nav" ". cli logo profile cart ." !important; align-items: center !important; column-gap: 18px !important; row-gap: 4px !important; padding: 10px 0 4px 0 !important; height: auto !important; position: relative !important; border-bottom: none !important; }
     header .logo { grid-area: logo !important; height: 60px !important; margin: 0 !important; }
     header .right-header-group { display: contents !important; }
-    header .cli-btn { grid-area: cli !important; justify-self: end !important; }
-    header .profile-container { grid-area: right !important; justify-self: start !important; }
-    header .cart-btn-mobile { grid-area: right !important; justify-self: start !important; margin-left: 57px !important; display: flex !important; }
+    header .cli-btn { grid-area: cli !important; }
+    header .profile-container { grid-area: profile !important; }
+    header .cart-btn-mobile { grid-area: cart !important; display: flex !important; }
     .nav-bar .cart-btn { display: none !important; }
     .stage { padding-top: 0 !important; }
 

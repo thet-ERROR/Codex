@@ -1,3 +1,6 @@
 body.ui-locked { overflow: hidden !important; }
+/* On phones/tablets the document scrolls now, not body (see tablet.css), so locking the page
+   behind an open modal has to happen on <html> too — body's overflow alone no longer stops it. */
+html:has(> body.ui-locked) { overflow: hidden !important; }
 body.ui-locked header, body.ui-locked .stage, body.ui-locked .left-sidebar, body.ui-locked .right-sidebar:not(.mobile-active) { pointer-events: none !important; filter: blur(3px) !important; opacity: 0.5 !important; transition: all 0.3s ease !important; }
 .right-sidebar.mobile-active, #cli-overlay, .gallery-overlay, .modal { pointer-events: auto !important; }
