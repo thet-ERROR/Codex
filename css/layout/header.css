@@ -25,6 +25,11 @@ body.night-mode header { background: linear-gradient(to bottom, rgba(5,5,15,0.95
 .achievements-btn:hover { background: var(--legendary-orange); color: #000; border-color: var(--legendary-orange); box-shadow: 0 0 15px var(--legendary-orange); }
 .cli-btn:hover { background: #fff; color: #000; border-color: #fff; box-shadow: 0 0 15px #fff; }
 
+/* Phone-only cart button — see index.html. Shown by css/responsive/mobile.css. */
+.cart-btn-mobile { display: none; position: relative; width: 45px; height: 45px; border-radius: 50%; background: rgba(255,255,255,0.05); border: 1px solid var(--neon-green); color: var(--neon-green); font-size: 1.3rem; cursor: pointer; align-items: center; justify-content: center; transition: 0.3s; }
+.cart-btn-mobile .cart-count { position: absolute; top: -4px; right: -4px; min-width: 18px; text-align: center; }
+.cart-btn-mobile.active { background: var(--neon-green); color: #000; box-shadow: 0 0 15px var(--neon-green); }
+
 .profile-container { position: relative; z-index: 999999 !important; pointer-events: auto !important; }
 .profile-btn { width: 45px; height: 45px; border-radius: 50%; background: rgba(255,255,255,0.05); border: 1px solid var(--neon-green); color: var(--neon-green); font-size: 1.5rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.3s; }
 .profile-btn:hover { background: var(--neon-green); color: #000; box-shadow: 0 0 15px var(--neon-green); }

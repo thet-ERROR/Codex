@@ -34,10 +34,22 @@ function positionCartDropdown(d, btn) {
     d.style.right = 'auto';
 }
 
+// Two cart buttons exist: the nav bar's (desktop/tablet) and the round one beside the profile
+// button (phones, where the nav bar's copy is hidden). Whichever is actually on screen is the one to
+// anchor to, highlight and point the "added" hint at.
+export function visibleCartButton() {
+    for (const sel of ['.cart-btn-mobile', '.nav-btn.cart-btn']) {
+        const el = document.querySelector(sel);
+        if (el && el.offsetParent !== null && el.getBoundingClientRect().width > 0) return el;
+    }
+    return null;
+}
+
 export function toggleCartDropdown() {
     const d = document.getElementById('cart-dropdown');
-    const btn = document.querySelector('.nav-btn.cart-btn');
+    const btn = visibleCartButton();
     if (!d || !btn) return;
+    hideCartHint();
 
     // Only worth computing on the way in — closing doesn't need a position, and recomputing then
     // would just be wasted work the instant before the element hides.
@@ -53,13 +65,21 @@ export function toggleCartDropdown() {
 // inline top/left this sets.
 window.addEventListener('resize', () => {
     const d = document.getElementById('cart-dropdown');
-    const btn = document.querySelector('.nav-btn.cart-btn');
+    const btn = visibleCartButton();
     if (d && btn && d.classList.contains('show')) positionCartDropdown(d, btn);
+    hideCartHint(); // a rotation or resize moves the button out from under the arrow
 });
 
-export function updateCartUI() { 
+export function updateCartUI() {
     const cCount = document.getElementById('cart-count');
-    if(cCount) cCount.innerText = state.cart.length; 
+    if(cCount) cCount.innerText = state.cart.length;
+    // The phone button's badge only appears once there's something in the cart — a permanent "0"
+    // on a round icon reads as a notification that never clears.
+    const mCount = document.getElementById('cart-count-mobile');
+    if (mCount) {
+        mCount.innerText = state.cart.length;
+        mCount.classList.toggle('hidden', state.cart.length === 0);
+    }
     
     const items = document.getElementById('mini-cart-items'); 
     let total = 0; 
@@ -109,20 +129,87 @@ export function addToCart() {
         img: getActiveImages(pc)[0] || ''
     });
 
-    localStorage.setItem('codex_cart', JSON.stringify(state.cart)); 
-    updateCartUI(); 
-    
-    const dropdown = document.getElementById('cart-dropdown'); 
-    if(dropdown) {
-        dropdown.classList.add('show'); 
-        setTimeout(() => dropdown.classList.remove('show'), 2000); 
-    }
-    
+    localStorage.setItem('codex_cart', JSON.stringify(state.cart));
+    updateCartUI();
+
     // Κλήση σε global functions (που υπάρχουν ήδη στο window)
-    if(window.closeModal) window.closeModal('gallery-overlay'); 
-    if(window.showToast) window.showToast("ITEM ADDED TO CART", "normal"); 
+    if(window.closeModal) window.closeModal('gallery-overlay');
+    // Replaces what used to happen here: the dropdown flashed open for 2s (unpositioned, so on
+    // desktop it appeared at the fallback corner) plus a toast at the bottom. Neither told a first-
+    // time visitor where the cart actually is — the hint points at it.
+    showCartHint();
     if(window.checkAchievement) window.checkAchievement('first_loot');
 }
+
+// --- "ADDED" HINT ---
+// A bubble with an arrow pointing at the cart button. Nice on desktop; on phones it's the difference
+// between a visitor finding the cart and not. Created on first use rather than living in index.html.
+const HINT_MS = 4000;
+let hintTimer = null;
+let hintShownAt = 0;
+
+function hintElement() {
+    let el = document.getElementById('cart-hint');
+    if (el) return el;
+    el = document.createElement('div');
+    el.id = 'cart-hint';
+    el.className = 'cart-hint';
+    el.setAttribute('role', 'status');
+    el.innerHTML = `<div class="cart-hint-arrow"></div>
+        <div class="cart-hint-title"><i class="ph-bold ph-check-circle"></i> <span class="cart-hint-title-text"></span></div>
+        <div class="cart-hint-text"></div>`;
+    // Tapping the hint opens the cart it's pointing at
+    el.addEventListener('click', () => toggleCartDropdown());
+    document.body.appendChild(el);
+    return el;
+}
+
+export function hideCartHint() {
+    clearTimeout(hintTimer);
+    const el = document.getElementById('cart-hint');
+    if (el) el.classList.remove('show');
+}
+
+function placeCartHint(btn) {
+    const el = hintElement();
+    // Re-read every time so a language switch since the last add is respected
+    el.querySelector('.cart-hint-title-text').textContent = t('cartHintTitle');
+    el.querySelector('.cart-hint-text').textContent = t('cartHintText');
+
+    const r = btn.getBoundingClientRect();
+    const w = el.offsetWidth; // measurable: hidden with opacity, not display:none
+    const centre = r.left + r.width / 2;
+    const left = Math.max(10, Math.min(centre - w / 2, window.innerWidth - w - 10));
+    el.style.top = `${r.bottom + 14}px`;
+    el.style.left = `${left}px`;
+    // The arrow tracks the button even when the bubble had to be clamped to a screen edge
+    el.querySelector('.cart-hint-arrow').style.left = `${centre - left - 8}px`;
+
+    el.classList.add('show');
+    hintShownAt = Date.now();
+    clearTimeout(hintTimer);
+    hintTimer = setTimeout(hideCartHint, HINT_MS);
+}
+
+function showCartHint() {
+    const btn = visibleCartButton();
+    if (!btn) {
+        if (window.showToast) window.showToast(t('cartHintTitle'), 'normal');
+        return;
+    }
+    // On phones the header scrolls with the page, so after browsing down to a card the cart
+    // button can be above the screen — bring it back into view before pointing at it.
+    const r = btn.getBoundingClientRect();
+    const offscreen = r.top < 0 || r.bottom > window.innerHeight;
+    if (offscreen) btn.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    setTimeout(() => placeCartHint(btn), offscreen ? 450 : 0);
+}
+
+// Scrolling away means the arrow no longer points at anything. The grace period ignores the
+// scroll this file just started itself.
+window.addEventListener('scroll', () => {
+    if (Date.now() - hintShownAt > 500) hideCartHint();
+}, { passive: true });
 
 export function removeFromCart(i) {
     state.cart.splice(i, 1); 

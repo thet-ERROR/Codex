@@ -61,7 +61,12 @@ export function startTutorialTour(lang) {
         onDestroyed: () => {
             if (window.showToast) window.showToast(isEl ? 'Η ΞΕΝΑΓΗΣΗ ΟΛΟΚΛΗΡΩΘΗΚΕ' : 'ONBOARDING COMPLETE', 'achievement');
         },
-        steps: STEPS[isEl ? 'el' : 'en']
+        // On phones the nav bar's CART is hidden in favour of the round button beside the profile
+        // (mobile.css) — point that step at the one actually on screen.
+        steps: STEPS[isEl ? 'el' : 'en'].map(step =>
+            step.element === '.cart-btn' && window.matchMedia('(max-width: 768px)').matches
+                ? { ...step, element: '.cart-btn-mobile' }
+                : step)
     });
 
     setTimeout(() => tour.drive(), 300);

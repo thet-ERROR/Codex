@@ -130,6 +130,14 @@ Type 'help' for a list of commands.
                 </button>
                 <div class="profile-menu" id="profile-menu"></div>
             </div>
+            <!-- Phones only (hidden above 768px in header.css). The nav bar's CART is the 5th item in
+                 a horizontally scrolling strip there, i.e. off-screen for anyone who doesn't think to
+                 swipe it — so on phones the cart lives next to the profile button instead, always
+                 visible, and the strip's copy is hidden (mobile.css). -->
+            <button class="cart-btn-mobile" onclick="playClick(); toggleCartDropdown()" aria-label="Cart">
+                <i class="ph-bold ph-shopping-cart"></i>
+                <span class="cart-count hidden" id="cart-count-mobile">0</span>
+            </button>
         </div>
     </header>
 
