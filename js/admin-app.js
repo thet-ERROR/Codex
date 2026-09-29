@@ -150,9 +150,49 @@
         const g=document.getElementById('fps-game').value, s=document.getElementById('fps-score').value;
         if(s) { currentFPS.push({game:g, score:s}); renderTags(); }
     }
-    function addReview() {
-        const u=document.getElementById('rev-user').value, t=document.getElementById('rev-text').value, r=document.getElementById('rev-rating').value;
-        if(u&&t) { currentReviews.push({user:u, text:t, rating:r, date:new Date()}); renderTags(); }
+    // On an EXISTING PC, reviews go straight to the API one at a time — the save button no longer
+    // sends them (it used to send the whole stale array and wipe any customer review posted while
+    // the form was open). On a PC not created yet there's nothing to call, so they're held locally
+    // and go out with the create request.
+    async function addReview() {
+        const u = document.getElementById('rev-user').value.trim();
+        const t = document.getElementById('rev-text').value.trim();
+        const r = parseInt(document.getElementById('rev-rating').value) || 5;
+        if (!u || !t) return;
+        if (!editId) { currentReviews.push({ user: u, text: t, rating: r, date: new Date() }); renderTags(); return; }
+        try {
+            const res = await fetch(`${API}/drops/${editId}/reviews`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${TOKEN}` },
+                body: JSON.stringify({ user: u, text: t, rating: r })
+            });
+            if (handleAuthError(res)) return;
+            const d = await res.json();
+            if (!res.ok) return alert(d.error || 'ERROR ADDING REVIEW');
+            currentReviews = d.reviews; renderTags();
+            // Keep the cached inventory in step, or re-opening EDIT before the next reload shows the old list
+            const cached = inventory.find(p => p._id === editId);
+            if (cached) cached.reviews = d.reviews;
+        } catch (e) { alert('NETWORK ERROR'); }
+    }
+
+    async function removeReview(i) {
+        const review = currentReviews[i];
+        if (!review) return;
+        if (!editId || !review._id) { currentReviews.splice(i, 1); renderTags(); return; }
+        if (!confirm(`Delete review by "${review.user}"?`)) return;
+        try {
+            const res = await fetch(`${API}/drops/${editId}/reviews/${review._id}`, {
+                method: 'DELETE', headers: { 'Authorization': `Bearer ${TOKEN}` }
+            });
+            if (handleAuthError(res)) return;
+            const d = await res.json();
+            if (!res.ok) return alert(d.error || 'ERROR REMOVING REVIEW');
+            currentReviews = d.reviews; renderTags();
+            // Keep the cached inventory in step, or re-opening EDIT before the next reload shows the old list
+            const cached = inventory.find(p => p._id === editId);
+            if (cached) cached.reviews = d.reviews;
+        } catch (e) { alert('NETWORK ERROR'); }
     }
     // currentReviews is loaded straight from the PC being edited, so r.user is whatever a customer
     // typed when redeeming a mission code — the same untrusted text the storefront escapes.
@@ -310,9 +350,11 @@ const data = {
                 case: document.getElementById('specInfo-case').value
             },
             fps: currentFPS,
-            reviews: currentReviews,
             options: collectOptions()
         };
+        // Only on create. On update the API ignores `reviews` anyway (see PUT /api/drops/:id) —
+        // omitting it here just makes that explicit.
+        if (!editId) data.reviews = currentReviews;
 
         // A paint option with no colour name renders as a nameless toggle on the storefront
         if (data.options.paint.enabled && !data.options.paint.colorName && !data.options.paint.colorNameEl) {
@@ -531,7 +573,7 @@ const data = {
             const i = Number(el.dataset.index);
             if (Number.isNaN(i)) return;
             if (el.dataset.list === 'fps') { currentFPS.splice(i, 1); renderTags(); }
-            if (el.dataset.list === 'review') { currentReviews.splice(i, 1); renderTags(); }
+            if (el.dataset.list === 'review') removeReview(i);
             if (el.dataset.list === 'vote-fps') { currentVoteFPS.splice(i, 1); renderVoteFPS(); }
         };
         delegate('fps-area', removeTag);
