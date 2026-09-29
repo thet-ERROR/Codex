@@ -42,6 +42,10 @@
 .side-divider { width: 40%; height: 1px; background: rgba(255,255,255,0.1); margin: 5px 0; }
 .side-btn.chat-toggle { margin-top: auto; border-color: var(--neon-green); color: var(--neon-green); }
 
+/* Flag with the target language's code under it — see applyLanguage() in js/i18n.js */
+#lang-toggle-btn { flex-direction: column; gap: 2px; }
+#lang-toggle-btn .lang-code { font-family: var(--font-ui); font-size: 0.55rem; font-weight: 800; letter-spacing: 1px; line-height: 1; color: #aaa; }
+
 @media (hover: hover) {
     #lang-toggle-btn:hover { border-color: #0f0; color: #0f0; box-shadow: 0 4px 15px rgba(0,255,0,0.15); }
 }

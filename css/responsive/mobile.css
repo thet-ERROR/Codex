@@ -13,13 +13,14 @@
        .right-header-group lets its buttons sit in the header's grid directly, either side of the
        logo, without touching the HTML (so the desktop header is unaffected).
 
-       The four sit as ONE evenly spaced group, centred as a whole. Pinning the logo to the exact
-       centre left one button on its left and two on its right, which read as lopsided. The outer 1fr
+       The four sit as ONE evenly spaced group, centred as a whole, logo first and the three round
+       buttons after it. Pinning the logo to the exact centre left one button on its left and two on
+       its right, which read as lopsided; logo-then-buttons keeps the three identical circles together. The outer 1fr
        columns soak up the leftover width equally on both sides; the nav strip spans them all, and
        since items spanning a flexible track don't feed into auto-track sizing, its 100vw width
        doesn't stretch the four button columns. The faint bottom border is dropped — on a phone it
        only read as a stray line floating in the gap. */
-    header { display: grid !important; grid-template-columns: 1fr auto auto auto auto 1fr !important; grid-template-areas: "nav nav nav nav nav nav" ". cli logo profile cart ." !important; align-items: center !important; column-gap: 18px !important; row-gap: 4px !important; padding: 10px 0 4px 0 !important; height: auto !important; position: relative !important; border-bottom: none !important; }
+    header { display: grid !important; grid-template-columns: 1fr auto auto auto auto 1fr !important; grid-template-areas: "nav nav nav nav nav nav" ". logo cli profile cart ." !important; align-items: center !important; column-gap: 18px !important; row-gap: 4px !important; padding: 10px 0 4px 0 !important; height: auto !important; position: relative !important; border-bottom: none !important; }
     header .logo { grid-area: logo !important; height: 60px !important; margin: 0 !important; }
     header .right-header-group { display: contents !important; }
     header .cli-btn { grid-area: cli !important; }
@@ -79,6 +80,10 @@
     .system-select-label { font-size: 1rem !important; letter-spacing: 3px !important; margin-bottom: 10px !important; }
     #main-card, .holo-card { padding: 15px !important; }
     .hero-img-frame { height: 140px !important; margin: 0 auto 6px auto !important; }
+    /* Carousel arrows centred on the photo instead of the whole card — at the card's midpoint they
+       sat right on top of the lore text. 85px = card padding (15) + half the photo frame (140/2);
+       tablet.css already shifts them up by half their own height. Keep in step with those two. */
+    .nav-arrow { top: 85px !important; }
     .pc-title { font-size: 1.7rem !important; margin-bottom: 3px !important; }
     .card-price-row { margin-bottom: 8px !important; }
     .pc-price { font-size: 1.4rem !important; }
@@ -86,6 +91,9 @@
     .sys-brief { padding: 10px !important; margin-bottom: 10px !important; }
     .sys-brief-title { font-size: 0.8rem !important; margin-bottom: 4px !important; }
     .sys-brief-text { font-size: 0.75rem !important; line-height: 1.4 !important; }
+    /* Seven lines of lore pushed INSPECT SYSTEM — the card's main button — under the bottom bar.
+       Three lines plus a "more" toggle (renderCard in js/modules/catalog.js) keeps it on screen. */
+    .sys-brief:not(.expanded) .sys-brief-text { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; line-clamp: 3; overflow: hidden; }
     .btn-card-inspect { padding: 11px !important; font-size: 0.9rem !important; margin-top: 3px !important; }
     .btn-card-compare { padding: 8px !important; margin-top: 6px !important; }
 }

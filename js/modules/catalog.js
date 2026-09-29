@@ -126,6 +126,7 @@ export function renderCard() {
             <div class="sys-brief">
                 <div class="sys-brief-title">${esc(window.t ? window.t('classifiedBrief') : '>// CLASSIFIED_BRIEF')}</div>
                 <div class="sys-brief-text">${esc(pcLore)}</div>
+                <button type="button" class="sys-brief-more hidden">${esc(window.t ? window.t('briefMore') : 'more')}</button>
             </div>
 
             <button class="btn-card-inspect" onclick="openGallery()">${esc(window.t ? window.t('inspectSystemBtn') : 'INSPECT SYSTEM')}</button>
@@ -135,11 +136,65 @@ export function renderCard() {
         </div>
     `;
     
+    // On phones the brief is clamped to 3 lines (mobile.css) so INSPECT SYSTEM isn't pushed under the
+    // bottom bar. The toggle only appears when the clamp actually cut something — short lore, or any
+    // desktop layout (no clamp there), never shows it.
+    const briefText = c.querySelector('.sys-brief-text');
+    const briefMore = c.querySelector('.sys-brief-more');
+    if (briefText && briefMore) {
+        const t = window.t || (k => k);
+        briefMore.classList.toggle('hidden', briefText.scrollHeight <= briefText.clientHeight + 1);
+        briefMore.addEventListener('click', (ev) => {
+            ev.stopPropagation();
+            const brief = briefMore.closest('.sys-brief');
+            const open = brief.classList.toggle('expanded');
+            briefMore.textContent = open ? t('briefLess') : t('briefMore');
+        });
+    }
+
     // Ξεκινάμε το animation στις μπάρες
     setTimeout(()=> {
         document.querySelectorAll('.bar-fill').forEach(b => b.style.width = b.getAttribute('data-width'));
     }, 50); 
 }
+
+// --- SWIPE BETWEEN PCs ---
+// Swiping the card is what people try first on a phone; the arrows stay as the visible hint and for
+// desktop. Horizontal-only and deliberate: a mostly-vertical gesture is a page scroll, so it's left
+// alone, and passive listeners mean this never delays scrolling. A browser suppresses the click on
+// release after a swipe like this, so INSPECT/wishlist taps aren't triggered by accident.
+const SWIPE_MIN_PX = 50;
+let touchStartX = 0, touchStartY = 0, touchTracking = false;
+
+function slideCard(dir) {
+    const card = document.getElementById('main-card');
+    if (!card) return;
+    card.classList.remove('swipe-in-left', 'swipe-in-right');
+    void card.offsetWidth; // restart the animation if swiping again before it finished
+    card.classList.add(dir > 0 ? 'swipe-in-right' : 'swipe-in-left');
+}
+
+function initCardSwipe() {
+    const wrapper = document.getElementById('carousel-wrapper');
+    if (!wrapper) return;
+    wrapper.addEventListener('touchstart', (e) => {
+        if (e.touches.length !== 1) { touchTracking = false; return; }
+        touchStartX = e.touches[0].clientX;
+        touchStartY = e.touches[0].clientY;
+        touchTracking = true;
+    }, { passive: true });
+    wrapper.addEventListener('touchend', (e) => {
+        if (!touchTracking) return;
+        touchTracking = false;
+        const dx = e.changedTouches[0].clientX - touchStartX;
+        const dy = e.changedTouches[0].clientY - touchStartY;
+        if (Math.abs(dx) < SWIPE_MIN_PX || Math.abs(dx) < Math.abs(dy) * 1.5) return;
+        if (state.filtered.length < 2) return;
+        if (window.playClick) window.playClick();
+        if (dx < 0) { nextPC(); slideCard(1); } else { prevPC(); slideCard(-1); }
+    }, { passive: true });
+}
+initCardSwipe();
 
 // Εξαγωγή στο window
 window.switchTab = switchTab;

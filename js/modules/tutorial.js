@@ -1,40 +1,97 @@
 // js/modules/tutorial.js
 
-// .add-review-btn (desktop right-sidebar) and .mobile-reviews-btn swap visibility at 1024px
-// (css/responsive/tablet.css), not 768px — must match that breakpoint exactly or this step
-// points at a hidden element on tablet-width / larger-phone screens.
-const isMobile = () => window.innerWidth <= 1024;
+// Built when the tour starts, not at load: which elements exist, where they sit and which side a
+// popover can open on all depend on the layout at that moment — and the layouts differ a lot.
+//
+//   <= 768px  phone: tabs on top, then [logo][terminal][profile][cart] (mobile.css), cart is the
+//             round .cart-btn-mobile (the nav bar's is hidden), swipe between PCs.
+//   <= 1024px the sidebar becomes a bottom bar (tablet.css), so its popovers must open ABOVE it —
+//             "right" put them off-screen — and reviews move to .mobile-reviews-btn.
+//   desktop   logo | centred tabs with CART | terminal, profile; sidebar is a left rail.
+//
+// Steps are listed in the order they appear on screen for that layout, so the tour reads top to
+// bottom instead of jumping around. Keep this in sync with any change to those areas.
+const isPhone = () => window.matchMedia('(max-width: 768px)').matches;
+const hasBottomBar = () => window.matchMedia('(max-width: 1024px)').matches;
 
-const STEPS = {
-    en: [
-        { popover: { title: 'WELCOME AGENT', description: 'Initiating System Override. Let us give you a quick tour of the CODEX Terminal.', side: "over", align: 'center' } },
-        { element: '.logo', popover: { title: 'IDENTITY CHECK', description: "Click the logo anytime to see who's really running this operation.", side: "bottom", align: 'start' } },
-        { element: '#tab-live', popover: { title: 'LIVE DROPS', description: 'Here you will find the currently available, custom-built gaming rigs ready for deployment.', side: "bottom", align: 'start' } },
-        { element: '#tab-vault', popover: { title: 'LAST CALL', description: 'Access classified systems that are either sold out or incoming. Keep an eye out for legendary drops.', side: "bottom", align: 'start' } },
-        { element: '#tab-vote', popover: { title: 'VOTE', description: "The network votes on which mystery PC gets unlocked for purchase. Only signed-in agents can vote — if it isn't secured before time runs out, it automatically moves to Live Drops.", side: "bottom", align: 'start' } },
-        { element: '.cart-btn', popover: { title: 'YOUR LOOT', description: 'Everything you pick lands here. Check your total, then send the order straight to us on WhatsApp.', side: "bottom", align: 'end' } },
-        { element: '.cli-btn', popover: { title: 'THE TERMINAL', description: 'Click here or press the [`] key to open the command line interface. Try typing "hack" inside it.', side: "bottom", align: 'end' } },
-        { element: '.profile-btn', popover: { title: 'AGENT PROFILE', description: 'Sign in or register here to save your wishlist, track your rank, and unlock rewards.', side: "bottom", align: 'end' } },
-        { element: '[data-i18n-title="sideSettings"]', popover: { title: 'SYSTEM PREFERENCES', description: 'Customize your accent color here.', side: "right", align: 'center' } },
-        { element: '[data-i18n-title="sideWheel"]', popover: { title: 'DAILY SPIN', description: 'Spin the wheel once a day for a chance to unlock premium accent colors or a discount coupon.', side: "right", align: 'center' } },
-        { element: '#lang-toggle-btn', popover: { title: 'LANGUAGE', description: 'Switch between Greek and English anytime — the whole site updates instantly.', side: "right", align: 'center' } },
-        { element: isMobile() ? '.mobile-reviews-btn' : '.add-review-btn', popover: { title: 'MISSION CODES', description: 'Found a physical code in your PC box? Enter it here to validate your system and unlock achievements.', side: isMobile() ? "top" : "left", align: 'center' } }
-    ],
-    el: [
-        { popover: { title: 'ΚΑΛΩΣΟΡΙΣΕΣ, ΠΡΑΚΤΟΡΑ', description: 'Ενεργοποιείται παράκαμψη συστήματος. Ας σου κάνουμε μια γρήγορη ξενάγηση στο CODEX Terminal.', side: "over", align: 'center' } },
-        { element: '.logo', popover: { title: 'ΕΛΕΓΧΟΣ ΤΑΥΤΟΤΗΤΑΣ', description: 'Πάτα το λογότυπο όποτε θες, για να δεις ποιος πραγματικά τρέχει αυτή την επιχείρηση.', side: "bottom", align: 'start' } },
-        { element: '#tab-live', popover: { title: 'LIVE DROPS', description: 'Εδώ θα βρεις τα διαθέσιμα, χειροποίητα gaming rigs, έτοιμα για παράδοση.', side: "bottom", align: 'start' } },
-        { element: '#tab-vault', popover: { title: 'LAST CALL', description: 'Πρόσβαση σε απόρρητα συστήματα που είναι είτε εξαντλημένα είτε έρχονται σύντομα. Πρόσεχε για θρυλικά drops.', side: "bottom", align: 'start' } },
-        { element: '#tab-vote', popover: { title: 'VOTE', description: 'Το δίκτυο ψηφίζει ποιο μυστηριώδες PC θα ξεκλειδωθεί για αγορά. Μόνο συνδεδεμένοι πράκτορες μπορούν να ψηφίσουν — αν δεν εξασφαλιστεί πριν λήξει ο χρόνος, μεταφέρεται αυτόματα στα Live Drops.', side: "bottom", align: 'start' } },
-        { element: '.cart-btn', popover: { title: 'Η ΛΕΙΑ ΣΟΥ', description: 'Ό,τι διαλέγεις μπαίνει εδώ. Δες το σύνολο και στείλε μας την παραγγελία κατευθείαν στο WhatsApp.', side: "bottom", align: 'end' } },
-        { element: '.cli-btn', popover: { title: 'ΤΟ ΤΕΡΜΑΤΙΚΟ', description: 'Πάτα εδώ ή το πλήκτρο [`] για να ανοίξεις τη γραμμή εντολών. Δοκίμασε να γράψεις "hack" μέσα.', side: "bottom", align: 'end' } },
-        { element: '.profile-btn', popover: { title: 'ΠΡΟΦΙΛ ΠΡΑΚΤΟΡΑ', description: 'Συνδέσου ή κάνε εγγραφή εδώ για να αποθηκεύσεις τη λίστα επιθυμιών σου, να παρακολουθείς το rank σου και να ξεκλειδώνεις έπαθλα.', side: "bottom", align: 'end' } },
-        { element: '[data-i18n-title="sideSettings"]', popover: { title: 'ΡΥΘΜΙΣΕΙΣ ΣΥΣΤΗΜΑΤΟΣ', description: 'Προσάρμοσε το χρώμα τονισμού σου εδώ.', side: "right", align: 'center' } },
-        { element: '[data-i18n-title="sideWheel"]', popover: { title: 'ΚΑΘΗΜΕΡΙΝΗ ΠΕΡΙΣΤΡΟΦΗ', description: 'Γύρνα τον τροχό μία φορά τη μέρα για να ξεκλειδώσεις premium χρώματα ή κουπόνι έκπτωσης.', side: "right", align: 'center' } },
-        { element: '#lang-toggle-btn', popover: { title: 'ΓΛΩΣΣΑ', description: 'Άλλαξε ανά πάσα στιγμή μεταξύ ελληνικών και αγγλικών — όλο το site ενημερώνεται αμέσως.', side: "right", align: 'center' } },
-        { element: isMobile() ? '.mobile-reviews-btn' : '.add-review-btn', popover: { title: 'ΚΩΔΙΚΟΙ ΑΠΟΣΤΟΛΗΣ', description: 'Βρήκες φυσικό κωδικό στο κουτί του PC σου; Καταχώρησέ τον εδώ για να επικυρώσεις το σύστημά σου και να ξεκλειδώσεις επιτεύγματα.', side: isMobile() ? "top" : "left", align: 'center' } }
-    ]
+const COPY = {
+    en: {
+        welcome: ['WELCOME AGENT', 'Initiating System Override. Let us give you a quick tour of the CODEX Terminal.'],
+        logo: ['IDENTITY CHECK', "Tap the logo anytime to see who's really running this operation."],
+        live: ['LIVE DROPS', 'Here you will find the currently available, custom-built gaming rigs ready for deployment.'],
+        vault: ['LAST CALL', 'Access classified systems that are either sold out or incoming. Keep an eye out for legendary drops.'],
+        vote: ['VOTE', "The network votes on which mystery PC gets unlocked for purchase. Only signed-in agents can vote — if it isn't secured before time runs out, it automatically moves to Live Drops."],
+        browsePhone: ['BROWSE SYSTEMS', 'Swipe the card left or right to see the next PC. Tap INSPECT SYSTEM for full specs, FPS and options.'],
+        browseDesktop: ['BROWSE SYSTEMS', 'Use the arrows either side of the card to see the next PC. INSPECT SYSTEM opens full specs, FPS and options.'],
+        cart: ['YOUR LOOT', 'Everything you pick lands here. Check your total, then send the order straight to us on WhatsApp.'],
+        cli: ['THE TERMINAL', 'Tap here (or press [`] on a keyboard) to open the command line. Try typing "hack" inside it.'],
+        profile: ['AGENT PROFILE', 'Sign in or register here to save your wishlist, track your rank, and unlock rewards.'],
+        settings: ['SYSTEM PREFERENCES', 'Customize your accent color here.'],
+        wheel: ['DAILY SPIN', 'Spin the wheel once a day for a chance to unlock premium accent colors or a discount coupon.'],
+        lang: ['LANGUAGE', 'Switch between Greek and English anytime. The button shows the language you\'ll switch TO — the whole site updates instantly.'],
+        reviews: ['MISSION CODES', 'Found a code in your PC box? Enter it here to leave a review — or to start a return if something\'s wrong.']
+    },
+    el: {
+        welcome: ['ΚΑΛΩΣΟΡΙΣΕΣ, ΠΡΑΚΤΟΡΑ', 'Ενεργοποιείται παράκαμψη συστήματος. Ας σου κάνουμε μια γρήγορη ξενάγηση στο CODEX Terminal.'],
+        logo: ['ΕΛΕΓΧΟΣ ΤΑΥΤΟΤΗΤΑΣ', 'Πάτα το λογότυπο όποτε θες, για να δεις ποιος πραγματικά τρέχει αυτή την επιχείρηση.'],
+        live: ['LIVE DROPS', 'Εδώ θα βρεις τα διαθέσιμα, χειροποίητα gaming rigs, έτοιμα για παράδοση.'],
+        vault: ['LAST CALL', 'Πρόσβαση σε απόρρητα συστήματα που είναι είτε εξαντλημένα είτε έρχονται σύντομα. Πρόσεχε για θρυλικά drops.'],
+        vote: ['VOTE', 'Το δίκτυο ψηφίζει ποιο μυστηριώδες PC θα ξεκλειδωθεί για αγορά. Μόνο συνδεδεμένοι πράκτορες μπορούν να ψηφίσουν — αν δεν εξασφαλιστεί πριν λήξει ο χρόνος, μεταφέρεται αυτόματα στα Live Drops.'],
+        browsePhone: ['ΠΕΡΙΗΓΗΣΗ', 'Σύρε την κάρτα αριστερά ή δεξιά για να δεις το επόμενο PC. Το ΕΠΙΘΕΩΡΗΣΗ ΣΥΣΤΗΜΑΤΟΣ δείχνει πλήρη specs, FPS και επιλογές.'],
+        browseDesktop: ['ΠΕΡΙΗΓΗΣΗ', 'Με τα βελάκια δεξιά κι αριστερά της κάρτας βλέπεις το επόμενο PC. Το ΕΠΙΘΕΩΡΗΣΗ ΣΥΣΤΗΜΑΤΟΣ δείχνει πλήρη specs, FPS και επιλογές.'],
+        cart: ['Η ΛΕΙΑ ΣΟΥ', 'Ό,τι διαλέγεις μπαίνει εδώ. Δες το σύνολο και στείλε μας την παραγγελία κατευθείαν στο WhatsApp.'],
+        cli: ['ΤΟ ΤΕΡΜΑΤΙΚΟ', 'Πάτα εδώ (ή το πλήκτρο [`] σε πληκτρολόγιο) για να ανοίξεις τη γραμμή εντολών. Δοκίμασε να γράψεις "hack" μέσα.'],
+        profile: ['ΠΡΟΦΙΛ ΠΡΑΚΤΟΡΑ', 'Συνδέσου ή κάνε εγγραφή εδώ για να αποθηκεύσεις τη λίστα επιθυμιών σου, να παρακολουθείς το rank σου και να ξεκλειδώνεις έπαθλα.'],
+        settings: ['ΡΥΘΜΙΣΕΙΣ ΣΥΣΤΗΜΑΤΟΣ', 'Προσάρμοσε το χρώμα τονισμού σου εδώ.'],
+        wheel: ['ΚΑΘΗΜΕΡΙΝΗ ΠΕΡΙΣΤΡΟΦΗ', 'Γύρνα τον τροχό μία φορά τη μέρα για να ξεκλειδώσεις premium χρώματα ή κουπόνι έκπτωσης.'],
+        lang: ['ΓΛΩΣΣΑ', 'Άλλαξε ανά πάσα στιγμή μεταξύ ελληνικών και αγγλικών. Το κουμπί δείχνει τη γλώσσα στην οποία θα ΠΑΣ — όλο το site ενημερώνεται αμέσως.'],
+        reviews: ['ΚΩΔΙΚΟΙ ΑΠΟΣΤΟΛΗΣ', 'Βρήκες κωδικό στο κουτί του PC σου; Βάλ\' τον εδώ για να γράψεις κριτική — ή για να ξεκινήσεις επιστροφή αν κάτι δεν πάει καλά.']
+    }
 };
+
+function buildSteps(lang) {
+    const c = COPY[lang];
+    const phone = isPhone();
+    const bar = hasBottomBar();
+    const step = (element, key, side, align = 'center') => ({
+        ...(element ? { element } : {}),
+        popover: { title: c[key][0], description: c[key][1], side, align }
+    });
+
+    const tabs = [
+        step('#tab-live', 'live', 'bottom', 'start'),
+        step('#tab-vault', 'vault', 'bottom', 'start'),
+        step('#tab-vote', 'vote', 'bottom', 'start')
+    ];
+    // The card sits mid-screen; "top" keeps the popover off the card it's describing
+    const browse = step('#carousel-wrapper', phone ? 'browsePhone' : 'browseDesktop', 'top');
+
+    const header = phone
+        ? [...tabs,
+           step('.logo', 'logo', 'bottom', 'start'),
+           step('.cli-btn', 'cli', 'bottom'),
+           step('.profile-btn', 'profile', 'bottom'),
+           step('.cart-btn-mobile', 'cart', 'bottom', 'end'),
+           browse]
+        : [step('.logo', 'logo', 'bottom', 'start'),
+           ...tabs,
+           step('.cart-btn', 'cart', 'bottom', 'end'),
+           step('.cli-btn', 'cli', 'bottom', 'end'),
+           step('.profile-btn', 'profile', 'bottom', 'end'),
+           browse];
+
+    // On the bottom bar a popover has to open upwards; on the desktop rail, to the right
+    const sideSide = bar ? 'top' : 'right';
+    const sidebar = [
+        step('[data-i18n-title="sideSettings"]', 'settings', sideSide),
+        step('[data-i18n-title="sideWheel"]', 'wheel', sideSide),
+        step('#lang-toggle-btn', 'lang', sideSide),
+        // .add-review-btn (desktop right sidebar) and .mobile-reviews-btn swap at 1024px, not 768px
+        step(bar ? '.mobile-reviews-btn' : '.add-review-btn', 'reviews', bar ? 'top' : 'left')
+    ];
+
+    return [step(null, 'welcome', 'over'), ...header, ...sidebar];
+}
 
 export function initInteractiveTutorial() {
     // Ελέγχουμε αν ο χρήστης (Agent) έχει ήδη ολοκληρώσει το tutorial στο παρελθόν
@@ -61,12 +118,7 @@ export function startTutorialTour(lang) {
         onDestroyed: () => {
             if (window.showToast) window.showToast(isEl ? 'Η ΞΕΝΑΓΗΣΗ ΟΛΟΚΛΗΡΩΘΗΚΕ' : 'ONBOARDING COMPLETE', 'achievement');
         },
-        // On phones the nav bar's CART is hidden in favour of the round button beside the profile
-        // (mobile.css) — point that step at the one actually on screen.
-        steps: STEPS[isEl ? 'el' : 'en'].map(step =>
-            step.element === '.cart-btn' && window.matchMedia('(max-width: 768px)').matches
-                ? { ...step, element: '.cart-btn-mobile' }
-                : step)
+        steps: buildSteps(isEl ? 'el' : 'en')
     });
 
     setTimeout(() => tour.drive(), 300);

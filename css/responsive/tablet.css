@@ -35,6 +35,22 @@
     .right-sidebar { display: none !important; position: fixed !important; top: auto !important; bottom: 80px !important; left: 50% !important; right: auto !important; transform: translateX(-50%) translateY(30px) scale(0.95); width: 95% !important; max-width: 400px; max-height: 60vh !important; background: rgba(10, 5, 20, 0.98) !important; backdrop-filter: blur(20px); border: 1px solid var(--neon-purple) !important; border-radius: 16px !important; z-index: 8500 !important; opacity: 0; pointer-events: none; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); flex-direction: column !important; box-shadow: 0 10px 40px rgba(0,0,0,0.9); }
     .right-sidebar.mobile-active { display: flex !important; transform: translateX(-50%) translateY(0) scale(1); opacity: 1; pointer-events: auto; }
 
+    /* Scroll affordance for the two sideways-scrolling strips (tab bar, bottom bar): fade the edge
+       that still has content past it. Classes toggled by js/ui/scroll-fade.js as you scroll, so the
+       fade clears once you reach that end. -webkit- because Safari only dropped the prefix in 15.4. */
+    .nav-bar.fade-right:not(.fade-left), .left-sidebar .side-group.fade-right:not(.fade-left) {
+        -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 56px), transparent);
+                mask-image: linear-gradient(to right, #000 calc(100% - 56px), transparent);
+    }
+    .nav-bar.fade-left:not(.fade-right), .left-sidebar .side-group.fade-left:not(.fade-right) {
+        -webkit-mask-image: linear-gradient(to right, transparent, #000 56px);
+                mask-image: linear-gradient(to right, transparent, #000 56px);
+    }
+    .nav-bar.fade-left.fade-right, .left-sidebar .side-group.fade-left.fade-right {
+        -webkit-mask-image: linear-gradient(to right, transparent, #000 56px, #000 calc(100% - 56px), transparent);
+                mask-image: linear-gradient(to right, transparent, #000 56px, #000 calc(100% - 56px), transparent);
+    }
+
     .yg-card-container { width: 95%; height: 80vh; max-height: 750px; }
     .yg-buttons-section { grid-template-columns: 1fr; }
     .starter-menu { flex-direction: column; align-items: center; }
