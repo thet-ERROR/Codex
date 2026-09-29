@@ -13,13 +13,14 @@
        .right-header-group lets its buttons sit in the header's grid directly, either side of the
        logo, without touching the HTML (so the desktop header is unaffected).
 
-       The four sit as ONE evenly spaced group, centred as a whole. Pinning the logo to the exact
-       centre left one button on its left and two on its right, which read as lopsided. The outer 1fr
+       The four sit as ONE evenly spaced group, centred as a whole, logo first and the three round
+       buttons after it. Pinning the logo to the exact centre left one button on its left and two on
+       its right, which read as lopsided; logo-then-buttons keeps the three identical circles together. The outer 1fr
        columns soak up the leftover width equally on both sides; the nav strip spans them all, and
        since items spanning a flexible track don't feed into auto-track sizing, its 100vw width
        doesn't stretch the four button columns. The faint bottom border is dropped — on a phone it
        only read as a stray line floating in the gap. */
-    header { display: grid !important; grid-template-columns: 1fr auto auto auto auto 1fr !important; grid-template-areas: "nav nav nav nav nav nav" ". cli logo profile cart ." !important; align-items: center !important; column-gap: 18px !important; row-gap: 4px !important; padding: 10px 0 4px 0 !important; height: auto !important; position: relative !important; border-bottom: none !important; }
+    header { display: grid !important; grid-template-columns: 1fr auto auto auto auto 1fr !important; grid-template-areas: "nav nav nav nav nav nav" ". logo cli profile cart ." !important; align-items: center !important; column-gap: 18px !important; row-gap: 4px !important; padding: 10px 0 4px 0 !important; height: auto !important; position: relative !important; border-bottom: none !important; }
     header .logo { grid-area: logo !important; height: 60px !important; margin: 0 !important; }
     header .right-header-group { display: contents !important; }
     header .cli-btn { grid-area: cli !important; }
