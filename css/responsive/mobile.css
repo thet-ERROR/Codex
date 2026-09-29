@@ -80,6 +80,10 @@
     .system-select-label { font-size: 1rem !important; letter-spacing: 3px !important; margin-bottom: 10px !important; }
     #main-card, .holo-card { padding: 15px !important; }
     .hero-img-frame { height: 140px !important; margin: 0 auto 6px auto !important; }
+    /* Carousel arrows centred on the photo instead of the whole card — at the card's midpoint they
+       sat right on top of the lore text. 85px = card padding (15) + half the photo frame (140/2);
+       tablet.css already shifts them up by half their own height. Keep in step with those two. */
+    .nav-arrow { top: 85px !important; }
     .pc-title { font-size: 1.7rem !important; margin-bottom: 3px !important; }
     .card-price-row { margin-bottom: 8px !important; }
     .pc-price { font-size: 1.4rem !important; }
@@ -87,6 +91,9 @@
     .sys-brief { padding: 10px !important; margin-bottom: 10px !important; }
     .sys-brief-title { font-size: 0.8rem !important; margin-bottom: 4px !important; }
     .sys-brief-text { font-size: 0.75rem !important; line-height: 1.4 !important; }
+    /* Seven lines of lore pushed INSPECT SYSTEM — the card's main button — under the bottom bar.
+       Three lines plus a "more" toggle (renderCard in js/modules/catalog.js) keeps it on screen. */
+    .sys-brief:not(.expanded) .sys-brief-text { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; line-clamp: 3; overflow: hidden; }
     .btn-card-inspect { padding: 11px !important; font-size: 0.9rem !important; margin-top: 3px !important; }
     .btn-card-compare { padding: 8px !important; margin-top: 6px !important; }
 }

@@ -11,6 +11,7 @@ import { initTerminal, initMatrix } from './modules/terminal.js';
 import { initInteractiveTutorial } from './modules/tutorial.js';
 import { initDayNightCycle } from './modules/time.js';
 import { initStageFit } from './modules/stagefit.js';
+import { initScrollFades } from './ui/scroll-fade.js';
 import { applyLanguage } from './i18n.js';
 
 import './modules/gallery.js';
@@ -238,6 +239,7 @@ const initApp = async () => {
         // a viewport too short for it (a laptop at 125% OS scale with browser chrome, i.e. anyone
         // not in fullscreen) this scales the stage down uniformly to fit. No-op when it already fits.
         initStageFit();
+        initScrollFades();
     } catch (e) {
         console.error("⛔ UI HYDRATION FAILED", e);
     } finally {
