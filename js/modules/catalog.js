@@ -77,12 +77,13 @@ export function prevPC() {
 export function renderCard() { 
     const c = document.getElementById('main-card'); 
     if (!c) return;
-    if (!state.filtered.length) { 
-        c.innerHTML = "<h3>NO SIGNAL</h3>"; 
-        return; 
-    } 
-    
-    const pc = state.filtered[state.index]; 
+    updateSwipeHint(); // before the early return, so an empty list hides it too
+    if (!state.filtered.length) {
+        c.innerHTML = "<h3>NO SIGNAL</h3>";
+        return;
+    }
+
+    const pc = state.filtered[state.index];
     const inCompare = state.compareList.find(p => p._id === pc._id); 
     const stock = pc.stock || 0;
     
@@ -164,7 +165,18 @@ export function renderCard() {
 // alone, and passive listeners mean this never delays scrolling. A browser suppresses the click on
 // release after a swipe like this, so INSPECT/wishlist taps aren't triggered by accident.
 const SWIPE_MIN_PX = 50;
+const SWIPE_LEARNED_KEY = 'codex_swipe_learned';
 let touchStartX = 0, touchStartY = 0, touchTracking = false;
+
+// The phone-only "swipe" hint (index.html, styled in mobile.css) teaches a gesture — once someone
+// has swiped, it has done its job and would only be clutter. Also pointless with nothing to swipe to.
+function updateSwipeHint() {
+    const hint = document.getElementById('swipe-hint');
+    if (!hint) return;
+    let learned = false;
+    try { learned = localStorage.getItem(SWIPE_LEARNED_KEY) === '1'; } catch (e) {}
+    hint.classList.toggle('hidden', learned || state.filtered.length < 2);
+}
 
 function slideCard(dir) {
     const card = document.getElementById('main-card');
@@ -191,6 +203,7 @@ function initCardSwipe() {
         if (Math.abs(dx) < SWIPE_MIN_PX || Math.abs(dx) < Math.abs(dy) * 1.5) return;
         if (state.filtered.length < 2) return;
         if (window.playClick) window.playClick();
+        try { localStorage.setItem(SWIPE_LEARNED_KEY, '1'); } catch (e) {}
         if (dx < 0) { nextPC(); slideCard(1); } else { prevPC(); slideCard(-1); }
     }, { passive: true });
 }

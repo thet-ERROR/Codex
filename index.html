@@ -149,6 +149,9 @@ Type 'help' for a list of commands.
             <button class="nav-arrow" onclick="playClick(); prevPC()"><i class="ph-bold ph-caret-left"></i></button>
             <div id="main-card"></div>
             <button class="nav-arrow" onclick="playClick(); nextPC()"><i class="ph-bold ph-caret-right"></i></button>
+            <!-- Phones only, in place of the arrows (mobile.css). Hidden for good once the visitor has
+                 swiped once, and whenever there's only one PC to show — see initCardSwipe(). -->
+            <div class="swipe-hint hidden" id="swipe-hint" aria-hidden="true"><i class="ph-bold ph-hand-swipe-left"></i></div>
         </div>
 
         <div class="starter-menu hidden" id="starter-menu">
@@ -631,9 +634,11 @@ Type 'help' for a list of commands.
     </div>
 
     <div class="modal-overlay" id="compare-modal">
-        <div class="modal-content" style="width:1200px;">
+        <!-- Was an inline width:1200px — wider than any phone, which is why the comparison came out
+             cropped. Sized in css/components/compare.css; content built by renderComparison(). -->
+        <div class="modal-content compare-box">
             <span class="close-modal" onclick="playClick(); closeModal('compare-modal')">X</span>
-            <h2 style="text-align:center;" data-i18n="compareTitle">VS MODE</h2>
+            <h2 class="vs-title" data-i18n="compareTitle">VS MODE</h2>
             <div class="compare-grid" id="compare-grid"></div>
         </div>
     </div>

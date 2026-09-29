@@ -91,6 +91,7 @@ const translations = {
         helpText: "Για ερωτήσεις σχετικά με παραγγελίες, εγγύηση ή τεχνική υποστήριξη, επικοινωνήστε στο <strong>d.codexphoenix@gmail.com</strong> ή μέσω του chat κάτω αριστερά.",
 
         cartYourLoot: "Η λεία σου", cartTotalLabel: "Σύνολο", cartCheckoutBtn: "Στείλε την παραγγελία στο WhatsApp",
+        compareSpecs: "Προδιαγραφές", compareFps: "Απόδοση (FPS)", compareView: "Δες το",
         briefMore: "Περισσότερα ▾", briefLess: "Λιγότερα ▴",
         cartHintTitle: "Προστέθηκε στο καλάθι", cartHintText: "Το καλάθι σου είναι εδώ — πάτα όποτε είσαι έτοιμος.",
         tickerDelivery: "⚡ Ασφαλής παράδοση 24H σε όλη τη Θεσσαλονίκη ⚡", tickerAssembled: "Συστήματα πλήρως συναρμολογημένα & ελεγμένα",
@@ -224,6 +225,7 @@ const translations = {
         helpText: "For questions about orders, warranty, or technical support, contact us at <strong>d.codexphoenix@gmail.com</strong> or via the chat in the bottom left.",
 
         cartYourLoot: "YOUR LOOT", cartTotalLabel: "TOTAL", cartCheckoutBtn: "SEND YOUR ORDER ON WHATSAPP",
+        compareSpecs: "SPECS", compareFps: "PERFORMANCE (FPS)", compareView: "VIEW",
         briefMore: "MORE ▾", briefLess: "LESS ▴",
         cartHintTitle: "ADDED TO CART", cartHintText: "Your cart is right here — tap it whenever you're ready.",
         tickerDelivery: "⚡ 24H SECURE DELIVERY ACROSS SKG ⚡", tickerAssembled: "SYSTEMS FULLY ASSEMBLED & TESTED",

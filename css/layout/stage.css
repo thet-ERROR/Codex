@@ -37,6 +37,9 @@ body.night-mode #main-card, body.night-mode .holo-card { background: var(--card-
 .btn-card-compare:hover { background: rgba(204, 255, 0, 0.1); color: #fff; border-style: solid; box-shadow: 0 0 10px var(--neon-green); }
 .btn-card-compare.selected { background: var(--neon-green); color: #000; border: 1px solid var(--neon-green); font-weight: bold; box-shadow: 0 0 15px var(--neon-green); }
 
+/* Phone-only swipe hint (shown and styled in mobile.css); never on desktop */
+.swipe-hint { display: none; }
+
 /* Swipe feedback — the new card slides in from the side it came from (initCardSwipe, catalog.js) */
 @keyframes cardInFromRight { from { opacity: 0.2; transform: translateX(40px); } to { opacity: 1; transform: translateX(0); } }
 @keyframes cardInFromLeft  { from { opacity: 0.2; transform: translateX(-40px); } to { opacity: 1; transform: translateX(0); } }
