@@ -123,8 +123,19 @@ export function requestReturn() {
         case "4": reasonText = "Other Critical Error"; break; 
     }
     
-    const msg = `🚨 **RETURN SIGNAL** 🚨%0A%0A📦 **System:** ${pcName}%0A🎫 **Code:** ${state.currentTicketCode}%0A⚠️ **Reason:** ${reasonText}%0A%0AWaiting for authorization...`;
-    window.open(`https://wa.me/${CONFIG.WHATSAPP_NUM}?text=${msg}`, '_blank');
+    // Built as plain text and encoded once. The old version hand-wrote %0A for newlines and
+    // interpolated the PC name raw, so an "&" or "#" in a build's name cut the message off at that
+    // character. WhatsApp bold is a single *asterisk* — the **double** form showed up literally.
+    const msg = [
+        '🚨 *RETURN SIGNAL* 🚨',
+        '',
+        `📦 *System:* ${pcName}`,
+        `🎫 *Code:* ${state.currentTicketCode}`,
+        `⚠️ *Reason:* ${reasonText}`,
+        '',
+        'Waiting for authorization...'
+    ].join('\n');
+    window.open(`https://wa.me/${CONFIG.WHATSAPP_NUM}?text=${encodeURIComponent(msg)}`, '_blank');
 }
 
 export function renderGlobalReviews() {

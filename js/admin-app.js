@@ -150,9 +150,49 @@
         const g=document.getElementById('fps-game').value, s=document.getElementById('fps-score').value;
         if(s) { currentFPS.push({game:g, score:s}); renderTags(); }
     }
-    function addReview() {
-        const u=document.getElementById('rev-user').value, t=document.getElementById('rev-text').value, r=document.getElementById('rev-rating').value;
-        if(u&&t) { currentReviews.push({user:u, text:t, rating:r, date:new Date()}); renderTags(); }
+    // On an EXISTING PC, reviews go straight to the API one at a time — the save button no longer
+    // sends them (it used to send the whole stale array and wipe any customer review posted while
+    // the form was open). On a PC not created yet there's nothing to call, so they're held locally
+    // and go out with the create request.
+    async function addReview() {
+        const u = document.getElementById('rev-user').value.trim();
+        const t = document.getElementById('rev-text').value.trim();
+        const r = parseInt(document.getElementById('rev-rating').value) || 5;
+        if (!u || !t) return;
+        if (!editId) { currentReviews.push({ user: u, text: t, rating: r, date: new Date() }); renderTags(); return; }
+        try {
+            const res = await fetch(`${API}/drops/${editId}/reviews`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${TOKEN}` },
+                body: JSON.stringify({ user: u, text: t, rating: r })
+            });
+            if (handleAuthError(res)) return;
+            const d = await res.json();
+            if (!res.ok) return alert(d.error || 'ERROR ADDING REVIEW');
+            currentReviews = d.reviews; renderTags();
+            // Keep the cached inventory in step, or re-opening EDIT before the next reload shows the old list
+            const cached = inventory.find(p => p._id === editId);
+            if (cached) cached.reviews = d.reviews;
+        } catch (e) { alert('NETWORK ERROR'); }
+    }
+
+    async function removeReview(i) {
+        const review = currentReviews[i];
+        if (!review) return;
+        if (!editId || !review._id) { currentReviews.splice(i, 1); renderTags(); return; }
+        if (!confirm(`Delete review by "${review.user}"?`)) return;
+        try {
+            const res = await fetch(`${API}/drops/${editId}/reviews/${review._id}`, {
+                method: 'DELETE', headers: { 'Authorization': `Bearer ${TOKEN}` }
+            });
+            if (handleAuthError(res)) return;
+            const d = await res.json();
+            if (!res.ok) return alert(d.error || 'ERROR REMOVING REVIEW');
+            currentReviews = d.reviews; renderTags();
+            // Keep the cached inventory in step, or re-opening EDIT before the next reload shows the old list
+            const cached = inventory.find(p => p._id === editId);
+            if (cached) cached.reviews = d.reviews;
+        } catch (e) { alert('NETWORK ERROR'); }
     }
     // currentReviews is loaded straight from the PC being edited, so r.user is whatever a customer
     // typed when redeeming a mission code — the same untrusted text the storefront escapes.
@@ -163,6 +203,22 @@
 
     // --- EXTRAS HELPERS ---
     const $ = id => document.getElementById(id);
+
+    // --- PRICE FIELDS ---
+    // The API stores integer cents (priceCents); the admin types euros. A comma is accepted as the
+    // decimal separator because that's what a Greek keyboard produces ("449,99").
+    // Returns undefined for an empty box and NaN for something that isn't a price.
+    function inputToCents(value) {
+        const s = String(value ?? '').trim().replace(/\s|€/g, '').replace(',', '.');
+        if (!s) return undefined;
+        const n = Number(s);
+        return Number.isFinite(n) && n >= 0 ? Math.round(n * 100) : NaN;
+    }
+    // Falls back to the legacy free-text price for anything the backend hasn't backfilled yet.
+    function centsToInput(cents, legacy) {
+        if (Number.isFinite(cents)) return (cents / 100).toFixed(2).replace(/\.00$/, '').replace('.', ',');
+        return legacy || '';
+    }
 
     // <input type="datetime-local"> has no timezone of its own — "2024-01-01T10:00" is read/written
     // as the BROWSER's local time. Sending that raw string to the backend meant Mongoose re-parsed
@@ -245,9 +301,10 @@
     function edit(id) {
         const pc = inventory.find(i=>i._id===id); if(!pc) return;
         fillOptions(pc);
-       ['name','price','stock','description','lore','loreEl','multitasking','status','category'].forEach(k => {
+       ['name','stock','description','lore','loreEl','multitasking','status','category'].forEach(k => {
     if(document.getElementById(k)) document.getElementById(k).value = pc[k]||'';
 });
+        $('price').value = centsToInput(pc.priceCents, pc.price);
         ['cpu','gpu','ram','ssd','mobo','psu','case'].forEach(k => document.getElementById(k).value = pc.specs[k]||'');
         ['cpu','gpu','ram','ssd','mobo','psu','case'].forEach(k => {
             const el = document.getElementById('specInfo-' + k);
@@ -280,9 +337,14 @@
         const imgInput = document.getElementById('imageUrl').value.trim();
         const imgs = imgInput ? [imgInput] : [];
 
+        const priceCents = inputToCents($('price').value);
+        if (priceCents === undefined || Number.isNaN(priceCents)) {
+            return alert("ΤΙΜΗ: βάλε έγκυρο ποσό σε ευρώ (π.χ. 449 ή 449,99).");
+        }
+
 const data = {
             name: document.getElementById('name').value,
-            price: document.getElementById('price').value,
+            priceCents,
             stock: document.getElementById('stock').value,
             category: document.getElementById('category').value,
             status: document.getElementById('status').value,
@@ -310,9 +372,11 @@ const data = {
                 case: document.getElementById('specInfo-case').value
             },
             fps: currentFPS,
-            reviews: currentReviews,
             options: collectOptions()
         };
+        // Only on create. On update the API ignores `reviews` anyway (see PUT /api/drops/:id) —
+        // omitting it here just makes that explicit.
+        if (!editId) data.reviews = currentReviews;
 
         // A paint option with no colour name renders as a nameless toggle on the storefront
         if (data.options.paint.enabled && !data.options.paint.colorName && !data.options.paint.colorNameEl) {
@@ -354,7 +418,7 @@ const data = {
             const res=await fetch(`${API}/vote-event`, { headers:{'Authorization':`Bearer ${TOKEN}`} }); const v=await res.json();
             if(v.title) {
                 document.getElementById('v-title').value=v.title;
-                document.getElementById('v-price').value=v.price || '';
+                document.getElementById('v-price').value = centsToInput(v.priceCents, v.price);
                 document.getElementById('v-target').value=v.targetVotes;
                 document.getElementById('v-days').value=v.durationDays;
                 document.getElementById('v-imageUrl').value = v.image || '';
@@ -378,6 +442,9 @@ const data = {
         // Παίρνουμε το Link απευθείας από το Text Box για το Vote Event!
         const imgInput = document.getElementById('v-imageUrl').value.trim();
         const startISO = localInputToISO(document.getElementById('v-start').value);
+        // Optional on a vote drop — it's an estimate, and an empty box stays "TBD" on the card
+        const votePriceCents = inputToCents($('v-price').value);
+        if (Number.isNaN(votePriceCents)) return alert("ΤΙΜΗ: βάλε έγκυρο ποσό σε ευρώ ή άφησέ το κενό.");
         if (!startISO) return alert("Βάλε ημερομηνία/ώρα έναρξης — χωρίς αυτήν το countdown δεν ξεκινάει ποτέ.");
 
         // The API replaces the event wholesale, which now also clears the one-vote-per-account
@@ -386,7 +453,7 @@ const data = {
 
         const data = {
             title: document.getElementById('v-title').value,
-            price: document.getElementById('v-price').value,
+            priceCents: votePriceCents,
             image: imgInput,
             targetVotes: document.getElementById('v-target').value,
             startDate: startISO,
@@ -531,7 +598,7 @@ const data = {
             const i = Number(el.dataset.index);
             if (Number.isNaN(i)) return;
             if (el.dataset.list === 'fps') { currentFPS.splice(i, 1); renderTags(); }
-            if (el.dataset.list === 'review') { currentReviews.splice(i, 1); renderTags(); }
+            if (el.dataset.list === 'review') removeReview(i);
             if (el.dataset.list === 'vote-fps') { currentVoteFPS.splice(i, 1); renderVoteFPS(); }
         };
         delegate('fps-area', removeTag);

@@ -3,7 +3,7 @@ import { state } from '../state.js';
 import { CONFIG } from '../config.js';
 import { t } from '../i18n.js';
 import { getBreakdown, getActiveImages } from './gallery.js';
-import { esc, escUrl } from '../utils.js';
+import { esc, escUrl, formatPrice } from '../utils.js';
 
 // Matches css/components/cart.css's declared width — the dropdown is display:none until .show
 // is added, so offsetWidth reads 0 at the point this needs it. Keep the two in sync if that ever
@@ -67,11 +67,11 @@ export function updateCartUI() {
         if(items) items.innerHTML = '<div style="color:#666; text-align:center; padding:20px; font-size:0.9rem;">CART IS EMPTY</div>'; 
     } else { 
         if(items) items.innerHTML = state.cart.map((item, i) => {
-            total += item.price;
+            total += item.priceCents;
             // item.options is the current shape; item.option is the pre-extras string kept so
             // carts already sitting in localStorage still render after this update.
             const optHTML = Array.isArray(item.options) && item.options.length
-                ? item.options.map(o => `<div class="mc-opt">+ ${esc(o.label)} <span class="mc-opt-price">+€${o.price}</span></div>`).join('')
+                ? item.options.map(o => `<div class="mc-opt">+ ${esc(o.label)} <span class="mc-opt-price">+${formatPrice(o.priceCents)}</span></div>`).join('')
                 : `<div class="mc-opt">${esc(item.option || t('cartOptStandard'))}</div>`;
 
             return `<div class="mini-cart-item">
@@ -79,14 +79,14 @@ export function updateCartUI() {
                         <div class="mc-details">
                             <div class="mc-name">${esc(item.name)}</div>
                             ${optHTML}
-                            <div class="mc-price">€${item.price}</div>
+                            <div class="mc-price">${formatPrice(item.priceCents)}</div>
                         </div>
                         <i class="ph-bold ph-x mc-remove" onclick="removeFromCart(${i})"></i>
                     </div>`;
         }).join('');
-    } 
+    }
     const mcTotal = document.getElementById('mc-total');
-    if(mcTotal) mcTotal.innerText = "€" + total; 
+    if(mcTotal) mcTotal.innerText = formatPrice(total);
 }
 
 export function addToCart() {
@@ -98,9 +98,10 @@ export function addToCart() {
 
     state.cart.push({
         name: pc.name,
-        basePrice: base,
-        price: total,
-        options: lines.map(l => ({ label: l.label, price: l.price })),
+        // getBreakdown() works in cents throughout — see gallery.js
+        basePriceCents: base,
+        priceCents: total,
+        options: lines.map(l => ({ label: l.label, priceCents: l.price })),
         // build.paint only ever goes true through the consent modal's Accept button, so this
         // doubles as "the personalisation terms were accepted" for the order message.
         paintAck: !!state.build.paint,
@@ -138,15 +139,15 @@ export function handleCheckout() {
     const msg = [t('orderMsgIntro'), ''];
     let total = 0;
     state.cart.forEach((item, i) => {
-        total += item.price;
-        msg.push(`${i + 1}. ${item.name} — €${item.price}`);
+        total += item.priceCents;
+        msg.push(`${i + 1}. ${item.name} — ${formatPrice(item.priceCents)}`);
         if (Array.isArray(item.options)) {
-            item.options.forEach(o => msg.push(`   • ${o.label} (+€${o.price})`));
+            item.options.forEach(o => msg.push(`   • ${o.label} (+${formatPrice(o.priceCents)})`));
         } else if (item.option) {
             msg.push(`   • ${item.option}`);
         }
     });
-    msg.push('', `${t('orderMsgTotal')}: €${total}`);
+    msg.push('', `${t('orderMsgTotal')}: ${formatPrice(total)}`);
     if (state.cart.some(item => item.paintAck)) msg.push('', `✔ ${t('orderMsgPaintAck')}`);
 
     window.open(`https://wa.me/${CONFIG.WHATSAPP_NUM}?text=${encodeURIComponent(msg.join('\n'))}`, "_blank");

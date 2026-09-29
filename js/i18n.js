@@ -113,6 +113,8 @@ const translations = {
         toastVerificationSent: "📧 Το email επιβεβαίωσης στάλθηκε — έλεγξε τα εισερχόμενά σου",
         // Cooldown πάνω στο "resend" — βλ. RESEND_COOLDOWN_MS στο js/modules/auth.js
         toastResendCooldown: "Περίμενε {s}s πριν ζητήσεις άλλο email",
+        // Boot — βλ. BOOT_BUDGET_MS στο js/main.js
+        bootWakingServer: "ΕΝΕΡΓΟΠΟΙΗΣΗ SERVER...", bootDataArrived: "Ο ΚΑΤΑΛΟΓΟΣ ΦΟΡΤΩΘΗΚΕ",
         dossierResendBtn: "ΕΠΑΝΑΠΟΣΤΟΛΗ EMAIL", dossierResendCountdown: "ΕΠΑΝΑΠΟΣΤΟΛΗ ΣΕ {s}s",
 
         alertBothFields: "Προσοχή: Συμπλήρωσε όνομα χρήστη και κωδικό", alertInvalidCreds: "Λανθασμένα στοιχεία σύνδεσης",
@@ -237,6 +239,8 @@ const translations = {
         toastVerificationSent: "📧 VERIFICATION EMAIL SENT — CHECK YOUR INBOX",
         // Cooldown on the "resend" button — see RESEND_COOLDOWN_MS in js/modules/auth.js
         toastResendCooldown: "WAIT {s}s BEFORE RESENDING",
+        // Boot — see BOOT_BUDGET_MS in js/main.js
+        bootWakingServer: "WAKING UP SERVER...", bootDataArrived: "CATALOGUE LOADED",
         dossierResendBtn: "RESEND EMAIL", dossierResendCountdown: "RESEND IN {s}s",
 
         alertBothFields: "SYSTEM ALERT: ENTER BOTH USERNAME & PASSWORD", alertInvalidCreds: "ACCESS DENIED: INVALID CREDENTIALS",

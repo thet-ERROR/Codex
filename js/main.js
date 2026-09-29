@@ -60,25 +60,70 @@ window.setTheme = (color, id) => {
     document.documentElement.style.setProperty('--neon-green', color);
 };
 
+// --- BOOT BUDGET ---
+// The splash used to wait on six API calls made one after another, with no timeout on any of them.
+// On a cold Render instance the first call alone takes ~50s, and if any call hung — or anything
+// threw between them — the splash never left at all. Now the whole boot shares one deadline: past
+// it the site renders with what it has, and whatever arrives late is applied when it lands.
+const BOOT_BUDGET_MS = 10000;
+let bootDeadline = 0;
+function withinBudget(promise) {
+    const remaining = Math.max(0, bootDeadline - Date.now());
+    return Promise.race([
+        promise,
+        new Promise((_, reject) => setTimeout(() => reject(new Error('boot-timeout')), remaining))
+    ]);
+}
+
+function applyStatus(status) {
+    if (!status) return;
+    if (typeof status.proConfigPrice === 'number') state.proConfigPrice = status.proConfigPrice;
+    if (typeof status.voteInfoText === 'string') state.voteInfoText = status.voteInfoText;
+    if (typeof status.voteInfoTextEl === 'string') state.voteInfoTextEl = status.voteInfoTextEl;
+}
+
+function showMaintenance(status) {
+    const overlay = document.getElementById('startup-overlay');
+    const startupText = document.getElementById('startup-text');
+    if (overlay) { overlay.classList.remove('hidden'); overlay.classList.add('maintenance-active'); }
+    if (startupText) startupText.innerText = status.message || "SYSTEM UNDER MAINTENANCE";
+}
+
 // --- SYSTEM INITIALIZATION SEQUENCE ---
 const initApp = async () => {
     console.log(">> SYSTEM INITIALIZING. WAITING FOR MODULES...");
+    bootDeadline = Date.now() + BOOT_BUDGET_MS;
+
+    // Started up front and in parallel rather than one after another — the catalogue doesn't depend
+    // on the session or the status call, so there's no reason for it to queue behind them.
+    // The .catch() handlers only silence "unhandled rejection" noise; each is still awaited below.
+    const statusPromise = api.checkStatus();
+    const dataPromise = Promise.all([api.fetchDrops(), api.fetchVoteEvent()]);
+    statusPromise.catch(() => {});
+    dataPromise.catch(() => {});
+
+    // A cold start is otherwise indistinguishable from a broken site — say what's happening.
+    const startupText = document.getElementById('startup-text');
+    const slowNotice = setTimeout(() => {
+        if (startupText) startupText.innerText = window.t ? window.t('bootWakingServer') : 'WAKING UP SERVER...';
+    }, 4000);
 
     // 0. Maintenance Kill Switch Check
     try {
-        const status = await api.checkStatus();
+        const status = await withinBudget(statusPromise);
         if (status.maintenance) {
-            const overlay = document.getElementById('startup-overlay');
-            const startupText = document.getElementById('startup-text');
-            if (overlay) overlay.classList.add('maintenance-active');
-            if (startupText) startupText.innerText = status.message || "SYSTEM UNDER MAINTENANCE";
+            clearTimeout(slowNotice);
+            showMaintenance(status);
             return; // never hides #startup-overlay, never renders the rest of the site
         }
-        if (typeof status.proConfigPrice === 'number') state.proConfigPrice = status.proConfigPrice;
-        if (typeof status.voteInfoText === 'string') state.voteInfoText = status.voteInfoText;
-        if (typeof status.voteInfoTextEl === 'string') state.voteInfoTextEl = status.voteInfoTextEl;
+        applyStatus(status);
     } catch (e) {
-        // Network/API error: fail open, proceed with normal boot (state keeps the CONFIG default)
+        // Out of budget or network error: fail open and boot normally. If the answer turns up later
+        // and says maintenance, honour it then instead of never finding out.
+        statusPromise.then(s => {
+            if (s && s.maintenance) showMaintenance(s);
+            else applyStatus(s);
+        }).catch(() => {});
     }
 
     // 0.5 Email verification — the emailed link points here with ?verify=<token>. This POSTs the
@@ -127,7 +172,9 @@ const initApp = async () => {
     // 1. Setup Auth & Listeners
     // Runs after the ?verify= step above, so an agent who just confirmed their email has
     // 'identity_confirmed' in the profile this call fetches rather than one page load later.
-    await checkSavedSession();
+    // Bounded like everything else: if it runs out of budget it keeps going in the background and
+    // updates the profile whenever /api/me answers — it just no longer holds the splash hostage.
+    await withinBudget(checkSavedSession()).catch(() => {});
 
     // Local clock on purpose — the badge is about when the agent is browsing, not about UTC
     const hour = new Date().getHours();
@@ -148,46 +195,61 @@ const initApp = async () => {
     }, { once: true });
 
     // 4. Connect to Codex Database (Backend)
-    try {
-        const drops = await api.fetchDrops();
-        const voteEvent = await api.fetchVoteEvent();
-        
-        state.inventory = drops || [];
+    // Array.isArray, not `|| []`: during maintenance /api/drops answers with a JSON object, and
+    // filterInv() calls .filter() on whatever lands here.
+    const applyData = ([drops, voteEvent]) => {
+        state.inventory = Array.isArray(drops) ? drops : [];
         state.activeEvent = voteEvent || null;
+    };
+    let voteTimerStarted = false;
+    const hydrate = () => {
+        filterInv();
+        renderGlobalReviews();
+        if (state.activeEvent && state.activeEvent.title) {
+            renderVoteState();
+            if (!voteTimerStarted) { setInterval(updateTimer, 1000); voteTimerStarted = true; }
+        } else {
+            const vTitle = document.getElementById('v-title');
+            const vBtn = document.getElementById('v-btn');
+            if (vTitle) vTitle.innerText = "NO ACTIVE VOTE";
+            if (vBtn) vBtn.disabled = true;
+        }
+    };
+
+    try {
+        applyData(await withinBudget(dataPromise));
     } catch (e) {
-        console.error("⛔ CRITICAL ERROR: API BOOT FAILED", e);
+        console.error("⛔ API BOOT SLOW OR FAILED — rendering now, filling in when it answers", e);
+        // Late arrival: the site is already on screen by then, so fill it in rather than drop it
+        dataPromise.then(result => {
+            applyData(result);
+            hydrate();
+            if (window.showToast) window.showToast(window.t ? window.t('bootDataArrived') : 'CATALOGUE LOADED', 'normal');
+        }).catch(err => console.error("⛔ API BOOT FAILED", err));
     }
 
-    // 5. Hydrate UI (Φόρτωση δεδομένων στα γραφικά)
-    filterInv(); 
-    updateCartUI(); 
-    renderGlobalReviews(); 
-    initMatrix();
-
-    if (state.activeEvent && state.activeEvent.title) { 
-        renderVoteState(); 
-        setInterval(updateTimer, 1000); 
-    } else { 
-        const vTitle = document.getElementById('v-title');
-        const vBtn = document.getElementById('v-btn');
-        if (vTitle) vTitle.innerText = "NO ACTIVE VOTE";
-        if (vBtn) vBtn.disabled = true;
+    // 5 + 6. Hydrate UI, then remove the splash. The finally is what guarantees the splash leaves:
+    // previously any exception thrown while hydrating left it covering the page forever.
+    try {
+        hydrate();
+        updateCartUI();
+        initMatrix();
+        // Last, once the real card content is in the DOM — the layout has no scroll by design, so on
+        // a viewport too short for it (a laptop at 125% OS scale with browser chrome, i.e. anyone
+        // not in fullscreen) this scales the stage down uniformly to fit. No-op when it already fits.
+        initStageFit();
+    } catch (e) {
+        console.error("⛔ UI HYDRATION FAILED", e);
+    } finally {
+        clearTimeout(slowNotice);
+        const overlay = document.getElementById('startup-overlay');
+        const bar = document.getElementById('loader-fill');
+        setTimeout(() => { if (bar) bar.style.width = "100%"; }, 500);
+        setTimeout(() => {
+            if (overlay) overlay.classList.add('hidden');
+            initInteractiveTutorial();
+        }, 1500);
     }
-
-    // Last, once the real card content is in the DOM — the layout has no scroll by design, so on a
-    // viewport too short for it (a laptop at 125% OS scale with browser chrome, i.e. anyone not in
-    // fullscreen) this scales the stage down uniformly to fit. No-op when it already fits.
-    initStageFit();
-
-    // 6. Remove Splash Screen & Run Tutorial
-    const overlay = document.getElementById('startup-overlay');
-    const bar = document.getElementById('loader-fill');
-    
-    setTimeout(() => { if (bar) bar.style.width = "100%"; }, 500);
-    setTimeout(() => { 
-        if (overlay) overlay.classList.add('hidden'); 
-        initInteractiveTutorial();
-    }, 1500);
 };
 
 // Εκκίνηση μόλις το DOM είναι έτοιμο

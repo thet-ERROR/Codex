@@ -29,4 +29,32 @@ export function escUrl(value) {
     return '';
 }
 
+// --- PRICES ---
+// Every amount on the site is integer euro cents internally and goes through formatPrice() to be
+// shown — one formatter, so the card, the inspect view, the cart and the WhatsApp message can't
+// drift into four different ways of writing the same number. el-GR is Greek convention:
+// "1.249,90 €" (dot for thousands, comma for decimals, symbol after).
+const EUR = new Intl.NumberFormat('el-GR', { style: 'currency', currency: 'EUR' });
+
+export function formatPrice(cents) {
+    return EUR.format((Number(cents) || 0) / 100);
+}
+
+// A PC or vote event's price in cents. The API backfills priceCents on boot, so the fallback only
+// matters for a document it couldn't parse — it reads the old free-text field the same way the
+// server's parseLegacyPriceToCents does (last separator is decimal only with 1-2 digits after it).
+export function priceCentsOf(item) {
+    if (item && Number.isFinite(item.priceCents)) return item.priceCents;
+    const s = String((item && item.price) ?? '').replace(/[^\d.,]/g, '');
+    if (!/\d/.test(s)) return 0;
+    const lastSep = Math.max(s.lastIndexOf('.'), s.lastIndexOf(','));
+    let whole = s, frac = '';
+    if (lastSep !== -1) {
+        const after = s.slice(lastSep + 1);
+        if (after.length === 1 || after.length === 2) { whole = s.slice(0, lastSep); frac = after; }
+    }
+    return parseInt(whole.replace(/[.,]/g, '') || '0', 10) * 100 + (frac ? parseInt(frac.padEnd(2, '0'), 10) : 0);
+}
+
 window.esc = esc;
+window.formatPrice = formatPrice;

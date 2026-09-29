@@ -1,7 +1,7 @@
 // js/modules/gallery.js
 import { state } from '../state.js';
 import { t } from '../i18n.js';
-import { esc } from '../utils.js';
+import { esc, formatPrice, priceCentsOf } from '../utils.js';
 
 // --- EXTRAS: normalisation, pricing, image sets ---
 
@@ -37,26 +37,30 @@ export function getActiveImages(pc) {
 }
 
 // Base price + every selected extra. Single source of truth for the live price, the breakdown
-// line, the cart entry and the WhatsApp order message.
+// line, the cart entry and the WhatsApp order message. Everything here is in CENTS: the base comes
+// from priceCents, and the extras — stored as whole euros, since the admin types them as such —
+// are converted on the way in, so no caller ever mixes the two units.
+const eurosToCents = (euros) => Math.round((Number(euros) || 0) * 100);
+
 export function getBreakdown() {
     const pc = state.currentGalleryPC;
     if (!pc) return { base: 0, lines: [], total: 0 };
     const opts = getOptions(pc);
-    const base = parseInt(String(pc.price).replace(/[^0-9]/g, '')) || 0;
+    const base = priceCentsOf(pc);
     const lines = [];
 
     if (opts.storage.enabled && state.build.storage === 'hdd' && opts.storage.hdd > 0) {
-        lines.push({ key: 'storage', label: t('storageOptHdd'), price: opts.storage.hdd });
+        lines.push({ key: 'storage', label: t('storageOptHdd'), price: eurosToCents(opts.storage.hdd) });
     }
     if (opts.storage.enabled && state.build.storage === 'ssd' && opts.storage.ssd > 0) {
-        lines.push({ key: 'storage', label: t('storageOptSsd'), price: opts.storage.ssd });
+        lines.push({ key: 'storage', label: t('storageOptSsd'), price: eurosToCents(opts.storage.ssd) });
     }
     if (opts.proConfig.enabled && state.build.proConfig) {
-        lines.push({ key: 'proConfig', label: t('proConfigTitle'), price: state.proConfigPrice });
+        lines.push({ key: 'proConfig', label: t('proConfigTitle'), price: eurosToCents(state.proConfigPrice) });
     }
     if (opts.paint.enabled && state.build.paint) {
         const name = paintName(opts);
-        lines.push({ key: 'paint', label: name ? `${t('paintTitle')} — ${name}` : t('paintTitle'), price: opts.paint.price });
+        lines.push({ key: 'paint', label: name ? `${t('paintTitle')} — ${name}` : t('paintTitle'), price: eurosToCents(opts.paint.price) });
     }
 
     return { base, lines, total: lines.reduce((sum, l) => sum + l.price, base) };
@@ -81,9 +85,9 @@ export function renderExtras() {
 
     if (showStorage) {
         const hddOpt = opts.storage.hdd > 0
-            ? `<option value="hdd" ${state.build.storage === 'hdd' ? 'selected' : ''}>${esc(t('storageOptHdd'))} (+€${opts.storage.hdd})</option>` : '';
+            ? `<option value="hdd" ${state.build.storage === 'hdd' ? 'selected' : ''}>${esc(t('storageOptHdd'))} (+${formatPrice(eurosToCents(opts.storage.hdd))})</option>` : '';
         const ssdOpt = opts.storage.ssd > 0
-            ? `<option value="ssd" ${state.build.storage === 'ssd' ? 'selected' : ''}>${esc(t('storageOptSsd'))} (+€${opts.storage.ssd})</option>` : '';
+            ? `<option value="ssd" ${state.build.storage === 'ssd' ? 'selected' : ''}>${esc(t('storageOptSsd'))} (+${formatPrice(eurosToCents(opts.storage.ssd))})</option>` : '';
         html += `
         <div class="yg-extra-block">
             <div class="yg-storage-label">${esc(t('storageLabel'))}</div>
@@ -101,7 +105,7 @@ export function renderExtras() {
             <span class="yg-extra-body">
                 <span class="yg-extra-title">${esc(t('proConfigTitle'))}</span>
             </span>
-            <span class="yg-extra-price">+€${state.proConfigPrice}</span>
+            <span class="yg-extra-price">+${formatPrice(eurosToCents(state.proConfigPrice))}</span>
         </label>`;
     }
 
@@ -116,7 +120,7 @@ export function renderExtras() {
                     ${esc(t('paintTitle'))}${name ? ' — ' + esc(name) : ''}
                 </span>
             </span>
-            <span class="yg-extra-price">+€${opts.paint.price}</span>
+            <span class="yg-extra-price">+${formatPrice(eurosToCents(opts.paint.price))}</span>
         </label>`;
     }
 
@@ -220,9 +224,10 @@ export function openGallery(pc) {
     const elTag = document.getElementById('yg-tagline');
     if(elTag) elTag.innerText = state.currentGalleryPC.tagline || (window.t ? window.t('taglineFallback') : "AUTHORIZED SYSTEM BUILD");
 
-    const basePrice = parseInt(state.currentGalleryPC.price.replace(/[^0-9]/g, '')) || 0; 
+    // priceCentsOf, not .price.replace(): the vote drop and any PC saved without a price have no
+    // `price` string at all, and calling .replace on undefined threw and aborted opening the card.
     const elLivePrice = document.getElementById('yg-price-live');
-    if(elLivePrice) elLivePrice.innerText = "€" + basePrice; 
+    if(elLivePrice) elLivePrice.innerText = formatPrice(priceCentsOf(state.currentGalleryPC));
     
     // Builds the extras this particular PC offers, then prices them (sets #yg-price-live).
     // Skipped for the vote drop, which has nothing to configure.
@@ -400,15 +405,15 @@ export function updatePrice() {
     const { base, lines, total } = getBreakdown();
 
     const liveP = document.getElementById('yg-price-live');
-    if(liveP) liveP.innerText = "€" + total;
+    if(liveP) liveP.innerText = formatPrice(total);
 
     const bd = document.getElementById('yg-price-breakdown');
     if (bd) {
         bd.hidden = lines.length === 0;
         bd.innerHTML = lines.length === 0 ? '' :
-            `<div class="yg-bd-row"><span>${esc(t('priceBaseLabel'))}</span><span>€${base}</span></div>` +
-            lines.map(l => `<div class="yg-bd-row"><span>+ ${esc(l.label)}</span><span>+€${l.price}</span></div>`).join('') +
-            `<div class="yg-bd-row yg-bd-total"><span>${esc(t('priceTotalLabel'))}</span><span>€${total}</span></div>`;
+            `<div class="yg-bd-row"><span>${esc(t('priceBaseLabel'))}</span><span>${formatPrice(base)}</span></div>` +
+            lines.map(l => `<div class="yg-bd-row"><span>+ ${esc(l.label)}</span><span>+${formatPrice(l.price)}</span></div>`).join('') +
+            `<div class="yg-bd-row yg-bd-total"><span>${esc(t('priceTotalLabel'))}</span><span>${formatPrice(total)}</span></div>`;
     }
 
 }

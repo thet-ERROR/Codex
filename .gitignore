@@ -1,3 +1,5 @@
 node_modules/
 .env
 uploads/
+# Installers ended up in assets/images once (43MB). Never belong in a web repo.
+*.exe

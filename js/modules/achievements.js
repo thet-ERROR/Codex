@@ -2,7 +2,7 @@
 import { state } from '../state.js';
 import { api } from '../api.js';
 import { CONFIG } from '../config.js';
-import { esc, escUrl } from '../utils.js';
+import { esc, escUrl, formatPrice, priceCentsOf } from '../utils.js';
 import { t, getLang } from '../i18n.js';
 
 // Ids the UI is allowed to report. Everything else in the catalogue is worked out by the API from
@@ -169,7 +169,7 @@ export function openAgentDashboard() {
                     <img src="${escUrl((pc.images || [])[0])}" alt="">
                     <div>
                         <div class="dw-name">${esc(pc.name)}</div>
-                        <div class="dw-price">${esc(pc.price)}</div>
+                        <div class="dw-price">${formatPrice(priceCentsOf(pc))}</div>
                     </div>
                     <button class="dw-remove" data-pc-id="${esc(pc._id || pc.id)}" title="${esc(t('dossierRemoveTarget'))}">
                         <i class="ph-bold ph-trash"></i>
