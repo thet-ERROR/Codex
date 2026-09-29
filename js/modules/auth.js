@@ -115,7 +115,9 @@ export async function checkSavedSession() {
 // --- LOGIN LOGIC ---
 export async function handleLogin() {
     const user = document.getElementById('login-user').value.trim();
-    const pass = document.getElementById('login-pass').value.trim();
+    // Not trimmed: a space is a legitimate password character. Trimming here while the backend
+    // hashes exactly what it receives made any password ending in a space impossible to log in with.
+    const pass = document.getElementById('login-pass').value;
 
     if (!user || !pass) {
         alert(window.t ? window.t('alertBothFields') : "SYSTEM ALERT: ENTER BOTH USERNAME & PASSWORD");
@@ -161,7 +163,7 @@ export async function handleLogin() {
 export async function handleSignup() {
     const user = document.getElementById('reg-user').value.trim();
     const email = document.getElementById('reg-email').value.trim();
-    const pass = document.getElementById('reg-pass').value.trim();
+    const pass = document.getElementById('reg-pass').value; // not trimmed — see handleLogin
     const subscribed = document.getElementById('reg-subscribe')?.checked || false;
 
     if(!user || !email || !pass) {

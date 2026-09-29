@@ -201,8 +201,17 @@ export function unlockVisuals() {
 
 export function buyVotePC() {
     if(!state.activeEvent) return;
-    const msg = `Hello! I want to secure the community drop:%0A%0A- *${state.activeEvent.title}*%0A- Estimated Price: €${state.activeEvent.price || 'TBD'}%0A%0AIs it available?`;
-    window.open(`https://wa.me/${CONFIG.WHATSAPP_NUM}?text=${msg}`, '_blank');
+    // Encoded once, as a whole — hand-written %0A with the title interpolated raw broke on any
+    // drop name containing "&" or "#" (same fix as requestReturn in reviews.js).
+    const msg = [
+        'Hello! I want to secure the community drop:',
+        '',
+        `- *${state.activeEvent.title}*`,
+        `- Estimated Price: €${state.activeEvent.price || 'TBD'}`,
+        '',
+        'Is it available?'
+    ].join('\n');
+    window.open(`https://wa.me/${CONFIG.WHATSAPP_NUM}?text=${encodeURIComponent(msg)}`, '_blank');
 }
 
 // Εξαγωγή στο global scope για τα onclick του HTML
