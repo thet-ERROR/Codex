@@ -32,10 +32,42 @@ export function closeModal(id) {
     }
 }
 
+// The share menu sits at body level (see index.html for why), so it's placed against the button
+// here. Where the sidebar is a vertical rail (desktop) it opens to the button's right; where it's the
+// horizontal bottom bar (tablet/phone — tablet.css and mobile.css switch it to flex-direction:row)
+// it opens as a row centred above the button, clamped to the screen edges.
+function positionSocialMenu(menu, btn) {
+    const bar = document.querySelector('.left-sidebar');
+    const horizontal = !!bar && getComputedStyle(bar).flexDirection === 'row';
+    menu.classList.toggle('is-horizontal', horizontal);
+
+    // Measured after .active and the orientation class are applied — before that it's display:none
+    const r = btn.getBoundingClientRect();
+    const w = menu.offsetWidth;
+    const h = menu.offsetHeight;
+    if (horizontal) {
+        const left = Math.max(10, Math.min(r.left + r.width / 2 - w / 2, window.innerWidth - w - 10));
+        menu.style.left = `${left}px`;
+        menu.style.top = `${Math.max(10, r.top - h - 12)}px`;
+    } else {
+        menu.style.left = `${r.right + 12}px`;
+        menu.style.top = `${Math.max(10, Math.min(r.top, window.innerHeight - h - 10))}px`;
+    }
+}
+
 export function toggleSocials() {
     const menu = document.getElementById('social-menu');
-    if(menu) menu.classList.toggle('active');
+    const btn = document.getElementById('social-toggle-btn');
+    if (!menu) return;
+    menu.classList.toggle('active');
+    if (menu.classList.contains('active') && btn) positionSocialMenu(menu, btn);
 }
+
+window.addEventListener('resize', () => {
+    const menu = document.getElementById('social-menu');
+    const btn = document.getElementById('social-toggle-btn');
+    if (menu && btn && menu.classList.contains('active')) positionSocialMenu(menu, btn);
+});
 
 export function toggleMobileReviews() {
     const sidebar = document.querySelector('.right-sidebar');
@@ -62,6 +94,14 @@ document.addEventListener('click', (e) => {
     if (menu && menu.classList.contains('show')) {
         if (!e.target.closest('#profile-menu') && !e.target.closest('.profile-btn')) {
             menu.classList.remove('show');
+        }
+    }
+
+    // Now that it floats free of the sidebar, a tap anywhere else should close it like the others
+    const socials = document.getElementById('social-menu');
+    if (socials && socials.classList.contains('active')) {
+        if (!e.target.closest('#social-menu') && !e.target.closest('#social-toggle-btn')) {
+            socials.classList.remove('active');
         }
     }
 

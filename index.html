@@ -77,20 +77,24 @@ Type 'help' for a list of commands.
             <button class="side-btn" id="lang-toggle-btn" onclick="playClick(); toggleLanguage()" title="Toggle Language" data-i18n-title="sideLang"><svg width="24" height="16" viewBox="0 0 27 18" shape-rendering="crispEdges" xmlns="http://www.w3.org/2000/svg"><rect width="27" height="18" fill="#fff"/><rect y="0" width="27" height="2" fill="#0D5EAF"/><rect y="4" width="27" height="2" fill="#0D5EAF"/><rect y="8" width="27" height="2" fill="#0D5EAF"/><rect y="12" width="27" height="2" fill="#0D5EAF"/><rect y="16" width="27" height="2" fill="#0D5EAF"/><rect x="0" y="0" width="10" height="10" fill="#0D5EAF"/><rect x="4" y="0" width="2" height="10" fill="#fff"/><rect x="0" y="4" width="10" height="2" fill="#fff"/></svg></button>
             <div class="side-divider"></div>
 
-            <div class="social-dropdown" style="position: relative;">
-                <button class="side-btn" onclick="playClick(); toggleSocials()" title="Social Networks" data-i18n-title="sideSocial"><i class="ph-duotone ph-share-network"></i></button>
-
-                <div class="social-menu" id="social-menu">
-                    <button class="side-btn" onclick="playClick(); showToast('DISCORD SERVER: COMING SOON', 'normal')" title="Discord" data-i18n-title="sideDiscord"><i class="ph-duotone ph-discord-logo"></i></button>
-                    <button class="side-btn" onclick="playClick(); window.open('https://instagram.com/codex_rigs', '_blank')" title="Instagram" data-i18n-title="sideInstagram"><i class="ph-duotone ph-instagram-logo"></i></button>
-                    <button class="side-btn" onclick="playClick(); openModal('newsletter')" title="Drop Alerts" data-i18n-title="sideDropAlerts"><i class="ph-duotone ph-envelope-simple"></i></button>
-                </div>
-            </div>
+            <!-- #social-menu itself lives at the end of this sidebar, outside .side-group — see there -->
+            <button class="side-btn" id="social-toggle-btn" onclick="playClick(); toggleSocials()" title="Social Networks" data-i18n-title="sideSocial"><i class="ph-duotone ph-share-network"></i></button>
 
             <button class="side-btn mobile-reviews-btn" onclick="playClick(); toggleMobileReviews()" title="Reviews" data-i18n-title="sideReviews"><i class="ph-duotone ph-star"></i></button>
         </div>
 
         <button class="side-btn chat-toggle" onclick="playClick(); toggleChat()"><i class="ph-duotone ph-chat-circle-dots"></i></button>
+    </div>
+
+    <!-- Deliberately NOT inside .side-group. On phones that group is a horizontally scrolling strip
+         (overflow-x: auto + -webkit-overflow-scrolling: touch), and iOS Safari clips even a
+         position:fixed child to such a container: the menu opened — the click sound played — but was
+         painted inside the 60px bar and never seen. At body level nothing can clip it; toggleSocials()
+         in js/ui/modals.js places it next to #social-toggle-btn instead. -->
+    <div class="social-menu" id="social-menu">
+        <button class="side-btn" onclick="playClick(); showToast('DISCORD SERVER: COMING SOON', 'normal')" title="Discord" data-i18n-title="sideDiscord"><i class="ph-duotone ph-discord-logo"></i></button>
+        <button class="side-btn" onclick="playClick(); window.open('https://instagram.com/codex_rigs', '_blank')" title="Instagram" data-i18n-title="sideInstagram"><i class="ph-duotone ph-instagram-logo"></i></button>
+        <button class="side-btn" onclick="playClick(); openModal('newsletter')" title="Drop Alerts" data-i18n-title="sideDropAlerts"><i class="ph-duotone ph-envelope-simple"></i></button>
     </div>
 
     <div class="right-sidebar">
@@ -435,27 +439,55 @@ Type 'help' for a list of commands.
         </div>
     </div>
 
+    <!-- Opened after a customer enters their mission code (checkMissionCode in modules/reviews.js).
+         Two clear outcomes instead of one bare bar and one alarm box: the happy path is the big,
+         obvious card; the return path is there and honest but visually secondary. Styles live in
+         css/components/mission.css — the old buttons used .btn-inspect, which is only styled inside
+         .auth-form, which is why "keep & review" rendered as a flat unstyled strip. -->
     <div class="modal-overlay" id="mission-modal">
-        <div class="modal-content" style="text-align:center; border: 2px solid var(--neon-green); width: 500px;">
+        <div class="modal-content mission-box">
             <span class="close-modal" onclick="closeModal('mission-modal')">X</span>
-            <h2 style="color:var(--neon-green); font-family:var(--font-ui); letter-spacing:2px; margin-bottom:5px;" data-i18n="missionTitle">SYSTEM VALIDATION</h2>
-            <div id="mission-pc-name" style="font-size:1.2rem; font-weight:bold; color:#fff; margin-bottom:20px;">PROJECT X</div>
-            <div style="background:#111; padding:15px; border-radius:8px; margin-bottom:20px; border:1px solid #333;">
-                <div style="color:#aaa; font-size:0.7rem; letter-spacing:1px;" data-i18n="missionWindowLabel">VALIDATION WINDOW CLOSES IN:</div>
-                <div id="mission-timer" style="font-size:2.5rem; font-family:monospace; color:#fff; font-weight:bold;">47:59:00</div>
+
+            <div class="mission-kicker" data-i18n="missionTitle">HOW'S YOUR NEW RIG?</div>
+            <div class="mission-pc" id="mission-pc-name">PROJECT X</div>
+
+            <div class="mission-timer-pill">
+                <i class="ph-bold ph-timer"></i>
+                <span data-i18n="missionWindowLabel">Window closes in</span>
+                <strong id="mission-timer">47h 59m 00s</strong>
             </div>
-            <div style="display:flex; flex-direction:column; gap:15px;">
-                <button class="btn-inspect" onclick="openReviewForm()" style="background:var(--neon-green); color:#000; border:none;" data-i18n="missionKeepBtn">
-                    SYSTEM OPERATIONAL (KEEP & REVIEW)                </button>
-                <div style="background:rgba(255, 51, 51, 0.1); padding:15px; border:1px solid var(--retro-red); border-radius:8px;">
-                    <h4 style="color:var(--retro-red); margin-bottom:10px;" data-i18n="missionReportTitle">Report System Failure</h4>
-                    <select id="return-reason" style="width:100%; padding:10px; background:#000; color:#fff; border:1px solid #555; border-radius:4px; margin-bottom:10px;">
-                        <option value="" disabled selected data-i18n="missionSelectReason">Select Error Protocol...</option>
-                        <option value="1" data-i18n="missionReason1">1. FPS Mismatch</option>
-                        <option value="2" data-i18n="missionReason2">2. Hardware Defect (DOA)</option>
-                    </select>
-                    <button class="btn-inspect" onclick="requestReturn()" style="background:transparent; border:1px solid var(--retro-red); color:var(--retro-red);" data-i18n="missionReturnBtn">INITIATE RETURN</button>
+
+            <div class="mission-option mission-option-keep">
+                <div class="mission-option-head">
+                    <i class="ph-fill ph-check-circle mission-option-icon"></i>
+                    <div>
+                        <div class="mission-option-title" data-i18n="missionKeepTitle">Everything works</div>
+                        <div class="mission-option-text" data-i18n="missionKeepText">Keep your system and tell others how it runs.</div>
+                    </div>
                 </div>
+                <button class="mission-btn mission-btn-keep" onclick="playClick(); openReviewForm()">
+                    <span data-i18n="missionKeepBtn">WRITE A REVIEW</span> <i class="ph-bold ph-arrow-right"></i>
+                </button>
+            </div>
+
+            <div class="mission-option mission-option-return">
+                <div class="mission-option-head">
+                    <i class="ph-fill ph-warning-circle mission-option-icon"></i>
+                    <div>
+                        <div class="mission-option-title" data-i18n="missionReportTitle">Something's not right?</div>
+                        <div class="mission-option-text" data-i18n="missionReportText">Pick what's wrong and we'll sort out a return with you on WhatsApp.</div>
+                    </div>
+                </div>
+                <select id="return-reason" class="mission-select">
+                    <option value="" disabled selected data-i18n="missionSelectReason">Choose the problem...</option>
+                    <option value="1" data-i18n="missionReason1">FPS lower than advertised</option>
+                    <option value="2" data-i18n="missionReason2">Hardware defect / won't start</option>
+                    <option value="3" data-i18n="missionReason3">Specs don't match the listing</option>
+                    <option value="4" data-i18n="missionReason4">Something else</option>
+                </select>
+                <button class="mission-btn mission-btn-return" onclick="playClick(); requestReturn()">
+                    <span data-i18n="missionReturnBtn">START A RETURN</span>
+                </button>
             </div>
         </div>
     </div>
@@ -659,7 +691,7 @@ Type 'help' for a list of commands.
         <div class="mini-cart-list" id="mini-cart-items"><div style="color:#666; text-align:center; padding:20px;">CART IS EMPTY</div></div>
         <div class="mini-cart-footer">
             <div class="mc-total-row"><span data-i18n="cartTotalLabel">TOTAL</span><span id="mc-total">€0</span></div>
-            <button class="mc-checkout-btn" onclick="handleCheckout()" data-i18n="cartCheckoutBtn">SECURE CHECKOUT</button>
+            <button class="mc-checkout-btn" onclick="handleCheckout()" data-i18n="cartCheckoutBtn">SEND YOUR ORDER ON WHATSAPP</button>
         </div>
     </div>
 
