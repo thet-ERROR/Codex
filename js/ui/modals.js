@@ -107,10 +107,11 @@ document.addEventListener('click', (e) => {
 
     const cart = document.getElementById('cart-dropdown');
     if (cart && cart.classList.contains('show')) {
-        if (!e.target.closest('#cart-dropdown') && !e.target.closest('.cart-btn')) {
+        // Both cart buttons (nav bar + the phone one beside the profile) and the "added" hint, which
+        // opens the cart itself, count as "inside" — otherwise this closes what they just opened.
+        if (!e.target.closest('#cart-dropdown') && !e.target.closest('.cart-btn, .cart-btn-mobile, #cart-hint')) {
             cart.classList.remove('show');
-            const cartBtn = document.querySelector('.nav-btn.cart-btn');
-            if (cartBtn) cartBtn.classList.remove('active');
+            document.querySelectorAll('.nav-btn.cart-btn, .cart-btn-mobile').forEach(b => b.classList.remove('active'));
         }
     }
 });

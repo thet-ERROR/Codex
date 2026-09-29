@@ -20,4 +20,27 @@
 .mini-cart-footer { border-top: 1px solid #333; padding-top: 15px; }
 .mc-total-row { display: flex; justify-content: space-between; margin-bottom: 15px; font-weight: bold; font-family: var(--font-ui); font-size: 1.2rem; }
 .mc-checkout-btn { width: 100%; background: var(--neon-green); color: #000; border: none; padding: 12px; font-weight: bold; font-family: var(--font-ui); cursor: pointer; border-radius: 6px; transition: 0.3s; letter-spacing: 1px; }
+/* "Added to cart" hint — built by showCartHint() in js/modules/cart.js and placed under whichever
+   cart button is on screen. Kept in the layout at opacity 0 rather than display:none so its width
+   can be measured to centre it before it fades in. z-index clears the header (10000). */
+.cart-hint {
+    position: fixed; top: 0; left: 0; z-index: 10050; max-width: 260px;
+    padding: 10px 14px; border-radius: 10px; cursor: pointer;
+    background: rgba(8, 8, 12, 0.97); border: 1px solid var(--neon-green);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8), 0 0 18px rgba(204, 255, 0, 0.25);
+    opacity: 0; pointer-events: none; transform: translateY(6px);
+    transition: opacity 0.25s ease, transform 0.25s ease;
+}
+.cart-hint.show { opacity: 1; pointer-events: auto; transform: translateY(0); animation: cartHintBob 1.2s ease-in-out 0.3s 3; }
+.cart-hint-arrow {
+    position: absolute; top: -9px; width: 16px; height: 16px;
+    background: rgba(8, 8, 12, 0.97); border-left: 1px solid var(--neon-green); border-top: 1px solid var(--neon-green);
+    transform: rotate(45deg);
+}
+.cart-hint-title { font-family: var(--font-ui); font-weight: 800; font-size: 0.9rem; letter-spacing: 1px; color: var(--neon-green); text-transform: uppercase; display: flex; align-items: center; gap: 6px; }
+.cart-hint-text { font-size: 0.8rem; color: #bbb; margin-top: 3px; line-height: 1.35; }
+/* A gentle nudge toward the button — three bobs, then it holds still */
+@keyframes cartHintBob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+@media (prefers-reduced-motion: reduce) { .cart-hint.show { animation: none; } }
+
 .mc-checkout-btn:hover { box-shadow: 0 0 20px var(--neon-green); transform: scale(1.02); }
