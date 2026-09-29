@@ -14,6 +14,27 @@ function loadAchievements() {
     return list.map(id => LEGACY_ACHIEVEMENT_IDS[id] || id);
 }
 
+// Cart items are priced in integer cents (priceCents/basePriceCents/options[].priceCents). Carts
+// saved before that change hold whole euros in `price` — converted once here, on load, so nothing
+// downstream ever has to wonder which unit it's holding.
+function loadCart() {
+    let raw;
+    try { raw = JSON.parse(localStorage.getItem('codex_cart')); } catch (e) { return []; }
+    if (!Array.isArray(raw)) return [];
+    return raw.map(item => {
+        if (!item || Number.isFinite(item.priceCents)) return item;
+        const toCents = (euros) => Math.round((Number(euros) || 0) * 100);
+        return {
+            ...item,
+            priceCents: toCents(item.price),
+            basePriceCents: toCents(item.basePrice ?? item.price),
+            options: Array.isArray(item.options)
+                ? item.options.map(o => ({ label: o.label, priceCents: toCents(o.price) }))
+                : item.options
+        };
+    });
+}
+
 export const state = {
     inventory: [],
     filtered: [],
@@ -22,7 +43,7 @@ export const state = {
     compareList: [],
     currentGalleryPC: null,
     galleryIndex: 0,
-    cart: JSON.parse(localStorage.getItem('codex_cart')) || [],
+    cart: loadCart(),
     activeEvent: null,
     isLoggedIn: false, // Αρχικά false, θα ελέγχεται στο auth.js
     // Hard gate on the backend: dossier/wishlist/achievements/vote all 403 until this is true.

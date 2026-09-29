@@ -1,6 +1,13 @@
 // js/modules/vote.js
 import { state } from '../state.js';
 import { CONFIG } from '../config.js';
+import { formatPrice, priceCentsOf } from '../utils.js';
+
+// A drop's price is optional — "estimated" — so no price must read as absent, not as 0,00 €.
+function votePriceLabel(ev) {
+    const hasPrice = ev && (Number.isFinite(ev.priceCents) || /\d/.test(String(ev.price ?? '')));
+    return hasPrice ? formatPrice(priceCentsOf(ev)) : null;
+}
 
 let notifiedAlmostThere = false;
 let lastEventTitle = null;
@@ -30,7 +37,8 @@ export function renderVoteState() {
     if(title) title.innerText = state.activeEvent.title;
 
     const priceDisp = document.getElementById('v-price-display');
-    if(priceDisp) priceDisp.innerText = state.activeEvent.price ? "ESTIMATED PRICE: €" + state.activeEvent.price : "";
+    const votePrice = votePriceLabel(state.activeEvent);
+    if(priceDisp) priceDisp.innerText = votePrice ? "ESTIMATED PRICE: " + votePrice : "";
 
     const img = document.getElementById('v-img');
     if(img) img.src = state.activeEvent.image || '';
@@ -78,6 +86,7 @@ function voteEventAsPC(ev) {
         _id: 'vote-event',
         name: ev.title || '',
         price: ev.price || '0',
+        priceCents: ev.priceCents,
         description: ev.description || '',
         lore: ev.lore || '',
         loreEl: ev.loreEl || '',
@@ -207,7 +216,7 @@ export function buyVotePC() {
         'Hello! I want to secure the community drop:',
         '',
         `- *${state.activeEvent.title}*`,
-        `- Estimated Price: €${state.activeEvent.price || 'TBD'}`,
+        `- Estimated Price: ${votePriceLabel(state.activeEvent) || 'TBD'}`,
         '',
         'Is it available?'
     ].join('\n');

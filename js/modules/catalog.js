@@ -1,6 +1,6 @@
 // js/modules/catalog.js
 import { state } from '../state.js';
-import { esc, escUrl } from '../utils.js';
+import { esc, escUrl, formatPrice, priceCentsOf } from '../utils.js';
 
 export function switchTab(mode) {
     state.currentTab = mode;
@@ -120,7 +120,7 @@ export function renderCard() {
             ${stockHTML}
             <div class="pc-title">${esc(pc.name)}</div>
             <div class="card-price-row">
-                <div class="pc-price">${esc(pc.price)}</div>
+                <div class="pc-price">${formatPrice(priceCentsOf(pc))}</div>
             </div>
 
             <div class="sys-brief">

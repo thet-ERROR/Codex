@@ -1,6 +1,6 @@
 // js/modules/compare.js
 import { state } from '../state.js';
-import { esc, escUrl } from '../utils.js';
+import { esc, escUrl, formatPrice, priceCentsOf } from '../utils.js';
 
 export function toggleCompare(id, btnElement) { 
     // Παίρνουμε το τρέχον PC που βλέπει ο χρήστης
@@ -49,7 +49,7 @@ export function openCompareModal() {
         <div class="compare-col">
             <img src="${escUrl((p.images || [])[0])}" class="compare-img">
             <h3>${esc(p.name)}</h3>
-            <div style="color:var(--neon-green); font-weight:bold; margin-bottom:10px;">${esc(p.price)}</div>
+            <div style="color:var(--neon-green); font-weight:bold; margin-bottom:10px;">${formatPrice(priceCentsOf(p))}</div>
             <div class="gallery-desc-box">${esc(p.description || (window.t ? window.t('systemDetailsFallback') : 'System Details'))}</div>
             ${Object.keys(p.specs || {}).map(k => `
                 <div class="compare-spec-row">

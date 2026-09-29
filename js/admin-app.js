@@ -204,6 +204,22 @@
     // --- EXTRAS HELPERS ---
     const $ = id => document.getElementById(id);
 
+    // --- PRICE FIELDS ---
+    // The API stores integer cents (priceCents); the admin types euros. A comma is accepted as the
+    // decimal separator because that's what a Greek keyboard produces ("449,99").
+    // Returns undefined for an empty box and NaN for something that isn't a price.
+    function inputToCents(value) {
+        const s = String(value ?? '').trim().replace(/\s|€/g, '').replace(',', '.');
+        if (!s) return undefined;
+        const n = Number(s);
+        return Number.isFinite(n) && n >= 0 ? Math.round(n * 100) : NaN;
+    }
+    // Falls back to the legacy free-text price for anything the backend hasn't backfilled yet.
+    function centsToInput(cents, legacy) {
+        if (Number.isFinite(cents)) return (cents / 100).toFixed(2).replace(/\.00$/, '').replace('.', ',');
+        return legacy || '';
+    }
+
     // <input type="datetime-local"> has no timezone of its own — "2024-01-01T10:00" is read/written
     // as the BROWSER's local time. Sending that raw string to the backend meant Mongoose re-parsed
     // it with `new Date(...)` on the server (Render runs in UTC), silently shifting every vote
@@ -285,9 +301,10 @@
     function edit(id) {
         const pc = inventory.find(i=>i._id===id); if(!pc) return;
         fillOptions(pc);
-       ['name','price','stock','description','lore','loreEl','multitasking','status','category'].forEach(k => {
+       ['name','stock','description','lore','loreEl','multitasking','status','category'].forEach(k => {
     if(document.getElementById(k)) document.getElementById(k).value = pc[k]||'';
 });
+        $('price').value = centsToInput(pc.priceCents, pc.price);
         ['cpu','gpu','ram','ssd','mobo','psu','case'].forEach(k => document.getElementById(k).value = pc.specs[k]||'');
         ['cpu','gpu','ram','ssd','mobo','psu','case'].forEach(k => {
             const el = document.getElementById('specInfo-' + k);
@@ -320,9 +337,14 @@
         const imgInput = document.getElementById('imageUrl').value.trim();
         const imgs = imgInput ? [imgInput] : [];
 
+        const priceCents = inputToCents($('price').value);
+        if (priceCents === undefined || Number.isNaN(priceCents)) {
+            return alert("ΤΙΜΗ: βάλε έγκυρο ποσό σε ευρώ (π.χ. 449 ή 449,99).");
+        }
+
 const data = {
             name: document.getElementById('name').value,
-            price: document.getElementById('price').value,
+            priceCents,
             stock: document.getElementById('stock').value,
             category: document.getElementById('category').value,
             status: document.getElementById('status').value,
@@ -396,7 +418,7 @@ const data = {
             const res=await fetch(`${API}/vote-event`, { headers:{'Authorization':`Bearer ${TOKEN}`} }); const v=await res.json();
             if(v.title) {
                 document.getElementById('v-title').value=v.title;
-                document.getElementById('v-price').value=v.price || '';
+                document.getElementById('v-price').value = centsToInput(v.priceCents, v.price);
                 document.getElementById('v-target').value=v.targetVotes;
                 document.getElementById('v-days').value=v.durationDays;
                 document.getElementById('v-imageUrl').value = v.image || '';
@@ -420,6 +442,9 @@ const data = {
         // Παίρνουμε το Link απευθείας από το Text Box για το Vote Event!
         const imgInput = document.getElementById('v-imageUrl').value.trim();
         const startISO = localInputToISO(document.getElementById('v-start').value);
+        // Optional on a vote drop — it's an estimate, and an empty box stays "TBD" on the card
+        const votePriceCents = inputToCents($('v-price').value);
+        if (Number.isNaN(votePriceCents)) return alert("ΤΙΜΗ: βάλε έγκυρο ποσό σε ευρώ ή άφησέ το κενό.");
         if (!startISO) return alert("Βάλε ημερομηνία/ώρα έναρξης — χωρίς αυτήν το countdown δεν ξεκινάει ποτέ.");
 
         // The API replaces the event wholesale, which now also clears the one-vote-per-account
@@ -428,7 +453,7 @@ const data = {
 
         const data = {
             title: document.getElementById('v-title').value,
-            price: document.getElementById('v-price').value,
+            priceCents: votePriceCents,
             image: imgInput,
             targetVotes: document.getElementById('v-target').value,
             startDate: startISO,
