@@ -46,10 +46,13 @@ const translations = {
         newsletterTitle: "Ειδοποιήσεις νέων PC", newsletterDesc: "Ειδοποιήσου μόλις βγει νέο PC ή ξεκινήσει ψηφοφορία.", newsletterBtn: "Ενεργοποίηση ειδοποιήσεων",
         reviewCodeTitle: "Επιβεβαιωμένη κριτική", reviewCodeBtn: "Αποστολή", rcUserPlaceholder: "Όνομα πράκτορα", rcTextPlaceholder: "Απόδοση συστήματος...",
 
-        missionTitle: "Επικύρωση συστήματος", missionWindowLabel: "Ο χρόνος επικύρωσης λήγει σε:",
-        missionKeepBtn: "Το σύστημα λειτουργεί (κράτα & αξιολόγησε)", missionReportTitle: "Αναφορά βλάβης συστήματος",
-        missionSelectReason: "Επίλεξε πρωτόκολλο σφάλματος...", missionReason1: "1. Απόκλιση FPS", missionReason2: "2. Βλάβη υλικού (DOA)",
-        missionReturnBtn: "Έναρξη επιστροφής",
+        missionTitle: "Πώς πάει το νέο σου PC;", missionWindowLabel: "Το παράθυρο κλείνει σε",
+        missionKeepTitle: "Όλα δουλεύουν τέλεια", missionKeepText: "Κράτα το σύστημα και πες στους άλλους πώς τρέχει.",
+        missionKeepBtn: "Γράψε κριτική",
+        missionReportTitle: "Κάτι δεν πάει καλά;", missionReportText: "Διάλεξε τι συμβαίνει και θα κανονίσουμε μαζί την επιστροφή στο WhatsApp.",
+        missionSelectReason: "Διάλεξε το πρόβλημα...", missionReason1: "Χαμηλότερα FPS από όσα γράφει", missionReason2: "Βλάβη υλικού / δεν ανοίγει",
+        missionReason3: "Τα specs δεν ταιριάζουν με την αγγελία", missionReason4: "Κάτι άλλο",
+        missionReturnBtn: "Ξεκίνα επιστροφή",
 
         loginTitle: "Σύνδεση", usernamePlaceholder: "Όνομα χρήστη", passwordPlaceholder: "Κωδικός",
         loginBtn: "Σύνδεση", lostAccessLink: "[ Ξέχασες τον κωδικό; ]",
@@ -87,7 +90,7 @@ const translations = {
         helpTitle: "Υποστήριξη",
         helpText: "Για ερωτήσεις σχετικά με παραγγελίες, εγγύηση ή τεχνική υποστήριξη, επικοινωνήστε στο <strong>d.codexphoenix@gmail.com</strong> ή μέσω του chat κάτω αριστερά.",
 
-        cartYourLoot: "Η λεία σου", cartTotalLabel: "Σύνολο", cartCheckoutBtn: "Ασφαλής ολοκλήρωση",
+        cartYourLoot: "Η λεία σου", cartTotalLabel: "Σύνολο", cartCheckoutBtn: "Στείλε την παραγγελία στο WhatsApp",
         tickerDelivery: "⚡ Ασφαλής παράδοση 24H σε όλη τη Θεσσαλονίκη ⚡", tickerAssembled: "Συστήματα πλήρως συναρμολογημένα & ελεγμένα",
         tickerProcessed: "⚡ Οι παραγγελίες επεξεργάζονται εντός 24 ωρών ⚡", tickerDiagnostic: "Πλήρης διαγνωστικός έλεγχος πριν από κάθε αποστολή",
 
@@ -174,10 +177,13 @@ const translations = {
         newsletterTitle: "DROP ALERTS", newsletterDesc: "Get notified the moment a new PC drops or a vote starts.", newsletterBtn: "ACTIVATE ALERTS",
         reviewCodeTitle: "VERIFIED REVIEW", reviewCodeBtn: "SUBMIT TRANSMISSION", rcUserPlaceholder: "Agent Name", rcTextPlaceholder: "System performance...",
 
-        missionTitle: "SYSTEM VALIDATION", missionWindowLabel: "VALIDATION WINDOW CLOSES IN:",
-        missionKeepBtn: "SYSTEM OPERATIONAL (KEEP & REVIEW)", missionReportTitle: "Report System Failure",
-        missionSelectReason: "Select Error Protocol...", missionReason1: "1. FPS Mismatch", missionReason2: "2. Hardware Defect (DOA)",
-        missionReturnBtn: "INITIATE RETURN",
+        missionTitle: "HOW'S YOUR NEW RIG?", missionWindowLabel: "Window closes in",
+        missionKeepTitle: "Everything works", missionKeepText: "Keep your system and tell others how it runs.",
+        missionKeepBtn: "WRITE A REVIEW",
+        missionReportTitle: "Something's not right?", missionReportText: "Pick what's wrong and we'll sort out a return with you on WhatsApp.",
+        missionSelectReason: "Choose the problem...", missionReason1: "FPS lower than advertised", missionReason2: "Hardware defect / won't start",
+        missionReason3: "Specs don't match the listing", missionReason4: "Something else",
+        missionReturnBtn: "START A RETURN",
 
         loginTitle: "AGENT SIGN-IN", usernamePlaceholder: "USERNAME", passwordPlaceholder: "PASSWORD",
         loginBtn: "AUTHENTICATE", lostAccessLink: "[ LOST ACCESS? ]",
@@ -215,7 +221,7 @@ const translations = {
         helpTitle: "SUPPORT",
         helpText: "For questions about orders, warranty, or technical support, contact us at <strong>d.codexphoenix@gmail.com</strong> or via the chat in the bottom left.",
 
-        cartYourLoot: "YOUR LOOT", cartTotalLabel: "TOTAL", cartCheckoutBtn: "SECURE CHECKOUT",
+        cartYourLoot: "YOUR LOOT", cartTotalLabel: "TOTAL", cartCheckoutBtn: "SEND YOUR ORDER ON WHATSAPP",
         tickerDelivery: "⚡ 24H SECURE DELIVERY ACROSS SKG ⚡", tickerAssembled: "SYSTEMS FULLY ASSEMBLED & TESTED",
         tickerProcessed: "⚡ ORDERS PROCESSED WITHIN 24 HOURS ⚡", tickerDiagnostic: "FULL DIAGNOSTIC CHECK BEFORE EVERY SHIPMENT",
 

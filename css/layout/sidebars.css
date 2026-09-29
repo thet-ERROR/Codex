@@ -57,5 +57,9 @@
 .add-review-btn { background: transparent; border: 1px solid var(--neon-purple); color: var(--neon-purple); padding: 8px 20px; border-radius: 6px; font-family:var(--font-ui); font-weight:bold; cursor: pointer; transition: 0.3s; margin-top:10px; width:100%; }
 .add-review-btn:hover { background: var(--neon-purple); color: #fff; }
 
-.social-menu { display: none; flex-direction: column; gap: 10px; position: absolute; left: 70px; top: 0; background: rgba(10,5,20,0.95); padding: 10px; border: 1px solid var(--neon-purple); border-radius: 12px; z-index: 1000; box-shadow: 0 10px 25px rgba(0,0,0,0.8); }
+/* Body-level and positioned by toggleSocials() (js/ui/modals.js) — to the right of the share button
+   on desktop, centred above it on the phone/tablet bottom bar. z-index clears that bar (9000). */
+.social-menu { display: none; flex-direction: column; gap: 10px; position: fixed; top: 0; left: 0; background: rgba(10,5,20,0.95); padding: 10px; border: 1px solid var(--neon-purple); border-radius: 12px; z-index: 9600; box-shadow: 0 10px 25px rgba(0,0,0,0.8); }
 .social-menu.active { display: flex; animation: fadeIn 0.2s ease; }
+.social-menu.is-horizontal { flex-direction: row; }
+.social-menu .side-btn { margin-bottom: 0; }
