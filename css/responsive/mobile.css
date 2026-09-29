@@ -80,10 +80,26 @@
     .system-select-label { font-size: 1rem !important; letter-spacing: 3px !important; margin-bottom: 10px !important; }
     #main-card, .holo-card { padding: 15px !important; }
     .hero-img-frame { height: 140px !important; margin: 0 auto 6px auto !important; }
-    /* Carousel arrows centred on the photo instead of the whole card — at the card's midpoint they
-       sat right on top of the lore text. 85px = card padding (15) + half the photo frame (140/2);
-       tablet.css already shifts them up by half their own height. Keep in step with those two. */
-    .nav-arrow { top: 85px !important; }
+    /* No arrows on phones — swiping the card is the way to browse there (initCardSwipe in
+       catalog.js). In their place, a small floating hint at photo height: 85px = card padding (15)
+       + half the photo frame (140/2). */
+    .nav-arrow { display: none !important; }
+    .swipe-hint {
+        display: flex; position: absolute; top: 85px; right: 8px; transform: translateY(-50%);
+        z-index: 5; pointer-events: none;
+        width: 34px; height: 34px; border-radius: 50%; align-items: center; justify-content: center;
+        background: rgba(8, 8, 12, 0.75); border: 1px solid rgba(204, 255, 0, 0.35);
+        color: var(--neon-green); font-size: 1.05rem; opacity: 0.8;
+        animation: swipeNudge 2.4s ease-in-out infinite;
+    }
+    /* A short leftward flick, then a long pause — noticeable without being a distraction */
+    @keyframes swipeNudge {
+        0%, 55%, 100% { transform: translate(0, -50%); }
+        65% { transform: translate(-8px, -50%); }
+        75% { transform: translate(0, -50%); }
+        85% { transform: translate(-8px, -50%); }
+    }
+    @media (prefers-reduced-motion: reduce) { .swipe-hint { animation: none; } }
     .pc-title { font-size: 1.7rem !important; margin-bottom: 3px !important; }
     .card-price-row { margin-bottom: 8px !important; }
     .pc-price { font-size: 1.4rem !important; }
