@@ -56,5 +56,23 @@ export function priceCentsOf(item) {
     return parseInt(whole.replace(/[.,]/g, '') || '0', 10) * 100 + (frac ? parseInt(frac.padEnd(2, '0'), 10) : 0);
 }
 
+// --- STOCK ---
+// One reading of a PC's availability for the card, the inspect view and the cart. 'coming' is the
+// admin panel's "coming soon" status: shown in LIVE DROPS (at the end) but not orderable yet.
+export function stockState(pc) {
+    if (pc && pc.status === 'coming') return 'soon';
+    const n = Number(pc && pc.stock) || 0;
+    if (n <= 0) return 'out';
+    if (n === 1) return 'last';
+    if (n < 5) return 'low';
+    return 'in';
+}
+
+export function stockLabel(pc) {
+    const t = window.t || (k => k);
+    const key = { soon: 'stockSoon', out: 'stockOut', last: 'stockLast', low: 'stockLow', in: 'stockIn' }[stockState(pc)];
+    return t(key, { n: Number(pc && pc.stock) || 0 });
+}
+
 window.esc = esc;
 window.formatPrice = formatPrice;

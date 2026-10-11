@@ -126,6 +126,11 @@ const translations = {
         alertBothFields: "Προσοχή: Συμπλήρωσε όνομα χρήστη και κωδικό", alertInvalidCreds: "Λανθασμένα στοιχεία σύνδεσης",
         alertAllFieldsRecruit: "Προσοχή: Όλα τα πεδία είναι υποχρεωτικά", alertRegistrationFailed: "Η εγγραφή απέτυχε",
         alertSoldOut: "Εξαντλήθηκε!", alertCartEmpty: "Το καλάθι είναι άδειο!", alertMaxCompare: "Μέγιστο 2 συστήματα στη σύγκριση",
+        // Badges αποθέματος — κάρτα (renderCard) και inspect (gallery.js)
+        stockIn: "ΔΙΑΘΕΣΙΜΟ", stockLow: "ΛΙΓΑ ΚΟΜΜΑΤΙΑ: {n}", stockLast: "ΜΟΝΟ 1 ΤΕΜΑΧΙΟ", stockOut: "ΕΞΑΝΤΛΗΘΗΚΕ", stockSoon: "ΣΥΝΤΟΜΑ",
+        cartEmpty: "ΤΟ ΚΑΛΑΘΙ ΕΙΝΑΙ ΑΔΕΙΟ", cartRemove: "Αφαίρεση",
+        addToCartBtn: "Στο καλάθι", flipToSpecs: "Δες τα specs", flipToFront: "Πίσω στην κάρτα",
+        alertComingSoon: "Έρχεται σύντομα — δεν είναι ακόμα διαθέσιμο", alertStockLimit: "Έχεις ήδη στο καλάθι όσα κομμάτια υπάρχουν",
         missionPromptCode: "Εισάγετε τον κωδικό αποστολής (βρίσκεται στο κουτί):",
         missionExpiredAlert: "⚠️ Η αποστολή έληξε. Πέρασαν 48 ώρες.",
         connectionErrorAlert: "⚠️ Σφάλμα σύνδεσης!\nΟ διακομιστής δεν ανταποκρίνεται.",
@@ -258,6 +263,11 @@ const translations = {
         alertBothFields: "SYSTEM ALERT: ENTER BOTH USERNAME & PASSWORD", alertInvalidCreds: "ACCESS DENIED: INVALID CREDENTIALS",
         alertAllFieldsRecruit: "SYSTEM ALERT: ALL FIELDS REQUIRED FOR RECRUITMENT", alertRegistrationFailed: "REGISTRATION FAILED",
         alertSoldOut: "SOLD OUT!", alertCartEmpty: "Cart is empty!", alertMaxCompare: "MAX 2 ITEMS ALLOWED IN VS MODE",
+        // Stock badges — card (renderCard) and inspect view (gallery.js)
+        stockIn: "IN STOCK", stockLow: "LOW STOCK: {n} UNITS", stockLast: "ONLY 1 UNIT LEFT", stockOut: "SOLD OUT", stockSoon: "COMING SOON",
+        cartEmpty: "CART IS EMPTY", cartRemove: "Remove",
+        addToCartBtn: "Add to Cart", flipToSpecs: "Flip to Specs", flipToFront: "Flip to Front",
+        alertComingSoon: "Coming soon — not available to order yet", alertStockLimit: "You already have every unit in stock in your cart",
         missionPromptCode: "ENTER MISSION CODE (Found in Box):",
         missionExpiredAlert: "⚠️ MISSION EXPIRED. 48 HOURS HAVE PASSED.",
         connectionErrorAlert: "⚠️ CONNECTION ERROR!\nThe server is not responding.",

@@ -90,6 +90,10 @@ export function toggleProfileMenu() {
 }
 
 document.addEventListener('click', (e) => {
+    // A click whose target was removed by its own handler (the cart's × re-renders the item list) has
+    // no ancestors left, so every "is it inside?" check below says no — and removing one item used to
+    // close the whole cart. A detached target was, by definition, inside something that re-rendered.
+    if (!e.target.isConnected) return;
     const menu = document.getElementById('profile-menu');
     if (menu && menu.classList.contains('show')) {
         if (!e.target.closest('#profile-menu') && !e.target.closest('.profile-btn')) {

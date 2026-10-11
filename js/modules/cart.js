@@ -3,7 +3,11 @@ import { state } from '../state.js';
 import { CONFIG } from '../config.js';
 import { t } from '../i18n.js';
 import { getBreakdown, getActiveImages } from './gallery.js';
-import { esc, escUrl, formatPrice } from '../utils.js';
+import { esc, escUrl, formatPrice, stockState } from '../utils.js';
+
+function notify(msg) {
+    if (window.showToast) window.showToast(msg, 'error'); else alert(msg);
+}
 
 // Matches css/components/cart.css's declared width — the dropdown is display:none until .show
 // is added, so offsetWidth reads 0 at the point this needs it. Keep the two in sync if that ever
@@ -84,7 +88,7 @@ export function updateCartUI() {
     const items = document.getElementById('mini-cart-items'); 
     let total = 0; 
     if (state.cart.length === 0) { 
-        if(items) items.innerHTML = '<div style="color:#666; text-align:center; padding:20px; font-size:0.9rem;">CART IS EMPTY</div>'; 
+        if(items) items.innerHTML = `<div style="color:#666; text-align:center; padding:20px; font-size:0.9rem;">${esc(t('cartEmpty'))}</div>`;
     } else { 
         if(items) items.innerHTML = state.cart.map((item, i) => {
             total += item.priceCents;
@@ -101,7 +105,7 @@ export function updateCartUI() {
                             ${optHTML}
                             <div class="mc-price">${formatPrice(item.priceCents)}</div>
                         </div>
-                        <i class="ph-bold ph-x mc-remove" onclick="removeFromCart(${i})"></i>
+                        <button type="button" class="mc-remove" onclick="removeFromCart(${i})" aria-label="${esc(t('cartRemove'))}" title="${esc(t('cartRemove'))}"><i class="ph-bold ph-x"></i></button>
                     </div>`;
         }).join('');
     }
@@ -111,12 +115,21 @@ export function updateCartUI() {
 
 export function addToCart() {
     const pc = state.currentGalleryPC;
-    if(!pc) return;
-    if(pc.stock === 0) return alert(t('alertSoldOut'));
+    if(!pc || pc.isVoteEvent) return;
+    // Toasts instead of alert(): a native dialog on a phone blocks the page and reads like an error
+    const st = stockState(pc);
+    if (st === 'soon') return notify(t('alertComingSoon'));
+    if (st === 'out') return notify(t('alertSoldOut'));
+    // Can't put three of a PC in the cart when the shop has one. Matched by id; older cart entries
+    // saved before ids were stored fall back to the name.
+    const pcId = String(pc._id || pc.id || '');
+    const inCart = state.cart.filter(item => item.pcId ? item.pcId === pcId : item.name === pc.name).length;
+    if (inCart >= (Number(pc.stock) || 0)) return notify(t('alertStockLimit'));
 
     const { base, lines, total } = getBreakdown();
 
     state.cart.push({
+        pcId,
         name: pc.name,
         // getBreakdown() works in cents throughout — see gallery.js
         basePriceCents: base,
@@ -221,7 +234,7 @@ export function removeFromCart(i) {
 // Checkout hands the order to WhatsApp. The message is prefilled with every line and every
 // chosen extra — without this the configured build never reaches the shop.
 export function handleCheckout() {
-    if(state.cart.length === 0) return alert(t('alertCartEmpty'));
+    if(state.cart.length === 0) return notify(t('alertCartEmpty'));
 
     const msg = [t('orderMsgIntro'), ''];
     let total = 0;

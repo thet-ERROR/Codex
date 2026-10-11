@@ -24,7 +24,8 @@ export function toggleCompare(id, btnElement) {
                 btnElement.innerText = window.t ? window.t('addedToVs') : 'ADDED TO VS';
             }
         } else { 
-            alert(window.t ? window.t('alertMaxCompare') : "MAX 2 ITEMS ALLOWED IN VS MODE");
+            const msg = window.t ? window.t('alertMaxCompare') : "MAX 2 ITEMS ALLOWED IN VS MODE";
+            if (window.showToast) window.showToast(msg, 'error'); else alert(msg);
         } 
     } 
     

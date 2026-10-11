@@ -15,8 +15,10 @@
 .mc-opt { font-size: 0.75rem; color: #888; line-height: 1.4; }
 .mc-opt-price { color: var(--neon-green); opacity: 0.75; }
 .mc-price { color: var(--neon-green); font-family: var(--font-ui); font-weight: bold; }
-.mc-remove { color: var(--retro-red); cursor: pointer; font-size: 1.2rem; transition: 0.2s; }
-.mc-remove:hover { color: #fff; transform: scale(1.2); }
+/* A real button with a 40px target — the bare 19px icon it replaced was easy to miss with a thumb */
+.mc-remove { flex-shrink: 0; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; background: none; border: none; border-radius: 50%; padding: 0; color: var(--retro-red); cursor: pointer; font-size: 1.2rem; transition: color 0.2s, background-color 0.2s; }
+.mc-remove:hover { color: #fff; background: rgba(255, 51, 51, 0.15); }
+.mc-remove:active { transform: scale(0.9); }
 .mini-cart-footer { border-top: 1px solid #333; padding-top: 15px; }
 .mc-total-row { display: flex; justify-content: space-between; margin-bottom: 15px; font-weight: bold; font-family: var(--font-ui); font-size: 1.2rem; }
 .mc-checkout-btn { width: 100%; background: var(--neon-green); color: #000; border: none; padding: 12px; font-weight: bold; font-family: var(--font-ui); cursor: pointer; border-radius: 6px; transition: 0.3s; letter-spacing: 1px; }

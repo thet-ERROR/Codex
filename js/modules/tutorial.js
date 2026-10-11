@@ -18,8 +18,7 @@ const COPY = {
     en: {
         welcome: ['WELCOME AGENT', 'Initiating System Override. Let us give you a quick tour of the CODEX Terminal.'],
         logo: ['IDENTITY CHECK', "Tap the logo anytime to see who's really running this operation."],
-        live: ['LIVE DROPS', 'Here you will find the currently available, custom-built gaming rigs ready for deployment.'],
-        vault: ['LAST CALL', 'Access classified systems that are either sold out or incoming. Keep an eye out for legendary drops.'],
+        live: ['LIVE DROPS', 'Every custom-built rig, ready for deployment. A blinking red badge means only one unit is left; COMING SOON builds wait at the end of the list.'],
         vote: ['VOTE', "The network votes on which mystery PC gets unlocked for purchase. Only signed-in agents can vote — if it isn't secured before time runs out, it automatically moves to Live Drops."],
         browsePhone: ['BROWSE SYSTEMS', 'Swipe the card left or right to see the next PC — the bars under the card show where you are. Tap INSPECT SYSTEM for full specs, FPS and options.'],
         browseDesktop: ['BROWSE SYSTEMS', 'Use the arrows either side of the card to see the next PC. INSPECT SYSTEM opens full specs, FPS and options.'],
@@ -34,8 +33,7 @@ const COPY = {
     el: {
         welcome: ['ΚΑΛΩΣΟΡΙΣΕΣ, ΠΡΑΚΤΟΡΑ', 'Ενεργοποιείται παράκαμψη συστήματος. Ας σου κάνουμε μια γρήγορη ξενάγηση στο CODEX Terminal.'],
         logo: ['ΕΛΕΓΧΟΣ ΤΑΥΤΟΤΗΤΑΣ', 'Πάτα το λογότυπο όποτε θες, για να δεις ποιος πραγματικά τρέχει αυτή την επιχείρηση.'],
-        live: ['LIVE DROPS', 'Εδώ θα βρεις τα διαθέσιμα, χειροποίητα gaming rigs, έτοιμα για παράδοση.'],
-        vault: ['LAST CALL', 'Πρόσβαση σε απόρρητα συστήματα που είναι είτε εξαντλημένα είτε έρχονται σύντομα. Πρόσεχε για θρυλικά drops.'],
+        live: ['LIVE DROPS', 'Όλα τα χειροποίητα gaming rigs, έτοιμα για παράδοση. Κόκκινο badge που αναβοσβήνει σημαίνει ότι έμεινε μόνο ένα τεμάχιο· όσα έρχονται ΣΥΝΤΟΜΑ είναι στο τέλος της λίστας.'],
         vote: ['VOTE', 'Το δίκτυο ψηφίζει ποιο μυστηριώδες PC θα ξεκλειδωθεί για αγορά. Μόνο συνδεδεμένοι πράκτορες μπορούν να ψηφίσουν — αν δεν εξασφαλιστεί πριν λήξει ο χρόνος, μεταφέρεται αυτόματα στα Live Drops.'],
         browsePhone: ['ΠΕΡΙΗΓΗΣΗ', 'Σύρε την κάρτα αριστερά ή δεξιά για να δεις το επόμενο PC — οι μπάρες κάτω από την κάρτα δείχνουν πού βρίσκεσαι. Το ΕΠΙΘΕΩΡΗΣΗ ΣΥΣΤΗΜΑΤΟΣ δείχνει πλήρη specs, FPS και επιλογές.'],
         browseDesktop: ['ΠΕΡΙΗΓΗΣΗ', 'Με τα βελάκια δεξιά κι αριστερά της κάρτας βλέπεις το επόμενο PC. Το ΕΠΙΘΕΩΡΗΣΗ ΣΥΣΤΗΜΑΤΟΣ δείχνει πλήρη specs, FPS και επιλογές.'],
@@ -60,7 +58,6 @@ function buildSteps(lang) {
 
     const tabs = [
         step('#tab-live', 'live', 'bottom', 'start'),
-        step('#tab-vault', 'vault', 'bottom', 'start'),
         step('#tab-vote', 'vote', 'bottom', 'start')
     ];
     // The card sits mid-screen; "top" keeps the popover off the card it's describing
