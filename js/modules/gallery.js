@@ -1,7 +1,7 @@
 // js/modules/gallery.js
 import { state } from '../state.js';
 import { t } from '../i18n.js';
-import { esc, formatPrice, priceCentsOf } from '../utils.js';
+import { esc, formatPrice, priceCentsOf, stockState, stockLabel } from '../utils.js';
 
 // --- EXTRAS: normalisation, pricing, image sets ---
 
@@ -262,41 +262,22 @@ export function openGallery(pc) {
     const elQuickSpecs = document.getElementById('yg-quick-specs');
     if(elQuickSpecs) {
         elQuickSpecs.innerHTML = `
-            <div class="yg-spec-badge"><div class="yg-spec-icon">⚙️</div><span>${cpuText}</span></div>
-            <div class="yg-spec-badge"><div class="yg-spec-icon">🎮</div><span>${gpuText}</span></div>
-            <div class="yg-spec-badge"><div class="yg-spec-icon">💾</div><span>${ramText}</span></div>
+            <div class="yg-spec-badge"><div class="yg-spec-icon">⚙️</div><span>${esc(cpuText)}</span></div>
+            <div class="yg-spec-badge"><div class="yg-spec-icon">🎮</div><span>${esc(gpuText)}</span></div>
+            <div class="yg-spec-badge"><div class="yg-spec-icon">💾</div><span>${esc(ramText)}</span></div>
         `;
     }
 
-    // 5. Stock Status
-    const stock = state.currentGalleryPC.stock || 0; 
-    const stockContainer = document.getElementById('yg-stock-container');
-    const stockBadge = document.getElementById('yg-stock-badge'); 
-    const addBtn = document.getElementById('yg-add-cart'); 
-    
-    if(stockContainer && stockBadge) {
-        if(stock === 0) { 
-            stockContainer.style.borderColor = "#ff3333";
-            stockContainer.style.background = "rgba(255, 51, 51, 0.1)";
-            stockBadge.style.color = "#ff3333";
-            stockBadge.innerText = "❌ OUT OF STOCK"; 
-            if(addBtn) addBtn.disabled = true;
-        } 
-        else if(stock < 5) { 
-            stockContainer.style.borderColor = "#fbbf24";
-            stockContainer.style.background = "rgba(251, 191, 36, 0.1)";
-            stockBadge.style.color = "#fbbf24";
-            stockBadge.innerText = `⚠️ LOW STOCK: ${stock} UNITS`; 
-            if(addBtn) addBtn.disabled = false;
-        } 
-        else { 
-            stockContainer.style.borderColor = "#bef264";
-            stockContainer.style.background = "rgba(190, 242, 100, 0.1)";
-            stockBadge.style.color = "#bef264";
-            stockBadge.innerText = "✔️ IN STOCK"; 
-            if(addBtn) addBtn.disabled = false;
-        } 
-    }    
+    // 5. Stock Status — the old code styled a stock box that index.html doesn't have, and only set the
+    // cart button's disabled state inside that missing box's branch, so a sold-out PC's button stayed
+    // live. Now the button itself says why it can't be pressed.
+    const addBtn = document.getElementById('yg-add-cart');
+    if (addBtn && !state.currentGalleryPC.isVoteEvent) {
+        const st = stockState(state.currentGalleryPC);
+        const blocked = st === 'out' || st === 'soon';
+        addBtn.disabled = blocked;
+        addBtn.textContent = blocked ? stockLabel(state.currentGalleryPC) : t('addToCartBtn');
+    }
     
 // 6. Back Side Detailed Specs (Yu-Gi-Oh style: stars + stat boxes + spec items + flavor text)
     let backH = "";

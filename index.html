@@ -110,7 +110,6 @@ Type 'help' for a list of commands.
         
         <div class="nav-bar">
             <button class="nav-btn active-live" id="tab-live" onclick="playClick(); switchTab('live')">LIVE DROPS</button>
-            <button class="nav-btn" id="tab-vault" onclick="playClick(); switchTab('vault')">LAST CALL</button>
             <button class="nav-btn" id="tab-starter" onclick="playClick(); switchTab('starter')">STARTER PACKS</button>
             <button class="nav-btn" id="tab-vote" onclick="playClick(); switchTab('vote')">VOTE</button>
             
@@ -146,13 +145,13 @@ Type 'help' for a list of commands.
         <button class="back-to-packs-btn hidden" id="back-to-packs-btn" onclick="playClick(); backToPacks()"><i class="ph-bold ph-arrow-left"></i> <span data-i18n="backToPacksBtn">BACK TO PACKS</span></button>
 
         <div class="carousel-wrapper" id="carousel-wrapper">
-            <button class="nav-arrow" onclick="playClick(); prevPC()"><i class="ph-bold ph-caret-left"></i></button>
+            <button class="nav-arrow" onclick="playClick(); swipeCard(-1)" aria-label="Previous PC"><i class="ph-bold ph-caret-left"></i></button>
             <div class="card-col">
                 <div id="main-card"></div>
                 <!-- Position indicator, not controls: one pill per PC, the current one lit (renderDots in catalog.js) -->
                 <div class="pc-dots hidden" id="pc-dots" aria-hidden="true"></div>
             </div>
-            <button class="nav-arrow" onclick="playClick(); nextPC()"><i class="ph-bold ph-caret-right"></i></button>
+            <button class="nav-arrow" onclick="playClick(); swipeCard(1)" aria-label="Next PC"><i class="ph-bold ph-caret-right"></i></button>
             <!-- Phones only, in place of the arrows (mobile.css). A finger that presses and drags left over
                  the photo; hidden for good once the visitor has swiped once, and whenever there's only one
                  PC to show — see updateSwipeHint(). -->
@@ -267,9 +266,10 @@ Type 'help' for a list of commands.
 
         <div class="yg-buttons-section">
             <button class="yg-btn yg-btn-specs yg-btn-breathe" onclick="playClick(); toggleCardFlip()">
-                <span>⇄</span> Flip to Specs
+                <span>⇄</span> <span data-i18n="flipToSpecs">Flip to Specs</span>
             </button>
-            <button class="yg-btn yg-btn-cart" id="yg-add-cart" onclick="addToCart()">
+            <!-- Text set per PC by gallery.js: "Add to Cart", or why it can't be (sold out / coming soon) -->
+            <button class="yg-btn yg-btn-cart" id="yg-add-cart" onclick="playClick(); addToCart()">
                 Add to Cart
             </button>
         </div>
@@ -289,7 +289,7 @@ Type 'help' for a list of commands.
 
         <div class="yg-buttons-section">
             <button class="yg-btn yg-btn-specs yg-btn-breathe" onclick="playClick(); toggleCardFlip()">
-                <span>⇄</span> Flip to Front
+                <span>⇄</span> <span data-i18n="flipToFront">Flip to Front</span>
             </button>
             <button id="bench-toggle-btn" class="yg-btn yg-btn-fps yg-btn-breathe" onclick="playClick(); toggleBenchmarksView()">
                 <i class="ph-bold ph-crosshair"></i> Show FPS

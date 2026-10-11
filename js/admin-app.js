@@ -51,7 +51,7 @@
         // 1. Fill Inventory List
         document.getElementById('inventory-list').innerHTML = inventory.map(pc => {
             let statusColor = pc.status === 'available' ? '#ccff00' : pc.status === 'coming' ? '#ffaa00' : '#ff3333';
-            let statusText = pc.status === 'coming' ? 'LAST CALL' : pc.status === 'available' ? 'LIVE' : 'SOLD OUT';
+            let statusText = pc.status === 'coming' ? 'COMING SOON' : pc.status === 'available' ? 'LIVE' : 'SOLD OUT';
 
             return `
             <div class="item">

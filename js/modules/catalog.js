@@ -1,10 +1,13 @@
 // js/modules/catalog.js
 import { state } from '../state.js';
-import { esc, escUrl, formatPrice, priceCentsOf } from '../utils.js';
+import { esc, escUrl, formatPrice, priceCentsOf, stockState, stockLabel } from '../utils.js';
 
 export function switchTab(mode) {
+    // LAST CALL ('vault') was removed — its "coming soon" PCs now sit at the end of LIVE DROPS
+    // (filterInv). A stale caller asking for it lands there instead of on an empty stage.
+    if (mode === 'vault') mode = 'live';
     state.currentTab = mode;
-    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active-live', 'active-vault', 'active-starter', 'active-vote', 'active-gear'));
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active-live', 'active-starter', 'active-vote', 'active-gear'));
     const tabBtn = document.getElementById(`tab-${mode}`);
     if (tabBtn) tabBtn.classList.add(`active-live`);
 
@@ -51,11 +54,13 @@ export function backToPacks() {
 }
 
 export function filterInv() { 
-    state.filtered = state.inventory.filter(p => { 
-        if (state.currentTab === 'live') return (p.category === 'drop' || !p.category) && p.status !== 'coming'; 
-        if (state.currentTab === 'vault') return p.status === 'coming'; 
+    state.filtered = state.inventory.filter(p => {
+        if (state.currentTab === 'live') return p.category === 'drop' || !p.category;
         return true;
-    }); 
+    });
+    // What can be bought now comes first, coming-soon builds last. sort() is stable, so the admin's
+    // own order is kept within each group.
+    state.filtered.sort((a, b) => (a.status === 'coming') - (b.status === 'coming'));
     state.index = 0; 
     renderCard(); 
 }
@@ -86,12 +91,8 @@ export function renderCard() {
 
     const pc = state.filtered[state.index];
     const inCompare = state.compareList.find(p => p._id === pc._id); 
-    const stock = pc.stock || 0;
-    
-    let stockHTML = ''; 
-    if (stock === 0) stockHTML = '<div class="stock-badge out">SOLD OUT</div>'; 
-    else if (stock < 5) stockHTML = `<div class="stock-badge low">LOW STOCK: ${stock} UNITS</div>`; 
-    else stockHTML = '<div class="stock-badge in">IN STOCK</div>'; 
+    // 'last' (exactly one unit) blinks red — see .stock-badge.last in stage.css
+    const stockHTML = `<div class="stock-badge ${stockState(pc)}">${esc(stockLabel(pc))}</div>`;
 
     let fpsHTML = ''; 
     if (pc.multitasking) {
@@ -206,12 +207,42 @@ function updateSwipeHint() {
     hint.classList.toggle('hidden', learned || state.filtered.length < 2);
 }
 
-function slideCard(dir) {
+// --- DECK TRANSITION ---
+// Moving to another PC plays like dealing from a deck: a snapshot of the old card is laid on top and
+// thrown off to the side it was swiped towards, fading and tilting, while the new card rises from just
+// underneath it. The snapshot is a plain clone — inert, not tappable — removed when its animation ends.
+const REDUCED_MOTION = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+function throwGhost(card, dir) {
+    const col = card.parentElement;
+    if (!col || !card.firstElementChild) return; // nothing rendered yet (e.g. "NO SIGNAL" never left)
+    col.querySelectorAll('.card-ghost').forEach(g => g.remove()); // a fast second swipe replaces the first
+    const ghost = card.cloneNode(true);
+    ghost.removeAttribute('id');
+    ghost.className = 'holo-card card-ghost ' + (dir > 0 ? 'to-left' : 'to-right');
+    ghost.setAttribute('aria-hidden', 'true');
+    ghost.inert = true;
+    Object.assign(ghost.style, {
+        width: card.offsetWidth + 'px', height: card.offsetHeight + 'px',
+        left: card.offsetLeft + 'px', top: card.offsetTop + 'px'
+    });
+    col.appendChild(ghost);
+    const done = () => ghost.remove();
+    ghost.addEventListener('animationend', done, { once: true });
+    setTimeout(done, 700); // in case animationend never fires (tab hidden mid-animation)
+}
+
+// dir > 0: next PC (finger moved left / right arrow), dir < 0: previous one
+export function swipeCard(dir) {
     const card = document.getElementById('main-card');
-    if (!card) return;
-    card.classList.remove('swipe-in-left', 'swipe-in-right');
+    if (!card || state.filtered.length < 2) return;
+    const animate = !REDUCED_MOTION.matches;
+    if (animate) throwGhost(card, dir);
+    if (dir > 0) nextPC(); else prevPC();
+    if (!animate) return;
+    card.classList.remove('deck-in');
     void card.offsetWidth; // restart the animation if swiping again before it finished
-    card.classList.add(dir > 0 ? 'swipe-in-right' : 'swipe-in-left');
+    card.classList.add('deck-in');
 }
 
 function initCardSwipe() {
@@ -235,7 +266,7 @@ function initCardSwipe() {
         if (state.filtered.length < 2) return;
         if (window.playClick) window.playClick();
         try { localStorage.setItem(SWIPE_LEARNED_KEY, '1'); } catch (e) {}
-        if (dx < 0) { nextPC(); slideCard(1); } else { prevPC(); slideCard(-1); }
+        swipeCard(dx < 0 ? 1 : -1);
     }, { passive: true });
     wrapper.addEventListener('touchend', () => { touchTracking = false; }, { passive: true });
     wrapper.addEventListener('touchcancel', () => { touchTracking = false; }, { passive: true });
@@ -250,3 +281,4 @@ window.filterInv = filterInv;
 window.nextPC = nextPC;
 window.prevPC = prevPC;
 window.renderCard = renderCard;
+window.swipeCard = swipeCard;
