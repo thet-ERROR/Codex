@@ -84,22 +84,35 @@
        catalog.js). In their place, a small floating hint at photo height: 85px = card padding (15)
        + half the photo frame (140/2). */
     .nav-arrow { display: none !important; }
-    .swipe-hint {
-        display: flex; position: absolute; top: 85px; right: 8px; transform: translateY(-50%);
-        z-index: 5; pointer-events: none;
-        width: 34px; height: 34px; border-radius: 50%; align-items: center; justify-content: center;
-        background: rgba(8, 8, 12, 0.75); border: 1px solid rgba(204, 255, 0, 0.35);
-        color: var(--neon-green); font-size: 1.05rem; opacity: 0.8;
-        animation: swipeNudge 2.4s ease-in-out infinite;
+    /* The hint is a finger over the photo: it lands on the right, presses down, drags left leaving a
+       glowing trail, lifts and fades — about a second of motion, then a pause. The container is just an
+       anchor point at the photo's centre (50% across, 85px down); the finger and trail animate inside. */
+    .swipe-hint { display: block; position: absolute; top: 85px; left: 50%; width: 0; height: 0; z-index: 5; pointer-events: none; }
+    .swipe-hint i {
+        position: absolute; left: -15px; top: -10px; font-size: 30px; line-height: 1; color: #fff;
+        filter: drop-shadow(0 0 6px rgba(204, 255, 0, 0.9)) drop-shadow(0 2px 4px rgba(0, 0, 0, 0.8));
+        opacity: 0; animation: swipeFinger 2.4s ease-in-out infinite; will-change: transform, opacity;
     }
-    /* A short leftward flick, then a long pause — noticeable without being a distraction */
-    @keyframes swipeNudge {
-        0%, 55%, 100% { transform: translate(0, -50%); }
-        65% { transform: translate(-8px, -50%); }
-        75% { transform: translate(0, -50%); }
-        85% { transform: translate(-8px, -50%); }
+    .swipe-hint-trail {
+        position: absolute; left: -55px; top: -2px; width: 110px; height: 4px; border-radius: 4px;
+        background: linear-gradient(to left, rgba(204, 255, 0, 0.9), rgba(204, 255, 0, 0));
+        transform-origin: right center; opacity: 0; animation: swipeTrail 2.4s ease-in-out infinite;
     }
-    @media (prefers-reduced-motion: reduce) { .swipe-hint { animation: none; } }
+    @keyframes swipeFinger {
+        0%   { opacity: 0; transform: translate3d(55px, 6px, 0) scale(1); }
+        12%  { opacity: 1; transform: translate3d(55px, 0, 0) scale(1); }
+        22%  { opacity: 1; transform: translate3d(55px, 0, 0) scale(0.82); }
+        52%  { opacity: 1; transform: translate3d(-55px, 0, 0) scale(0.82); }
+        62%  { opacity: 0; transform: translate3d(-62px, 0, 0) scale(1); }
+        100% { opacity: 0; transform: translate3d(-62px, 0, 0) scale(1); }
+    }
+    @keyframes swipeTrail {
+        0%, 22% { opacity: 0; transform: scaleX(0); }
+        26%  { opacity: 1; transform: scaleX(0); }
+        52%  { opacity: 1; transform: scaleX(1); }
+        66%, 100% { opacity: 0; transform: scaleX(1); }
+    }
+    @media (prefers-reduced-motion: reduce) { .swipe-hint i, .swipe-hint-trail { animation: none; opacity: 0.8; } .swipe-hint-trail { display: none; } }
     .pc-title { font-size: 1.7rem !important; margin-bottom: 3px !important; }
     .card-price-row { margin-bottom: 8px !important; }
     .pc-price { font-size: 1.4rem !important; }

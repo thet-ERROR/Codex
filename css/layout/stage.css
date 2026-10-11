@@ -3,14 +3,24 @@
 .back-to-packs-btn { pointer-events: auto; display: flex; align-items: center; gap: 6px; margin: 0 auto 15px auto; background: rgba(255,255,255,0.05); border: 1px solid #444; color: #ccc; padding: 8px 16px; border-radius: 30px; font-family: var(--font-ui); font-weight: 700; font-size: 0.8rem; letter-spacing: 1px; cursor: pointer; transition: 0.3s; }
 .back-to-packs-btn:hover { border-color: var(--neon-purple); color: #fff; box-shadow: 0 0 12px rgba(176,38,255,0.2); }
 .carousel-wrapper, .starter-menu { pointer-events: auto; }
-.carousel-wrapper { display: flex; align-items: center; justify-content: center; gap: 40px; transition: 0.3s; width: 100%; }
+.carousel-wrapper { display: flex; align-items: center; justify-content: center; gap: 40px; width: 100%; /* pan-y: the browser keeps vertical scroll, a sideways drag is ours (initCardSwipe) */ touch-action: pan-y; }
+.card-col { display: flex; flex-direction: column; align-items: center; gap: 14px; min-width: 0; max-width: 100%; }
 
-#main-card, .holo-card { width: 420px; max-width: 95vw; background: #111111 !important; border: 2px solid #333333 !important; border-radius: 16px; padding: 35px; text-align: center; position: relative; transition: 0.4s; box-shadow: 0 40px 100px rgba(0,0,0,0.8); display: flex; flex-direction: column; align-items: center; pointer-events: auto; backdrop-filter: none !important; -webkit-backdrop-filter: none !important; opacity: 1 !important; visibility: visible !important; }
-#main-card:hover, .holo-card:hover { transform: translateY(-4px); box-shadow: 0 50px 120px rgba(0,0,0,0.85); }
+/* Where you are in the list: one pill per PC, not tappable. Grey and see-through, the current one
+   wider and lit green — so "there are more to the sides" reads without any text. */
+.pc-dots { display: flex; justify-content: center; align-items: center; gap: 7px; pointer-events: none; }
+.pc-dot { width: 18px; height: 5px; border-radius: 5px; background: rgba(255, 255, 255, 0.16); transition: width 0.25s ease, background-color 0.25s ease, box-shadow 0.25s ease; }
+.pc-dot.active { width: 38px; background: var(--neon-green); box-shadow: 0 0 10px rgba(204, 255, 0, 0.55); }
+
+#main-card, .holo-card { width: 420px; max-width: 95vw; background: #111111 !important; border: 2px solid #333333 !important; border-radius: 16px; padding: 35px; text-align: center; position: relative; transition: transform 0.25s ease, box-shadow 0.25s ease; box-shadow: 0 40px 100px rgba(0,0,0,0.8); display: flex; flex-direction: column; align-items: center; pointer-events: auto; backdrop-filter: none !important; -webkit-backdrop-filter: none !important; opacity: 1 !important; visibility: visible !important; }
+/* Only where there's a real hover — on a phone :hover sticks after a tap and the card would jump up */
+@media (hover: hover) { #main-card:hover, .holo-card:hover { transform: translateY(-4px); box-shadow: 0 50px 120px rgba(0,0,0,0.85); } }
 body.night-mode #main-card, body.night-mode .holo-card { background: var(--card-bg-night) !important; border-color: var(--card-border-night) !important; box-shadow: 0 40px 100px rgba(0,0,0,0.9), var(--night-glow); }
 .holo-card-inner { position: relative; width: 100%; height: 100%; pointer-events: auto; }
 .hero-img-frame { position: relative; overflow: hidden; height: 200px; margin: 0 auto 10px auto; border-radius: 8px; }
-.hero-img-frame::before { content: ''; position: absolute; top: 0; left: -150%; width: 60%; height: 100%; background: linear-gradient(to right, transparent, rgba(255,255,255,0.08), transparent); transform: skewX(-20deg); animation: holo-glare 5s infinite; pointer-events: none; }
+.hero-img-frame::before { content: ''; position: absolute; top: 0; left: -150%; width: 60%; height: 100%; background: linear-gradient(to right, transparent, rgba(255,255,255,0.08), transparent); transform: skewX(-20deg); animation: holoSweep 5s infinite; pointer-events: none; will-change: transform; }
+/* Same sweep as holo-glare, moved with transform instead of `left` — `left` re-lays-out the card every frame */
+@keyframes holoSweep { 0% { transform: translateX(0) skewX(-20deg); } 20%, 100% { transform: translateX(500%) skewX(-20deg); } }
 @media (prefers-reduced-motion: reduce) {
     .hero-img-frame::before { animation: none; }
 }
@@ -41,10 +51,14 @@ body.night-mode #main-card, body.night-mode .holo-card { background: var(--card-
 .swipe-hint { display: none; }
 
 /* Swipe feedback — the new card slides in from the side it came from (initCardSwipe, catalog.js) */
-@keyframes cardInFromRight { from { opacity: 0.2; transform: translateX(40px); } to { opacity: 1; transform: translateX(0); } }
-@keyframes cardInFromLeft  { from { opacity: 0.2; transform: translateX(-40px); } to { opacity: 1; transform: translateX(0); } }
-#main-card.swipe-in-right { animation: cardInFromRight 0.28s ease-out; }
-#main-card.swipe-in-left  { animation: cardInFromLeft 0.28s ease-out; }
+@keyframes cardInFromRight { from { opacity: 0.3; transform: translate3d(46px, 0, 0); } to { opacity: 1; transform: translate3d(0, 0, 0); } }
+@keyframes cardInFromLeft  { from { opacity: 0.3; transform: translate3d(-46px, 0, 0); } to { opacity: 1; transform: translate3d(0, 0, 0); } }
+#main-card.swipe-in-right { animation: cardInFromRight 0.2s cubic-bezier(0.2, 0.8, 0.3, 1); }
+#main-card.swipe-in-left  { animation: cardInFromLeft 0.2s cubic-bezier(0.2, 0.8, 0.3, 1); }
+
+/* Instant press feedback on the card's buttons: the colour change is a 0.3s fade, the squeeze is immediate */
+.btn-card-inspect, .btn-card-compare { transition: background-color 0.2s, box-shadow 0.2s, color 0.2s, transform 0.08s; }
+.btn-card-inspect:active, .btn-card-compare:active { transform: scale(0.97); }
 @media (prefers-reduced-motion: reduce) { #main-card.swipe-in-right, #main-card.swipe-in-left { animation: none; } }
 
 .nav-arrow { background: rgba(255,255,255,0.05); color: #fff; width: 40px; height: 80px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; cursor: pointer; clip-path: polygon(0 20%, 100% 0, 100% 100%, 0 80%); transition: 0.3s; }

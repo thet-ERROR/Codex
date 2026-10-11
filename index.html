@@ -147,11 +147,16 @@ Type 'help' for a list of commands.
 
         <div class="carousel-wrapper" id="carousel-wrapper">
             <button class="nav-arrow" onclick="playClick(); prevPC()"><i class="ph-bold ph-caret-left"></i></button>
-            <div id="main-card"></div>
+            <div class="card-col">
+                <div id="main-card"></div>
+                <!-- Position indicator, not controls: one pill per PC, the current one lit (renderDots in catalog.js) -->
+                <div class="pc-dots hidden" id="pc-dots" aria-hidden="true"></div>
+            </div>
             <button class="nav-arrow" onclick="playClick(); nextPC()"><i class="ph-bold ph-caret-right"></i></button>
-            <!-- Phones only, in place of the arrows (mobile.css). Hidden for good once the visitor has
-                 swiped once, and whenever there's only one PC to show — see initCardSwipe(). -->
-            <div class="swipe-hint hidden" id="swipe-hint" aria-hidden="true"><i class="ph-bold ph-hand-swipe-left"></i></div>
+            <!-- Phones only, in place of the arrows (mobile.css). A finger that presses and drags left over
+                 the photo; hidden for good once the visitor has swiped once, and whenever there's only one
+                 PC to show — see updateSwipeHint(). -->
+            <div class="swipe-hint hidden" id="swipe-hint" aria-hidden="true"><span class="swipe-hint-trail"></span><i class="ph-fill ph-hand-pointing"></i></div>
         </div>
 
         <div class="starter-menu hidden" id="starter-menu">
