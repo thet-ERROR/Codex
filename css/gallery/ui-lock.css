@@ -3,4 +3,10 @@ body.ui-locked { overflow: hidden !important; }
    behind an open modal has to happen on <html> too — body's overflow alone no longer stops it. */
 html:has(> body.ui-locked) { overflow: hidden !important; }
 body.ui-locked header, body.ui-locked .stage, body.ui-locked .left-sidebar, body.ui-locked .right-sidebar:not(.mobile-active) { pointer-events: none !important; filter: blur(3px) !important; opacity: 0.5 !important; transition: all 0.3s ease !important; }
+/* Blurring the whole page behind every modal is the heaviest thing the site does on a phone GPU, and the
+   overlay is 95% opaque so it's barely visible anyway — on touch layouts just dim, no blur. */
+@media (max-width: 1024px) {
+    body.ui-locked header, body.ui-locked .stage, body.ui-locked .left-sidebar, body.ui-locked .right-sidebar:not(.mobile-active) { filter: none !important; transition: opacity 0.2s ease !important; }
+    .modal-overlay { backdrop-filter: none !important; -webkit-backdrop-filter: none !important; }
+}
 .right-sidebar.mobile-active, #cli-overlay, .gallery-overlay, .modal { pointer-events: auto !important; }

@@ -78,6 +78,7 @@ export function renderCard() {
     const c = document.getElementById('main-card'); 
     if (!c) return;
     updateSwipeHint(); // before the early return, so an empty list hides it too
+    renderDots();
     if (!state.filtered.length) {
         c.innerHTML = "<h3>NO SIGNAL</h3>";
         return;
@@ -155,8 +156,35 @@ export function renderCard() {
 
     // Ξεκινάμε το animation στις μπάρες
     setTimeout(()=> {
-        document.querySelectorAll('.bar-fill').forEach(b => b.style.width = b.getAttribute('data-width'));
-    }, 50); 
+        c.querySelectorAll('.bar-fill').forEach(b => b.style.width = b.getAttribute('data-width'));
+    }, 50);
+
+    preloadNeighbours();
+}
+
+// The next swipe lands on a photo that's already downloaded and decoded, instead of an empty frame that
+// pops in a moment after the card slides.
+function preloadNeighbours() {
+    const n = state.filtered.length;
+    if (n < 2) return;
+    [1, -1].forEach(step => {
+        const src = state.filtered[(state.index + step + n) % n]?.images?.[0];
+        // escUrl is the "is this a safe URL" check; the raw value is what the browser should fetch
+        // (its output is HTML-escaped, which would mangle a `&` in a query string)
+        if (src && escUrl(src)) { const img = new Image(); img.decoding = 'async'; img.src = src; }
+    });
+}
+
+// One pill per PC under the card; the current one is lit. Built once per list length and then only the
+// highlight moves, so the pill widens smoothly instead of the row being rebuilt on every swipe.
+function renderDots() {
+    const box = document.getElementById('pc-dots');
+    if (!box) return;
+    const n = state.filtered.length;
+    box.classList.toggle('hidden', n < 2);
+    if (n < 2) return;
+    if (box.children.length !== n) box.innerHTML = '<span class="pc-dot"></span>'.repeat(n);
+    for (let i = 0; i < n; i++) box.children[i].classList.toggle('active', i === state.index);
 }
 
 // --- SWIPE BETWEEN PCs ---
@@ -195,17 +223,22 @@ function initCardSwipe() {
         touchStartY = e.touches[0].clientY;
         touchTracking = true;
     }, { passive: true });
-    wrapper.addEventListener('touchend', (e) => {
+    // Fires the moment the finger has clearly gone sideways, while it's still down — waiting for the
+    // lift added the length of the gesture's tail to every swipe and made it feel laggy.
+    wrapper.addEventListener('touchmove', (e) => {
         if (!touchTracking) return;
-        touchTracking = false;
-        const dx = e.changedTouches[0].clientX - touchStartX;
-        const dy = e.changedTouches[0].clientY - touchStartY;
+        const dx = e.touches[0].clientX - touchStartX;
+        const dy = e.touches[0].clientY - touchStartY;
+        if (Math.abs(dy) > 30 && Math.abs(dy) > Math.abs(dx)) { touchTracking = false; return; } // it's a scroll
         if (Math.abs(dx) < SWIPE_MIN_PX || Math.abs(dx) < Math.abs(dy) * 1.5) return;
+        touchTracking = false; // one swipe = one card, however long the finger keeps moving
         if (state.filtered.length < 2) return;
         if (window.playClick) window.playClick();
         try { localStorage.setItem(SWIPE_LEARNED_KEY, '1'); } catch (e) {}
         if (dx < 0) { nextPC(); slideCard(1); } else { prevPC(); slideCard(-1); }
     }, { passive: true });
+    wrapper.addEventListener('touchend', () => { touchTracking = false; }, { passive: true });
+    wrapper.addEventListener('touchcancel', () => { touchTracking = false; }, { passive: true });
 }
 initCardSwipe();
 
