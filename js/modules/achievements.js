@@ -2,7 +2,7 @@
 import { state } from '../state.js';
 import { api } from '../api.js';
 import { CONFIG } from '../config.js';
-import { esc, escUrl, formatPrice, priceCentsOf } from '../utils.js';
+import { esc, escUrl, formatPrice, priceCentsOf, formatShortDateTime } from '../utils.js';
 import { t, getLang } from '../i18n.js';
 
 // Ids the UI is allowed to report. Everything else in the catalogue is worked out by the API from
@@ -186,8 +186,46 @@ export function openAgentDashboard() {
         }
     }
 
+    renderDossierCoupons();
     if (window.openModal) window.openModal('agent-dashboard-modal');
 }
+
+// Coupons won on the daily wheel (issued and stored by the server — see POST /api/wheel/spin). Each
+// shows its discount, the code to quote, and until when it's valid; used ones stay listed, marked.
+export function renderDossierCoupons() {
+    const box = document.getElementById('dossier-coupons');
+    if (!box) return;
+    const coupons = state.coupons || [];
+    if (!coupons.length) {
+        box.innerHTML = `<div class="dossier-empty">${esc(t('dossierNoCoupons'))}</div>
+            <button type="button" class="coupon-spin-btn" data-coupon-act="spin"><i class="ph-bold ph-gift"></i> ${esc(t('colorsSpinBtn'))}</button>`;
+        return;
+    }
+    box.innerHTML = coupons.map(c => {
+        const used = !!c.usedAt;
+        return `<div class="coupon-row${used ? ' used' : ''}">
+            <div class="coupon-pct">-${esc(c.percent)}%</div>
+            <div class="coupon-info">
+                <div class="coupon-code">${esc(c.code)}</div>
+                <div class="coupon-meta">${esc(used ? t('couponUsed') : t('couponValidUntil', { until: formatShortDateTime(c.expiresAt) }))}</div>
+            </div>
+            ${used ? '' : `<button type="button" class="coupon-copy" data-coupon-act="copy" data-code="${esc(c.code)}" aria-label="${esc(t('couponCopy'))}" title="${esc(t('couponCopy'))}"><i class="ph-bold ph-copy"></i></button>`}
+        </div>`;
+    }).join('');
+}
+
+document.addEventListener('click', async (e) => {
+    const btn = e.target.closest('#dossier-coupons [data-coupon-act]');
+    if (!btn) return;
+    if (window.playClick) window.playClick();
+    if (btn.dataset.couponAct === 'spin') {
+        if (window.closeModal) window.closeModal('agent-dashboard-modal');
+        if (window.openWheelFromSettings) window.openWheelFromSettings();
+        return;
+    }
+    try { await navigator.clipboard.writeText(btn.dataset.code); } catch (err) { /* shown anyway */ }
+    if (window.showToast) window.showToast(t('couponCopied', { code: btn.dataset.code }), 'normal');
+});
 
 // Εξαγωγή στο global scope για να λειτουργούν τα onclick στο HTML
 window.checkAchievement = checkAchievement;

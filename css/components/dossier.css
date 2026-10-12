@@ -100,3 +100,20 @@
 
 .dossier-auth-actions { display: flex; gap: 10px; margin-top: 5px; }
 .dossier-auth-actions .yg-btn { flex: 1; }
+/* Wheel coupons (renderDossierCoupons in achievements.js): a ticket — dashed edge, notches, the
+   discount on the stub, the code to quote, a copy button */
+.coupon-heading { color: #ffc43d; background: rgba(255, 196, 61, 0.1); border-color: rgba(255, 196, 61, 0.4); }
+#dossier-coupons { border-left-color: #ffc43d; max-height: none; }
+.coupon-row { position: relative; display: flex; align-items: center; gap: 12px; width: 100%; box-sizing: border-box; padding: 10px 12px 10px 14px; border: 1px dashed rgba(255, 196, 61, 0.6); border-radius: 10px; background: linear-gradient(90deg, rgba(255, 196, 61, 0.12), rgba(255, 196, 61, 0.02)); }
+.coupon-row::before, .coupon-row::after { content: ''; position: absolute; top: 50%; width: 12px; height: 12px; margin-top: -6px; border-radius: 50%; background: #0c0c11; border: 1px dashed rgba(255, 196, 61, 0.6); }
+.coupon-row::before { left: -7px; }
+.coupon-row::after { right: -7px; }
+.coupon-pct { flex: none; min-width: 58px; padding-right: 10px; border-right: 1px dashed rgba(255, 196, 61, 0.45); font-family: var(--font-ui); font-weight: 800; font-size: 1.3rem; color: #ffc43d; text-align: center; }
+.coupon-info { flex: 1; min-width: 0; }
+.coupon-code { font-family: 'Courier New', monospace; font-weight: 700; font-size: 1rem; letter-spacing: 2px; color: #fff; }
+.coupon-meta { margin-top: 2px; font-size: 0.72rem; color: #9a9aa2; }
+.coupon-copy { flex: none; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 50%; border: 1px solid rgba(255, 196, 61, 0.5); background: transparent; color: #ffc43d; cursor: pointer; transition: background-color 0.2s; }
+.coupon-copy:hover { background: rgba(255, 196, 61, 0.15); }
+.coupon-row.used { opacity: 0.45; filter: grayscale(1); }
+.coupon-spin-btn { display: inline-flex; align-items: center; gap: 6px; margin: 8px auto 0; padding: 8px 14px; border-radius: 999px; border: 1px solid rgba(255, 196, 61, 0.6); background: transparent; color: #ffc43d; font-family: var(--font-ui); font-weight: 800; font-size: 0.75rem; letter-spacing: 1px; text-transform: uppercase; cursor: pointer; }
+.coupon-spin-btn:hover { background: rgba(255, 196, 61, 0.15); }

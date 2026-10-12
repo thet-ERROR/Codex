@@ -653,6 +653,12 @@ Type 'help' for a list of commands.
                         </div>
                     </div>
 
+                    <!-- Coupons won on the daily wheel — filled by renderDossierCoupons() (achievements.js) -->
+                    <div>
+                        <h3 class="dossier-heading coupon-heading" data-i18n="dossierCouponsHeading">&gt;// COUPONS</h3>
+                        <div class="dossier-list coupon-list" id="dossier-coupons"></div>
+                    </div>
+
                     <div>
                         <h3 class="dossier-heading"><span data-i18n="dossierWishlistHeading">&gt;// WISHLIST</span> <span style="font-size: 0.6em; color: #888;" data-i18n="dossierWishlistSub">(SAVED SYSTEMS)</span></h3>
                         <div class="wishlist-grid" id="dossier-wishlist">
@@ -789,6 +795,12 @@ Type 'help' for a list of commands.
         <div class="mini-cart-header"><span data-i18n="cartYourLoot">YOUR LOOT</span><span onclick="toggleCartDropdown()" style="cursor:pointer;">X</span></div>
         <div class="mini-cart-list" id="mini-cart-items"><div style="color:#666; text-align:center; padding:20px;">CART IS EMPTY</div></div>
         <div class="mini-cart-footer">
+            <!-- Only when the signed-in account has an unused wheel coupon (updateCartUI in cart.js) -->
+            <div class="mc-coupon hidden" id="mc-coupon">
+                <label for="mc-coupon-select"><i class="ph-bold ph-ticket"></i> <span data-i18n="cartCouponLabel">COUPON</span></label>
+                <select id="mc-coupon-select"></select>
+            </div>
+            <div class="mc-discount-row hidden" id="mc-discount-row"><span id="mc-discount-label"></span><span id="mc-discount"></span></div>
             <div class="mc-total-row"><span data-i18n="cartTotalLabel">TOTAL</span><span id="mc-total">€0</span></div>
             <button class="mc-checkout-btn" onclick="handleCheckout()" data-i18n="cartCheckoutBtn">SEND YOUR ORDER ON WHATSAPP</button>
         </div>

@@ -119,6 +119,16 @@ const translations = {
         voteShareText: "Ψήφισε για να ξεκλειδώσει το {name} στο PHOENIX CODEX!", linkCopied: "Ο σύνδεσμος αντιγράφηκε",
         voteInfoDefault: "Κοινοτικά drops: η κοινότητα ψηφίζει για να ξεκλειδώσει ένα μυστηριώδες PC.\n\n1. Η ψηφοφορία ανοίγει την ημερομηνία που φαίνεται.\n2. Κάθε συνδεδεμένος πράκτορας με επιβεβαιωμένο email έχει μία ψήφο.\n3. Αν μαζευτούν οι ψήφοι πριν λήξει ο χρόνος, το PC ξεκλειδώνει και μπαίνει αμέσως στα Live Drops, έτοιμο για παραγγελία.\n4. Αν λήξει πρώτα ο χρόνος, το PC έρχεται κι αυτό στα Live Drops με το κλείσιμο της ψηφοφορίας.",
         communityDropBadge: "ΚΟΙΝΟΤΙΚΟ DROP",
+        // Τροχός + κουπόνια (wheel.js, dashboard, καλάθι)
+        wheelSpinsLeft: "ΠΡΟΣΠΑΘΕΙΕΣ: {n}/{max}", wheelLoginRequired: "Συνδέσου για να γυρίσεις τον τροχό.",
+        wheelError: "Ο τροχός δεν απάντησε — δοκίμασε ξανά σε λίγο.", wheelNoSpins: "Τελείωσαν οι προσπάθειες — ξανά σε {time}.",
+        wheelSkinNew: "> ΞΕΚΛΕΙΔΩΣΕΣ ΤΟ SKIN {name} — ΕΦΑΡΜΟΣΤΗΚΕ ΣΤΟ SITE.", wheelSkinAgain: "> ΤΟ SKIN {name} ΤΟ ΕΙΧΕΣ ΗΔΗ — ΕΦΑΡΜΟΣΤΗΚΕ ΞΑΝΑ.",
+        wheelCouponWon: "> ΚΕΡΔΙΣΕΣ ΚΟΥΠΟΝΙ -{p}%: {code} — ισχύει έως {until}. Το βρίσκεις στο προφίλ σου και στο καλάθι.",
+        wheelCouponToast: "🎟 Κέρδισες κουπόνι -{p}%!", wheelBlank: "> ΤΙΠΟΤΑ ΑΥΤΗ ΤΗ ΦΟΡΑ — ΔΟΚΙΜΑΣΕ ΞΑΝΑ.", wheelBlankLast: "> ΤΙΠΟΤΑ ΑΥΤΗ ΤΗ ΦΟΡΑ — ΤΕΛΕΙΩΣΑΝ ΟΙ ΠΡΟΣΠΑΘΕΙΕΣ.",
+        dossierCouponsHeading: ">// Κουπόνια", dossierNoCoupons: "> Κανένα κουπόνι ακόμα — κέρδισε ένα στον Ημερήσιο Τροχό.",
+        couponUsed: "Χρησιμοποιήθηκε", couponValidUntil: "Ισχύει έως {until}", couponCopy: "Αντιγραφή κωδικού", couponCopied: "Ο κωδικός {code} αντιγράφηκε",
+        cartCouponLabel: "Κουπόνι", cartCouponNone: "Χωρίς κουπόνι", cartCouponLine: "Έκπτωση κουπονιού (-{p}%)",
+        orderMsgCoupon: "Κουπόνι", orderMsgAccount: "Λογαριασμός",
         // Τίτλος πάνω από την κάρτα (renderStageHeading στο catalog.js)
         stageLive: "Διαθέσιμα συστήματα", stageStarter: "Διάλεξε πακέτο", stagePack: "Πακέτο {pack}", stageVote: "Κοινοτική ψηφοφορία",
         stageCountOne: "1 σύστημα", stageCountMany: "{n} συστήματα", stageEmpty: "Δεν υπάρχουν συστήματα εδώ ακόμα — έρχονται σύντομα.",
@@ -301,6 +311,16 @@ const translations = {
         voteShareText: "Vote to unlock {name} at PHOENIX CODEX!", linkCopied: "Link copied",
         voteInfoDefault: "Community drops: the network votes to unlock a mystery PC.\n\n1. Voting opens on the date shown.\n2. Every signed-in agent with a verified email gets one vote.\n3. Reach the target before time runs out and the PC unlocks — it goes straight to Live Drops, ready to order.\n4. If time runs out first, the PC still comes to Live Drops when voting closes.",
         communityDropBadge: "COMMUNITY DROP",
+        // Wheel + coupons (wheel.js, dashboard, cart)
+        wheelSpinsLeft: "SPINS LEFT: {n}/{max}", wheelLoginRequired: "Sign in to spin the wheel.",
+        wheelError: "The wheel didn't respond — try again in a moment.", wheelNoSpins: "No spins left — next in {time}.",
+        wheelSkinNew: "> SKIN {name} UNLOCKED — APPLIED TO THE SITE.", wheelSkinAgain: "> YOU ALREADY HAD SKIN {name} — RE-APPLIED.",
+        wheelCouponWon: "> YOU WON A -{p}% COUPON: {code} — valid until {until}. It's in your profile and your cart.",
+        wheelCouponToast: "🎟 You won a -{p}% coupon!", wheelBlank: "> NOTHING THIS TIME — TRY AGAIN.", wheelBlankLast: "> NOTHING THIS TIME — NO SPINS LEFT.",
+        dossierCouponsHeading: ">// Coupons", dossierNoCoupons: "> No coupons yet — win one on the Daily Wheel.",
+        couponUsed: "Used", couponValidUntil: "Valid until {until}", couponCopy: "Copy code", couponCopied: "Code {code} copied",
+        cartCouponLabel: "Coupon", cartCouponNone: "No coupon", cartCouponLine: "Coupon discount (-{p}%)",
+        orderMsgCoupon: "Coupon", orderMsgAccount: "Account",
         // Heading over the card (renderStageHeading in catalog.js)
         stageLive: "Available systems", stageStarter: "Choose a pack", stagePack: "{pack} pack", stageVote: "Community vote",
         stageCountOne: "1 system", stageCountMany: "{n} systems", stageEmpty: "No systems here yet — more are on the way.",

@@ -246,6 +246,19 @@
                 <button class="btn" id="end-vote-btn" style="margin-top:8px; border:1px solid #ff3333; color:#ff3333; background:transparent;">ΑΦΑΙΡΕΣΗ EVENT ΑΠΟ ΤΟ VOTE TAB</button>
             </div>
 
+            <!-- Wheel coupons: a customer quotes the code in their WhatsApp order; check it's real and
+                 theirs here, then mark it used so it can't be used twice -->
+            <div class="tool-box">
+                <h3 style="color:#ffc43d;">ΚΟΥΠΟΝΙΑ ΤΡΟΧΟΥ</h3>
+                <p style="font-size:0.75rem; color:#888; margin:-5px 0 10px 0;">Ο πελάτης γράφει τον κωδικό στο μήνυμα WhatsApp. Έλεγξέ τον εδώ και πάτα «Εξαργύρωση» όταν κλείσει η παραγγελία.</p>
+                <label>Κωδικός</label><input type="text" id="coupon-code" placeholder="CDX-XXXXXX" style="text-transform:uppercase;">
+                <div style="display:flex; gap:8px; margin-top:8px;">
+                    <button class="btn" id="coupon-check-btn" style="flex:1;">ΕΛΕΓΧΟΣ</button>
+                    <button class="btn btn-purple" id="coupon-redeem-btn" style="flex:1;">ΕΞΑΡΓΥΡΩΣΗ</button>
+                </div>
+                <p id="coupon-result" style="font-size:0.85rem; margin:10px 0 0 0; white-space:pre-line;"></p>
+            </div>
+
             <div class="code-box">
                 <h3 style="color:#00f0ff;">ORDER CODES</h3>
                 <label>Generate for Sold Item:</label>

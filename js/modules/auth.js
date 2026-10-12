@@ -72,6 +72,8 @@ export async function hydrateProfile() {
     // erase them. Whatever comes back last is the authoritative profile.
     const merged = await pushLocalAchievements(me.achievements);
     applyProfile(merged || me);
+    // Coupons and wheel colours live on the account now (wheel.js)
+    if (window.applyWheelData) window.applyWheelData({ coupons: me.coupons || [], unlockedColors: me.unlockedColors || [] });
     return me;
 }
 
@@ -290,6 +292,9 @@ export function logout() {
     state.nextRank = null;
     state.nextRankXp = null;
     state.rankProgress = 0;
+    // Coupons belong to the account too — and a picked one mustn't ride along into a guest's cart
+    state.coupons = [];
+    state.selectedCoupon = null;
     localStorage.removeItem('codex_username');
     localStorage.removeItem('codex_token');
     updateAuthUI(null);
