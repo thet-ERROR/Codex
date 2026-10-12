@@ -1,0 +1,77 @@
+/* ===== DESIGN TOKENS — sizes and depth, one source for every screen =====
+   Plan step 1. Later steps (compact Vote, the PC card's "body", windows, motion) build on these
+   instead of each file inventing its own numbers. Three tiers, set by width:
+     desktop  > 1024px   (default values below)
+     tablet   769–1024px (document scrolls, bottom bar)
+     phone    ≤ 768px
+   Change a value here and every component that uses it follows. */
+:root {
+    /* --- Sizes --- */
+    --card-w: 420px;          /* PC card / vote card width */
+    --card-pad: 30px;         /* inner padding of those cards */
+    --card-radius: 16px;
+    --hero-h: 200px;          /* photo frame height on a card */
+    --title-size: 2.4rem;     /* PC / drop name */
+    --price-size: 1.9rem;
+    --ctl-h: 48px;            /* main buttons */
+    --ctl-radius: 8px;
+    --gap-1: 6px; --gap-2: 10px; --gap-3: 14px; --gap-4: 20px; --gap-5: 28px;
+    --text-s: 0.78rem; --text-m: 0.9rem;
+
+    /* --- Depth: the "body" materials ---
+       slab    — a solid object with thickness: lit top-left edge, dark bottom-right edge, a few
+                 stacked 2px shadows (its sides), then the cast shadow
+       raised  — a smaller part standing off a slab (icon blocks, buttons)
+       sunken  — a recess cut into a slab (photo window, brief panel, inputs) */
+    --edge-light: inset 1px 1px 0 rgba(255, 255, 255, 0.09);
+    --edge-dark: inset -1px -1px 0 rgba(0, 0, 0, 0.6);
+    --thickness: 0 2px 0 #0b0b0e, 0 4px 0 #09090c, 0 6px 0 #070709;
+    --cast: 0 18px 30px rgba(0, 0, 0, 0.6);
+    --slab: var(--edge-light), var(--edge-dark), var(--thickness), var(--cast);
+    --slab-pressed: inset 1px 1px 0 rgba(255, 255, 255, 0.06), var(--edge-dark), 0 1px 0 #0b0b0e, 0 8px 16px rgba(0, 0, 0, 0.6);
+    --raised: inset 0 1px 0 rgba(255, 255, 255, 0.14), 0 3px 0 #0c0c10, 0 5px 0 #08080b, 0 10px 18px rgba(0, 0, 0, 0.55);
+    --raised-pressed: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 1px 0 #0c0c10, 0 4px 8px rgba(0, 0, 0, 0.5);
+    --sunken: inset 0 2px 8px rgba(0, 0, 0, 0.75), inset 0 -1px 0 rgba(255, 255, 255, 0.05);
+    --surface-slab: linear-gradient(160deg, #1d1d25 0%, #111116 55%, #0b0b0f 100%);
+    --surface-raised: linear-gradient(145deg, #2a2a33, #15151b);
+    --surface-sunken: #08080b;
+    --press-depth: 5px;       /* how far a slab sinks when pressed */
+
+    /* --- Motion --- */
+    --ease-out: cubic-bezier(0.2, 0.8, 0.3, 1);
+    --dur-fast: 120ms;
+    --dur: 200ms;
+    --dur-slow: 320ms;
+}
+
+/* Tablet (and phone, until the phone block below overrides) */
+@media (max-width: 1024px) {
+    :root {
+        --card-w: min(420px, 95vw);
+        --card-pad: 22px;
+        --hero-h: 170px;
+        --title-size: 2rem;
+        --price-size: 1.6rem;
+        --gap-5: 22px;
+    }
+}
+
+/* Phone */
+@media (max-width: 768px) {
+    :root {
+        --card-w: 95vw;
+        --card-pad: 15px;
+        --card-radius: 14px;
+        --hero-h: 140px;
+        --title-size: 1.7rem;
+        --price-size: 1.4rem;
+        --ctl-h: 44px;
+        --gap-4: 16px; --gap-5: 18px;
+        --cast: 0 12px 22px rgba(0, 0, 0, 0.55);   /* smaller blur = cheaper to paint on a phone */
+    }
+}
+
+/* No motion for visitors who asked for less: transitions/animations built on these collapse */
+@media (prefers-reduced-motion: reduce) {
+    :root { --dur-fast: 0ms; --dur: 0ms; --dur-slow: 0ms; }
+}
