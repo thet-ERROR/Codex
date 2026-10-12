@@ -74,5 +74,20 @@ export function stockLabel(pc) {
     return t(key, { n: Number(pc && pc.stock) || 0 });
 }
 
+// --- EARLY ACCESS ---
+// A community drop unlocked before its vote ended is members-only until then (server.js
+// resolveVoteEvent sets membersOnlyUntil). The checkout is a WhatsApp message, so this is enforced
+// where an order starts — the cart — and shown on the card and in INSPECT.
+export function membersOnlyActive(pc) {
+    const until = pc && pc.membersOnlyUntil ? Date.parse(pc.membersOnlyUntil) : NaN;
+    return Number.isFinite(until) && until > Date.now();
+}
+
+// "14 Οκτ, 18:00" / "14 Oct, 18:00" — for "members first until …"
+export function formatShortDateTime(value) {
+    const lang = document.documentElement.lang === 'el' ? 'el-GR' : 'en-GB';
+    return new Intl.DateTimeFormat(lang, { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }).format(new Date(value));
+}
+
 window.esc = esc;
 window.formatPrice = formatPrice;

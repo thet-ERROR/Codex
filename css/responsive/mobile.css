@@ -77,7 +77,8 @@
     .vote-btn { min-height: 48px; font-size: 0.95rem; }
 
     /* Compact stage card: less scroll to see everything on phones */
-    .system-select-label { font-size: 1rem !important; letter-spacing: 3px !important; margin-bottom: 10px !important; }
+    .stage-heading { margin-bottom: 10px; }
+    .sh-title { font-size: 1.05rem; letter-spacing: 2px; }
     #main-card, .holo-card { padding: 15px !important; }
     .hero-img-frame { height: 140px !important; margin: 0 auto 6px auto !important; }
     /* No arrows on phones — swiping the card is the way to browse there (initCardSwipe in

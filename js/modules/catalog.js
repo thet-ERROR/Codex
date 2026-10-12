@@ -1,6 +1,40 @@
 // js/modules/catalog.js
 import { state } from '../state.js';
-import { esc, escUrl, formatPrice, priceCentsOf, stockState, stockLabel } from '../utils.js';
+import { esc, escUrl, formatPrice, priceCentsOf, stockState, stockLabel, membersOnlyActive, formatShortDateTime } from '../utils.js';
+
+// --- STAGE HEADING ---
+// The title over the card: a >// kicker in the terminal's voice, a translated title, and how many PCs
+// are in this list. It used to be a hardcoded English "// SYSTEM SELECT //" on every tab.
+// Rebuilt on every tab/pack switch, list change and language switch (applyLanguage → renderCard).
+let stageView = { kind: 'live', pack: null };
+
+const PACK_KEYS = { gaming: 'packGaming', streaming: 'packStreaming', coding: 'packCoding' };
+
+export function renderStageHeading() {
+    const t = window.t || (k => k);
+    const kicker = document.getElementById('stage-kicker');
+    const title = document.getElementById('stage-label');
+    const count = document.getElementById('stage-count');
+    if (!title) return;
+    const { kind, pack } = stageView;
+    const packName = pack ? t(PACK_KEYS[pack] || pack) : '';
+    const view = {
+        live:    { k: 'LIVE_DROPS',     title: t('stageLive') },
+        starter: { k: 'STARTER_PACKS',  title: t('stageStarter') },
+        pack:    { k: 'STARTER_PACKS / ' + String(pack || '').toUpperCase(), title: t('stagePack', { pack: packName }) },
+        vote:    { k: 'COMMUNITY_VOTE', title: t('stageVote') },
+        gear:    { k: 'ARMORY',         title: t('armoryLocked') }
+    }[kind] || { k: '', title: '' };
+    if (kicker) kicker.textContent = '>// ' + view.k;
+    title.textContent = view.title;
+    if (count) {
+        // Only where a list of PCs is on screen
+        const n = state.filtered.length;
+        const show = (kind === 'live' || kind === 'pack') && n > 0;
+        count.classList.toggle('hidden', !show);
+        if (show) count.textContent = n === 1 ? t('stageCountOne') : t('stageCountMany', { n });
+    }
+}
 
 export function switchTab(mode) {
     // LAST CALL ('vault') was removed — its "coming soon" PCs now sit at the end of LIVE DROPS
@@ -19,23 +53,23 @@ export function switchTab(mode) {
     const backBtn = document.getElementById('back-to-packs-btn');
     if (backBtn) backBtn.classList.add('hidden');
 
-    const label = document.getElementById('stage-label');
-    if (mode === 'vote') { 
+    if (mode === 'vote') {
         document.getElementById('vote-view').classList.remove('hidden');
-        if (label) label.innerText = "// COMMUNITY VOTE //";
+        stageView = { kind: 'vote', pack: null };
         // Fresh count, and the unlock sequence if one is waiting to be seen (vote.js)
         if (window.onVoteTabShown) window.onVoteTabShown();
-    } else if (mode === 'starter') { 
-        document.getElementById('starter-menu').classList.remove('hidden'); 
-        if (label) label.innerText = "// STARTER PACKS //"; 
-    } else if (mode === 'gear') { 
-        document.getElementById('gear-view').classList.remove('hidden'); 
-        if (label) label.innerText = "// ARMORY //"; 
-    } else { 
-        document.getElementById('carousel-wrapper').classList.remove('hidden'); 
-        if (label) label.innerText = "// SYSTEM SELECT //"; 
-        filterInv(); 
-    } 
+    } else if (mode === 'starter') {
+        document.getElementById('starter-menu').classList.remove('hidden');
+        stageView = { kind: 'starter', pack: null };
+    } else if (mode === 'gear') {
+        document.getElementById('gear-view').classList.remove('hidden');
+        stageView = { kind: 'gear', pack: null };
+    } else {
+        document.getElementById('carousel-wrapper').classList.remove('hidden');
+        stageView = { kind: 'live', pack: null };
+        filterInv();
+    }
+    renderStageHeading();
 }
 
 export function selectPack(cat) {
@@ -45,6 +79,7 @@ export function selectPack(cat) {
     if (backBtn) backBtn.classList.remove('hidden');
     state.filtered = state.inventory.filter(p => p.category === cat);
     state.index = 0;
+    stageView = { kind: 'pack', pack: cat };
     renderCard();
 }
 
@@ -53,6 +88,8 @@ export function backToPacks() {
     document.getElementById('starter-menu').classList.remove('hidden');
     const backBtn = document.getElementById('back-to-packs-btn');
     if (backBtn) backBtn.classList.add('hidden');
+    stageView = { kind: 'starter', pack: null };
+    renderStageHeading();
 }
 
 export function filterInv() { 
@@ -86,8 +123,11 @@ export function renderCard() {
     if (!c) return;
     updateSwipeHint(); // before the early return, so an empty list hides it too
     renderDots();
+    renderStageHeading(); // count + language
     if (!state.filtered.length) {
-        c.innerHTML = "<h3>NO SIGNAL</h3>";
+        // An empty list says so in the visitor's language, inside the card frame
+        const t = window.t || (k => k);
+        c.innerHTML = `<div class="card-empty"><i class="ph-duotone ph-cpu"></i><div>${esc(t('stageEmpty'))}</div></div>`;
         return;
     }
 
@@ -111,6 +151,7 @@ export function renderCard() {
                 <i class="ph-bold ph-crosshair" style="font-size:1.3rem;"></i>
             </button>
             ${stockHTML}${pc.communityDrop ? `<div class="community-badge"><i class="ph-fill ph-users-three"></i> ${esc(window.t ? window.t('communityDropBadge') : 'COMMUNITY DROP')}</div>` : ''}
+            ${membersOnlyActive(pc) ? `<div class="members-badge"><i class="ph-fill ph-lock-key"></i> ${esc(window.t ? window.t('membersOnlyBadge', { until: formatShortDateTime(pc.membersOnlyUntil) }) : 'MEMBERS FIRST')}</div>` : ''}
             <div class="pc-title">${esc(pc.name)}</div>
             <div class="card-price-row">
                 <div class="pc-price">${formatPrice(priceCentsOf(pc))}</div>
@@ -259,20 +300,55 @@ function throwGhost(card, dir, fromX, velocity) {
 
 // dir > 0: next PC (finger moved left / right arrow), dir < 0: previous one. fromX/velocity come from
 // a drag, so the throw continues the finger's motion; the arrows and keys throw from rest.
-export function swipeCard(dir, fromX = 0, velocity = 0) {
+//
+// The work is split across frames. In the frame the gesture ends only cheap things happen: the old
+// card is snapshotted and its throw starts (a compositor animation — once started it runs on the GPU
+// whatever the main thread is doing), the pills move, and the real card is hidden under the
+// snapshot. Building the new card (innerHTML, layout, image decode, raster) waits two frames.
+// Doing it all in one frame is what cost a visible hitch on phones; a fast desktop never showed it.
+let pendingRender = 0;
+
+function finishPendingRender() {
+    if (!pendingRender) return;
+    cancelAnimationFrame(pendingRender);
+    pendingRender = 0;
+    showNewCard(false);
+}
+
+function showNewCard(animate) {
     const card = document.getElementById('main-card');
-    if (!card || state.filtered.length < 2) return;
-    stopCardAnimations(card);
-    const animate = !REDUCED_MOTION.matches;
-    if (animate) throwGhost(card, dir, fromX, velocity);
-    card.style.transform = '';
-    card.classList.remove('dragging');
-    if (dir > 0) nextPC(); else prevPC();
+    renderCard();
+    if (!card) return;
+    card.style.opacity = '';
     if (!animate) return;
     card.animate([
         { transform: 'translate3d(0, 12px, 0) scale(0.94)', opacity: 0.35 },
         { transform: 'none', opacity: 1 }
     ], { duration: RISE_MS, easing: EASE_OUT });
+}
+
+export function swipeCard(dir, fromX = 0, velocity = 0) {
+    const card = document.getElementById('main-card');
+    const n = state.filtered.length;
+    if (!card || n < 2) return;
+    // A second swipe before the last one finished building: build it now, so the snapshot is of the
+    // card actually on screen
+    finishPendingRender();
+    stopCardAnimations(card);
+    card.style.transform = '';
+    card.classList.remove('dragging');
+    state.index = (state.index + (dir > 0 ? 1 : -1) + n) % n;
+
+    if (REDUCED_MOTION.matches) { renderCard(); return; }
+    throwGhost(card, dir, fromX, velocity);
+    card.style.opacity = '0';
+    renderDots(); // the pill moves at once — the one thing that should answer instantly
+    pendingRender = requestAnimationFrame(() => {
+        pendingRender = requestAnimationFrame(() => {
+            pendingRender = 0;
+            showNewCard(true);
+        });
+    });
 }
 
 function springBack(card, fromX, width) {
@@ -313,6 +389,10 @@ function initCardSwipe() {
             const hint = document.getElementById('swipe-hint');
             if (hint) hint.classList.add('hidden');
         }
+        // Once the gesture is a sideways drag, keep the page still under it — including on the very
+        // event that decided it — otherwise vertical drift of the thumb also scrolled the page and the
+        // card wobbled diagonally
+        if (e.cancelable) e.preventDefault();
         // Velocity, weighted towards the latest movement, for flick detection on release
         const dt = e.timeStamp - d.lastT;
         if (dt > 0) d.v = 0.8 * ((t.clientX - d.lastX) / dt) + 0.2 * d.v;
@@ -324,7 +404,10 @@ function initCardSwipe() {
             d.raf = 0;
             if (drag === d) d.card.style.transform = pose(d.dx, d.width);
         });
-    }, { passive: true });
+    // Not passive: it has to be able to stop the page scrolling during a sideways drag (above). It
+    // only ever does that after the drag has locked sideways, so a vertical scroll that starts on the
+    // card is never held back, and the handler is a few arithmetic operations.
+    }, { passive: false });
 
     const release = (e) => {
         const d = drag;
@@ -372,4 +455,5 @@ window.filterInv = filterInv;
 window.nextPC = nextPC;
 window.prevPC = prevPC;
 window.renderCard = renderCard;
+window.renderStageHeading = renderStageHeading;
 window.swipeCard = swipeCard;

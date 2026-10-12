@@ -119,6 +119,12 @@ const translations = {
         voteShareText: "Ψήφισε για να ξεκλειδώσει το {name} στο PHOENIX CODEX!", linkCopied: "Ο σύνδεσμος αντιγράφηκε",
         voteInfoDefault: "Κοινοτικά drops: η κοινότητα ψηφίζει για να ξεκλειδώσει ένα μυστηριώδες PC.\n\n1. Η ψηφοφορία ανοίγει την ημερομηνία που φαίνεται.\n2. Κάθε συνδεδεμένος πράκτορας με επιβεβαιωμένο email έχει μία ψήφο.\n3. Αν μαζευτούν οι ψήφοι πριν λήξει ο χρόνος, το PC ξεκλειδώνει και μπαίνει αμέσως στα Live Drops, έτοιμο για παραγγελία.\n4. Αν λήξει πρώτα ο χρόνος, το PC έρχεται κι αυτό στα Live Drops με το κλείσιμο της ψηφοφορίας.",
         communityDropBadge: "ΚΟΙΝΟΤΙΚΟ DROP",
+        // Τίτλος πάνω από την κάρτα (renderStageHeading στο catalog.js)
+        stageLive: "Διαθέσιμα συστήματα", stageStarter: "Διάλεξε πακέτο", stagePack: "Πακέτο {pack}", stageVote: "Κοινοτική ψηφοφορία",
+        stageCountOne: "1 σύστημα", stageCountMany: "{n} συστήματα", stageEmpty: "Δεν υπάρχουν συστήματα εδώ ακόμα — έρχονται σύντομα.",
+        membersOnlyBadge: "ΠΡΟΤΕΡΑΙΟΤΗΤΑ ΜΕΛΩΝ ΕΩΣ {until}", membersOnlyBtn: "Σύνδεση για πρόσβαση μελών",
+        membersOnlyAlert: "Μέχρι {until} το παραγγέλνουν μόνο τα μέλη — συνδέσου για να το πάρεις πρώτος.",
+        voteHelpUnlockedMembers: "Προτεραιότητα για τα μέλη έως {until}, μετά για όλους · 1 τεμάχιο.",
 
         // Όροι — HTML (data-i18n-html): ο τίτλος του κάθε σημείου είναι <strong>, τα data-info-go είναι συνδέσεις προς άλλη καρτέλα
         rules1: "<strong>Παραγγελίες.</strong> Το απόθεμα ενημερώνεται όταν φορτώνει η σελίδα. Η παραγγελία στέλνεται μέσω WhatsApp και ολοκληρώνεται όταν την επιβεβαιώσουμε μαζί σου.",
@@ -295,6 +301,12 @@ const translations = {
         voteShareText: "Vote to unlock {name} at PHOENIX CODEX!", linkCopied: "Link copied",
         voteInfoDefault: "Community drops: the network votes to unlock a mystery PC.\n\n1. Voting opens on the date shown.\n2. Every signed-in agent with a verified email gets one vote.\n3. Reach the target before time runs out and the PC unlocks — it goes straight to Live Drops, ready to order.\n4. If time runs out first, the PC still comes to Live Drops when voting closes.",
         communityDropBadge: "COMMUNITY DROP",
+        // Heading over the card (renderStageHeading in catalog.js)
+        stageLive: "Available systems", stageStarter: "Choose a pack", stagePack: "{pack} pack", stageVote: "Community vote",
+        stageCountOne: "1 system", stageCountMany: "{n} systems", stageEmpty: "No systems here yet — more are on the way.",
+        membersOnlyBadge: "MEMBERS FIRST UNTIL {until}", membersOnlyBtn: "Sign in for member access",
+        membersOnlyAlert: "Until {until} only members can order this — sign in to get it first.",
+        voteHelpUnlockedMembers: "Members first until {until}, then everyone · 1 unit.",
 
         rules1: "<strong>Orders.</strong> Stock is refreshed when the page loads. Your order is sent over WhatsApp and is complete once we confirm it with you.",
         rules2: "<strong>Prices.</strong> Prices include VAT unless stated otherwise.",

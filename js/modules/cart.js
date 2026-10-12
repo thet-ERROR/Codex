@@ -3,7 +3,7 @@ import { state } from '../state.js';
 import { CONFIG } from '../config.js';
 import { t } from '../i18n.js';
 import { getBreakdown, getActiveImages } from './gallery.js';
-import { esc, escUrl, formatPrice, stockState } from '../utils.js';
+import { esc, escUrl, formatPrice, stockState, membersOnlyActive, formatShortDateTime } from '../utils.js';
 
 function notify(msg) {
     if (window.showToast) window.showToast(msg, 'error'); else alert(msg);
@@ -120,6 +120,16 @@ export function addToCart() {
     const st = stockState(pc);
     if (st === 'soon') return notify(t('alertComingSoon'));
     if (st === 'out') return notify(t('alertSoldOut'));
+    // Early access on a community drop: members only until the date on the card. The login window
+    // can't open over the inspect card (it sits underneath it), so that closes first.
+    if (membersOnlyActive(pc) && !(state.isLoggedIn && state.emailVerified)) {
+        notify(t(state.isLoggedIn ? 'toastVerifyReminder' : 'membersOnlyAlert', { until: formatShortDateTime(pc.membersOnlyUntil) }));
+        if (!state.isLoggedIn) {
+            if (window.closeModal) window.closeModal('gallery-overlay');
+            if (window.openModal) window.openModal('login-modal');
+        }
+        return;
+    }
     // Can't put three of a PC in the cart when the shop has one. Matched by id; older cart entries
     // saved before ids were stored fall back to the name.
     const pcId = String(pc._id || pc.id || '');

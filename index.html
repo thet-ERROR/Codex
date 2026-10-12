@@ -72,7 +72,7 @@ Type 'help' for a list of commands.
             <div class="side-divider"></div>
             <!-- Warranty & Returns / Terms / Support used to be three icons here (a shield, a book and a
                  headset — nothing on a phone said which was which). One button, three tabs inside. -->
-            <button class="side-btn side-btn-info" onclick="playClick(); openInfo()" title="Information: warranty, terms, support" data-i18n-title="sideInfo" data-i18n-aria="sideInfo" aria-label="Information"><i class="ph-duotone ph-info"></i></button>
+            <button class="side-btn side-btn-info" onclick="playClick(); openInfo()" title="Information: warranty, terms, support" data-i18n-title="sideInfo" data-i18n-aria="sideInfo" aria-label="Information"><i class="ph-duotone ph-info"></i><span class="side-label">INFO</span></button>
             <button class="side-btn" onclick="playClick(); openWheelFromSettings()" title="Daily Spin" data-i18n-title="sideWheel"><i class="ph-duotone ph-gift"></i></button>
             <button class="side-btn" id="lang-toggle-btn" onclick="playClick(); toggleLanguage()" title="Toggle Language" data-i18n-title="sideLang"><svg width="24" height="16" viewBox="0 0 27 18" shape-rendering="crispEdges" xmlns="http://www.w3.org/2000/svg"><rect width="27" height="18" fill="#fff"/><rect y="0" width="27" height="2" fill="#0D5EAF"/><rect y="4" width="27" height="2" fill="#0D5EAF"/><rect y="8" width="27" height="2" fill="#0D5EAF"/><rect y="12" width="27" height="2" fill="#0D5EAF"/><rect y="16" width="27" height="2" fill="#0D5EAF"/><rect x="0" y="0" width="10" height="10" fill="#0D5EAF"/><rect x="4" y="0" width="2" height="10" fill="#fff"/><rect x="0" y="4" width="10" height="2" fill="#fff"/></svg></button>
             <div class="side-divider"></div>
@@ -141,7 +141,17 @@ Type 'help' for a list of commands.
     </header>
 
     <div class="stage">
-        <div class="system-select-label" id="stage-label">// SYSTEM SELECT //</div>
+        <!-- Heading over the stage: a >// kicker, a translated title and how many PCs are here.
+             Filled by renderStageHeading() in js/modules/catalog.js on every tab/pack/language change. -->
+        <div class="stage-heading" id="stage-heading">
+            <span class="sh-kicker" id="stage-kicker">&gt;// LIVE_DROPS</span>
+            <div class="sh-row">
+                <span class="sh-line" aria-hidden="true"></span>
+                <h2 class="sh-title" id="stage-label">&nbsp;</h2>
+                <span class="sh-line" aria-hidden="true"></span>
+            </div>
+            <span class="sh-count hidden" id="stage-count"></span>
+        </div>
         <button class="back-to-packs-btn hidden" id="back-to-packs-btn" onclick="playClick(); backToPacks()"><i class="ph-bold ph-arrow-left"></i> <span data-i18n="backToPacksBtn">BACK TO PACKS</span></button>
 
         <div class="carousel-wrapper" id="carousel-wrapper">
@@ -390,13 +400,13 @@ Type 'help' for a list of commands.
     <div class="modal-overlay" id="info-modal">
         <div class="modal-content info-box" role="dialog" aria-modal="true" aria-labelledby="info-title">
             <div class="info-head">
-                <h2 class="info-title" id="info-title" data-i18n="infoTitle">Information</h2>
+                <div class="info-head-text"><span class="info-kicker">&gt;// CODEX_INFO</span><h2 class="info-title" id="info-title" data-i18n="infoTitle">Information</h2></div>
                 <button type="button" class="modal-x" onclick="closeModal('info-modal')" data-i18n-aria="closeLabel" aria-label="Close"><i class="ph-bold ph-x"></i></button>
             </div>
             <div class="info-tabs" role="tablist">
-                <button type="button" class="info-tab active" role="tab" id="info-tab-returns" aria-selected="true" aria-controls="info-panel-returns" data-info-tab="returns"><i class="ph-bold ph-shield-check"></i><span data-i18n="infoTabReturns">Warranty & Returns</span></button>
-                <button type="button" class="info-tab" role="tab" id="info-tab-terms" aria-selected="false" aria-controls="info-panel-terms" data-info-tab="terms"><i class="ph-bold ph-book-bookmark"></i><span data-i18n="infoTabTerms">Terms</span></button>
-                <button type="button" class="info-tab" role="tab" id="info-tab-support" aria-selected="false" aria-controls="info-panel-support" data-info-tab="support"><i class="ph-bold ph-headset"></i><span data-i18n="infoTabSupport">Support</span></button>
+                <button type="button" class="info-tab active" role="tab" id="info-tab-returns" aria-selected="true" aria-controls="info-panel-returns" data-info-tab="returns"><span class="info-tab-no">01</span><i class="ph-bold ph-shield-check"></i><span data-i18n="infoTabReturns">Warranty & Returns</span></button>
+                <button type="button" class="info-tab" role="tab" id="info-tab-terms" aria-selected="false" aria-controls="info-panel-terms" data-info-tab="terms"><span class="info-tab-no">02</span><i class="ph-bold ph-book-bookmark"></i><span data-i18n="infoTabTerms">Terms</span></button>
+                <button type="button" class="info-tab" role="tab" id="info-tab-support" aria-selected="false" aria-controls="info-panel-support" data-info-tab="support"><span class="info-tab-no">03</span><i class="ph-bold ph-headset"></i><span data-i18n="infoTabSupport">Support</span></button>
             </div>
 
             <div class="info-body">
@@ -472,7 +482,7 @@ Type 'help' for a list of commands.
     <div class="modal-overlay" id="settings-modal">
         <div class="modal-content info-box" role="dialog" aria-modal="true" aria-labelledby="settings-title">
             <div class="info-head">
-                <h2 class="info-title" id="settings-title" data-i18n="settingsTitle">SYSTEM PREFERENCES</h2>
+                <div class="info-head-text"><span class="info-kicker">&gt;// SYS_CONFIG</span><h2 class="info-title" id="settings-title" data-i18n="settingsTitle">SYSTEM PREFERENCES</h2></div>
                 <button type="button" class="modal-x" onclick="closeModal('settings-modal')" data-i18n-aria="closeLabel" aria-label="Close"><i class="ph-bold ph-x"></i></button>
             </div>
 
@@ -734,7 +744,7 @@ Type 'help' for a list of commands.
     <div class="modal-overlay" id="vote-info-modal">
         <div class="modal-content info-box vote-info-box" role="dialog" aria-modal="true" aria-labelledby="vote-info-title">
             <div class="info-head">
-                <h2 class="info-title" id="vote-info-title" data-i18n="voteInfoTitle">HOW IT WORKS</h2>
+                <div class="info-head-text"><span class="info-kicker">&gt;// COMMUNITY_DROP</span><h2 class="info-title" id="vote-info-title" data-i18n="voteInfoTitle">HOW IT WORKS</h2></div>
                 <button type="button" class="modal-x" onclick="closeModal('vote-info-modal')" data-i18n-aria="closeLabel" aria-label="Close"><i class="ph-bold ph-x"></i></button>
             </div>
             <div class="info-body">

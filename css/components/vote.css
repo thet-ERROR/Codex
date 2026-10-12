@@ -184,6 +184,13 @@
     font-size: 0.7rem; font-weight: bold; letter-spacing: 1px; vertical-align: top;
 }
 
+/* Early access on that PC (members only until the vote's end) — under the badges, full width */
+.members-badge {
+    display: flex; align-items: center; justify-content: center; gap: 6px; width: fit-content; margin: 0 auto 10px; padding: 4px 10px; border-radius: 4px;
+    background: rgba(176, 38, 255, 0.14); border: 1px solid var(--neon-purple); color: #d9a6ff;
+    font-size: 0.68rem; font-weight: bold; letter-spacing: 1px;
+}
+
 /* --- Inspect card in vote mode: same card, gold/purple dress, nothing configurable --- */
 .yg-card.vote-mode .yg-card-face {
     border-color: var(--vote-gold) !important;
