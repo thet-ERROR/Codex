@@ -78,7 +78,9 @@ export const state = {
     // acceptPaintConsent), so it never needs a separate "did they ack it" flag.
     build: { storage: '', proConfig: false, paint: false },
     bgVolume: 0.1,
-    unlockedColors: JSON.parse(localStorage.getItem('codex_unlocked_colors')) || []
+    unlockedColors: JSON.parse(localStorage.getItem('codex_unlocked_colors')) || [],
+    // Wheel coupons for the signed-in account, from /api/me and /api/wheel (never stored locally)
+    coupons: []
 };
 
 window.codexState = state;

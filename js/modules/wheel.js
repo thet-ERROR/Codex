@@ -1,6 +1,15 @@
 // js/modules/wheel.js
+//
+// The daily wheel. The spin is decided by the server (POST /api/wheel/spin): it counts the attempts,
+// picks the slice and, for a coupon, issues a unique code saved on the account. This file only
+// animates the wheel to the slice it was told and shows the result — a spin decided in the browser
+// could be faked from devtools, and a coupon is worth real money.
 import { state } from '../state.js';
+import { CONFIG } from '../config.js';
+import { t, getLang } from '../i18n.js';
+import { formatShortDateTime } from '../utils.js';
 
+// Same order as WHEEL_SLICES in the backend — the server answers with an index into this list
 const SLICES = [
     { type: 'blank', label: 'BLANK' },
     { type: 'color', id: 'cyberGold', hex: '#ffd700', label: 'CYBER GOLD' },
@@ -12,11 +21,11 @@ const SLICES = [
     { type: 'color', id: 'matrixGreen', hex: '#00ff41', label: 'MATRIX GREEN' }
 ];
 const SLICE_DEG = 360 / SLICES.length;
-const MAX_ATTEMPTS = 3;
-const COOLDOWN_MS = 24 * 60 * 60 * 1000;
+const SPIN_MS = 4600;
 
 let spinning = false;
 let currentRotation = 0;
+let status = { attemptsLeft: 3, maxAttempts: 3, nextAvailableAt: null };
 
 function sliceFill(i) {
     return i % 2 === 0 ? '#111' : '#1a1a1a';
@@ -48,43 +57,61 @@ export function refreshColorLocks() {
     });
 }
 
-// --- Attempts / cooldown status ---
-function getWheelStatus() {
-    const now = Date.now();
-    const stored = localStorage.getItem('codex_wheel_attempts_left');
-    let attemptsLeft = stored === null ? MAX_ATTEMPTS : parseInt(stored);
-    let nextAvailableAt = parseInt(localStorage.getItem('codex_wheel_next_available_at')) || 0;
-
-    if (attemptsLeft <= 0 && now >= nextAvailableAt) {
-        attemptsLeft = MAX_ATTEMPTS;
-        nextAvailableAt = 0;
-        localStorage.setItem('codex_wheel_attempts_left', attemptsLeft);
-        localStorage.setItem('codex_wheel_next_available_at', nextAvailableAt);
+// Colours and coupons the server holds for the account — merged with colours unlocked on this
+// browser before the wheel moved server-side, so nobody loses a skin
+export function applyWheelData(data) {
+    if (!data) return;
+    if (Array.isArray(data.unlockedColors)) {
+        const merged = Array.from(new Set([...(state.unlockedColors || []), ...data.unlockedColors]));
+        state.unlockedColors = merged;
+        try { localStorage.setItem('codex_unlocked_colors', JSON.stringify(merged)); } catch (e) {}
+        refreshColorLocks();
     }
-    return { attemptsLeft, nextAvailableAt, available: attemptsLeft > 0 };
+    if (Array.isArray(data.coupons)) {
+        state.coupons = data.coupons;
+        if (window.updateCartUI) window.updateCartUI();
+    }
+    if (typeof data.attemptsLeft === 'number') {
+        status = { attemptsLeft: data.attemptsLeft, maxAttempts: data.maxAttempts || 3, nextAvailableAt: data.nextAvailableAt || null };
+    }
 }
 
 function formatCountdown(ms) {
-    if (ms <= 0) return '0h 0m';
-    const totalMinutes = Math.ceil(ms / 60000);
-    return `${Math.floor(totalMinutes / 60)}h ${totalMinutes % 60}m`;
+    const total = Math.max(0, Math.ceil(ms / 60000));
+    const [h, m] = getLang() === 'el' ? ['ώ', 'λ'] : ['h', 'm'];
+    return `${Math.floor(total / 60)}${h} ${total % 60}${m}`;
 }
 
-function updateAttemptsDisplay(n) {
+function updateAttemptsDisplay() {
     const el = document.getElementById('wheel-attempts');
-    if (el) el.textContent = `SPINS LEFT: ${Math.max(n, 0)}/${MAX_ATTEMPTS}`;
+    if (el) el.textContent = t('wheelSpinsLeft', { n: Math.max(status.attemptsLeft, 0), max: status.maxAttempts });
 }
 
-export function openWheelFromSettings() {
+function authHeaders() {
+    return { 'Authorization': `Bearer ${localStorage.getItem('codex_token')}` };
+}
+
+function notify(msg, type = 'error') { if (window.showToast) window.showToast(msg, type); }
+
+export async function openWheelFromSettings() {
     if (!state.isLoggedIn) {
-        if (window.showToast) window.showToast('ACCESS DENIED. LOGIN REQUIRED.', 'error');
+        notify(t('wheelLoginRequired'));
         if (window.openModal) window.openModal('login-modal');
         return;
     }
+    if (!state.emailVerified) { notify(t('toastVerifyReminder')); return; }
 
-    const status = getWheelStatus();
-    if (!status.available) {
-        if (window.showToast) window.showToast(`NO SPINS LEFT. TRY AGAIN IN ${formatCountdown(status.nextAvailableAt - Date.now())}.`, 'error');
+    try {
+        const res = await fetch(`${CONFIG.API_URL}/wheel`, { headers: authHeaders() });
+        const data = await res.json().catch(() => ({}));
+        if (res.status === 401) { if (window.logout) window.logout(); if (window.openModal) window.openModal('login-modal'); return; }
+        if (!res.ok) { notify(data.code === 'EMAIL_NOT_VERIFIED' ? t('toastVerifyReminder') : t('wheelError')); return; }
+        applyWheelData(data);
+    } catch (e) { notify(t('wheelError')); return; }
+
+    if (status.attemptsLeft <= 0) {
+        const wait = status.nextAvailableAt ? Date.parse(status.nextAvailableAt) - Date.now() : 0;
+        notify(t('wheelNoSpins', { time: formatCountdown(wait) }));
         return;
     }
 
@@ -102,15 +129,17 @@ export function openWheelFromSettings() {
     currentRotation = 0;
     spinning = false;
 
-    updateAttemptsDisplay(status.attemptsLeft);
+    updateAttemptsDisplay();
     const btn = document.getElementById('wheel-initiate-btn');
     if (btn) btn.disabled = false;
 
     requestAnimationFrame(buildWheel);
 }
 
-function resolveSpin(slice, attemptsLeftAfterSpin) {
+function resolveSpin(data) {
     spinning = false;
+    const slice = SLICES[data.index] || SLICES[0];
+    const reward = data.reward || { type: slice.type };
     const resultEl = document.getElementById('wheel-result');
     const btn = document.getElementById('wheel-initiate-btn');
     const pointer = document.querySelector('.wheel-pointer');
@@ -119,48 +148,25 @@ function resolveSpin(slice, attemptsLeftAfterSpin) {
         setTimeout(() => pointer.classList.remove('locked'), 700);
     }
 
-    const isWin = slice.type !== 'blank';
+    applyWheelData(data);
+    updateAttemptsDisplay();
 
-    if (isWin) {
-        // Winning ends this cycle immediately, even with attempts left.
-        localStorage.setItem('codex_wheel_attempts_left', 0);
-        localStorage.setItem('codex_wheel_next_available_at', Date.now() + COOLDOWN_MS);
-    } else if (attemptsLeftAfterSpin <= 0) {
-        localStorage.setItem('codex_wheel_next_available_at', Date.now() + COOLDOWN_MS);
-    }
-
-    updateAttemptsDisplay(isWin ? 0 : attemptsLeftAfterSpin);
-
-    if (slice.type === 'color') {
-        const alreadyUnlocked = state.unlockedColors.includes(slice.id);
-        if (!alreadyUnlocked) {
-            state.unlockedColors.push(slice.id);
-            localStorage.setItem('codex_unlocked_colors', JSON.stringify(state.unlockedColors));
-        }
-        refreshColorLocks();
+    let text;
+    if (reward.type === 'color') {
         if (window.setTheme) window.setTheme(slice.hex, slice.id);
-        if (resultEl) resultEl.textContent = alreadyUnlocked
-            ? `> SKIN ALREADY UNLOCKED: ${slice.label}. RE-APPLIED TO SYSTEM THEME.`
-            : `> SKIN UNLOCKED: ${slice.label}. AUTO-APPLIED TO SYSTEM THEME.`;
-    } else if (slice.type === 'coupon') {
-        // No fixed code here on purpose: the spin is decided client-side, so any literal string
-        // in this file would be readable in devtools and claimable without ever spinning.
-        // Quoting the agent name instead means you verify the claim on your side.
-        const agent = (localStorage.getItem('codex_username') || '').toUpperCase();
-        if (resultEl) resultEl.textContent = `> REWARD UNLOCKED: 5% DISCOUNT. MESSAGE US ON WHATSAPP AS AGENT ${agent} TO CLAIM IT.`;
+        text = t(reward.alreadyUnlocked ? 'wheelSkinAgain' : 'wheelSkinNew', { name: slice.label });
+    } else if (reward.type === 'coupon' && reward.coupon) {
+        text = t('wheelCouponWon', { p: reward.coupon.percent, code: reward.coupon.code, until: formatShortDateTime(reward.coupon.expiresAt) });
+        notify(t('wheelCouponToast', { p: reward.coupon.percent }), 'achievement');
     } else {
-        if (resultEl) resultEl.textContent = attemptsLeftAfterSpin > 0
-            ? '> HACK FAILED. NO REWARD EXTRACTED. TRY AGAIN.'
-            : '> HACK FAILED. NO REWARD EXTRACTED. NO ATTEMPTS REMAINING.';
+        text = status.attemptsLeft > 0 ? t('wheelBlank') : t('wheelBlankLast');
     }
-
-    if (btn) btn.disabled = isWin || attemptsLeftAfterSpin <= 0;
+    if (resultEl) resultEl.textContent = text;
+    if (btn) btn.disabled = status.attemptsLeft <= 0;
 }
 
-export function spinWheel() {
-    if (spinning) return;
-    const status = getWheelStatus();
-    if (!status.available) return;
+export async function spinWheel() {
+    if (spinning || status.attemptsLeft <= 0) return;
     const wheel = document.getElementById('wheel');
     if (!wheel) return;
 
@@ -170,27 +176,49 @@ export function spinWheel() {
     const resultEl = document.getElementById('wheel-result');
     if (resultEl) resultEl.textContent = '';
 
-    // Earned for spinning, not for winning — the outcome is decided client-side, so tying a badge
-    // to the prize would mean tying it to something anyone can fake.
+    // Earned for spinning, not for winning (a client-reported badge, see achievements.js)
     if (window.checkAchievement) window.checkAchievement('hacker');
 
-    const chosenIndex = Math.floor(Math.random() * SLICES.length);
-    const targetCenterAngle = chosenIndex * SLICE_DEG + SLICE_DEG / 2;
+    let data;
+    try {
+        const res = await fetch(`${CONFIG.API_URL}/wheel/spin`, { method: 'POST', headers: authHeaders() });
+        data = await res.json().catch(() => ({}));
+        if (!res.ok) {
+            spinning = false;
+            if (data.code === 'NO_SPINS') {
+                status = { ...status, attemptsLeft: 0, nextAvailableAt: data.nextAvailableAt };
+                updateAttemptsDisplay();
+                notify(t('wheelNoSpins', { time: formatCountdown(Date.parse(data.nextAvailableAt) - Date.now()) }));
+            } else if (res.status === 401) {
+                if (window.logout) window.logout();
+            } else {
+                notify(data.code === 'EMAIL_NOT_VERIFIED' ? t('toastVerifyReminder') : t('wheelError'));
+                if (btn) btn.disabled = false;
+            }
+            return;
+        }
+    } catch (e) {
+        spinning = false;
+        if (btn) btn.disabled = false;
+        notify(t('wheelError'));
+        return;
+    }
 
+    // Six full turns, landing on the slice the server picked
+    const targetCenterAngle = data.index * SLICE_DEG + SLICE_DEG / 2;
     const targetMod = (360 - targetCenterAngle + 360) % 360;
     const currentMod = currentRotation % 360;
     let delta = targetMod - currentMod;
     if (delta <= 0) delta += 360;
     currentRotation += 6 * 360 + delta;
-
     wheel.style.transform = `rotate(${currentRotation}deg)`;
 
-    const attemptsLeftAfterSpin = status.attemptsLeft - 1;
-    localStorage.setItem('codex_wheel_attempts_left', attemptsLeftAfterSpin);
-
-    setTimeout(() => resolveSpin(SLICES[chosenIndex], attemptsLeftAfterSpin), 4600);
+    setTimeout(() => resolveSpin(data), SPIN_MS);
 }
+
+document.addEventListener('codex:lang', updateAttemptsDisplay);
 
 window.spinWheel = spinWheel;
 window.openWheelFromSettings = openWheelFromSettings;
 window.refreshColorLocks = refreshColorLocks;
+window.applyWheelData = applyWheelData;

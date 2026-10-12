@@ -109,9 +109,52 @@ export function updateCartUI() {
                     </div>`;
         }).join('');
     }
+    // Coupon: offered only with something in the cart and an unused code on the account
+    const usable = activeCoupons();
+    const couponBox = document.getElementById('mc-coupon');
+    const select = document.getElementById('mc-coupon-select');
+    if (state.selectedCoupon && !usable.some(c => c.code === state.selectedCoupon)) state.selectedCoupon = null;
+    if (couponBox && select) {
+        const show = usable.length > 0 && state.cart.length > 0;
+        couponBox.classList.toggle('hidden', !show);
+        if (show) {
+            select.innerHTML = `<option value="">${esc(t('cartCouponNone'))}</option>` +
+                usable.map(c => `<option value="${esc(c.code)}">-${esc(c.percent)}% · ${esc(c.code)}</option>`).join('');
+            select.value = state.selectedCoupon || '';
+        }
+    }
+    const { discount, coupon } = couponDiscount(total);
+    const discountRow = document.getElementById('mc-discount-row');
+    if (discountRow) {
+        discountRow.classList.toggle('hidden', !discount);
+        if (discount) {
+            document.getElementById('mc-discount-label').textContent = t('cartCouponLine', { p: coupon.percent });
+            document.getElementById('mc-discount').textContent = '-' + formatPrice(discount);
+        }
+    }
     const mcTotal = document.getElementById('mc-total');
-    if(mcTotal) mcTotal.innerText = formatPrice(total);
+    if(mcTotal) mcTotal.innerText = formatPrice(total - discount);
 }
+
+function activeCoupons() {
+    const now = Date.now();
+    return (state.coupons || []).filter(c => !c.usedAt && Date.parse(c.expiresAt) > now);
+}
+
+// The discount is shown and written into the order message; the shop confirms the code in the admin
+// panel (it's checked against the account there) before honouring it
+function couponDiscount(total) {
+    const coupon = state.selectedCoupon ? activeCoupons().find(c => c.code === state.selectedCoupon) : null;
+    if (!coupon || !total) return { discount: 0, coupon: null };
+    return { discount: Math.round(total * coupon.percent / 100), coupon };
+}
+
+document.addEventListener('change', (e) => {
+    if (e.target && e.target.id === 'mc-coupon-select') {
+        state.selectedCoupon = e.target.value || null;
+        updateCartUI();
+    }
+});
 
 export function addToCart() {
     const pc = state.currentGalleryPC;
@@ -257,7 +300,12 @@ export function handleCheckout() {
             msg.push(`   • ${item.option}`);
         }
     });
-    msg.push('', `${t('orderMsgTotal')}: ${formatPrice(total)}`);
+    const { discount, coupon } = couponDiscount(total);
+    if (discount) {
+        msg.push('', `${t('orderMsgCoupon')}: ${coupon.code} (-${coupon.percent}% = -${formatPrice(discount)})`);
+        if (state.isLoggedIn) msg.push(`${t('orderMsgAccount')}: ${localStorage.getItem('codex_username') || ''}`);
+    }
+    msg.push('', `${t('orderMsgTotal')}: ${formatPrice(total - discount)}`);
     if (state.cart.some(item => item.paintAck)) msg.push('', `✔ ${t('orderMsgPaintAck')}`);
 
     window.open(`https://wa.me/${CONFIG.WHATSAPP_NUM}?text=${encodeURIComponent(msg.join('\n'))}`, "_blank");

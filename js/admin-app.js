@@ -425,6 +425,26 @@ const data = {
         } catch (e) { alert('Η αφαίρεση απέτυχε.'); }
     }
 
+    // Wheel coupons — look up whose a code is and whether it's still good; redeem marks it used
+    // (atomic on the server, so the same code can't be honoured twice)
+    async function checkCoupon(redeem) {
+        const code = $('coupon-code').value.trim().toUpperCase();
+        const out = $('coupon-result');
+        if (!code) { out.textContent = 'Γράψε πρώτα έναν κωδικό.'; return; }
+        if (redeem && !confirm(`Εξαργύρωση του ${code}; Δεν θα μπορεί να ξαναχρησιμοποιηθεί.`)) return;
+        try {
+            const url = `${API}/admin/coupons/${encodeURIComponent(code)}` + (redeem ? '/redeem' : '');
+            const res = await fetch(url, { method: redeem ? 'POST' : 'GET', headers: { 'Authorization': `Bearer ${TOKEN}` } });
+            const d = await res.json().catch(() => ({}));
+            if (!res.ok) { out.style.color = '#ff3333'; out.textContent = redeem ? '❌ Δεν εξαργυρώθηκε: δεν υπάρχει, έχει ήδη χρησιμοποιηθεί ή έληξε.' : '❌ Δεν βρέθηκε τέτοιος κωδικός.'; return; }
+            if (redeem) { out.style.color = '#ccff00'; out.textContent = `✅ Εξαργυρώθηκε — ${d.code} (${d.username})`; return; }
+            const fmt = v => v ? new Date(v).toLocaleString('el-GR') : '—';
+            const state = d.usedAt ? `⛔ ΧΡΗΣΙΜΟΠΟΙΗΘΗΚΕ ${fmt(d.usedAt)}` : d.expired ? '⛔ ΕΛΗΞΕ' : '✅ ΕΓΚΥΡΟ';
+            out.style.color = d.usedAt || d.expired ? '#ff9a5c' : '#ccff00';
+            out.textContent = `${state}\n-${d.percent}% · ${d.username} (${d.email})\nΕκδόθηκε ${fmt(d.issuedAt)} · Λήγει ${fmt(d.expiresAt)}`;
+        } catch (e) { out.style.color = '#ff3333'; out.textContent = 'Σφάλμα σύνδεσης.'; }
+    }
+
     async function loadVote() {
         try {
             const res=await fetch(`${API}/vote-event`, { headers:{'Authorization':`Bearer ${TOKEN}`} }); const v=await res.json();
@@ -598,6 +618,8 @@ const data = {
         on('add-vote-fps-btn', 'click', addVoteFPS);
         on('upload-vote-btn', 'click', uploadVote);
         on('end-vote-btn', 'click', endVote);
+        on('coupon-check-btn', 'click', () => checkCoupon(false));
+        on('coupon-redeem-btn', 'click', () => checkCoupon(true));
         on('generate-code-btn', 'click', generateCode);
 
         delegate('inventory-list', (el) => {

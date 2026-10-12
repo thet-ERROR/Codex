@@ -27,7 +27,7 @@ const COPY = {
         profile: ['AGENT PROFILE', 'Sign in or register here to save your wishlist, track your rank, and unlock rewards.'],
         settings: ['SYSTEM PREFERENCES', 'Sound, language and your accent colour — and you can replay this tour from here.'],
         info: ['INFORMATION', 'Warranty & returns, terms and support live here. Need to send something back? Press Return and we handle it by email.'],
-        wheel: ['DAILY SPIN', 'Spin the wheel once a day for a chance to unlock premium accent colors or a discount coupon.'],
+        wheel: ['DAILY SPIN', 'Spin the wheel once a day for a chance at a premium accent colour or a discount coupon — coupons wait in your profile and your cart.'],
         lang: ['LANGUAGE', 'Switch between Greek and English anytime. The button shows the language you\'ll switch TO — the whole site updates instantly.'],
         reviews: ['MISSION CODES', 'Found a code in your PC box? Enter it here to leave a review — or to start a return if something\'s wrong.']
     },
@@ -43,7 +43,7 @@ const COPY = {
         profile: ['ΠΡΟΦΙΛ ΠΡΑΚΤΟΡΑ', 'Συνδέσου ή κάνε εγγραφή εδώ για να αποθηκεύσεις τη λίστα επιθυμιών σου, να παρακολουθείς το rank σου και να ξεκλειδώνεις έπαθλα.'],
         settings: ['ΡΥΘΜΙΣΕΙΣ ΣΥΣΤΗΜΑΤΟΣ', 'Ήχος, γλώσσα και χρώμα τονισμού — κι από εδώ μπορείς να δεις ξανά αυτή την ξενάγηση.'],
         info: ['ΠΛΗΡΟΦΟΡΙΕΣ', 'Εδώ βρίσκεις εγγύηση & επιστροφές, όρους και υποστήριξη. Θες να επιστρέψεις κάτι; Πάτα «Επιστροφή» και τα λέμε με email.'],
-        wheel: ['ΚΑΘΗΜΕΡΙΝΗ ΠΕΡΙΣΤΡΟΦΗ', 'Γύρνα τον τροχό μία φορά τη μέρα για να ξεκλειδώσεις premium χρώματα ή κουπόνι έκπτωσης.'],
+        wheel: ['ΚΑΘΗΜΕΡΙΝΗ ΠΕΡΙΣΤΡΟΦΗ', 'Γύρνα τον τροχό μία φορά τη μέρα για premium χρώμα ή κουπόνι έκπτωσης — τα κουπόνια σε περιμένουν στο προφίλ και στο καλάθι σου.'],
         lang: ['ΓΛΩΣΣΑ', 'Άλλαξε ανά πάσα στιγμή μεταξύ ελληνικών και αγγλικών. Το κουμπί δείχνει τη γλώσσα στην οποία θα ΠΑΣ — όλο το site ενημερώνεται αμέσως.'],
         reviews: ['ΚΩΔΙΚΟΙ ΑΠΟΣΤΟΛΗΣ', 'Βρήκες κωδικό στο κουτί του PC σου; Βάλ\' τον εδώ για να γράψεις κριτική — ή για να ξεκινήσεις επιστροφή αν κάτι δεν πάει καλά.']
     }

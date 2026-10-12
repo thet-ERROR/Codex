@@ -46,3 +46,8 @@
 @media (prefers-reduced-motion: reduce) { .cart-hint.show { animation: none; } }
 
 .mc-checkout-btn:hover { box-shadow: 0 0 20px var(--neon-green); transform: scale(1.02); }
+/* Coupon picker + discount line (updateCartUI in cart.js) */
+.mc-coupon { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 10px; font-family: var(--font-ui); font-weight: 700; font-size: 0.85rem; color: #ffc43d; }
+.mc-coupon label { display: flex; align-items: center; gap: 6px; white-space: nowrap; }
+.mc-coupon select { flex: 1; min-width: 0; padding: 8px; border-radius: 6px; border: 1px solid rgba(255, 196, 61, 0.5); background: #111; color: #fff; font-size: 16px; font-family: 'Courier New', monospace; }
+.mc-discount-row { display: flex; justify-content: space-between; margin-bottom: 8px; font-family: var(--font-ui); font-weight: 700; font-size: 0.9rem; color: #ffc43d; }
