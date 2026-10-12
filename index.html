@@ -172,19 +172,37 @@ Type 'help' for a list of commands.
             <div class="swipe-hint hidden" id="swipe-hint" aria-hidden="true"><span class="swipe-hint-trail"></span><i class="ph-fill ph-hand-pointing"></i></div>
         </div>
 
+        <!-- Pack chooser. Each pack is a "tile": a raised icon block with thickness, a title, one line
+             saying who it's for and how many systems are in it (renderPackCounts in catalog.js). Tall
+             cards on desktop, compact rows on phones (mobile.css). -->
         <div class="starter-menu hidden" id="starter-menu">
-            <div class="pack-card" onclick="selectPack('gaming')">
-                <i class="ph-duotone ph-game-controller pack-icon"></i>
-                <div class="pack-title" data-i18n="packGaming">GAMING</div>
-            </div>
-            <div class="pack-card" onclick="selectPack('streaming')">
-                <i class="ph-duotone ph-video-camera pack-icon"></i>
-                <div class="pack-title" data-i18n="packStreaming">STREAMING</div>
-            </div>
-            <div class="pack-card" onclick="selectPack('coding')">
-                <i class="ph-duotone ph-code pack-icon"></i>
-                <div class="pack-title" data-i18n="packCoding">CODING</div>
-            </div>
+            <button type="button" class="pack-card" data-pack="gaming" onclick="playClick(); selectPack('gaming')">
+                <span class="pack-icon-block"><i class="ph-duotone ph-game-controller pack-icon"></i></span>
+                <span class="pack-text">
+                    <span class="pack-title" data-i18n="packGaming">GAMING</span>
+                    <span class="pack-desc" data-i18n="packGamingDesc">Esports and AAA games</span>
+                    <span class="pack-count" data-pack-count="gaming"></span>
+                </span>
+                <i class="ph-bold ph-caret-right pack-chevron"></i>
+            </button>
+            <button type="button" class="pack-card" data-pack="streaming" onclick="playClick(); selectPack('streaming')">
+                <span class="pack-icon-block"><i class="ph-duotone ph-video-camera pack-icon"></i></span>
+                <span class="pack-text">
+                    <span class="pack-title" data-i18n="packStreaming">STREAMING</span>
+                    <span class="pack-desc" data-i18n="packStreamingDesc">Play and stream at the same time</span>
+                    <span class="pack-count" data-pack-count="streaming"></span>
+                </span>
+                <i class="ph-bold ph-caret-right pack-chevron"></i>
+            </button>
+            <button type="button" class="pack-card" data-pack="coding" onclick="playClick(); selectPack('coding')">
+                <span class="pack-icon-block"><i class="ph-duotone ph-code pack-icon"></i></span>
+                <span class="pack-text">
+                    <span class="pack-title" data-i18n="packCoding">CODING</span>
+                    <span class="pack-desc" data-i18n="packCodingDesc">Development, many windows, quiet</span>
+                    <span class="pack-count" data-pack-count="coding"></span>
+                </span>
+                <i class="ph-bold ph-caret-right pack-chevron"></i>
+            </button>
         </div>
 
         <div class="holo-card hidden" id="gear-view">

@@ -25,6 +25,7 @@ export function renderStageHeading() {
         vote:    { k: 'COMMUNITY_VOTE', title: t('stageVote') },
         gear:    { k: 'ARMORY',         title: t('armoryLocked') }
     }[kind] || { k: '', title: '' };
+    if (kind === 'starter') renderPackCounts();
     if (kicker) kicker.textContent = '>// ' + view.k;
     title.textContent = view.title;
     if (count) {
@@ -34,6 +35,16 @@ export function renderStageHeading() {
         count.classList.toggle('hidden', !show);
         if (show) count.textContent = n === 1 ? t('stageCountOne') : t('stageCountMany', { n });
     }
+}
+
+// "3 systems" on each pack tile, so nobody opens an empty pack
+function renderPackCounts() {
+    const t = window.t || (k => k);
+    document.querySelectorAll('[data-pack-count]').forEach(el => {
+        const n = state.inventory.filter(p => p.category === el.dataset.packCount).length;
+        el.textContent = n === 0 ? t('packSoon') : (n === 1 ? t('stageCountOne') : t('stageCountMany', { n }));
+        el.classList.toggle('empty', n === 0);
+    });
 }
 
 export function switchTab(mode) {
