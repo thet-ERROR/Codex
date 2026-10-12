@@ -131,6 +131,8 @@ const translations = {
         orderMsgCoupon: "Κουπόνι", orderMsgAccount: "Λογαριασμός",
         // Τίτλος πάνω από την κάρτα (renderStageHeading στο catalog.js)
         stageLive: "Διαθέσιμα συστήματα", stageStarter: "Διάλεξε πακέτο", stagePack: "Πακέτο {pack}", stageVote: "Κοινοτική ψηφοφορία",
+        packGamingDesc: "Esports και βαριά AAA παιχνίδια", packStreamingDesc: "Παίζεις και κάνεις stream μαζί", packCodingDesc: "Development, πολλά παράθυρα, αθόρυβο",
+        packSoon: "Έρχονται σύντομα",
         stageCountOne: "1 σύστημα", stageCountMany: "{n} συστήματα", stageEmpty: "Δεν υπάρχουν συστήματα εδώ ακόμα — έρχονται σύντομα.",
         membersOnlyBadge: "ΠΡΟΤΕΡΑΙΟΤΗΤΑ ΜΕΛΩΝ ΕΩΣ {until}", membersOnlyBtn: "Σύνδεση για πρόσβαση μελών",
         membersOnlyAlert: "Μέχρι {until} το παραγγέλνουν μόνο τα μέλη — συνδέσου για να το πάρεις πρώτος.",
@@ -323,6 +325,8 @@ const translations = {
         orderMsgCoupon: "Coupon", orderMsgAccount: "Account",
         // Heading over the card (renderStageHeading in catalog.js)
         stageLive: "Available systems", stageStarter: "Choose a pack", stagePack: "{pack} pack", stageVote: "Community vote",
+        packGamingDesc: "Esports and heavy AAA games", packStreamingDesc: "Play and stream at the same time", packCodingDesc: "Development, many windows, quiet",
+        packSoon: "Coming soon",
         stageCountOne: "1 system", stageCountMany: "{n} systems", stageEmpty: "No systems here yet — more are on the way.",
         membersOnlyBadge: "MEMBERS FIRST UNTIL {until}", membersOnlyBtn: "Sign in for member access",
         membersOnlyAlert: "Until {until} only members can order this — sign in to get it first.",
