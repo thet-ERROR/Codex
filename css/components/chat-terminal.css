@@ -1,7 +1,10 @@
 .chat-widget { position: fixed; left: 90px; bottom: 60px; width: 300px; z-index: 5000; transform: translateY(20px); opacity: 0; pointer-events: none; transition: 0.3s; }
 .chat-widget.open { transform: translateY(0); opacity: 1; pointer-events: auto; }
 .chat-body { background: #0a0a0c; border: 1px solid #333; border-radius: 10px; height: 350px; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-.chat-top { padding: 10px; border-bottom: 1px solid #222; font-family: var(--font-ui); font-weight: bold; color: var(--neon-green); background: #111; }
+.chat-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 6px 6px 6px 12px; border-bottom: 1px solid #222; font-family: var(--font-ui); font-weight: bold; color: var(--neon-green); background: #111; }
+.chat-close { flex: none; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border-radius: 50%; border: none; background: transparent; color: #888; font-size: 1.1rem; cursor: pointer; transition: color 0.2s, background-color 0.2s; }
+.chat-close:hover { color: #fff; background: rgba(255, 255, 255, 0.08); }
+.chat-close:focus-visible { outline: 2px solid var(--neon-green); outline-offset: 1px; }
 
 .chat-menu { flex: 1; position: relative; overflow: hidden; }
 .chat-menu-screen { position: absolute; inset: 0; padding: 15px; overflow-y: auto; transition: transform 0.35s cubic-bezier(0.25, 0.8, 0.25, 1), opacity 0.3s; }
@@ -17,7 +20,7 @@
 .chat-menu-icon { font-size: 1.6rem; }
 .chat-menu-label { font-size: 0.68rem; font-weight: 700; text-align: center; letter-spacing: 0.5px; line-height: 1.2; }
 
-.chat-menu-back { display: flex; align-items: center; gap: 6px; color: var(--neon-green); font-family: var(--font-ui); font-size: 0.75rem; font-weight: 700; cursor: pointer; margin-bottom: 12px; }
+.chat-menu-back { display: flex; align-items: center; gap: 6px; min-height: 36px; padding: 0; background: none; border: none; color: var(--neon-green); font-family: var(--font-ui); font-size: 0.75rem; font-weight: 700; cursor: pointer; margin-bottom: 12px; }
 .chat-menu-back:hover { color: #fff; }
 
 .chat-response { background: rgba(204,255,0,0.08); border: 1px solid rgba(204,255,0,0.2); border-radius: 8px; padding: 12px; font-size: 0.82rem; color: #ddd; line-height: 1.5; }

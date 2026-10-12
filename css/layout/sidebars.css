@@ -14,20 +14,9 @@
         box-shadow: 0 4px 15px rgba(255,255,255,0.08);
     }
 
-    /* Trust / Warranty — πράσινο tint */
-    .left-sidebar .side-btn[title="Warranty & Trust"]:hover {
-        border-color: var(--neon-green);
-        color: var(--neon-green);
-        box-shadow: 0 4px 15px rgba(204,255,0,0.15);
-    }
-    /* Rules — μωβ tint */
-    .left-sidebar .side-btn[title="Rules"]:hover {
-        border-color: var(--neon-purple);
-        color: var(--neon-purple);
-        box-shadow: 0 4px 15px rgba(176,38,255,0.15);
-    }
-    /* Help — γαλάζιο tint */
-    .left-sidebar .side-btn[title="Help"]:hover {
+    /* Information — γαλάζιο tint. (The old per-button tints matched on the English title attribute, so
+       they vanished in Greek, where applyLanguage rewrites it; a class can't be translated away.) */
+    .left-sidebar .side-btn-info:hover {
         border-color: #00f0ff;
         color: #00f0ff;
         box-shadow: 0 4px 15px rgba(0,240,255,0.15);

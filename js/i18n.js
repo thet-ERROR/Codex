@@ -1,14 +1,14 @@
 // js/i18n.js
 const translations = {
     el: {
-        sideSettings: "Ρυθμίσεις συστήματος", sideTrust: "Εγγύηση & αξιοπιστία", sideRules: "Κανόνες", sideHelp: "Βοήθεια",
+        sideSettings: "Ρυθμίσεις συστήματος", sideInfo: "Πληροφορίες: εγγύηση, όροι, υποστήριξη",
         sideWheel: "Καθημερινή περιστροφή", sideLang: "Αλλαγή γλώσσας", sideSocial: "Κοινωνικά δίκτυα", sideDiscord: "Discord",
         sideInstagram: "Instagram", sideDropAlerts: "Ειδοποιήσεις νέων PC", sideReviews: "Κριτικές", sideTerminal: "Τερματικό",
 
         reviewsLabel: "Κριτικές", writeReviewBtn: "[+] Γράψε κριτική", cartLabel: "Καλάθι",
         packGaming: "GAMING", packStreaming: "STREAMING", packCoding: "CODING",
         armoryLocked: "Οπλοστάσιο κλειδωμένο", voteCommunityDrop: "Κοινοτικό drop!", voteProgressLabel: "Πρόοδος",
-        vsModeReady: "Λειτουργία VS έτοιμη", chatTop: "ΥΠΟΣΤΗΡΙΞΗ CODEX",
+        vsModeReady: "Λειτουργία VS έτοιμη", chatTop: "Γρήγορες απαντήσεις", chatBack: "ΠΙΣΩ", chatAdminBtn: "💬 ΜΙΛΑ ΜΕ ΤΟΝ ADMIN",
 
         extrasLabel: "Επιπλέον επιλογές",
         storageLabel: "Επέκταση αποθηκευτικού χώρου", storageOptStandard: "Στάνταρ (χωρίς επιπλέον)",
@@ -33,15 +33,31 @@ const translations = {
         rewardCyberGold: "Skin Cyber Gold", rewardToxicOrange: "Skin Toxic Orange", rewardNeonPink: "Skin Neon Pink",
         rewardMatrixGreen: "Skin Matrix Green", rewardCoupon: "Κουπόνι 5%",
 
-        trustTitle: "Πρωτόκολλα εμπιστοσύνης",
         trustWarrantyTitle: "Νόμιμη εγγύηση 2 ετών",
         trustWarrantyText: "Κάθε σύστημα καλύπτεται από τη νόμιμη εγγύηση 2 ετών για ελαττώματα, σύμφωνα με την ισχύουσα νομοθεσία περί προστασίας καταναλωτή.",
         trustReturnTitle: "Δικαίωμα υπαναχώρησης 14 ημερών",
-        trustReturnText: "Έχετε δικαίωμα υπαναχώρησης εντός 14 ημερολογιακών ημερών από την παραλαβή, χωρίς αιτιολόγηση, σύμφωνα με την ενωσιακή νομοθεσία εξ αποστάσεως πωλήσεων.",
+        trustReturnText: "Έχεις δικαίωμα υπαναχώρησης εντός 14 ημερολογιακών ημερών από την παραλαβή, χωρίς αιτιολόγηση, σύμφωνα με την ενωσιακή νομοθεσία εξ αποστάσεως πωλήσεων. Εξαίρεση: η custom βαφή, που φτιάχνεται κατά παραγγελία.",
         trustShippingTitle: "Αποστολή εντός Ελλάδας",
         trustShippingText: "Ασφαλής συσκευασία και παράδοση σε όλη την Ελλάδα, με πλήρη έλεγχο λειτουργίας πριν την αποστολή.",
 
         settingsTitle: "Ρυθμίσεις συστήματος", accentColorLabel: "Χρώμα τονισμού",
+        settingsSound: "Ήχος & μουσική", settingsLanguage: "Γλώσσα", settingsReplayTour: "Δες ξανά την ξενάγηση",
+        colorsLockedNote: "Τα 4 κάτω ξεκλειδώνουν στον Ημερήσιο Τροχό (απαιτείται σύνδεση).", colorsSpinBtn: "Γύρνα τον τροχό",
+        toastColorLocked: "Κλειδωμένο χρώμα — γύρνα τον Ημερήσιο Τροχό για να το ξεκλειδώσεις.",
+        colorLime: "Lime", colorCyan: "Cyan", colorRed: "Κόκκινο", colorPurple: "Μωβ",
+        closeLabel: "Κλείσιμο",
+
+        // Ενιαίο παράθυρο Πληροφοριών (index.html #info-modal): Εγγύηση & Επιστροφές / Όροι / Υποστήριξη
+        infoTitle: "Πληροφορίες", infoTabReturns: "Εγγύηση & Επιστροφές", infoTabTerms: "Όροι", infoTabSupport: "Υποστήριξη",
+        returnHowTitle: "Πώς κάνω επιστροφή",
+        returnHowText: "Πάτα «Επιστροφή» και θα ανοίξει το email σου με έτοιμο μήνυμα. Συμπλήρωσε τα στοιχεία και στείλ' το μέσα σε 14 ημέρες από την παραλαβή· θα σου απαντήσουμε με τα επόμενα βήματα.",
+        returnBtn: "Επιστροφή", returnCopyBtn: "Αντιγραφή email", returnCopied: "Το email αντιγράφηκε",
+        returnMailSubject: "Αίτημα επιστροφής — PHOENIX CODEX",
+        returnMailBody: "Γεια σας,\n\nθέλω να κάνω επιστροφή.\n\nΌνομα:\nΣύστημα (PC):\nΗμερομηνία παραλαβής:\nΛόγος επιστροφής:\n\nΕυχαριστώ",
+        returnMailBodyCode: "Γεια σας,\n\nθέλω να κάνω επιστροφή.\n\nΣύστημα: {pc}\nΚωδικός κουτιού: {code}\nΛόγος: {reason}\n\nΌνομα:\nΗμερομηνία παραλαβής:\n\nΕυχαριστώ",
+        supportFaqTitle: "Γρήγορες απαντήσεις", supportFaqText: "Αγορά, μεταφορικά, εγγύηση, ποιο PC να διαλέξω",
+        supportEmailTitle: "Στείλε μας email", supportCodeTitle: "Έχεις κωδικό από το κουτί;",
+        supportCodeText: "Γράψε κριτική για το PC σου· ο κωδικός ισχύει 2 ημέρες από την πρώτη χρήση.",
 
         newsletterTitle: "Ειδοποιήσεις νέων PC", newsletterDesc: "Ειδοποιήσου μόλις βγει νέο PC ή ξεκινήσει ψηφοφορία.", newsletterBtn: "Ενεργοποίηση ειδοποιήσεων",
         reviewCodeTitle: "Επιβεβαιωμένη κριτική", reviewCodeBtn: "Αποστολή", rcUserPlaceholder: "Όνομα πράκτορα", rcTextPlaceholder: "Απόδοση συστήματος...",
@@ -49,7 +65,7 @@ const translations = {
         missionTitle: "Πώς πάει το νέο σου PC;", missionWindowLabel: "Το παράθυρο κλείνει σε",
         missionKeepTitle: "Όλα δουλεύουν τέλεια", missionKeepText: "Κράτα το σύστημα και πες στους άλλους πώς τρέχει.",
         missionKeepBtn: "Γράψε κριτική",
-        missionReportTitle: "Κάτι δεν πάει καλά;", missionReportText: "Διάλεξε τι συμβαίνει και θα κανονίσουμε μαζί την επιστροφή στο WhatsApp.",
+        missionReportTitle: "Κάτι δεν πάει καλά;", missionReportText: "Διάλεξε τι συμβαίνει και θα ανοίξει το email σου με έτοιμο μήνυμα επιστροφής.",
         missionSelectReason: "Διάλεξε το πρόβλημα...", missionReason1: "Χαμηλότερα FPS από όσα γράφει", missionReason2: "Βλάβη υλικού / δεν ανοίγει",
         missionReason3: "Τα specs δεν ταιριάζουν με την αγγελία", missionReason4: "Κάτι άλλο",
         missionReturnBtn: "Ξεκίνα επιστροφή",
@@ -80,15 +96,12 @@ const translations = {
         // title stays a translation-file string, see openVoteInfo() in js/modules/vote.js.
         voteInfoTitle: "Πώς λειτουργεί",
 
-        rulesTitle: "Όροι & προϋποθέσεις",
-        rules1: "1. Οι διαθέσιμες ποσότητες εμφανίζονται σε πραγματικό χρόνο· η παραγγελία ολοκληρώνεται με την επιβεβαίωση πληρωμής.",
-        rules2: "2. Οι τιμές περιλαμβάνουν ΦΠΑ, εκτός αν αναφέρεται διαφορετικά.",
-        rules3: "3. Ισχύει δικαίωμα υπαναχώρησης 14 ημερών και νόμιμη εγγύηση 2 ετών (βλ. Trust Protocols).",
-        rules4: "4. Σε περιπτώσεις custom βαφής ή άλλης τροποποίησης κατόπιν επιλογής του πελάτη, το προϊόν θεωρείται εξατομικευμένο και κατασκευάζεται κατά παραγγελία. Δεν γίνεται δεκτή επιστροφή χρημάτων λόγω αλλαγής γνώμης (εξαίρεση από το δικαίωμα υπαναχώρησης 14 ημερών, ν. 2251/1994 & Οδηγία 2011/83/ΕΕ). Η νόμιμη εγγύηση 2 ετών για ελαττώματα ισχύει κανονικά.",
-        rules5: "5. Για πλήρεις όρους χρήσης και πολιτική απορρήτου, επικοινωνήστε μαζί μας.",
-
-        helpTitle: "Υποστήριξη",
-        helpText: "Για ερωτήσεις σχετικά με παραγγελίες, εγγύηση ή τεχνική υποστήριξη, επικοινωνήστε στο <strong>d.codexphoenix@gmail.com</strong> ή μέσω του chat κάτω αριστερά.",
+        // Όροι — HTML (data-i18n-html): ο τίτλος του κάθε σημείου είναι <strong>, τα data-info-go είναι συνδέσεις προς άλλη καρτέλα
+        rules1: "<strong>Παραγγελίες.</strong> Το απόθεμα ενημερώνεται όταν φορτώνει η σελίδα. Η παραγγελία στέλνεται μέσω WhatsApp και ολοκληρώνεται όταν την επιβεβαιώσουμε μαζί σου.",
+        rules2: "<strong>Τιμές.</strong> Οι τιμές περιλαμβάνουν ΦΠΑ, εκτός αν αναφέρεται διαφορετικά.",
+        rules3: "<strong>Επιστροφές & εγγύηση.</strong> Ισχύει δικαίωμα υπαναχώρησης 14 ημερών και νόμιμη εγγύηση 2 ετών — δες την καρτέλα <a href=\"#\" data-info-go=\"returns\">Εγγύηση & Επιστροφές</a>.",
+        rules4: "<strong>Custom βαφή.</strong> Η βαφή φτιάχνεται κατά παραγγελία, με βάση τη δική σου επιλογή. Για αυτήν δεν γίνεται επιστροφή λόγω αλλαγής γνώμης (εξαίρεση από το δικαίωμα υπαναχώρησης 14 ημερών, ν. 2251/1994 & Οδηγία 2011/83/ΕΕ). Η νόμιμη εγγύηση 2 ετών για ελαττώματα ισχύει κανονικά.",
+        rules5: "<strong>Επικοινωνία.</strong> Για πλήρεις όρους χρήσης και πολιτική απορρήτου, επικοινωνήστε μαζί μας από την καρτέλα <a href=\"#\" data-info-go=\"support\">Υποστήριξη</a>.",
 
         cartYourLoot: "Η λεία σου", cartTotalLabel: "Σύνολο", cartCheckoutBtn: "Στείλε την παραγγελία στο WhatsApp",
         compareSpecs: "Προδιαγραφές", compareFps: "Απόδοση (FPS)", compareView: "Δες το",
@@ -132,7 +145,7 @@ const translations = {
         addToCartBtn: "Στο καλάθι", flipToSpecs: "Δες τα specs", flipToFront: "Πίσω στην κάρτα",
         alertComingSoon: "Έρχεται σύντομα — δεν είναι ακόμα διαθέσιμο", alertStockLimit: "Έχεις ήδη στο καλάθι όσα κομμάτια υπάρχουν",
         missionPromptCode: "Εισάγετε τον κωδικό αποστολής (βρίσκεται στο κουτί):",
-        missionExpiredAlert: "⚠️ Η αποστολή έληξε. Πέρασαν 48 ώρες.",
+        missionExpiredAlert: "Ο κωδικός έληξε (ισχύει 2 ημέρες από την πρώτη χρήση). Αν έχεις θέμα με το PC σου, κάνε επιστροφή από τις Πληροφορίες.",
         connectionErrorAlert: "⚠️ Σφάλμα σύνδεσης!\nΟ διακομιστής δεν ανταποκρίνεται.",
         alertAllFieldsReview: "Προσοχή: Όλα τα πεδία είναι υποχρεωτικά", alertTransmissionFailed: "Η αποστολή απέτυχε",
         alertServerError: "Σφάλμα διακομιστή", alertSelectErrorProtocol: "⚠️ Προσοχή: Επίλεξε έγκυρο πρωτόκολλο σφάλματος.",
@@ -140,14 +153,14 @@ const translations = {
         backToPacksBtn: "Πίσω στα packs", voteAlmostThere: "ΚΟΝΤΑ ΣΤΟ ΣΤΟΧΟ", voteRemaining: "ψήφοι ακόμα"
     },
     en: {
-        sideSettings: "System Settings", sideTrust: "Warranty & Trust", sideRules: "Rules", sideHelp: "Help",
+        sideSettings: "System Settings", sideInfo: "Information: warranty, terms, support",
         sideWheel: "Daily Spin", sideLang: "Toggle Language", sideSocial: "Social Networks", sideDiscord: "Discord",
         sideInstagram: "Instagram", sideDropAlerts: "Drop Alerts", sideReviews: "Reviews", sideTerminal: "Terminal",
 
         reviewsLabel: "REVIEWS", writeReviewBtn: "[+] WRITE REVIEW", cartLabel: "CART",
         packGaming: "GAMING", packStreaming: "STREAMING", packCoding: "CODING",
         armoryLocked: "ARMORY LOCKED", voteCommunityDrop: "COMMUNITY DROP!", voteProgressLabel: "PROGRESS",
-        vsModeReady: "VS MODE READY", chatTop: "CODEX SUPPORT",
+        vsModeReady: "VS MODE READY", chatTop: "Quick answers", chatBack: "BACK", chatAdminBtn: "💬 TALK TO THE ADMIN",
 
         extrasLabel: "EXTRAS",
         storageLabel: "Storage Expansion", storageOptStandard: "Standard (No Extra)",
@@ -172,15 +185,31 @@ const translations = {
         rewardCyberGold: "CYBER GOLD SKIN", rewardToxicOrange: "TOXIC ORANGE SKIN", rewardNeonPink: "NEON PINK SKIN",
         rewardMatrixGreen: "MATRIX GREEN SKIN", rewardCoupon: "5% COUPON",
 
-        trustTitle: "TRUST PROTOCOLS",
         trustWarrantyTitle: "2-YEAR LEGAL WARRANTY",
         trustWarrantyText: "Every system is covered by the 2-year statutory warranty against defects, in accordance with current consumer protection law.",
         trustReturnTitle: "14-DAY RIGHT OF WITHDRAWAL",
-        trustReturnText: "You have the right to withdraw within 14 calendar days of receipt, without justification, in accordance with EU distance-selling law.",
+        trustReturnText: "You have the right to withdraw within 14 calendar days of receipt, without justification, in accordance with EU distance-selling law. Exception: custom paint, which is made to order.",
         trustShippingTitle: "GR SHIPPING",
         trustShippingText: "Secure packaging and delivery across Greece, with a full functionality check before shipping.",
 
         settingsTitle: "SYSTEM PREFERENCES", accentColorLabel: "ACCENT COLOR",
+        settingsSound: "Sound & music", settingsLanguage: "Language", settingsReplayTour: "Replay the tour",
+        colorsLockedNote: "The bottom 4 unlock on the Daily Spin (sign-in required).", colorsSpinBtn: "Spin the wheel",
+        toastColorLocked: "Locked colour — spin the Daily Wheel to unlock it.",
+        colorLime: "Lime", colorCyan: "Cyan", colorRed: "Red", colorPurple: "Purple",
+        closeLabel: "Close",
+
+        // Combined Information window (index.html #info-modal): Warranty & Returns / Terms / Support
+        infoTitle: "Information", infoTabReturns: "Warranty & Returns", infoTabTerms: "Terms", infoTabSupport: "Support",
+        returnHowTitle: "How to return an item",
+        returnHowText: "Press “Return” and your email app opens with a ready-made message. Fill in the details and send it within 14 days of receiving the item; we'll reply with the next steps.",
+        returnBtn: "Return", returnCopyBtn: "Copy email", returnCopied: "Email copied",
+        returnMailSubject: "Return request — PHOENIX CODEX",
+        returnMailBody: "Hello,\n\nI would like to return an item.\n\nName:\nSystem (PC):\nDate received:\nReason for return:\n\nThank you",
+        returnMailBodyCode: "Hello,\n\nI would like to return an item.\n\nSystem: {pc}\nBox code: {code}\nReason: {reason}\n\nName:\nDate received:\n\nThank you",
+        supportFaqTitle: "Quick answers", supportFaqText: "Buying, shipping, warranty, which PC to choose",
+        supportEmailTitle: "Email us", supportCodeTitle: "Got a code from the box?",
+        supportCodeText: "Write a review for your PC; the code is valid for 2 days after you first use it.",
 
         newsletterTitle: "DROP ALERTS", newsletterDesc: "Get notified the moment a new PC drops or a vote starts.", newsletterBtn: "ACTIVATE ALERTS",
         reviewCodeTitle: "VERIFIED REVIEW", reviewCodeBtn: "SUBMIT TRANSMISSION", rcUserPlaceholder: "Agent Name", rcTextPlaceholder: "System performance...",
@@ -188,7 +217,7 @@ const translations = {
         missionTitle: "HOW'S YOUR NEW RIG?", missionWindowLabel: "Window closes in",
         missionKeepTitle: "Everything works", missionKeepText: "Keep your system and tell others how it runs.",
         missionKeepBtn: "WRITE A REVIEW",
-        missionReportTitle: "Something's not right?", missionReportText: "Pick what's wrong and we'll sort out a return with you on WhatsApp.",
+        missionReportTitle: "Something's not right?", missionReportText: "Pick what's wrong and your email app opens with a ready-made return message.",
         missionSelectReason: "Choose the problem...", missionReason1: "FPS lower than advertised", missionReason2: "Hardware defect / won't start",
         missionReason3: "Specs don't match the listing", missionReason4: "Something else",
         missionReturnBtn: "START A RETURN",
@@ -219,15 +248,11 @@ const translations = {
         // stays a translation-file string, see openVoteInfo() in js/modules/vote.js.
         voteInfoTitle: "HOW IT WORKS",
 
-        rulesTitle: "TERMS & CONDITIONS",
-        rules1: "1. Available quantities are shown in real time; an order is completed once payment is confirmed.",
-        rules2: "2. Prices include VAT unless stated otherwise.",
-        rules3: "3. A 14-day right of withdrawal and a 2-year statutory warranty apply (see Trust Protocols).",
-        rules4: "4. Where a custom paint job or any other customer-specified modification is ordered, the product is considered personalised and made to order. Refunds for change of mind are not accepted (exempt from the 14-day right of withdrawal under Greek law 2251/1994 & EU Directive 2011/83/EU). The 2-year statutory warranty against defects still applies in full.",
-        rules5: "5. For full terms of use and our privacy policy, please contact us.",
-
-        helpTitle: "SUPPORT",
-        helpText: "For questions about orders, warranty, or technical support, contact us at <strong>d.codexphoenix@gmail.com</strong> or via the chat in the bottom left.",
+        rules1: "<strong>Orders.</strong> Stock is refreshed when the page loads. Your order is sent over WhatsApp and is complete once we confirm it with you.",
+        rules2: "<strong>Prices.</strong> Prices include VAT unless stated otherwise.",
+        rules3: "<strong>Returns & warranty.</strong> A 14-day right of withdrawal and a 2-year statutory warranty apply — see the <a href=\"#\" data-info-go=\"returns\">Warranty & Returns</a> tab.",
+        rules4: "<strong>Custom paint.</strong> Paint is made to order from your own choice. It cannot be returned for change of mind (exempt from the 14-day right of withdrawal under Greek law 2251/1994 & EU Directive 2011/83/EU). The 2-year statutory warranty against defects still applies in full.",
+        rules5: "<strong>Contact.</strong> For full terms of use and our privacy policy, please contact us from the <a href=\"#\" data-info-go=\"support\">Support</a> tab.",
 
         cartYourLoot: "YOUR LOOT", cartTotalLabel: "TOTAL", cartCheckoutBtn: "SEND YOUR ORDER ON WHATSAPP",
         compareSpecs: "SPECS", compareFps: "PERFORMANCE (FPS)", compareView: "VIEW",
@@ -269,7 +294,7 @@ const translations = {
         addToCartBtn: "Add to Cart", flipToSpecs: "Flip to Specs", flipToFront: "Flip to Front",
         alertComingSoon: "Coming soon — not available to order yet", alertStockLimit: "You already have every unit in stock in your cart",
         missionPromptCode: "ENTER MISSION CODE (Found in Box):",
-        missionExpiredAlert: "⚠️ MISSION EXPIRED. 48 HOURS HAVE PASSED.",
+        missionExpiredAlert: "This code has expired (it is valid for 2 days after first use). If something is wrong with your PC, start a return from Information.",
         connectionErrorAlert: "⚠️ CONNECTION ERROR!\nThe server is not responding.",
         alertAllFieldsReview: "SYSTEM ALERT: ALL FIELDS REQUIRED", alertTransmissionFailed: "TRANSMISSION FAILED",
         alertServerError: "SERVER ERROR", alertSelectErrorProtocol: "⚠️ SYSTEM ALERT: Please select a valid Error Protocol.",
@@ -328,6 +353,12 @@ export function applyLanguage(lang) {
         const v = translations[lang]?.[el.dataset.i18nHtml];
         if (v !== undefined) el.innerHTML = v;
     });
+    // Name for icon-only controls (colour swatches, close buttons) — read by screen readers, and the
+    // fallback label when a phone has no hover tooltip
+    document.querySelectorAll('[data-i18n-aria]').forEach(el => {
+        const v = translations[lang]?.[el.dataset.i18nAria];
+        if (v !== undefined) el.setAttribute('aria-label', v);
+    });
 
     currentLang = lang;
     localStorage.setItem('codex_lang', lang);
@@ -351,12 +382,24 @@ export function applyLanguage(lang) {
     // Extras rows carry prices/hours baked into their text, so they're built in JS, not data-i18n
     if (window.renderExtras) window.renderExtras();
     if (window.updateCartUI) window.updateCartUI();
+    if (window.renderChat) window.renderChat();
+    if (window.syncSettingsUI) window.syncSettingsUI();
+    // For anything built outside data-i18n that needs to follow the language (modal close labels, …)
+    document.dispatchEvent(new CustomEvent('codex:lang', { detail: { lang } }));
 }
 
 export function toggleLanguage() {
     applyLanguage(currentLang === 'el' ? 'en' : 'el');
     // Switching the language is one of the badges the API can't observe for itself
     if (window.checkAchievement) window.checkAchievement('polyglot');
+}
+
+// An explicit choice (the ΕΛ | EN switch in Settings, the tour's language pick) rather than a flip
+export function setLanguage(lang) {
+    if (lang !== 'el' && lang !== 'en') return;
+    const changed = lang !== currentLang;
+    applyLanguage(lang);
+    if (changed && window.checkAchievement) window.checkAchievement('polyglot');
 }
 
 // For the few places that hold their own {en, el} tables rather than i18n keys — the achievement
@@ -373,4 +416,5 @@ export function t(key, vars) {
 
 window.toggleLanguage = toggleLanguage;
 window.applyLanguage = applyLanguage;
+window.setLanguage = setLanguage;
 window.t = t;

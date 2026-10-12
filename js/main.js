@@ -12,7 +12,7 @@ import { initInteractiveTutorial } from './modules/tutorial.js';
 import { initDayNightCycle } from './modules/time.js';
 import { initStageFit } from './modules/stagefit.js';
 import { initScrollFades } from './ui/scroll-fade.js';
-import { applyLanguage } from './i18n.js';
+import { applyLanguage, t } from './i18n.js';
 
 import './modules/gallery.js';
 import './modules/compare.js';
@@ -21,6 +21,7 @@ import './modules/chat.js';
 import './modules/achievements.js';
 import './modules/whoami.js';
 import './modules/wheel.js';
+import './modules/info.js';
 
 // --- ΠΡΟΣΘΕΣΕ ΑΥΤΕΣ ΤΙΣ 3 ΓΡΑΜΜΕΣ ΕΔΩ ---
 // 3. UI Helpers (Παράθυρα, Ήχοι, Ειδοποιήσεις)
@@ -42,23 +43,40 @@ window.toggleAudio = () => {
     localStorage.setItem('codex_audio', state.audioEnabled);
     if (state.audioEnabled) { bgMusic.play().catch(()=>{}); } else { bgMusic.pause(); }
     
-    // UI Update
-    const audBtn = document.getElementById('set-audio'); 
-    if (audBtn) {
-        audBtn.className = state.audioEnabled ? 'setting-card active' : 'setting-card'; 
-        const sTitle = audBtn.querySelector('.s-title');
-        if (sTitle) sTitle.innerText = state.audioEnabled ? 'AUDIO: ON' : 'AUDIO: OFF'; 
-    }
+    syncSettingsUI();
 };
+
+// What the Settings window shows, derived from state — run at startup (it used to say "AUDIO: ON"
+// after a reload whatever had been saved), after each change, and on a language switch.
+function syncSettingsUI() {
+    const audBtn = document.getElementById('set-audio');
+    if (audBtn) {
+        audBtn.classList.toggle('on', state.audioEnabled);
+        audBtn.setAttribute('aria-checked', String(state.audioEnabled));
+    }
+    const lang = document.documentElement.lang === 'el' ? 'el' : 'en';
+    document.querySelectorAll('.seg-btn[data-lang]').forEach(b => {
+        const on = b.dataset.lang === lang;
+        b.classList.toggle('active', on);
+        b.setAttribute('aria-pressed', String(on));
+    });
+    document.querySelectorAll('.color-btn[data-color]').forEach(b => {
+        const on = b.dataset.color.toLowerCase() === String(state.currentTheme).toLowerCase();
+        b.classList.toggle('current', on);
+        b.setAttribute('aria-pressed', String(on));
+    });
+}
+window.syncSettingsUI = syncSettingsUI;
 
 window.setTheme = (color, id) => {
     if (id && !state.unlockedColors.includes(id)) {
-        if (window.showToast) window.showToast('LOCKED. SPIN THE WHEEL TO UNLOCK.', 'error');
+        if (window.showToast) window.showToast(t('toastColorLocked'), 'error');
         return;
     }
     state.currentTheme = color;
     localStorage.setItem('codex_theme', color);
     document.documentElement.style.setProperty('--neon-green', color);
+    syncSettingsUI();
 };
 
 // --- BOOT BUDGET ---
