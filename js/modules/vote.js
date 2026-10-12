@@ -11,7 +11,7 @@ import { state } from '../state.js';
 import { CONFIG } from '../config.js';
 import { api } from '../api.js';
 import { t, getLang } from '../i18n.js';
-import { formatPrice, priceCentsOf } from '../utils.js';
+import { formatPrice, priceCentsOf, formatShortDateTime } from '../utils.js';
 
 const REFRESH_MS = 45000;               // live progress while the tab is on screen
 const UNLOCK_SEEN_KEY = 'codex_vote_unlock_seen';
@@ -138,7 +138,13 @@ function renderAction(phase, user) {
         help = phase === 'upcoming' ? t('voteHelpUpcoming') : '';
     } else if (phase === 'unlocked' || phase === 'closed') {
         action = 'golive'; label = t('voteSeeLiveBtn');
-        help = phase === 'unlocked' ? t('voteHelpUnlocked') : '';
+        if (phase === 'unlocked') {
+            // Unlocked in time: members order first until the vote would have ended (server.js)
+            const end = ev() ? windowOf(ev()).end : null;
+            help = end !== null && end > Date.now() + serverOffset
+                ? t('voteHelpUnlockedMembers', { until: formatShortDateTime(end) })
+                : t('voteHelpUnlocked');
+        }
     } else if (user === 'guest') {
         action = 'login'; label = t('voteLoginBtn');
         help = t('voteHelpGuest'); link = { act: 'signup', text: t('voteSignupLink') };

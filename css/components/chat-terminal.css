@@ -29,7 +29,11 @@
 
 #cli-overlay { display: none !important; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 700px; max-width: 90%; height: 450px; background: rgba(5, 5, 10, 0.98); border: 1px solid var(--neon-green); border-radius: 12px; box-shadow: 0 20px 100px rgba(0,0,0,0.9); z-index: 9999; padding: 20px; font-family: monospace; color: #0f0; flex-direction: column; pointer-events: auto !important; }
 #cli-overlay.active { display: flex !important; }
-.cli-close { position: absolute; top: 15px; right: 15px; color: #0f0; cursor: pointer; font-size: 1.2rem; }
+.cli-bar { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin: -20px -20px 12px; padding: 6px 6px 6px 16px; border-bottom: 1px solid rgba(0, 255, 0, 0.2); background: repeating-linear-gradient(0deg, rgba(0, 255, 0, 0.03) 0 1px, transparent 1px 3px), rgba(0, 255, 0, 0.05); border-radius: 12px 12px 0 0; }
+.cli-bar-title { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; color: rgba(0, 255, 0, 0.75); letter-spacing: 1px; }
+.cli-close { flex: none; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 50%; border: 1px solid rgba(0, 255, 0, 0.3); background: transparent; color: #0f0; cursor: pointer; font-size: 1.1rem; transition: background-color 0.2s; }
+.cli-close:hover { background: rgba(0, 255, 0, 0.12); }
+.cli-close:focus-visible { outline: 2px solid #0f0; outline-offset: 2px; }
 .cli-output { flex: 1; overflow-y: auto; margin-bottom: 10px; white-space: pre-wrap; line-height: 1.4; }
 .cli-input-line { display: flex; align-items: center; }
 .cli-prompt { color: #0f0; margin-right: 10px; }

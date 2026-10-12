@@ -1,7 +1,7 @@
 // js/modules/gallery.js
 import { state } from '../state.js';
 import { t } from '../i18n.js';
-import { esc, formatPrice, priceCentsOf, stockState, stockLabel } from '../utils.js';
+import { esc, formatPrice, priceCentsOf, stockState, stockLabel, membersOnlyActive } from '../utils.js';
 
 // --- EXTRAS: normalisation, pricing, image sets ---
 
@@ -277,7 +277,9 @@ export function openGallery(pc) {
         const st = stockState(state.currentGalleryPC);
         const blocked = st === 'out' || st === 'soon';
         addBtn.disabled = blocked;
-        addBtn.textContent = blocked ? stockLabel(state.currentGalleryPC) : t('addToCartBtn');
+        // Early access: still pressable for a guest — it takes them to sign in
+        const membersGate = !blocked && membersOnlyActive(state.currentGalleryPC) && !(state.isLoggedIn && state.emailVerified);
+        addBtn.textContent = blocked ? stockLabel(state.currentGalleryPC) : (membersGate ? t('membersOnlyBtn') : t('addToCartBtn'));
     }
     
 // 6. Back Side Detailed Specs (Yu-Gi-Oh style: stars + stat boxes + spec items + flavor text)

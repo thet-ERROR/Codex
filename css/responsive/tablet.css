@@ -51,6 +51,17 @@
                 mask-image: linear-gradient(to right, transparent, #000 56px, #000 calc(100% - 56px), transparent);
     }
 
+    /* Swipe smoothness on phones/tablets. The card gets its own GPU layer up front, so the first
+       frame of a drag doesn't stop to paint it; its 100px-blur shadow and the photo's drop-shadow
+       filter made that layer slow to paint every time a new PC was drawn, so they're lighter here;
+       and the snapshot thrown off-screen needs no shadow at all. Background blurs that sat behind the
+       moving card (tab strip, pack cards) are dropped — invisible on these dark backgrounds anyway. */
+    #main-card { will-change: transform; box-shadow: 0 18px 40px rgba(0, 0, 0, 0.7); }
+    body.night-mode #main-card { box-shadow: 0 18px 40px rgba(0, 0, 0, 0.75), var(--night-glow); }
+    .hero-img { filter: none; }
+    .card-ghost > .holo-card { box-shadow: none; }
+    .nav-bar, .pack-card { backdrop-filter: none; -webkit-backdrop-filter: none; }
+
     .yg-card-container { width: 95%; height: 80vh; max-height: 750px; }
     .yg-buttons-section { grid-template-columns: 1fr; }
     .starter-menu { flex-direction: column; align-items: center; }

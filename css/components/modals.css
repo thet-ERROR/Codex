@@ -140,3 +140,81 @@ body.lang-el .info-terms li { font-size: 0.85rem; }
     .info-actions .info-btn { flex: 1 1 100%; }
 }
 @media (prefers-reduced-motion: reduce) { .info-panel.active { animation: none; } }
+
+/* ===== HUD LAYER — gives the shared window shell the site's own look =====
+   The same vocabulary as the PC card and the terminal: a >// kicker over the title with a blinking
+   cursor, HUD corner brackets, cut-corner tabs numbered 01/02/03, icon chips, and the card's
+   ">// CLASSIFIED_BRIEF" treatment (purple left rule) for the panel that matters most. */
+.info-box { position: relative; background: linear-gradient(180deg, #0e0e14 0%, #09090c 60%); border-color: rgba(176, 38, 255, 0.28); border-top-color: var(--neon-green); }
+.info-box::before, .info-box::after { content: ''; position: absolute; width: 16px; height: 16px; pointer-events: none; z-index: 2; }
+.info-box::before { top: 8px; left: 8px; border-top: 2px solid var(--neon-green); border-left: 2px solid var(--neon-green); }
+.info-box::after { bottom: 8px; right: 8px; border-bottom: 2px solid var(--neon-purple); border-right: 2px solid var(--neon-purple); }
+
+/* Header: faint scanlines, kicker, title with a terminal cursor */
+.info-head { background: repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.018) 0 1px, transparent 1px 3px); padding-top: 16px; }
+.info-head-text { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.info-kicker { font-family: 'Courier New', monospace; font-size: 0.72rem; font-weight: 700; letter-spacing: 1px; color: var(--neon-green); opacity: 0.85; }
+.info-title { font-size: 1.3rem; letter-spacing: 2px; }
+.info-title::after { content: '_'; margin-left: 3px; color: var(--neon-green); animation: cursorBlink 1s step-end infinite; }
+
+/* Tabs: cut corners like the card arrows, a number, and a lit underline when active */
+.info-tab {
+    position: relative; border-radius: 0; border-color: #2c2c34; background: rgba(255, 255, 255, 0.025);
+    clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
+    text-transform: uppercase; letter-spacing: 0.5px;
+}
+.info-tab-no { font-family: 'Courier New', monospace; font-size: 0.7rem; font-weight: 700; opacity: 0.55; }
+.info-tab:hover { color: #fff; background: rgba(255, 255, 255, 0.06); }
+.info-tab.active { color: var(--neon-green); border-color: rgba(204, 255, 0, 0.35); background: rgba(255, 255, 255, 0.06); box-shadow: inset 0 -2px 0 var(--neon-green); }
+.info-tab.active .info-tab-no { opacity: 1; }
+
+/* Rows: the icon sits in a chip */
+.info-ico.info-ico { width: 46px; height: 46px; display: flex; align-items: center; justify-content: center; font-size: 1.6rem; border-radius: 10px; border: 1px solid currentColor; background: rgba(255, 255, 255, 0.03); box-shadow: inset 0 0 14px rgba(255, 255, 255, 0.03); }
+.info-row { border-bottom-color: rgba(255, 255, 255, 0.06); }
+.info-row h3 { letter-spacing: 1px; }
+
+/* The returns panel reads like the card's brief: purple rule, >// heading */
+.info-callout { border-radius: 0 10px 10px 0; border: none; border-left: 2px solid var(--neon-purple); background: rgba(0, 0, 0, 0.45); }
+.info-callout h3 { color: var(--neon-purple); font-size: 0.85rem; letter-spacing: 2px; text-transform: uppercase; }
+.info-callout h3::before { content: '>// '; }
+.info-btn { border-radius: 6px; }
+
+/* Terms: 01. 02. … in the accent, monospace — instead of generic numbered circles */
+.info-terms li { padding-left: 46px; }
+.info-terms li::before { content: counter(term, decimal-leading-zero); width: auto; height: auto; top: 1px; border: none; border-radius: 0; background: none; font-family: 'Courier New', monospace; font-size: 0.95rem; color: var(--neon-green); }
+.info-terms li + li { padding-top: 16px; border-top: 1px solid rgba(255, 255, 255, 0.06); }
+.info-terms li + li::before { top: 17px; }
+
+/* Support rows: HUD cards with a lit left edge on hover */
+.info-action { position: relative; border-radius: 10px; border-color: rgba(255, 255, 255, 0.08); background: linear-gradient(90deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.015)); overflow: hidden; }
+.info-action::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 2px; background: var(--neon-green); opacity: 0; transition: opacity 0.2s; }
+.info-action:hover::before { opacity: 1; }
+.info-action .info-ico.info-ico { width: 42px; height: 42px; font-size: 1.4rem; }
+.info-action:hover .info-caret { color: var(--neon-green); transform: translateX(3px); }
+.info-caret { transition: transform 0.2s, color 0.2s; }
+
+/* Settings and How-it-works share the shell; their own accents */
+.set-heading::before { content: '>// '; }
+
+@media (prefers-reduced-motion: reduce) { .info-title::after { animation: none; } }
+@media (max-width: 768px) {
+    .info-title { font-size: 1.1rem; }
+    .info-tab { clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px); }
+    .info-tab-no { display: none; }
+    .info-box::after { bottom: calc(8px + env(safe-area-inset-bottom)); }
+}
+
+/* ===== Older windows moved into the shell (upgradeModalShells in js/ui/modals.js) ===== */
+.info-box--sm { width: min(440px, calc(100vw - 32px)); }
+.info-head { text-align: left; }
+.info-body .auth-form { margin-top: 0; }
+.info-body .ach-grid { max-height: none; overflow: visible; padding-right: 0; }
+.info-body > p:first-child { margin-top: 0; }
+#tutorial-lang-modal .info-body { text-align: center; }
+
+/* Phones: nothing may be wider than the screen. A flex item doesn't shrink below its content by
+   default (min-width: auto), which is how a 600px window pushed its X off the right edge. */
+@media (max-width: 768px) {
+    .modal-overlay > :not(.info-box) { min-width: 0; max-width: calc(100vw - 20px); box-sizing: border-box; }
+    .info-box--sm { width: 100%; }
+}
