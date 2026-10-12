@@ -7,6 +7,11 @@ body.night-mode header { background: linear-gradient(to bottom, rgba(5,5,15,0.95
 
 .logo { height: 88px; width: auto; object-fit: contain; display: block; position: relative; z-index: 5001; cursor: pointer; animation: logoGlow 6s ease-in-out infinite; transition: transform 0.3s ease; }
 .logo:hover { transform: scale(1.06); }
+/* An animated filter is repainted every frame (Safari never hands it to the GPU), and the header is on
+   screen the whole visit — on touch layouts the glow stays, it just doesn't breathe. */
+@media (max-width: 1024px), (prefers-reduced-motion: reduce) {
+    .logo { animation: none; filter: drop-shadow(0 0 10px rgba(176, 38, 255, 0.4)); }
+}
 
 .nav-bar { display: flex; gap: 10px; background: rgba(255,255,255,0.05); padding: 8px; border-radius: 40px; border: 1px solid var(--glass-border); backdrop-filter: blur(10px); position: absolute; left: 50%; transform: translateX(-50%); }
 .nav-btn { background: transparent; border: none; color: #aaa; padding: 8px 20px; border-radius: 30px; font-family: var(--font-ui); font-size: 0.9rem; font-weight: 700; cursor: pointer; transition: 0.3s; letter-spacing: 1px; display: flex; align-items: center; gap: 6px; white-space: nowrap; }
