@@ -1,4 +1,6 @@
-#toast-container { position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%); z-index: 20000; display: flex; flex-direction: column; gap: 10px; pointer-events: none; }
+/* Above every layer — modals sit at 99999-1000000 and the inspect card at 999999, and a toast fired
+   from inside one of them (stock limit, locked colour, newsletter error) used to be painted under it */
+#toast-container { position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%); z-index: 2147483000; display: flex; flex-direction: column; gap: 10px; pointer-events: none; }
 .toast { background: rgba(0, 0, 0, 0.95); border: 1px solid var(--neon-green); color: #fff; padding: 15px 30px; border-radius: 8px; font-family: var(--font-ui); font-weight: bold; box-shadow: 0 0 20px rgba(204, 255, 0, 0.2); display: flex; align-items: center; gap: 10px; animation: slideUpFade 0.5s ease-out; pointer-events: auto; }
 .toast.achievement { border-color: var(--legendary-orange); color: var(--legendary-orange); }
 .toast.error { border-color: var(--retro-red); color: var(--retro-red); }
