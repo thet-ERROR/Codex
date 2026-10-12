@@ -203,3 +203,18 @@ body.lang-el .info-terms li { font-size: 0.85rem; }
     .info-tab-no { display: none; }
     .info-box::after { bottom: calc(8px + env(safe-area-inset-bottom)); }
 }
+
+/* ===== Older windows moved into the shell (upgradeModalShells in js/ui/modals.js) ===== */
+.info-box--sm { width: min(440px, calc(100vw - 32px)); }
+.info-head { text-align: left; }
+.info-body .auth-form { margin-top: 0; }
+.info-body .ach-grid { max-height: none; overflow: visible; padding-right: 0; }
+.info-body > p:first-child { margin-top: 0; }
+#tutorial-lang-modal .info-body { text-align: center; }
+
+/* Phones: nothing may be wider than the screen. A flex item doesn't shrink below its content by
+   default (min-width: auto), which is how a 600px window pushed its X off the right edge. */
+@media (max-width: 768px) {
+    .modal-overlay > :not(.info-box) { min-width: 0; max-width: calc(100vw - 20px); box-sizing: border-box; }
+    .info-box--sm { width: 100%; }
+}

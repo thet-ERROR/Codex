@@ -132,6 +132,72 @@ document.addEventListener('keydown', (e) => {
         e.target.click();
     }
 });
+// --- ONE SHELL FOR EVERY WINDOW ---
+// The older windows (login, sign-up, achievements, newsletter, review, …) were each a .modal-content
+// with its own inline width, title style and a loose "X" — on a phone a 600px box that couldn't
+// shrink past its content, so the X ended up off-screen. Rather than hand-edit eleven blocks of
+// markup, they're moved into the same shell as Information/Settings at start-up: kicker + title +
+// 44px close button in a header that stays put, the rest in a scrolling body. Ids, data-i18n and
+// handlers are untouched — elements are moved, not rebuilt.
+const SHELL_KICKERS = {
+    'login-modal': 'AUTH', 'signup-modal': 'NEW_RECRUIT', 'forgot-modal': 'RECOVERY', 'reset-modal': 'RECOVERY',
+    'achievements-modal': 'AGENT_RECORD', 'newsletter-modal': 'DROP_ALERTS', 'review-code-modal': 'FIELD_REPORT',
+    'spec-info-modal': 'COMPONENT', 'proconfig-info-modal': 'PRO_CONFIG', 'paint-consent-modal': 'CUSTOM_PAINT',
+    'tutorial-lang-modal': 'TOUR'
+};
+const SHELL_SMALL = ['login-modal', 'signup-modal', 'forgot-modal', 'reset-modal', 'newsletter-modal', 'review-code-modal', 'spec-info-modal', 'tutorial-lang-modal'];
+
+function upgradeModalShells() {
+    Object.keys(SHELL_KICKERS).forEach(id => {
+        const overlay = document.getElementById(id);
+        const box = overlay && overlay.querySelector(':scope > .modal-content');
+        if (!box || box.classList.contains('info-box')) return;
+
+        const close = box.querySelector(':scope > .close-modal, :scope > .close-btn');
+        const title = box.querySelector(':scope > h2');
+        const head = document.createElement('div');
+        head.className = 'info-head';
+        const headText = document.createElement('div');
+        headText.className = 'info-head-text';
+        const kicker = document.createElement('span');
+        kicker.className = 'info-kicker';
+        kicker.textContent = '>// ' + SHELL_KICKERS[id];
+        headText.appendChild(kicker);
+        if (title) {
+            title.removeAttribute('style');
+            title.className = 'info-title';
+            headText.appendChild(title);
+        }
+        const x = document.createElement('button');
+        x.type = 'button';
+        x.className = 'modal-x';
+        x.dataset.i18nAria = 'closeLabel';
+        x.setAttribute('aria-label', window.t ? window.t('closeLabel') : 'Close');
+        x.innerHTML = '<i class="ph-bold ph-x"></i>';
+        // Same action as the old X (some decline or skip rather than just close)
+        x.setAttribute('onclick', (close && close.getAttribute('onclick')) || `closeModal('${id}')`);
+        if (close) close.remove();
+        head.append(headText, x);
+
+        const body = document.createElement('div');
+        body.className = 'info-body';
+        while (box.firstChild) body.appendChild(box.firstChild);
+        box.append(head, body);
+
+        box.classList.add('info-box');
+        if (SHELL_SMALL.includes(id)) box.classList.add('info-box--sm');
+        box.style.width = '';           // the inline widths were the phone overflow
+        box.style.borderColor = '';
+        box.setAttribute('role', 'dialog');
+        box.setAttribute('aria-modal', 'true');
+        if (title) {
+            if (!title.id) title.id = id + '-title';
+            box.setAttribute('aria-labelledby', title.id);
+        }
+    });
+}
+
+upgradeModalShells();
 enhanceCloseButtons();
 document.addEventListener('codex:lang', enhanceCloseButtons);
 

@@ -42,7 +42,11 @@
 <body id="main-body">
 
     <div id="cli-overlay">
-        <div class="cli-close" onclick="toggleCLI()"><i class="ph-bold ph-x"></i></div>
+        <!-- Title bar: the close button lives here, so it can't sit on top of the first line of output -->
+        <div class="cli-bar">
+            <span class="cli-bar-title"><i class="ph-bold ph-terminal-window"></i> codex@terminal</span>
+            <button type="button" class="cli-close" onclick="toggleCLI()" data-i18n-aria="closeLabel" aria-label="Close"><i class="ph-bold ph-x"></i></button>
+        </div>
         <div class="cli-output" id="cli-output">CODEX TERMINAL v1.0 [SECURE CONNECTION ESTABLISHED]
 Type 'help' for a list of commands.
         </div>
