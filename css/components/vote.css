@@ -216,3 +216,35 @@
     font-size: 3rem; line-height: 1; pointer-events: none;
     filter: drop-shadow(0 0 14px rgba(255,196,61,0.6));
 }
+
+/* ===== Compact vote card — tablet and phone (plan step 2) =====
+   On a phone the card needed two screens. Now: no "PROGRESS" title (the bar says it), count + time
+   on ONE line over the bar, the "N votes to go" chip only once it's hot (80%+), a shorter photo, the
+   lore on two lines, and INSPECT as a quiet link instead of a second big button. Desktop unchanged. */
+@media (max-width: 1024px) {
+    .vote-container { padding: 16px var(--card-pad) 18px; width: var(--card-w); max-width: 95vw; margin: 6px auto; }
+    .vote-title { margin: 12px 0 2px; font-size: var(--title-size); }
+    .vote-price { margin-bottom: 10px; font-size: 1.05rem; min-height: 0; }
+    .mystery-img-wrap { height: 120px; margin-bottom: 12px; }
+    .lock-icon { font-size: 2.4rem; }
+
+    .vote-section-title { display: none; }
+    .vote-progress { display: grid; grid-template-columns: 1fr auto; align-items: center; column-gap: 10px; row-gap: 6px; margin-bottom: 12px; }
+    .vote-progress-row { display: contents; }
+    .vote-count { grid-column: 1; grid-row: 1; text-align: left; font-size: 0.9rem; }
+    .vote-timer { grid-column: 2; grid-row: 1; padding: 0; border: none; background: none; font-size: 0.78rem; color: #cfc8b4; justify-self: end; }
+    .vote-progress-wrap { grid-column: 1 / -1; grid-row: 2; margin: 0; height: 10px; }
+    .vote-remaining-chip { grid-column: 1 / -1; grid-row: 3; justify-self: start; display: none; }
+    .vote-remaining-chip.hot { display: inline-block; }
+
+    .vote-message { margin-bottom: 12px; font-size: 0.85rem; }
+    .vote-btn { min-height: var(--ctl-h); font-size: 0.95rem; }
+    .vote-helper { margin-top: 6px; font-size: 0.75rem; }
+
+    .vote-brief { margin-top: 12px; }
+    .vote-brief:not(.expanded) .sys-brief-text { -webkit-line-clamp: 2 !important; line-clamp: 2 !important; }
+
+    /* INSPECT: a text link, not a button */
+    .vote-inspect { width: auto; margin: 8px auto 0; padding: 8px 12px; border: none; background: none; box-shadow: none; color: var(--vote-gold); font-size: 0.8rem; letter-spacing: 1px; text-decoration: underline; text-underline-offset: 3px; }
+    .vote-inspect:hover { background: none; box-shadow: none; color: #fff; }
+}
