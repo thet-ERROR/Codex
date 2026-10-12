@@ -7,7 +7,7 @@ const translations = {
 
         reviewsLabel: "Κριτικές", writeReviewBtn: "[+] Γράψε κριτική", cartLabel: "Καλάθι",
         packGaming: "GAMING", packStreaming: "STREAMING", packCoding: "CODING",
-        armoryLocked: "Οπλοστάσιο κλειδωμένο", voteCommunityDrop: "Κοινοτικό drop!", voteProgressLabel: "Πρόοδος",
+        armoryLocked: "Οπλοστάσιο κλειδωμένο", voteProgressLabel: "Πρόοδος",
         vsModeReady: "Λειτουργία VS έτοιμη", chatTop: "Γρήγορες απαντήσεις", chatBack: "ΠΙΣΩ", chatAdminBtn: "💬 ΜΙΛΑ ΜΕ ΤΟΝ ADMIN",
 
         extrasLabel: "Επιπλέον επιλογές",
@@ -95,6 +95,30 @@ const translations = {
         // The body text moved to SiteConfig.voteInfoTextEl (admin-editable) — only the modal's
         // title stays a translation-file string, see openVoteInfo() in js/modules/vote.js.
         voteInfoTitle: "Πώς λειτουργεί",
+        // VOTE tab (js/modules/vote.js) — μία κάρτα, ένα κουμπί ανά κατάσταση
+        voteStatus_none: "ΧΩΡΙΣ ΨΗΦΟΦΟΡΙΑ", voteStatus_upcoming: "ΕΡΧΕΤΑΙ ΣΥΝΤΟΜΑ", voteStatus_open: "ΨΗΦΟΦΟΡΙΑ ΑΝΟΙΧΤΗ",
+        voteStatus_unlocked: "ΞΕΚΛΕΙΔΩΘΗΚΕ", voteStatus_closed: "ΕΚΛΕΙΣΕ", voteStatus_loading: "ΦΟΡΤΩΣΗ...",
+        voteHowItWorks: "Πώς λειτουργεί", voteNoneTitle: "Καμία ψηφοφορία τώρα",
+        voteMsgNone: "Το επόμενο κοινοτικό drop έρχεται σύντομα. Θες να μάθεις πρώτος πότε ανοίγει η ψηφοφορία;",
+        voteMsgUnlocked: "Η κοινότητα το ξεκλείδωσε! Το PC είναι πλέον στα Live Drops, έτοιμο για παραγγελία.",
+        voteMsgClosed: "Ο χρόνος έληξε πριν μαζευτούν οι ψήφοι — το PC βρίσκεται πλέον στα Live Drops.",
+        voteEstPrice: "~{price} · εκτίμηση", votePriceTbd: "Τιμή: σύντομα",
+        voteCount: "{n} / {target} ψήφοι", voteRemainingOne: "1 ψήφος ακόμα", voteRemainingMany: "{n} ψήφοι ακόμα",
+        voteOpensIn: "Ανοίγει σε {time}", voteClosesIn: "Κλείνει σε {time}",
+        voteNotifyBtn: "Ειδοποίησέ με", voteLoginBtn: "Σύνδεση για να ψηφίσεις", voteVerifyBtn: "Επιβεβαίωσε το email σου",
+        voteCastBtn: "Ψήφισε · +50 XP", voteDoneBtn: "✓ Η ψήφος σου μετρήθηκε", voteSeeLiveBtn: "Δες το στα Live Drops",
+        voteHelpUpcoming: "Θα μπορείς να ψηφίσεις μόλις ανοίξει η ψηφοφορία.",
+        voteHelpGuest: "Δωρεάν λογαριασμός · 1 ψήφος ανά πράκτορα.", voteSignupLink: "Εγγραφή",
+        voteHelpVerify: "Η ψήφος σου ξεκλειδώνει μόλις επιβεβαιώσεις το email σου.",
+        voteHelpCan: "1 ψήφος ανά πράκτορα — μετράει αμέσως.",
+        voteHelpVoted: "Φέρε κι άλλους για να ξεκλειδώσει πιο γρήγορα.", voteShareLink: "Μοιράσου",
+        voteHelpUnlocked: "1 τεμάχιο — όποιος προλάβει.",
+        voteToastCounted: "Η ψήφος σου μετρήθηκε!", voteToastAlready: "Έχεις ήδη ψηφίσει σε αυτό το drop.",
+        voteToastFailed: "Η ψήφος δεν πέρασε — δοκίμασε ξανά σε λίγο.",
+        voteUnlockedToast: "🔓 Το {name} ξεκλειδώθηκε — είναι στα Live Drops!",
+        voteShareText: "Ψήφισε για να ξεκλειδώσει το {name} στο PHOENIX CODEX!", linkCopied: "Ο σύνδεσμος αντιγράφηκε",
+        voteInfoDefault: "Κοινοτικά drops: η κοινότητα ψηφίζει για να ξεκλειδώσει ένα μυστηριώδες PC.\n\n1. Η ψηφοφορία ανοίγει την ημερομηνία που φαίνεται.\n2. Κάθε συνδεδεμένος πράκτορας με επιβεβαιωμένο email έχει μία ψήφο.\n3. Αν μαζευτούν οι ψήφοι πριν λήξει ο χρόνος, το PC ξεκλειδώνει και μπαίνει αμέσως στα Live Drops, έτοιμο για παραγγελία.\n4. Αν λήξει πρώτα ο χρόνος, το PC έρχεται κι αυτό στα Live Drops με το κλείσιμο της ψηφοφορίας.",
+        communityDropBadge: "ΚΟΙΝΟΤΙΚΟ DROP",
 
         // Όροι — HTML (data-i18n-html): ο τίτλος του κάθε σημείου είναι <strong>, τα data-info-go είναι συνδέσεις προς άλλη καρτέλα
         rules1: "<strong>Παραγγελίες.</strong> Το απόθεμα ενημερώνεται όταν φορτώνει η σελίδα. Η παραγγελία στέλνεται μέσω WhatsApp και ολοκληρώνεται όταν την επιβεβαιώσουμε μαζί σου.",
@@ -150,7 +174,7 @@ const translations = {
         alertAllFieldsReview: "Προσοχή: Όλα τα πεδία είναι υποχρεωτικά", alertTransmissionFailed: "Η αποστολή απέτυχε",
         alertServerError: "Σφάλμα διακομιστή", alertSelectErrorProtocol: "⚠️ Προσοχή: Επίλεξε έγκυρο πρωτόκολλο σφάλματος.",
         loreFallback: "Σύστημα τακτικών επιχειρήσεων. Οι πλήρεις προδιαγραφές βρίσκονται στον φάκελο INSPECT. Απαιτείται εξουσιοδότηση.",
-        backToPacksBtn: "Πίσω στα packs", voteAlmostThere: "ΚΟΝΤΑ ΣΤΟ ΣΤΟΧΟ", voteRemaining: "ψήφοι ακόμα"
+        backToPacksBtn: "Πίσω στα packs"
     },
     en: {
         sideSettings: "System Settings", sideInfo: "Information: warranty, terms, support",
@@ -159,7 +183,7 @@ const translations = {
 
         reviewsLabel: "REVIEWS", writeReviewBtn: "[+] WRITE REVIEW", cartLabel: "CART",
         packGaming: "GAMING", packStreaming: "STREAMING", packCoding: "CODING",
-        armoryLocked: "ARMORY LOCKED", voteCommunityDrop: "COMMUNITY DROP!", voteProgressLabel: "PROGRESS",
+        armoryLocked: "ARMORY LOCKED", voteProgressLabel: "PROGRESS",
         vsModeReady: "VS MODE READY", chatTop: "Quick answers", chatBack: "BACK", chatAdminBtn: "💬 TALK TO THE ADMIN",
 
         extrasLabel: "EXTRAS",
@@ -247,6 +271,30 @@ const translations = {
         // The body text moved to SiteConfig.voteInfoText (admin-editable) — only the modal's title
         // stays a translation-file string, see openVoteInfo() in js/modules/vote.js.
         voteInfoTitle: "HOW IT WORKS",
+        // VOTE tab (js/modules/vote.js) — one card, one button per state
+        voteStatus_none: "NO VOTE RUNNING", voteStatus_upcoming: "COMING SOON", voteStatus_open: "VOTING OPEN",
+        voteStatus_unlocked: "UNLOCKED", voteStatus_closed: "CLOSED", voteStatus_loading: "LOADING...",
+        voteHowItWorks: "How it works", voteNoneTitle: "No vote right now",
+        voteMsgNone: "The next community drop is on its way. Want to be the first to know when voting opens?",
+        voteMsgUnlocked: "The community unlocked it! The PC is now in Live Drops, ready to order.",
+        voteMsgClosed: "Time ran out before the target was reached — the PC is now in Live Drops.",
+        voteEstPrice: "~{price} · estimate", votePriceTbd: "Price: coming soon",
+        voteCount: "{n} / {target} votes", voteRemainingOne: "1 vote to go", voteRemainingMany: "{n} votes to go",
+        voteOpensIn: "Opens in {time}", voteClosesIn: "Closes in {time}",
+        voteNotifyBtn: "Notify me", voteLoginBtn: "Sign in to vote", voteVerifyBtn: "Verify your email",
+        voteCastBtn: "Vote · +50 XP", voteDoneBtn: "✓ Your vote counts", voteSeeLiveBtn: "See it in Live Drops",
+        voteHelpUpcoming: "You can vote as soon as voting opens.",
+        voteHelpGuest: "Free account · 1 vote per agent.", voteSignupLink: "Sign up",
+        voteHelpVerify: "Your vote unlocks once you verify your email.",
+        voteHelpCan: "1 vote per agent — it counts straight away.",
+        voteHelpVoted: "Bring others in to unlock it faster.", voteShareLink: "Share",
+        voteHelpUnlocked: "1 unit — first come, first served.",
+        voteToastCounted: "Your vote counts!", voteToastAlready: "You've already voted on this drop.",
+        voteToastFailed: "Your vote didn't go through — try again in a moment.",
+        voteUnlockedToast: "🔓 {name} is unlocked — it's in Live Drops!",
+        voteShareText: "Vote to unlock {name} at PHOENIX CODEX!", linkCopied: "Link copied",
+        voteInfoDefault: "Community drops: the network votes to unlock a mystery PC.\n\n1. Voting opens on the date shown.\n2. Every signed-in agent with a verified email gets one vote.\n3. Reach the target before time runs out and the PC unlocks — it goes straight to Live Drops, ready to order.\n4. If time runs out first, the PC still comes to Live Drops when voting closes.",
+        communityDropBadge: "COMMUNITY DROP",
 
         rules1: "<strong>Orders.</strong> Stock is refreshed when the page loads. Your order is sent over WhatsApp and is complete once we confirm it with you.",
         rules2: "<strong>Prices.</strong> Prices include VAT unless stated otherwise.",
@@ -299,7 +347,7 @@ const translations = {
         alertAllFieldsReview: "SYSTEM ALERT: ALL FIELDS REQUIRED", alertTransmissionFailed: "TRANSMISSION FAILED",
         alertServerError: "SERVER ERROR", alertSelectErrorProtocol: "⚠️ SYSTEM ALERT: Please select a valid Error Protocol.",
         loreFallback: "Tactical operations system. Full specifications are available in the INSPECT file. Authorization required.",
-        backToPacksBtn: "BACK TO PACKS", voteAlmostThere: "ALMOST THERE", voteRemaining: "votes to go"
+        backToPacksBtn: "BACK TO PACKS"
     }
 };
 

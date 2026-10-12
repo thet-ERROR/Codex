@@ -413,9 +413,25 @@ const data = {
         ).join('');
     }
 
+    // Clears the VOTE tab. A PC the event already turned into stays in LIVE DROPS (it's a normal PC
+    // now — edit or delete it from the list like any other).
+    async function endVote() {
+        if (!confirm('Να αφαιρεθεί το event από το Vote tab; Οι ψήφοι του χάνονται. Αν έχει ήδη γίνει PC στα Live Drops, αυτό μένει.')) return;
+        try {
+            const res = await fetch(`${API}/vote-event`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${TOKEN}` } });
+            if (!res.ok) throw new Error(res.status);
+            alert('Το event αφαιρέθηκε.');
+            loadVote(); loadInv();
+        } catch (e) { alert('Η αφαίρεση απέτυχε.'); }
+    }
+
     async function loadVote() {
         try {
             const res=await fetch(`${API}/vote-event`, { headers:{'Authorization':`Bearer ${TOKEN}`} }); const v=await res.json();
+            // How the current event stands — after an unlock or expiry it stays on the VOTE tab
+            // (pointing at its new LIVE DROPS PC) until it's removed or replaced
+            const phaseText = { open: '🟢 Ανοιχτή ψηφοφορία', upcoming: '🕒 Δεν άνοιξε ακόμα', unlocked: '🔓 Ξεκλειδώθηκε — είναι στα Live Drops', closed: '⏹ Έληξε — μπήκε στα Live Drops' };
+            $('v-status-line').textContent = v.title ? `${phaseText[v.phase] || ''} · ${v.currentVotes || 0}/${v.targetVotes || 0} ψήφοι` : 'Κανένα event αυτή τη στιγμή.';
             if(v.title) {
                 document.getElementById('v-title').value=v.title;
                 document.getElementById('v-price').value = centsToInput(v.priceCents, v.price);
@@ -581,6 +597,7 @@ const data = {
         on('save-vote-info-btn', 'click', saveVoteInfo);
         on('add-vote-fps-btn', 'click', addVoteFPS);
         on('upload-vote-btn', 'click', uploadVote);
+        on('end-vote-btn', 'click', endVote);
         on('generate-code-btn', 'click', generateCode);
 
         delegate('inventory-list', (el) => {

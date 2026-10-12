@@ -4,8 +4,8 @@ import { api } from './api.js';
 
 import { checkSavedSession, hydrateProfile } from './modules/auth.js';
 import { updateCartUI } from './modules/cart.js';
-import { filterInv } from './modules/catalog.js';
-import { renderVoteState, updateTimer } from './modules/vote.js';
+import { filterInv, switchTab } from './modules/catalog.js';
+import { renderVoteState, updateTimer, applyVoteEventFromBoot } from './modules/vote.js';
 import { renderGlobalReviews } from './modules/reviews.js';
 import { initTerminal, initMatrix } from './modules/terminal.js';
 import { initInteractiveTutorial } from './modules/tutorial.js';
@@ -218,21 +218,15 @@ const initApp = async () => {
     // filterInv() calls .filter() on whatever lands here.
     const applyData = ([drops, voteEvent]) => {
         state.inventory = Array.isArray(drops) ? drops : [];
-        state.activeEvent = voteEvent || null;
+        applyVoteEventFromBoot(voteEvent);
     };
     let voteTimerStarted = false;
     const hydrate = () => {
         filterInv();
         renderGlobalReviews();
-        if (state.activeEvent && state.activeEvent.title) {
-            renderVoteState();
-            if (!voteTimerStarted) { setInterval(updateTimer, 1000); voteTimerStarted = true; }
-        } else {
-            const vTitle = document.getElementById('v-title');
-            const vBtn = document.getElementById('v-btn');
-            if (vTitle) vTitle.innerText = "NO ACTIVE VOTE";
-            if (vBtn) vBtn.disabled = true;
-        }
+        // Every state is the card's own business now, including "no vote running" (vote.js)
+        renderVoteState();
+        if (!voteTimerStarted) { setInterval(updateTimer, 1000); voteTimerStarted = true; }
     };
 
     try {
@@ -251,6 +245,10 @@ const initApp = async () => {
     // previously any exception thrown while hydrating left it covering the page forever.
     try {
         hydrate();
+        // Links straight into a tab — the vote card's Share button sends ?tab=vote, and so can an
+        // Instagram post or a newsletter
+        const deepTab = new URLSearchParams(location.search).get('tab');
+        if (deepTab === 'vote' || deepTab === 'starter') switchTab(deepTab);
         updateCartUI();
         initMatrix();
         // Last, once the real card content is in the DOM — the layout has no scroll by design, so on

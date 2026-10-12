@@ -180,43 +180,58 @@ Type 'help' for a list of commands.
             </div>
         </div>
 
-        <!-- Specs / FPS / lore all live in the shared inspect card (openVoteGallery in
-             js/modules/vote.js) so this drop behaves like every other card — it just can't be
-             configured or added to the cart. -->
+        <!-- Community drop. One card whose contents follow the vote's state (data-phase: loading / none /
+             upcoming / open / unlocked / closed) and the visitor's (data-user: guest / unverified / can /
+             voted) — renderVoteState() in js/modules/vote.js sets both, CSS shows and hides the parts.
+             Specs and FPS open in the shared inspect card (openVoteGallery). -->
         <div id="vote-view" class="hidden">
-            <div class="vote-container" id="vote-container">
-                <div class="vote-header-row">
-                    <span class="vote-kicker" data-i18n="voteCommunityDrop">COMMUNITY DROP!</span>
-                    <!-- Content set by openVoteInfo() (js/modules/vote.js) from SiteConfig
-                         .voteInfoText/-El — admin-editable via the panel's GLOBAL SETTINGS box. -->
-                    <button type="button" class="vote-info-btn" onclick="playClick(); openVoteInfo();" aria-label="How community drops work">
-                        <i class="ph-bold ph-info"></i>
+            <div class="vote-container" id="vote-container" data-phase="loading" data-user="guest">
+                <div class="vote-top">
+                    <span class="vote-status" id="v-status">...</span>
+                    <!-- Text set by openVoteInfo() from SiteConfig.voteInfoText/-El (admin GLOBAL SETTINGS) -->
+                    <button type="button" class="vote-info-btn" onclick="playClick(); openVoteInfo();">
+                        <i class="ph-bold ph-info"></i> <span data-i18n="voteHowItWorks">How it works</span>
                     </button>
                 </div>
 
-                <h2 id="v-title" class="vote-title">LOADING...</h2>
+                <h2 id="v-title" class="vote-title">&nbsp;</h2>
                 <div id="v-price-display" class="vote-price"></div>
 
-                <div class="mystery-img-wrap" onclick="playClick(); openVoteGallery()" title="Inspect">
-                    <img id="v-img" src="" class="mystery-img" alt="Vote Event Image">
+                <div class="vote-empty" aria-hidden="true"><i class="ph-duotone ph-users-three"></i></div>
+
+                <div class="mystery-img-wrap" id="v-img-wrap" onclick="playClick(); openVoteGallery()">
+                    <img id="v-img" class="mystery-img" alt="">
                     <i class="ph-fill ph-lock-key lock-icon" id="v-lock"></i>
+                    <span class="vote-flash" aria-hidden="true"></span>
                 </div>
 
-                <div class="vote-progress-row">
-                    <span data-i18n="voteProgressLabel">PROGRESS</span>
-                    <span id="v-count">0 / 0 VOTES</span>
+                <div class="vote-progress">
+                    <div class="vote-section-title" data-i18n="voteProgressLabel">PROGRESS</div>
+                    <div class="vote-progress-row">
+                        <span id="v-count" class="vote-count"></span>
+                        <span id="v-remaining-chip" class="vote-remaining-chip hidden"></span>
+                    </div>
+                    <div class="vote-progress-wrap" id="v-bar" role="progressbar" aria-valuemin="0" aria-valuenow="0" aria-valuemax="0" data-i18n-aria="voteProgressLabel">
+                        <div class="vote-progress-fill" id="v-fill"></div>
+                    </div>
+                    <div class="vote-timer hidden" id="v-timer"><i class="ph-bold ph-timer"></i> <span id="v-timer-text"></span></div>
                 </div>
-                <div class="vote-progress-wrap">
-                    <div class="vote-progress-fill" id="v-fill"></div>
+
+                <p class="vote-message hidden" id="v-message"></p>
+
+                <button type="button" class="vote-btn" id="v-btn" data-action="" onclick="voteMainAction()">
+                    <span class="vote-spinner" aria-hidden="true"></span><span id="v-btn-label">&nbsp;</span>
+                </button>
+                <div class="vote-helper hidden" id="v-helper"></div>
+
+                <div class="sys-brief vote-brief hidden" id="v-brief">
+                    <div class="sys-brief-title" id="v-brief-title"></div>
+                    <div class="sys-brief-text" id="v-brief-text"></div>
+                    <button type="button" class="sys-brief-more hidden" id="v-brief-more"></button>
                 </div>
-                <div id="v-remaining-chip" class="vote-remaining-chip hidden"></div>
 
-                <button class="vote-btn" id="v-btn" onclick="castVote()">AUTHORIZE DROP</button>
-                <button class="vote-btn hidden" id="v-buy-btn" onclick="buyVotePC()" style="background:#ccff00; color:#000; margin-top:10px;">SECURE NOW</button>
-                <div class="timer-text" id="v-timer">CALCULATING TIME...</div>
-
-                <button class="vote-flip-btn" id="v-inspect-btn" onclick="playClick(); openVoteGallery()">
-                    <i class="ph-bold ph-magnifying-glass"></i> <span data-i18n="inspectSystemBtn">INSPECT SYSTEM</span>
+                <button type="button" class="btn-card-inspect vote-inspect" onclick="playClick(); openVoteGallery()">
+                    <span data-i18n="inspectSystemBtn">INSPECT SYSTEM</span>
                 </button>
             </div>
         </div>
@@ -717,12 +732,16 @@ Type 'help' for a list of commands.
     </div>
 
     <div class="modal-overlay" id="vote-info-modal">
-        <div class="modal-content">
-            <div class="close-btn" onclick="closeModal('vote-info-modal')">X</div>
-            <h2 style="color:var(--neon-purple); margin-bottom:15px;" data-i18n="voteInfoTitle">HOW IT WORKS</h2>
-            <!-- Filled by openVoteInfo(), not data-i18n-html: this is admin-authored free text
-                 from SiteConfig now, not a translation-file string. -->
-            <p class="vote-info-text" id="vote-info-text"></p>
+        <div class="modal-content info-box vote-info-box" role="dialog" aria-modal="true" aria-labelledby="vote-info-title">
+            <div class="info-head">
+                <h2 class="info-title" id="vote-info-title" data-i18n="voteInfoTitle">HOW IT WORKS</h2>
+                <button type="button" class="modal-x" onclick="closeModal('vote-info-modal')" data-i18n-aria="closeLabel" aria-label="Close"><i class="ph-bold ph-x"></i></button>
+            </div>
+            <div class="info-body">
+                <!-- Filled by openVoteInfo(), not data-i18n-html: admin-authored free text from
+                     SiteConfig (with an i18n default), set as text so no markup can get in. -->
+                <p class="vote-info-text" id="vote-info-text"></p>
+            </div>
         </div>
     </div>
 

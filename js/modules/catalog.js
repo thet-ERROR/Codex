@@ -21,8 +21,10 @@ export function switchTab(mode) {
 
     const label = document.getElementById('stage-label');
     if (mode === 'vote') { 
-        document.getElementById('vote-view').classList.remove('hidden'); 
-        if (label) label.innerText = "// COMMUNITY VOTE //"; 
+        document.getElementById('vote-view').classList.remove('hidden');
+        if (label) label.innerText = "// COMMUNITY VOTE //";
+        // Fresh count, and the unlock sequence if one is waiting to be seen (vote.js)
+        if (window.onVoteTabShown) window.onVoteTabShown();
     } else if (mode === 'starter') { 
         document.getElementById('starter-menu').classList.remove('hidden'); 
         if (label) label.innerText = "// STARTER PACKS //"; 
@@ -108,7 +110,7 @@ export function renderCard() {
             <button onclick="toggleWishlist('${pcId}')" style="position:absolute; top:15px; right:15px; background:rgba(0,0,0,0.7); border:1px solid ${wishColor}; color:${wishColor}; border-radius:50%; width:40px; height:40px; display:flex; justify-content:center; align-items:center; cursor:pointer; z-index:10; transition:all 0.3s;">
                 <i class="ph-bold ph-crosshair" style="font-size:1.3rem;"></i>
             </button>
-            ${stockHTML}
+            ${stockHTML}${pc.communityDrop ? `<div class="community-badge"><i class="ph-fill ph-users-three"></i> ${esc(window.t ? window.t('communityDropBadge') : 'COMMUNITY DROP')}</div>` : ''}
             <div class="pc-title">${esc(pc.name)}</div>
             <div class="card-price-row">
                 <div class="pc-price">${formatPrice(priceCentsOf(pc))}</div>
