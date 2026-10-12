@@ -227,7 +227,8 @@ export function openGallery(pc) {
     // priceCentsOf, not .price.replace(): the vote drop and any PC saved without a price have no
     // `price` string at all, and calling .replace on undefined threw and aborted opening the card.
     const elLivePrice = document.getElementById('yg-price-live');
-    if(elLivePrice) elLivePrice.innerText = formatPrice(priceCentsOf(state.currentGalleryPC));
+    // A community drop without a price is "coming soon", not 0,00 €
+    if(elLivePrice) elLivePrice.innerText = state.currentGalleryPC.priceTbd ? t('votePriceTbd') : formatPrice(priceCentsOf(state.currentGalleryPC));
     
     // Builds the extras this particular PC offers, then prices them (sets #yg-price-live).
     // Skipped for the vote drop, which has nothing to configure.

@@ -14,7 +14,8 @@ export async function checkMissionCode() {
         let data = await api.checkMissionCode(code);
 
         if (!data.valid) {
-            alert("❌ " + data.msg);
+            // data.msg already starts with its own ❌ (server.js) — adding another showed two
+            alert(data.msg);
             return;
         }
 
@@ -26,7 +27,10 @@ export async function checkMissionCode() {
         }
 
         if (data.expired) {
-            alert(t('missionExpiredAlert'));
+            // The code only covers the review window now (2 days). Returns have their own route, so
+            // instead of a dead-end alert the visitor lands on it.
+            if (window.showToast) window.showToast(t('missionExpiredAlert'), 'error');
+            if (window.openInfo) window.openInfo('returns');
             return;
         }
 
@@ -115,27 +119,16 @@ export function requestReturn() {
         return; 
     }
     
-    let reasonText = "";
-    switch(reasonValue) { 
-        case "1": reasonText = "FPS / Performance Mismatch"; break; 
-        case "2": reasonText = "Hardware Defect / DOA"; break; 
-        case "3": reasonText = "Specification Mismatch"; break; 
-        case "4": reasonText = "Other Critical Error"; break; 
-    }
-    
-    // Built as plain text and encoded once. The old version hand-wrote %0A for newlines and
-    // interpolated the PC name raw, so an "&" or "#" in a build's name cut the message off at that
-    // character. WhatsApp bold is a single *asterisk* — the **double** form showed up literally.
-    const msg = [
-        '🚨 *RETURN SIGNAL* 🚨',
-        '',
-        `📦 *System:* ${pcName}`,
-        `🎫 *Code:* ${state.currentTicketCode}`,
-        `⚠️ *Reason:* ${reasonText}`,
-        '',
-        'Waiting for authorization...'
-    ].join('\n');
-    window.open(`https://wa.me/${CONFIG.WHATSAPP_NUM}?text=${encodeURIComponent(msg)}`, '_blank');
+    // The reason as the visitor read it in the dropdown, so the email says what they chose
+    const t = window.t || (k => k);
+    const reasonText = t('missionReason' + reasonValue);
+
+    // Returns go by email now (same route as the Return button in Information), with the system,
+    // box code and reason already filled in. Built as plain text and encoded once, so an "&" or "#"
+    // in a build's name can't cut the message off at that character.
+    const subject = t('returnMailSubject');
+    const body = t('returnMailBodyCode', { pc: pcName, code: state.currentTicketCode || '—', reason: reasonText });
+    window.location.href = `mailto:${CONFIG.SUPPORT_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
 }
 
 export function renderGlobalReviews() {

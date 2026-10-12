@@ -1,77 +1,206 @@
-/* Community drop card. Single face — specs/FPS/lore open in the shared inspect card
-   (.yg-card.vote-mode below), so nothing here needs a flip side any more. */
+/* ===== COMMUNITY DROP CARD (VOTE tab) — js/modules/vote.js =====
+   Same shell as the LIVE DROPS card (#main-card in stage.css) so the tabs read as one product.
+   Colour roles: gold = the vote itself (status, progress, lock); purple = the vote button;
+   lime (accent) = buying / going to the PC; grey = closed. No max-height: on desktop stagefit scales
+   the stage to fit, on tablets and phones the page scrolls — a scrollbar inside the card was a bug. */
+:root { --vote-gold: #ffc43d; }
+
 .vote-container {
-    width: 460px; max-width: 92vw; margin: 0 auto; box-sizing: border-box;
-    position: relative; padding: 22px 26px 24px; text-align: center;
-    background: rgba(10,10,15,0.96); border: 2px solid var(--neon-purple); border-radius: 20px;
-    max-height: 86vh; overflow-y: auto; pointer-events: auto;
-    animation: chromeBreathe 4s ease-in-out infinite;
-    /* Gold-into-purple halo marks this out as the one card you can't just buy */
-    box-shadow: 0 0 30px rgba(176,38,255,0.25), 0 0 60px rgba(255,196,61,0.10);
+    width: 420px; max-width: 95vw; margin: 0 auto; box-sizing: border-box; position: relative;
+    padding: 26px 30px 26px; text-align: center; pointer-events: auto;
+    background: #111; border: 2px solid rgba(255, 196, 61, 0.45); border-radius: 16px;
+    box-shadow: 0 40px 100px rgba(0, 0, 0, 0.8), 0 0 40px rgba(255, 196, 61, 0.08);
 }
 
-.vote-header-row { display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 6px; }
-.vote-kicker {
-    font-family: var(--font-ui); font-weight: 800; font-size: 1rem; letter-spacing: 1px;
-    background: linear-gradient(90deg, #ffc43d, var(--neon-purple));
-    -webkit-background-clip: text; background-clip: text; color: transparent;
+.vote-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+
+/* Status pill — the .stock-badge shape, coloured by phase */
+.vote-status {
+    display: inline-flex; align-items: center; gap: 7px; padding: 5px 11px; border-radius: 999px;
+    font-family: var(--font-ui); font-weight: 800; font-size: 0.7rem; letter-spacing: 1px; text-transform: uppercase;
+    color: var(--vote-gold); background: rgba(255, 196, 61, 0.12); border: 1px solid rgba(255, 196, 61, 0.5);
 }
-/* Real button: was a bare unstyled <div>?</div> with an onclick, which read as plain text rather
-   than anything clickable. ph-info instead of a literal "?" character to match the icon already
-   used for the other in-card info trigger (openSpecInfo in gallery.js). */
+.vote-status::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+.vote-container[data-phase="open"] .vote-status::before { animation: votePulse 1.6s ease-in-out infinite; }
+.vote-container[data-phase="upcoming"] .vote-status { background: transparent; }
+.vote-container[data-phase="unlocked"] .vote-status { color: var(--neon-green); background: rgba(204, 255, 0, 0.12); border-color: var(--neon-green); }
+.vote-container[data-phase="closed"] .vote-status,
+.vote-container[data-phase="none"] .vote-status,
+.vote-container[data-phase="loading"] .vote-status { color: #9a9aa2; background: rgba(255, 255, 255, 0.05); border-color: #3a3a42; }
+@keyframes votePulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.25; } }
+
 .vote-info-btn {
-    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
-    width: 22px; height: 22px; padding: 0; border-radius: 50%;
-    background: transparent; border: 1.5px solid #ffc43d; color: #ffc43d;
-    font-size: 0.75rem; cursor: pointer; transition: 0.2s ease;
+    display: inline-flex; align-items: center; gap: 6px; min-height: 34px; padding: 0 12px; border-radius: 999px;
+    background: transparent; border: 1px solid rgba(255, 196, 61, 0.5); color: var(--vote-gold);
+    font-family: var(--font-ui); font-weight: 700; font-size: 0.78rem; cursor: pointer;
+    transition: background-color 0.2s, color 0.2s, box-shadow 0.2s;
 }
-.vote-info-btn:hover { background: #ffc43d; color: #0a0a0f; box-shadow: 0 0 10px rgba(255,196,61,0.5); }
+.vote-info-btn:hover { background: var(--vote-gold); color: #0a0a0f; box-shadow: 0 0 10px rgba(255, 196, 61, 0.45); }
+.vote-info-btn:focus-visible { outline: 2px solid var(--vote-gold); outline-offset: 2px; }
 
-/* Admin-authored free text (SiteConfig.voteInfoText/-El), set via .innerText in openVoteInfo() —
-   pre-line turns the \n line breaks the admin typed into real ones without ever parsing HTML. */
-.vote-info-text { white-space: pre-line; }
-.vote-title { color: #fff; margin: 0 0 4px; font-size: 1.7rem; text-transform: uppercase; line-height: 1.15; }
-.vote-price { color: var(--neon-green); font-family: var(--font-ui); font-weight: bold; font-size: 1.15rem; margin-bottom: 14px; }
+.vote-title { margin: 16px 0 4px; font-family: var(--font-ui); font-weight: 800; font-size: 2rem; line-height: 1.05; text-transform: uppercase; color: #fff; overflow-wrap: anywhere; }
+.vote-price { min-height: 1.3em; margin-bottom: 14px; font-family: var(--font-ui); font-weight: 800; font-size: 1.2rem; color: var(--neon-green); }
 
+/* Empty state icon (no vote running) */
+.vote-empty { display: none; margin: 6px 0 4px; font-size: 3.6rem; color: #3a3a42; }
+
+/* Teaser photo — blurred and locked until the community unlocks it */
 .mystery-img-wrap {
-    position: relative; width: 100%; height: 200px; max-width: 320px; margin: 0 auto 14px auto;
-    border-radius: 12px; overflow: hidden; border: 1px solid var(--neon-purple); cursor: pointer;
+    position: relative; width: 100%; height: 190px; margin: 0 auto 16px; overflow: hidden; cursor: pointer;
+    border-radius: 10px; border: 1px solid #2a2a2e; background: #0a0a0c;
 }
-.mystery-img { width: 100%; height: 100%; object-fit: cover; filter: blur(25px) brightness(0.3); transition: 2s ease-in-out; }
-.mystery-img.unlocked { filter: blur(0) brightness(1); }
-.lock-icon { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); font-size: 3.4rem; color: #ffc43d; z-index: 10; transition: 0.5s; text-shadow: 0 0 20px rgba(255,196,61,0.5); }
+.mystery-img { display: block; width: 100%; height: 100%; object-fit: cover; filter: blur(22px) brightness(0.35); transform: scale(1.1); transition: filter 0.9s ease, transform 0.9s ease; }
+.lock-icon {
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 2;
+    font-size: 3.2rem; color: var(--vote-gold); text-shadow: 0 0 20px rgba(255, 196, 61, 0.5); transition: opacity 0.4s;
+}
+.vote-flash { position: absolute; inset: 0; z-index: 3; pointer-events: none; opacity: 0; background: radial-gradient(circle at center, rgba(255, 220, 120, 0.95), rgba(255, 196, 61, 0.35) 40%, transparent 70%); }
+.vote-container[data-phase="unlocked"] .mystery-img,
+.vote-container[data-phase="closed"] .mystery-img { filter: none; transform: none; }
+.vote-container[data-phase="unlocked"] .lock-icon,
+.vote-container[data-phase="closed"] .lock-icon { opacity: 0; }
 
-.vote-progress-row { display: flex; justify-content: space-between; font-size: 0.78rem; color: #ccc; }
-.vote-progress-wrap { background: #222; height: 14px; border-radius: 7px; margin: 10px 0; overflow: hidden; box-shadow: inset 0 0 8px rgba(0,0,0,0.6); }
-.vote-progress-fill { background: linear-gradient(90deg, var(--neon-purple), #ffc43d); height: 100%; width: 0%; border-radius: 7px; box-shadow: 0 0 12px rgba(255,196,61,0.5); transition: width 0.8s cubic-bezier(0.16, 1, 0.3, 1); }
-.vote-remaining-chip { display: inline-block; margin-bottom: 10px; padding: 4px 14px; border-radius: 20px; background: rgba(255,196,61,0.10); border: 1px solid rgba(255,196,61,0.4); color: #ffd479; font-family: var(--font-ui); font-weight: 700; font-size: 0.75rem; letter-spacing: 1px; }
+/* Progress — the VS modal's hairline title, then count + chip, bar, countdown pill */
+.vote-progress { margin-bottom: 16px; }
+.vote-section-title {
+    display: flex; align-items: center; gap: 10px; margin-bottom: 8px;
+    font-family: var(--font-ui); font-weight: 800; font-size: 0.7rem; letter-spacing: 2px; text-transform: uppercase; color: var(--vote-gold);
+}
+.vote-section-title::before, .vote-section-title::after { content: ''; flex: 1; height: 1px; background: rgba(255, 196, 61, 0.3); }
+.vote-progress-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; min-height: 26px; }
+.vote-count { font-family: var(--font-ui); font-weight: 800; font-size: 0.95rem; color: #fff; }
+.vote-remaining-chip {
+    padding: 3px 11px; border-radius: 999px; background: rgba(255, 196, 61, 0.1); border: 1px solid rgba(255, 196, 61, 0.4);
+    color: #ffd479; font-family: var(--font-ui); font-weight: 700; font-size: 0.75rem; letter-spacing: 0.5px;
+}
+/* 80%+: the chip itself says "almost there" — no toast over the splash screen any more */
+.vote-remaining-chip.hot { background: rgba(255, 120, 40, 0.15); border-color: #ff7a29; color: #ff9a5c; animation: votePulse 1.4s ease-in-out infinite; }
+.vote-progress-wrap { height: 12px; margin: 8px 0 12px; overflow: hidden; border-radius: 6px; background: #222; box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.6); }
+.vote-progress-fill { width: 0%; height: 100%; border-radius: 6px; background: linear-gradient(90deg, var(--neon-purple), var(--vote-gold)); box-shadow: 0 0 12px rgba(255, 196, 61, 0.5); transition: width 0.8s cubic-bezier(0.16, 1, 0.3, 1); }
+.vote-container[data-phase="unlocked"] .vote-progress-fill { background: var(--neon-green); box-shadow: 0 0 12px rgba(204, 255, 0, 0.5); }
+.vote-timer {
+    display: inline-flex; align-items: center; gap: 7px; padding: 6px 14px; border-radius: 999px;
+    border: 1px solid rgba(255, 196, 61, 0.35); background: rgba(255, 196, 61, 0.06);
+    color: #e9e2cf; font-family: var(--font-ui); font-weight: 700; font-size: 0.85rem;
+}
+.vote-timer i { color: var(--vote-gold); }
 
-.vote-btn { width: 100%; padding: 13px; background: var(--neon-purple); color: #fff; border: none; font-family: var(--font-ui); font-weight: 800; font-size: 1.1rem; cursor: pointer; border-radius: 8px; letter-spacing: 2px; }
-.vote-btn:disabled { background: #333; cursor: not-allowed; color: #666; }
-/* Already used your one vote — reads as earned, not broken */
-.vote-btn.voted:disabled { background: rgba(255,196,61,0.12); border: 1px solid #ffc43d; color: #ffc43d; }
-.timer-text { font-family: monospace; color: #aaa; margin-top: 9px; font-size: 0.85rem; }
+.vote-message { margin: 0 0 16px; color: #c4c4cb; font-size: 0.92rem; line-height: 1.5; }
 
-.vote-flip-btn { margin-top: 13px; width: 100%; padding: 11px; background: transparent; border: 1px solid #ffc43d; color: #ffc43d; font-family: var(--font-ui); font-weight: 700; font-size: 0.85rem; letter-spacing: 1px; cursor: pointer; border-radius: 8px; transition: 0.3s; text-transform: uppercase; display: flex; align-items: center; justify-content: center; gap: 8px; }
-.vote-flip-btn:hover { background: #ffc43d; color: #000; box-shadow: 0 0 15px rgba(255,196,61,0.5); }
+/* Main button — one per state (data-action set by renderAction) */
+.vote-btn {
+    position: relative; display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; min-height: 50px; padding: 12px;
+    border: 1px solid var(--neon-purple); border-radius: 8px; background: var(--neon-purple); color: #fff; cursor: pointer;
+    font-family: var(--font-ui); font-weight: 800; font-size: 1.05rem; letter-spacing: 1px; text-transform: uppercase;
+    transition: box-shadow 0.2s, background-color 0.2s, transform 0.08s;
+}
+.vote-btn:hover:not(:disabled) { box-shadow: 0 0 20px rgba(176, 38, 255, 0.55); }
+.vote-btn:active:not(:disabled) { transform: scale(0.97); }
+.vote-btn:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+.vote-btn[data-action="login"], .vote-btn[data-action="notify"] { background: transparent; color: #fff; }
+.vote-btn[data-action="login"]:hover, .vote-btn[data-action="notify"]:hover { background: rgba(176, 38, 255, 0.18); }
+.vote-btn[data-action="verify"] { background: transparent; border-color: #ffaa00; color: #ffaa00; }
+.vote-btn[data-action="golive"] { background: var(--neon-green); border-color: var(--neon-green); color: #000; }
+.vote-btn[data-action="golive"]:hover { box-shadow: 0 0 20px var(--neon-green); }
+/* Already voted — reads as earned, not broken */
+.vote-btn[data-action="voted"], .vote-btn[data-action="voted"]:disabled { background: rgba(255, 196, 61, 0.12); border-color: var(--vote-gold); color: var(--vote-gold); cursor: default; }
+.vote-btn:disabled { cursor: default; }
+.vote-spinner { display: none; width: 16px; height: 16px; border-radius: 50%; border: 2px solid rgba(255, 255, 255, 0.35); border-top-color: #fff; animation: voteSpin 0.7s linear infinite; }
+.vote-btn.is-loading .vote-spinner { display: inline-block; }
+@keyframes voteSpin { to { transform: rotate(360deg); } }
+
+.vote-helper { margin-top: 8px; color: #9a9aa2; font-size: 0.82rem; line-height: 1.45; }
+.vote-link { padding: 0; background: none; border: none; color: var(--neon-green); font: inherit; font-weight: 700; text-decoration: underline; cursor: pointer; }
+
+.vote-brief { margin: 18px 0 0; }
+.vote-inspect { margin-top: 12px; }
+
+/* What each phase hides */
+.vote-container[data-phase="none"] .mystery-img-wrap,
+.vote-container[data-phase="none"] .vote-progress,
+.vote-container[data-phase="none"] .vote-brief,
+.vote-container[data-phase="none"] .vote-inspect,
+.vote-container[data-phase="none"] .vote-price,
+.vote-container[data-phase="loading"] .vote-progress,
+.vote-container[data-phase="loading"] .vote-btn,
+.vote-container[data-phase="loading"] .vote-inspect,
+.vote-container[data-phase="loading"] .vote-price,
+.vote-container[data-phase="closed"] .vote-remaining-chip,
+.vote-container[data-phase="unlocked"] .vote-timer,
+.vote-container[data-phase="closed"] .vote-timer { display: none !important; }
+.vote-container[data-phase="none"] .vote-empty { display: block; }
+.vote-container[data-phase="loading"] .vote-title { color: #333; }
+
+/* ===== UNLOCK SEQUENCE (playUnlock in vote.js) =====
+   The lock shakes and bursts, the photo clears, a gold flash — then a snapshot of the photo flies up
+   into the LIVE DROPS tab, which pings. */
+.vote-container.unlocking .lock-icon { animation: lockBreak 0.75s cubic-bezier(0.3, 0, 0.6, 1) forwards; }
+.vote-container.unlocking .vote-flash { animation: voteFlash 0.9s ease-out 0.45s forwards; }
+.vote-container.unlocking .mystery-img { transition-delay: 0.45s; }
+@keyframes lockBreak {
+    0% { transform: translate(-50%, -50%) rotate(0) scale(1); opacity: 1; }
+    20% { transform: translate(-50%, -50%) rotate(-14deg) scale(1.05); }
+    40% { transform: translate(-50%, -50%) rotate(12deg) scale(1.1); }
+    60% { transform: translate(-50%, -50%) rotate(-6deg) scale(1.2); opacity: 1; }
+    100% { transform: translate(-50%, -50%) rotate(0) scale(2.2); opacity: 0; }
+}
+@keyframes voteFlash { 0% { opacity: 0; transform: scale(0.6); } 30% { opacity: 1; } 100% { opacity: 0; transform: scale(1.6); } }
+
+.vote-flyer {
+    position: fixed; z-index: 9500; margin: 0; pointer-events: none; transform-origin: center center; will-change: transform, opacity;
+    border-color: var(--neon-green); box-shadow: 0 0 30px rgba(204, 255, 0, 0.6);
+}
+.vote-flyer .lock-icon, .vote-flyer .vote-flash { display: none; }
+.vote-flyer .mystery-img { filter: none; transform: none; transition: none; }
+
+#tab-live.tab-ping { animation: tabPing 0.8s ease-out 2; }
+@keyframes tabPing {
+    0% { box-shadow: 0 0 0 0 rgba(204, 255, 0, 0.85); transform: scale(1); }
+    30% { transform: scale(1.1); }
+    100% { box-shadow: 0 0 0 16px rgba(204, 255, 0, 0); transform: scale(1); }
+}
+
+/* Both pills stay on one line each on a narrow phone (Greek labels run long) */
+.vote-status, .vote-info-btn { white-space: nowrap; }
+@media (max-width: 480px) {
+    .vote-top { gap: 6px; }
+    .vote-status { padding: 5px 9px; font-size: 0.62rem; letter-spacing: 0.5px; }
+    .vote-info-btn { padding: 0 10px; font-size: 0.72rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .vote-container[data-phase="open"] .vote-status::before, .vote-remaining-chip.hot { animation: none; }
+    .mystery-img { transition: none; }
+}
+
+/* "How it works" — the admin's text in the shared window shell (modals.css .info-box) */
+.vote-info-box { border-top-color: var(--vote-gold); }
+.vote-info-text { margin: 0; white-space: pre-line; color: #c4c4cb; line-height: 1.6; font-size: 0.95rem; }
+
+/* COMMUNITY DROP badge on the LIVE DROPS card of a PC the community unlocked (renderCard) */
+.community-badge {
+    display: inline-flex; align-items: center; gap: 5px; margin: 0 0 10px 6px; padding: 4px 10px; border-radius: 4px;
+    background: rgba(255, 196, 61, 0.14); border: 1px solid var(--vote-gold); color: var(--vote-gold);
+    font-size: 0.7rem; font-weight: bold; letter-spacing: 1px; vertical-align: top;
+}
 
 /* --- Inspect card in vote mode: same card, gold/purple dress, nothing configurable --- */
 .yg-card.vote-mode .yg-card-face {
-    border-color: #ffc43d !important;
+    border-color: var(--vote-gold) !important;
     box-shadow: 0 0 40px rgba(176,38,255,0.35), 0 0 80px rgba(255,196,61,0.15) !important;
 }
 .yg-card.vote-mode .yg-project-name,
 .yg-card.vote-mode .yg-back-title {
-    background: linear-gradient(90deg, #ffc43d, var(--neon-purple));
+    background: linear-gradient(90deg, var(--vote-gold), var(--neon-purple));
     -webkit-background-clip: text; background-clip: text; color: transparent;
 }
-/* No extras, no cart, no wishlist, no fake anchor price on a drop that isn't for sale yet */
+/* No extras, no cart, no wishlist on a drop that isn't for sale yet */
 .yg-card.vote-mode .yg-extras-section,
 .yg-card.vote-mode .yg-target-lock,
 .yg-card.vote-mode #yg-add-cart { display: none !important; }
 .yg-card.vote-mode .yg-buttons-section { grid-template-columns: 1fr !important; }
 
-/* Drop not yet secured — the photo stays classified inside the inspect card too */
+/* Drop not yet unlocked — the photo stays classified inside the inspect card too */
 .yg-card.vote-locked .yg-pc-image { filter: blur(22px) brightness(0.35); pointer-events: none; }
 .yg-card.vote-locked .yg-image-frame { position: relative; }
 .yg-card.vote-locked .yg-image-frame::after {

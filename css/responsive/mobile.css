@@ -68,13 +68,13 @@
     .dossier-box { padding: 15px !important; gap: 12px !important; overflow-y: auto !important; -webkit-overflow-scrolling: touch !important; pointer-events: auto !important; max-height: 85vh !important; padding-bottom: 20px !important; }
     .dossier-grid { grid-template-columns: 1fr !important; }
 
-    .vote-container { padding: 15px !important; max-width: 90vw !important; margin: 10px auto !important; }
-    .mystery-img-wrap { height: 180px !important; margin-bottom: 15px !important; }
-    .mystery-img { max-height: 100% !important; object-fit: contain !important; }
-    #v-title { font-size: 1.5rem !important; }
-    #v-price-display { font-size: 1.2rem !important; margin-bottom: 15px !important; }
-    .vote-progress-wrap { height: 15px !important; margin-bottom: 12px !important; }
-    .vote-btn { padding: 12px !important; font-size: 0.95rem !important; }
+    /* Community drop card: same width as the PC card on this layout (95vw, 15px padding) */
+    .vote-container { padding: 16px; max-width: 95vw; margin: 10px auto; }
+    .vote-info-btn { min-height: 40px; }
+    .mystery-img-wrap { height: 160px; margin-bottom: 14px; }
+    .vote-title { font-size: 1.55rem; margin-top: 14px; }
+    .vote-price { font-size: 1.1rem; margin-bottom: 12px; }
+    .vote-btn { min-height: 48px; font-size: 0.95rem; }
 
     /* Compact stage card: less scroll to see everything on phones */
     .system-select-label { font-size: 1rem !important; letter-spacing: 3px !important; margin-bottom: 10px !important; }

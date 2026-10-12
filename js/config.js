@@ -2,6 +2,9 @@ export const CONFIG = {
     API_URL: 'https://codex-backend-9kij.onrender.com/api',
     WHATSAPP_NUM: '306912345678',
     INSTAGRAM_URL: 'https://instagram.com/codex_rigs',
+    // Returns and support questions go here — the Return button in the Information window opens a
+    // prefilled email to this address.
+    SUPPORT_EMAIL: 'd.codexphoenix@gmail.com',
     DEFAULT_THEME: '#ccff00',
     // Fallback only — the live price comes from /api/status (admin-editable). Used when the
     // status call fails and we boot in offline/fail-open mode.

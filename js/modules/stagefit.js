@@ -26,36 +26,50 @@ const MIN_SCALE = 0.6;
 // Breathing room below the content so it never sits flush against the ticker.
 const BOTTOM_GAP = 10;
 
-export function fitStage() {
+// The transform last written, so an unchanged fit costs nothing (no style write, no restyle).
+let applied = null;
+
+// animate: ease into the new scale instead of jumping — used when the CONTENT changed size (a PC with
+// longer lore, a tab switch), so the whole stage doesn't visibly snap mid-swipe. Never on window
+// resize or the first fit, where following the window instantly is what's wanted.
+export function fitStage({ animate = false } = {}) {
     const stage = document.querySelector('.stage');
     if (!stage) return;
+    const next = targetTransform(stage);
+    if (next === applied) return;
+    stage.classList.toggle('fit-animate', animate && applied !== null);
+    stage.style.transformOrigin = 'center center';
+    stage.style.transform = next;
+    applied = next;
+}
 
-    // Cleared first, before any early return, so crossing a breakpoint on resize drops a stale
-    // transform instead of leaving it applied. Also means every bail-out path below is a no-op.
-    stage.style.transform = 'none';
-
+function targetTransform(stage) {
     // Only the fixed, no-scroll desktop layout needs this. Below 1024px tablet.css switches .stage
     // to `position: relative` and gives body `overflow-y: auto` — the page scrolls there, so there
     // is nothing to fit, and mobile.css already applies its own scale to #carousel-wrapper which
     // this would compound with. Reading the computed position tests for that layout directly
-    // rather than duplicating the breakpoint's magic number here.
-    if (getComputedStyle(stage).position !== 'fixed') return;
+    // rather than duplicating the breakpoint's magic number here. Returning 'none' also drops a
+    // stale transform when the window crosses that breakpoint.
+    if (getComputedStyle(stage).position !== 'fixed') return 'none';
 
     // offsetParent is null for display:none elements, which is how the inactive tab views (and the
     // BACK TO PACKS button) are hidden — .hidden sets `display: none !important`.
     const visible = Array.from(stage.children).filter(el => el.offsetParent !== null);
-    if (!visible.length) return;
+    if (!visible.length) return 'none';
 
+    // Layout offsets, not getBoundingClientRect: offsets ignore the transform already on .stage, so
+    // there's no need to clear it and re-measure (which restyled the whole stage on every fit, right
+    // in the frame a swipe animation starts). .stage is fixed at inset 0, so its children's offsets
+    // are viewport coordinates of the untransformed layout.
     let top = Infinity;
     let bottom = -Infinity;
     for (const el of visible) {
-        const rect = el.getBoundingClientRect();
-        if (rect.height === 0) continue;
-        top = Math.min(top, rect.top);
-        bottom = Math.max(bottom, rect.bottom);
+        if (el.offsetHeight === 0) continue;
+        top = Math.min(top, el.offsetTop);
+        bottom = Math.max(bottom, el.offsetTop + el.offsetHeight);
     }
     const contentHeight = bottom - top;
-    if (!Number.isFinite(contentHeight) || contentHeight <= 0) return;
+    if (!Number.isFinite(contentHeight) || contentHeight <= 0) return 'none';
 
     // Read the chrome heights off the DOM instead of hardcoding them, so this keeps working if the
     // header or ticker is ever resized (including by the width-based responsive tiers).
@@ -65,10 +79,10 @@ export function fitStage() {
     const bottomH = (ticker ? ticker.offsetHeight : 0) + BOTTOM_GAP;
 
     const available = window.innerHeight - headerH - bottomH;
-    if (available <= 0) return;
+    if (available <= 0) return 'none';
 
-    // Already fits: leave transform at 'none' so this is a no-op everywhere it isn't needed.
-    if (contentHeight <= available) return;
+    // Already fits: no transform, so this is a no-op everywhere it isn't needed.
+    if (contentHeight <= available) return 'none';
 
     const scale = Math.max(MIN_SCALE, available / contentHeight);
 
@@ -87,12 +101,14 @@ export function fitStage() {
     const bandCentre = headerH + available / 2;
     const shift = bandCentre - origin - scale * (contentCentre - origin);
 
-    stage.style.transformOrigin = 'center center';
-    stage.style.transform = `translateY(${shift}px) scale(${scale})`;
+    // Rounded so sub-pixel noise doesn't count as a change (and restart the easing) on every fit
+    return `translateY(${shift.toFixed(1)}px) scale(${scale.toFixed(4)})`;
 }
 
 let scheduled = false;
-function schedule() {
+let resizedAt = 0;
+function onResize() {
+    resizedAt = performance.now();
     if (scheduled) return;
     scheduled = true;
     requestAnimationFrame(() => {
@@ -105,17 +121,21 @@ export function initStageFit() {
     const stage = document.querySelector('.stage');
     if (!stage) return;
 
-    window.addEventListener('resize', schedule);
+    window.addEventListener('resize', onResize);
 
-    // Catches a card re-render (innerHTML replaced -> childList), a tab switch (.hidden toggled ->
-    // class attribute) and a language switch (re-renders the card). attributeFilter is what keeps
-    // this from looping on its own output: fitStage() writes `style`, which is not observed.
-    new MutationObserver(schedule).observe(stage, {
-        childList: true,
-        subtree: true,
-        attributes: true,
-        attributeFilter: ['class']
-    });
+    // Watches the SIZE of each top-level block on the stage (card carousel, packs, vote, labels)
+    // rather than every DOM change inside it. A card re-render with different lore, a tab switch
+    // (display:none ↔ shown) and a language switch all change a size and refit; the things that don't
+    // — the swipe's flying snapshot, class flips, the position pills, the vote timer ticking once a
+    // second — no longer trigger a full measure. The callback runs after layout and before paint, so
+    // the new scale lands in the same frame; writing a transform on .stage can't resize its children,
+    // so this can't loop. While the window itself is being resized, follow it instantly.
+    if ('ResizeObserver' in window) {
+        const ro = new ResizeObserver(() => fitStage({ animate: performance.now() - resizedAt > 250 }));
+        Array.from(stage.children).forEach(el => ro.observe(el));
+    } else {
+        new MutationObserver(onResize).observe(stage, { childList: true, subtree: true, attributes: true, attributeFilter: ['class'] });
+    }
 
     fitStage();
 }

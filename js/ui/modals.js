@@ -16,21 +16,124 @@ export function playHover() {
     } 
 }
 
-export function openModal(id) { 
-    let m = document.getElementById(id) || document.getElementById(id + '-modal');
+// --- MODAL MANAGER ---
+// Every window used to close only through its own little "X" — a <span>, so not reachable by keyboard —
+// and nothing else: no Escape, no tap outside, focus left wherever it was behind the window. The
+// stack below remembers what's open (top = the one Escape closes) and who opened it (so focus goes
+// back there on close).
+const modalStack = [];
+
+// Windows where "dismiss" isn't simply "hide": declining the paint consent un-ticks its checkbox, and
+// skipping the tour marks it as seen
+const DISMISS_HOOKS = {
+    'paint-consent-modal': () => window.declinePaintConsent && window.declinePaintConsent(),
+    'tutorial-lang-modal': () => window.skipTutorial && window.skipTutorial()
+};
+
+const FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
+
+function resolveModal(id) {
+    return document.getElementById(id) || document.getElementById(id + '-modal');
+}
+
+export function openModal(id) {
+    let m = resolveModal(id);
     if(m) {
-        if (id === 'gallery-overlay') m.style.display = 'flex';
-        else m.classList.add('active'); 
+        if (id === 'gallery-overlay') { m.style.display = 'flex'; return; }
+        const wasActive = m.classList.contains('active');
+        m.classList.add('active');
+        if (wasActive) return;
+        const opener = document.activeElement && document.activeElement !== document.body ? document.activeElement : null;
+        modalStack.push({ el: m, opener });
+        // The window itself takes focus (not an input — that would pop a phone keyboard open), so
+        // Tab starts inside it and Escape works at once
+        const box = m.querySelector('.modal-content') || m;
+        if (!box.hasAttribute('tabindex')) box.setAttribute('tabindex', '-1');
+        box.focus({ preventScroll: true });
     }
 }
 
-export function closeModal(id) { 
-    let m = document.getElementById(id) || document.getElementById(id + '-modal');
+export function closeModal(id) {
+    let m = resolveModal(id);
     if(m) {
-        m.classList.remove('active'); 
+        m.classList.remove('active');
         if (id === 'gallery-overlay') m.style.display = 'none';
+        const i = modalStack.findIndex(s => s.el === m);
+        if (i !== -1) {
+            const [{ opener }] = modalStack.splice(i, 1);
+            // Back to the button that opened it — unless the window was closed to open something else,
+            // which has already taken focus
+            if (opener && opener.isConnected && (document.activeElement === document.body || m.contains(document.activeElement))) {
+                opener.focus({ preventScroll: true });
+            }
+        }
     }
 }
+
+function dismissTop() {
+    // Windows closed some other way can linger in the stack; skip to one that's really open
+    while (modalStack.length && !modalStack[modalStack.length - 1].el.classList.contains('active')) modalStack.pop();
+    const top = modalStack[modalStack.length - 1];
+    if (top) {
+        (DISMISS_HOOKS[top.el.id] || (() => closeModal(top.el.id)))();
+        // A hook may only have changed state (declining paint un-ticks and closes by itself; be sure)
+        if (top.el.classList.contains('active')) closeModal(top.el.id);
+        return true;
+    }
+    const gallery = document.getElementById('gallery-overlay');
+    if (gallery && gallery.style.display === 'flex') { closeModal('gallery-overlay'); return true; }
+    return false;
+}
+
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+        if (dismissTop()) e.preventDefault();
+        return;
+    }
+    // Keep Tab inside the open window instead of wandering off into the page behind it
+    if (e.key === 'Tab') {
+        const top = modalStack[modalStack.length - 1];
+        if (!top || !top.el.classList.contains('active')) return;
+        const items = Array.from(top.el.querySelectorAll(FOCUSABLE)).filter(el => el.offsetParent !== null);
+        if (!items.length) return;
+        const first = items[0], last = items[items.length - 1];
+        const box = top.el.querySelector('.modal-content') || top.el;
+        if (e.shiftKey && (document.activeElement === first || document.activeElement === box)) { e.preventDefault(); last.focus(); }
+        else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+    }
+});
+
+// A tap on the dim area outside a window closes it. Only when the press STARTED there too: selecting
+// text in a field and releasing outside the box fires a click on the overlay, and must not close it.
+let pressedOn = null;
+document.addEventListener('pointerdown', (e) => { pressedOn = e.target; }, true);
+document.addEventListener('click', (e) => {
+    const overlay = e.target;
+    if (!overlay.classList || !overlay.classList.contains('modal-overlay') || pressedOn !== overlay) return;
+    if (!overlay.classList.contains('active')) return;
+    (DISMISS_HOOKS[overlay.id] || (() => closeModal(overlay.id)))();
+    if (overlay.classList.contains('active')) closeModal(overlay.id);
+});
+
+// The old "X" spans/divs: make them real controls (focusable, announced, Enter/Space) and a size a
+// thumb can hit. The label follows the language.
+function enhanceCloseButtons() {
+    const label = window.t ? window.t('closeLabel') : 'Close';
+    document.querySelectorAll('.close-modal, .close-btn, .modal-close, .yg-close-btn, .yg-close-back').forEach(el => {
+        if (el.tagName === 'BUTTON') { if (!el.hasAttribute('aria-label')) el.setAttribute('aria-label', label); return; }
+        el.setAttribute('role', 'button');
+        if (!el.hasAttribute('tabindex')) el.setAttribute('tabindex', '0');
+        el.setAttribute('aria-label', label);
+    });
+}
+document.addEventListener('keydown', (e) => {
+    if ((e.key === 'Enter' || e.key === ' ') && e.target.matches && e.target.matches('[role="button"].close-modal, [role="button"].close-btn, [role="button"].yg-close-btn, [role="button"].yg-close-back')) {
+        e.preventDefault();
+        e.target.click();
+    }
+});
+enhanceCloseButtons();
+document.addEventListener('codex:lang', enhanceCloseButtons);
 
 // The share menu sits at body level (see index.html for why), so it's placed against the button
 // here. Where the sidebar is a vertical rail (desktop) it opens to the button's right; where it's the

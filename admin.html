@@ -206,7 +206,8 @@
 
             <div class="tool-box">
                 <h3 style="color:#b026ff;">VOTE EVENT</h3>
-                <p style="font-size:0.75rem; color:#888; margin:-5px 0 10px 0;">Un-secured events auto-convert to a Live Drop when their timer ends.</p>
+                <p style="font-size:0.75rem; color:#888; margin:-5px 0 10px 0;">Όταν μαζευτούν οι ψήφοι, το PC μπαίνει αμέσως στα Live Drops (stock 1, badge «Κοινοτικό drop»). Αν λήξει ο χρόνος πριν, μπαίνει κι αυτό στα Live Drops. Χωρίς τιμή μπαίνει ως ΣΥΝΤΟΜΑ μέχρι να του βάλεις τιμή.</p>
+                <p id="v-status-line" style="font-size:0.8rem; margin:0 0 10px 0; color:#ffc43d;"></p>
                 <label>Event Title</label><input type="text" id="v-title" placeholder="Project Ronin">
                 <label>Estimated Price (€) — προαιρετικό, κενό = TBD</label><input type="text" inputmode="decimal" id="v-price" placeholder="1200">
                 <label>Hero Image URL (Discord / Imgur Link)</label><input type="text" id="v-imageUrl" placeholder="https://cdn.discordapp.com/...">
@@ -242,6 +243,7 @@
                 </div>
                 <input type="text" id="v-case" placeholder="CASE Model" style="margin-top:10px;">
                 <button class="btn btn-purple" id="upload-vote-btn">START EVENT</button>
+                <button class="btn" id="end-vote-btn" style="margin-top:8px; border:1px solid #ff3333; color:#ff3333; background:transparent;">ΑΦΑΙΡΕΣΗ EVENT ΑΠΟ ΤΟ VOTE TAB</button>
             </div>
 
             <div class="code-box">

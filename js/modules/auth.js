@@ -53,6 +53,9 @@ export function updateAuthUI(username) {
             `;
         }
     }
+    // The VOTE card's button depends on who's asking (guest / unverified / voted) — vote.js
+    // refetches if the session changed, otherwise just re-renders
+    if (window.onVoteAuthChange) window.onVoteAuthChange();
 }
 
 // Pulls wishlist + progression from the account. Shared by the boot-time session check, a fresh
