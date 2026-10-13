@@ -59,6 +59,7 @@ export function switchTab(mode) {
     // (filterInv). A stale caller asking for it lands there instead of on an empty stage.
     if (mode === 'vault') mode = 'live';
     state.currentTab = mode;
+    document.body.dataset.stage = mode; // the floor's colour follows the tab (floor.css)
     document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active-live', 'active-starter', 'active-vote', 'active-gear'));
     const tabBtn = document.getElementById(`tab-${mode}`);
     if (tabBtn) tabBtn.classList.add(`active-live`);
@@ -98,6 +99,7 @@ export function selectPack(cat) {
     state.filtered = state.inventory.filter(p => p.category === cat);
     state.index = 0;
     stageView = { kind: 'pack', pack: cat };
+    document.body.dataset.stage = 'live'; // a pack's PCs are on the main card — same floor as LIVE DROPS
     renderCard();
 }
 
@@ -107,6 +109,7 @@ export function backToPacks() {
     const backBtn = document.getElementById('back-to-packs-btn');
     if (backBtn) backBtn.classList.add('hidden');
     stageView = { kind: 'starter', pack: null };
+    document.body.dataset.stage = 'starter';
     renderStageHeading();
 }
 
