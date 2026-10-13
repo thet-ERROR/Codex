@@ -312,8 +312,8 @@
         });
 
 
-        // Load the image URL into the text box
-        document.getElementById('imageUrl').value = pc.images[0] || '';
+        // All photos, one URL per line (the first is the card's cover)
+        document.getElementById('imageUrl').value = (pc.images || []).join('\n');
 
         currentFPS = pc.fps || []; currentReviews = pc.reviews || []; renderTags();
         editId = id;
@@ -333,9 +333,9 @@
     }
 
     async function handleFormSubmit() {
-        // Παίρνουμε το Link απευθείας από το Text Box!
+        // One link per line; blank lines ignored
         const imgInput = document.getElementById('imageUrl').value.trim();
-        const imgs = imgInput ? [imgInput] : [];
+        const imgs = imgInput.split(/[\r\n]+/).map(s => s.trim()).filter(Boolean);
 
         const priceCents = inputToCents($('price').value);
         if (priceCents === undefined || Number.isNaN(priceCents)) {
