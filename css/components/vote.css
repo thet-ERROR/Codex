@@ -248,3 +248,13 @@
     .vote-inspect { width: auto; margin: 8px auto 0; padding: 8px 12px; border: none; background: none; box-shadow: none; color: var(--vote-gold); font-size: 0.8rem; letter-spacing: 1px; text-decoration: underline; text-underline-offset: 3px; }
     .vote-inspect:hover { background: none; box-shadow: none; color: #fff; }
 }
+
+/* A revealed drop shows its WHOLE photo, framed like every other PC's (object-fit: contain in the
+   same --hero-h frame, no crop) — the cover crop cut the case off. Before the reveal it stays a
+   blurred, cropped teaser. */
+.vote-container[data-phase="unlocked"] .mystery-img-wrap,
+.vote-container[data-phase="closed"] .mystery-img-wrap {
+    height: var(--hero-h); background: none; border: none; overflow: visible;
+}
+.vote-container[data-phase="unlocked"] .mystery-img,
+.vote-container[data-phase="closed"] .mystery-img { object-fit: contain; border-radius: 8px; }

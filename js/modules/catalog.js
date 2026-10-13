@@ -35,6 +35,13 @@ export function renderStageHeading() {
         count.classList.toggle('hidden', !show);
         if (show) count.textContent = n === 1 ? t('stageCountOne') : t('stageCountMany', { n });
     }
+    // Active budget filter: a chip you can dismiss, shown even when it matched nothing
+    const chip = document.getElementById('stage-filter');
+    if (chip) {
+        const on = priceFilter && kind === 'live';
+        chip.classList.toggle('hidden', !on);
+        if (on) chip.querySelector('span').textContent = priceLabel();
+    }
 }
 
 // "3 systems" on each pack tile, so nobody opens an empty pack
@@ -103,9 +110,39 @@ export function backToPacks() {
     renderStageHeading();
 }
 
-export function filterInv() { 
+// Price filter for LIVE DROPS, set by the help assistant's budget choices (chat.js). Euro bounds;
+// max null = no ceiling. The heading shows it as a chip with ✕, so it's never a hidden state.
+let priceFilter = null;
+
+export function setPriceFilter(minEuro, maxEuro) {
+    priceFilter = { min: minEuro || 0, max: maxEuro || null };
+    stageView = { kind: 'live', pack: null };
+    switchTab('live');
+}
+
+export function clearPriceFilter() {
+    priceFilter = null;
+    if (state.currentTab === 'live') switchTab('live');
+}
+
+function priceLabel() {
+    const t = window.t || (k => k);
+    const { min, max } = priceFilter;
+    if (!min && max) return t('budgetUnder', { max });
+    if (min && !max) return t('budgetOver', { min });
+    return `€${min} – €${max}`;
+}
+
+export function filterInv() {
     state.filtered = state.inventory.filter(p => {
-        if (state.currentTab === 'live') return p.category === 'drop' || !p.category;
+        if (state.currentTab === 'live') {
+            if (!(p.category === 'drop' || !p.category)) return false;
+            if (priceFilter) {
+                const euros = priceCentsOf(p) / 100;
+                if (euros < priceFilter.min || (priceFilter.max && euros > priceFilter.max)) return false;
+            }
+            return true;
+        }
         return true;
     });
     // What can be bought now comes first, coming-soon builds last. sort() is stable, so the admin's
@@ -138,7 +175,7 @@ export function renderCard() {
     if (!state.filtered.length) {
         // An empty list says so in the visitor's language, inside the card frame
         const t = window.t || (k => k);
-        c.innerHTML = `<div class="card-empty"><i class="ph-duotone ph-cpu"></i><div>${esc(t('stageEmpty'))}</div></div>`;
+        c.innerHTML = `<div class="card-empty"><i class="ph-duotone ph-cpu"></i><div>${esc(t('stageEmpty'))}</div>${priceFilter ? `<button type="button" class="card-empty-btn" onclick="clearPriceFilter()">${esc(t('budgetClear'))}</button>` : ''}</div>`;
         return;
     }
 
@@ -467,4 +504,6 @@ window.nextPC = nextPC;
 window.prevPC = prevPC;
 window.renderCard = renderCard;
 window.renderStageHeading = renderStageHeading;
+window.setPriceFilter = setPriceFilter;
+window.clearPriceFilter = clearPriceFilter;
 window.swipeCard = swipeCard;
