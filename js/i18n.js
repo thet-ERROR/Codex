@@ -8,7 +8,7 @@ const translations = {
         reviewsLabel: "Κριτικές", writeReviewBtn: "[+] Γράψε κριτική", cartLabel: "Καλάθι",
         packGaming: "GAMING", packStreaming: "STREAMING", packCoding: "CODING",
         armoryLocked: "Οπλοστάσιο κλειδωμένο", voteProgressLabel: "Πρόοδος",
-        vsModeReady: "Λειτουργία VS έτοιμη", chatTop: "Γρήγορες απαντήσεις", chatBack: "ΠΙΣΩ", chatAdminBtn: "💬 ΜΙΛΑ ΜΕ ΤΟΝ ADMIN",
+        vsModeReady: "Λειτουργία VS έτοιμη", chatTop: "Βοήθεια επιλογής", chatBack: "ΠΙΣΩ",
 
         extrasLabel: "Επιπλέον επιλογές",
         storageLabel: "Επέκταση αποθηκευτικού χώρου", storageOptStandard: "Στάνταρ (χωρίς επιπλέον)",
@@ -55,7 +55,8 @@ const translations = {
         returnMailSubject: "Αίτημα επιστροφής — PHOENIX CODEX",
         returnMailBody: "Γεια σας,\n\nθέλω να κάνω επιστροφή.\n\nΌνομα:\nΣύστημα (PC):\nΗμερομηνία παραλαβής:\nΛόγος επιστροφής:\n\nΕυχαριστώ",
         returnMailBodyCode: "Γεια σας,\n\nθέλω να κάνω επιστροφή.\n\nΣύστημα: {pc}\nΚωδικός κουτιού: {code}\nΛόγος: {reason}\n\nΌνομα:\nΗμερομηνία παραλαβής:\n\nΕυχαριστώ",
-        supportFaqTitle: "Γρήγορες απαντήσεις", supportFaqText: "Αγορά, μεταφορικά, εγγύηση, ποιο PC να διαλέξω",
+        supportFaqTitle: "Βοήθεια επιλογής PC", supportFaqText: "Πες μας τι κάνεις ή πόσα θες να δώσεις και σε πάμε στο σωστό σύστημα",
+        budgetUnder: "Έως €{max}", budgetOver: "Πάνω από €{min}", budgetClear: "Καθάρισε το φίλτρο",
         supportEmailTitle: "Στείλε μας email", supportCodeTitle: "Έχεις κωδικό από το κουτί;",
         supportCodeText: "Γράψε κριτική για το PC σου· ο κωδικός ισχύει 2 ημέρες από την πρώτη χρήση.",
 
@@ -202,7 +203,7 @@ const translations = {
         reviewsLabel: "REVIEWS", writeReviewBtn: "[+] WRITE REVIEW", cartLabel: "CART",
         packGaming: "GAMING", packStreaming: "STREAMING", packCoding: "CODING",
         armoryLocked: "ARMORY LOCKED", voteProgressLabel: "PROGRESS",
-        vsModeReady: "VS MODE READY", chatTop: "Quick answers", chatBack: "BACK", chatAdminBtn: "💬 TALK TO THE ADMIN",
+        vsModeReady: "VS MODE READY", chatTop: "Buying help", chatBack: "BACK",
 
         extrasLabel: "EXTRAS",
         storageLabel: "Storage Expansion", storageOptStandard: "Standard (No Extra)",
@@ -249,7 +250,8 @@ const translations = {
         returnMailSubject: "Return request — PHOENIX CODEX",
         returnMailBody: "Hello,\n\nI would like to return an item.\n\nName:\nSystem (PC):\nDate received:\nReason for return:\n\nThank you",
         returnMailBodyCode: "Hello,\n\nI would like to return an item.\n\nSystem: {pc}\nBox code: {code}\nReason: {reason}\n\nName:\nDate received:\n\nThank you",
-        supportFaqTitle: "Quick answers", supportFaqText: "Buying, shipping, warranty, which PC to choose",
+        supportFaqTitle: "PC picking help", supportFaqText: "Tell us what you do or your budget and we take you to the right system",
+        budgetUnder: "Up to €{max}", budgetOver: "Over €{min}", budgetClear: "Clear the filter",
         supportEmailTitle: "Email us", supportCodeTitle: "Got a code from the box?",
         supportCodeText: "Write a review for your PC; the code is valid for 2 days after you first use it.",
 

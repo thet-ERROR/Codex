@@ -1,64 +1,62 @@
 // js/modules/chat.js
 //
-// The "Quick answers" widget: a fixed menu of canned answers, not a live chat. Every label and answer
-// is an {el, en} pair (same pattern as COPY in tutorial.js) and the menu is rebuilt on a language
-// switch — it used to be Greek-only with an English "BACK".
+// The help assistant (bottom-left button). It used to be a menu of canned text answers dressed in
+// decorative emoji — it told people things instead of doing them. Every choice here DOES something:
+// takes you to the right starter pack, filters LIVE DROPS by your budget, opens the returns tab or
+// the WhatsApp chat. Where an answer is needed first (how to buy), the answer comes with the button
+// that acts on it. Two languages, rebuilt on a language switch.
 import { CONFIG } from '../config.js';
 import { getLang, t } from '../i18n.js';
 
-const CHAT_CATEGORIES = [
+const L = (pair) => pair[getLang() === 'el' ? 'el' : 'en'];
+
+// Each node is a list of choices, an answer with actions, or a direct action
+const MENU = [
     {
-        id: 'buy', icon: '🛒', admin: true,
-        label: { el: 'ΑΓΟΡΑ & ΠΑΡΑΓΓΕΛΙΑ', en: 'BUYING & ORDERING' },
-        response: {
-            el: `🛒 <b>ΠΩΣ ΑΓΟΡΑΖΩ:</b><br>Βάλε το σύστημα στο καλάθι και πάτα «Στείλε την παραγγελία στο WhatsApp». Εκεί την ολοκληρώνουμε μαζί σου.`,
-            en: `🛒 <b>HOW TO BUY:</b><br>Add the system to your cart and press “Send your order on WhatsApp”. We complete the order with you there.`
-        }
+        id: 'need',
+        label: { el: 'Τι PC χρειάζομαι;', en: 'Which PC do I need?' },
+        hint: { el: 'Διάλεξε τι κάνεις και πάμε στο σωστό πακέτο', en: 'Pick what you do and we go to the right pack' },
+        choices: [
+            { label: { el: 'Gaming', en: 'Gaming' }, hint: { el: 'Esports και βαριά AAA παιχνίδια', en: 'Esports and heavy AAA games' }, go: { pack: 'gaming' } },
+            { label: { el: 'Streaming', en: 'Streaming' }, hint: { el: 'Παίζεις και κάνεις stream μαζί', en: 'Play and stream at the same time' }, go: { pack: 'streaming' } },
+            { label: { el: 'Coding', en: 'Coding' }, hint: { el: 'Development, πολλά παράθυρα, αθόρυβο', en: 'Development, many windows, quiet' }, go: { pack: 'coding' } }
+        ]
     },
     {
-        id: 'shipping', icon: '📦', admin: true,
-        label: { el: 'ΜΕΤΑΦΟΡΙΚΑ', en: 'SHIPPING' },
-        response: {
-            el: `📦 <b>Αποστολές πανελλαδικά!</b><br>Τα μεταφορικά καθορίζονται κατά την παραγγελία.`,
-            en: `📦 <b>We ship across Greece!</b><br>Shipping costs are agreed when you order.`
-        }
+        id: 'budget',
+        label: { el: 'Ανάλογα με το budget', en: 'By budget' },
+        hint: { el: 'Δείξε μου μόνο ό,τι χωράει στο ποσό μου', en: 'Show only what fits my budget' },
+        choices: [
+            { label: { el: 'Έως €400', en: 'Up to €400' }, go: { budget: [0, 400] } },
+            { label: { el: '€400 – €700', en: '€400 – €700' }, go: { budget: [400, 700] } },
+            { label: { el: 'Πάνω από €700', en: 'Over €700' }, go: { budget: [700, null] } }
+        ]
     },
     {
-        id: 'warranty', icon: '🛡️',
-        label: { el: 'ΕΓΓΥΗΣΗ & ΕΠΙΣΤΡΟΦΕΣ', en: 'WARRANTY & RETURNS' },
-        response: {
-            el: `🛡️ <b>2 ΧΡΟΝΙΑ ΕΓΓΥΗΣΗ:</b><br>Όλα ελέγχονται εξονυχιστικά πριν φύγουν. Αν υπάρξει θέμα, άνοιξε <b>Πληροφορίες → Εγγύηση & Επιστροφές</b> και πάτα «Επιστροφή» — θα σου ανοίξει έτοιμο email.`,
-            en: `🛡️ <b>2-YEAR WARRANTY:</b><br>Every system is tested thoroughly before it ships. If something's wrong, open <b>Information → Warranty & Returns</b> and press “Return” — it opens a ready-made email.`
+        id: 'buy',
+        label: { el: 'Πώς αγοράζω;', en: 'How do I buy?' },
+        hint: { el: 'Βήματα, μεταφορικά, πληρωμή', en: 'Steps, shipping, payment' },
+        answer: {
+            el: '1. Διάλεξε σύστημα και βάλ’ το στο καλάθι.\n2. Στο καλάθι πάτα «Στείλε την παραγγελία στο WhatsApp».\n3. Εκεί συμφωνούμε πληρωμή και παράδοση — τα μεταφορικά καθορίζονται τότε, αποστολές σε όλη την Ελλάδα.',
+            en: '1. Pick a system and add it to the cart.\n2. In the cart press “Send your order on WhatsApp”.\n3. We agree payment and delivery there — shipping is set at that point, we ship across Greece.'
         },
-        info: true
+        actions: [{ label: { el: 'Δες τα συστήματα', en: 'See the systems' }, go: { live: true } }]
     },
     {
-        id: 'games', icon: '🎮',
-        label: { el: 'ΤΙ PC ΧΡΕΙΑΖΟΜΑΙ', en: 'WHICH PC DO I NEED' },
-        sub: [
-            { id: 'esports', icon: '⚡', label: { el: 'ESPORTS', en: 'ESPORTS' },
-              response: { el: `🎮 <b>ESPORTS:</b><br>Πήγαινε στα <b>STARTER PACKS</b> και δες τη σειρά "Gaming"!`, en: `🎮 <b>ESPORTS:</b><br>Head to <b>STARTER PACKS</b> and open the "Gaming" series!` } },
-            { id: 'aaa', icon: '🔥', label: { el: 'HEAVY AAA', en: 'HEAVY AAA' },
-              response: { el: `🔥 <b>ΒΑΡΙΑ ΠΑΙΧΝΙΔΙΑ:</b><br>Χρειάζεσαι δυνατό GPU (16GB+ RAM). Ψάξε στα Live Drops για υψηλό Multitasking Score.`, en: `🔥 <b>HEAVY GAMES:</b><br>You need a strong GPU (16GB+ RAM). Look in Live Drops for a high Multitasking Score.` } },
-            { id: 'creator', icon: '🎥', label: { el: 'CREATOR', en: 'CREATOR' },
-              response: { el: `🎥 <b>CREATOR:</b><br>Δες τις κατηγορίες "Streaming" &amp; "Coding" στα Starter Packs!`, en: `🎥 <b>CREATOR:</b><br>Check the "Streaming" &amp; "Coding" categories in Starter Packs!` } }
-        ]
+        id: 'returns',
+        label: { el: 'Εγγύηση & επιστροφή', en: 'Warranty & returns' },
+        hint: { el: '2 χρόνια εγγύηση · 14 μέρες επιστροφή', en: '2-year warranty · 14-day returns' },
+        go: { info: 'returns' }
     },
     {
-        id: 'budget', icon: '💶',
-        label: { el: 'ΠΡΟΥΠΟΛΟΓΙΣΜΟΣ', en: 'BUDGET ADVISOR' },
-        sub: [
-            { id: 'low', icon: '💸', label: { el: '< €400', en: '< €400' },
-              response: { el: `💰 Με budget κάτω από €400, τσέκαρε τα <b>STARTER PACKS</b> για την καλύτερη σχέση τιμής/απόδοσης!`, en: `💰 With a budget under €400, check the <b>STARTER PACKS</b> for the best value!` } },
-            { id: 'mid', icon: '💶', label: { el: '€400 – €700', en: '€400 – €700' }, admin: true,
-              response: { el: `💰 Στα €400-700 έχεις αρκετές καλές επιλογές στα <b>LIVE DROPS</b>. Ρίξε μια ματιά!`, en: `💰 At €400–700 there are plenty of good options in <b>LIVE DROPS</b>. Have a look!` } },
-            { id: 'high', icon: '💎', label: { el: '€700+', en: '€700+' }, admin: true,
-              response: { el: `💰 Με budget €700+, ρώτα μας για <b>Custom Build</b> στα δικά σου specs!`, en: `💰 With €700+, ask us about a <b>Custom Build</b> to your own specs!` } }
-        ]
+        id: 'admin',
+        label: { el: 'Μίλα με τον admin', en: 'Talk to the admin' },
+        hint: { el: 'Άνοιγμα συζήτησης στο WhatsApp', en: 'Opens a WhatsApp chat' },
+        go: { whatsapp: true }
     }
 ];
 
-const L = (pair) => pair[getLang() === 'el' ? 'el' : 'en'];
+let path = [];          // ids walked so far: [] = home, ['need'] = that node's choices
 
 export function toggleChat() {
     const c = document.getElementById('chat-widget');
@@ -66,96 +64,98 @@ export function toggleChat() {
     if (window.playClick) window.playClick();
 }
 
-// Opens (never closes) — for the Support tab's "Quick answers" row, where a toggle could shut a chat
-// that was already open
+// Opens (never closes) — used by the Support tab's entry, where a toggle could shut a widget that
+// was already open
 export function openChat() {
     const c = document.getElementById('chat-widget');
     if (c && !c.classList.contains('open')) toggleChat();
 }
 
-function adminButtonHTML() {
-    return `<button class="chat-admin-btn" onclick="window.open('https://wa.me/${CONFIG.WHATSAPP_NUM}', '_blank')">${t('chatAdminBtn')}</button>`;
+function closeChat() {
+    const c = document.getElementById('chat-widget');
+    if (c) c.classList.remove('open');
 }
 
-const backHTML = (onclick) => `<button type="button" class="chat-menu-back" onclick="${onclick}"><i class="ph-bold ph-caret-left"></i> ${t('chatBack')}</button>`;
+const row = (label, hint, attrs, caret = true) => `
+    <button type="button" class="chat-row" ${attrs}>
+        <span class="chat-row-text"><strong>${label}</strong>${hint ? `<small>${hint}</small>` : ''}</span>
+        ${caret ? '<i class="ph-bold ph-caret-right"></i>' : ''}
+    </button>`;
 
-// Answers about returns point at the Information window — a button there beats telling people where to look
-function infoButtonHTML() {
-    return `<button class="chat-admin-btn" onclick="toggleChat(); openInfo('returns')">${t('infoTabReturns')}</button>`;
+const esc = (s) => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+function node() {
+    let list = MENU, cur = null;
+    for (const id of path) {
+        cur = (list || []).find(n => n.id === id) || null;
+        list = cur && cur.choices;
+    }
+    return cur;
 }
 
 export function renderChat() {
     const home = document.getElementById('chat-menu-home');
-    if (!home) return;
-    home.innerHTML = `<div class="chat-menu-grid">
-        ${CHAT_CATEGORIES.map(cat => `
-            <button class="chat-menu-item" onclick="openChatCategory('${cat.id}')">
-                <span class="chat-menu-icon">${cat.icon}</span>
-                <span class="chat-menu-label">${L(cat.label)}</span>
-            </button>
-        `).join('')}
-    </div>`;
-    // A language switch while a sub-screen is open: go back to the menu rather than leave it half-translated
-    chatGoBack(true);
-}
-
-export function openChatCategory(id) {
-    const cat = CHAT_CATEGORIES.find(c => c.id === id);
     const sub = document.getElementById('chat-menu-sub');
-    if (!cat || !sub) return;
-    if (window.playClick) window.playClick();
+    if (!home || !sub) return;
 
-    if (cat.sub) {
-        sub.innerHTML = `
-            ${backHTML('chatGoBack()')}
-            <div class="chat-menu-grid">
-                ${cat.sub.map(s => `
-                    <button class="chat-menu-item" onclick="openChatAnswer('${cat.id}','${s.id}')">
-                        <span class="chat-menu-icon">${s.icon}</span>
-                        <span class="chat-menu-label">${L(s.label)}</span>
-                    </button>
-                `).join('')}
-            </div>
-        `;
-    } else {
-        sub.innerHTML = `
-            ${backHTML('chatGoBack()')}
-            <div class="chat-response">${L(cat.response)}</div>
-            ${cat.admin ? adminButtonHTML() : ''}
-            ${cat.info ? infoButtonHTML() : ''}
-        `;
+    home.innerHTML = MENU.map(n => row(esc(L(n.label)), n.hint ? esc(L(n.hint)) : '', `data-chat-open="${n.id}"`)).join('');
+
+    const cur = node();
+    if (!cur) { showScreen(false); return; }
+    let html = `<button type="button" class="chat-menu-back" data-chat-back><i class="ph-bold ph-caret-left"></i> ${esc(t('chatBack'))}</button>
+        <div class="chat-sub-title">${esc(L(cur.label))}</div>`;
+    if (cur.choices) {
+        html += cur.choices.map((c, i) => row(esc(L(c.label)), c.hint ? esc(L(c.hint)) : '', `data-chat-pick="${i}"`)).join('');
+    } else if (cur.answer) {
+        html += `<div class="chat-response">${esc(L(cur.answer)).replace(/\n/g, '<br>')}</div>`;
+        (cur.actions || []).forEach((a, i) => { html += `<button type="button" class="chat-action" data-chat-act="${i}">${esc(L(a.label))}</button>`; });
     }
-
-    document.getElementById('chat-menu-home')?.classList.add('hidden-screen');
-    sub.classList.add('active-screen');
+    sub.innerHTML = html;
+    showScreen(true);
 }
 
-export function openChatAnswer(catId, subId) {
-    const cat = CHAT_CATEGORIES.find(c => c.id === catId);
-    const item = cat?.sub?.find(s => s.id === subId);
-    const sub = document.getElementById('chat-menu-sub');
-    if (!item || !sub) return;
-    if (window.playClick) window.playClick();
-
-    sub.innerHTML = `
-        ${backHTML(`openChatCategory('${catId}')`)}
-        <div class="chat-response">${L(item.response)}</div>
-        ${item.admin ? adminButtonHTML() : ''}
-    `;
+function showScreen(sub) {
+    document.getElementById('chat-menu-home')?.classList.toggle('hidden-screen', sub);
+    document.getElementById('chat-menu-sub')?.classList.toggle('active-screen', sub);
 }
 
-export function chatGoBack(silent = false) {
-    if (silent !== true && window.playClick) window.playClick();
-    document.getElementById('chat-menu-home')?.classList.remove('hidden-screen');
-    document.getElementById('chat-menu-sub')?.classList.remove('active-screen');
+// Does what the choice says, then gets out of the way so the result is what's on screen
+function run(go) {
+    if (!go) return;
+    closeChat();
+    path = [];
+    renderChat();
+    if (go.pack) { if (window.clearPriceFilter) window.clearPriceFilter(); window.switchTab('starter'); window.selectPack(go.pack); }
+    else if (go.budget) window.setPriceFilter(go.budget[0], go.budget[1]);
+    else if (go.live) { window.clearPriceFilter(); window.switchTab('live'); }
+    else if (go.info) window.openInfo(go.info);
+    else if (go.whatsapp) window.open(`https://wa.me/${CONFIG.WHATSAPP_NUM}`, '_blank');
 }
 
-// Εξαγωγή στο global scope για το HTML
+document.addEventListener('click', (e) => {
+    const widget = e.target.closest('#chat-widget');
+    if (!widget) return;
+    const open = e.target.closest('[data-chat-open]');
+    const pick = e.target.closest('[data-chat-pick]');
+    const act = e.target.closest('[data-chat-act]');
+    if (e.target.closest('[data-chat-back]')) { if (window.playClick) window.playClick(); path.pop(); renderChat(); return; }
+    if (open) {
+        if (window.playClick) window.playClick();
+        const n = MENU.find(m => m.id === open.dataset.chatOpen);
+        if (n.go) { run(n.go); return; }
+        path = [n.id];
+        renderChat();
+    } else if (pick) {
+        if (window.playClick) window.playClick();
+        run(node().choices[Number(pick.dataset.chatPick)].go);
+    } else if (act) {
+        if (window.playClick) window.playClick();
+        run(node().actions[Number(act.dataset.chatAct)].go);
+    }
+});
+
 window.toggleChat = toggleChat;
 window.openChat = openChat;
 window.renderChat = renderChat;
-window.openChatCategory = openChatCategory;
-window.openChatAnswer = openChatAnswer;
-window.chatGoBack = chatGoBack;
 
 renderChat();

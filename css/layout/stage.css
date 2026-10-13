@@ -177,3 +177,9 @@ body.night-mode #main-card, body.night-mode .holo-card { background: var(--card-
     .pack-count { margin-top: 3px; }
     .pack-chevron { display: block; flex: none; font-size: 1.2rem; color: var(--pack); opacity: 0.8; }
 }
+
+/* Active budget filter chip under the heading, and the button inside an empty filtered list */
+.sh-filter { pointer-events: auto; display: inline-flex; align-items: center; gap: 6px; margin-top: 6px; padding: 5px 12px; border-radius: 999px; border: 1px solid var(--neon-green); background: rgba(255, 255, 255, 0.05); color: var(--neon-green); font-family: var(--font-ui); font-weight: 800; font-size: 0.78rem; letter-spacing: 0.5px; cursor: pointer; }
+.sh-filter:hover { background: var(--neon-green); color: #000; }
+.card-empty-btn { margin-top: 6px; padding: 9px 16px; border-radius: 8px; border: 1px solid var(--neon-green); background: transparent; color: var(--neon-green); font-family: var(--font-ui); font-weight: 800; font-size: 0.8rem; letter-spacing: 0.5px; text-transform: uppercase; cursor: pointer; }
+.card-empty-btn:hover { background: var(--neon-green); color: #000; }
