@@ -1,0 +1,68 @@
+/* ===== PC card "body" — plan step 4 =====
+   The card reads as a solid object instead of a flat panel, using the materials in
+   css/base/tokens.css:
+     slab    — the card itself: lit top-left edge, dark bottom-right edge, 8px of stacked sides,
+               then its cast shadow
+     sunken  — the photo sits in a recessed window; the brief is a panel cut into the card
+     raised  — the buttons stand off the card and sink into it when pressed
+   Every rule covers the swipe snapshot too (.card-ghost > .holo-card), so the card doesn't change
+   look in the frame it's thrown. The hard 0-blur "sides" are cheap to paint — only the one cast
+   shadow is blurred, and it's smaller on phones (tokens). */
+
+#main-card, .card-ghost > .holo-card {
+    border-color: #2c2c33 !important;
+    box-shadow:
+        var(--edge-light), var(--edge-dark),
+        0 2px 0 #0d0d10, 0 4px 0 #0a0a0d, 0 6px 0 #08080a, 0 8px 0 #060608,
+        0 30px 70px rgba(0, 0, 0, 0.75);
+}
+@media (hover: hover) {
+    #main-card:hover {
+        box-shadow:
+            var(--edge-light), var(--edge-dark),
+            0 2px 0 #0d0d10, 0 4px 0 #0a0a0d, 0 6px 0 #08080a, 0 8px 0 #060608,
+            0 44px 90px rgba(0, 0, 0, 0.8);
+    }
+}
+body.night-mode #main-card {
+    box-shadow:
+        var(--edge-light), var(--edge-dark),
+        0 2px 0 #0d0d10, 0 4px 0 #0a0a0d, 0 6px 0 #08080a, 0 8px 0 #060608,
+        0 30px 70px rgba(0, 0, 0, 0.8), var(--night-glow);
+}
+
+/* Photo window: a recess with a soft light in its middle; the rim shadow sits ABOVE the photo
+   (::after) so the picture looks set into the card, not pasted on it */
+.hero-img-frame {
+    border-radius: 10px; margin-bottom: 12px;
+    background: radial-gradient(70% 60% at 50% 40%, #16161c, #07070a);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    box-shadow: var(--sunken);
+}
+.hero-img-frame::after {
+    content: ''; position: absolute; inset: 0; z-index: 2; border-radius: inherit; pointer-events: none;
+    box-shadow: inset 0 10px 18px rgba(0, 0, 0, 0.55), inset 0 -1px 0 rgba(255, 255, 255, 0.05), inset 0 0 0 1px rgba(0, 0, 0, 0.4);
+}
+.hero-photos { z-index: 3; }
+
+/* The brief: a panel cut into the card */
+.sys-brief { background: rgba(0, 0, 0, 0.55); border-radius: 0 8px 8px 0; box-shadow: var(--sunken); }
+
+/* INSPECT: raised, lit from above; pressing sinks it */
+.btn-card-inspect {
+    background: linear-gradient(180deg, rgba(176, 38, 255, 0.24), rgba(176, 38, 255, 0.08));
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12), 0 3px 0 #1a0f24, 0 5px 0 #0e0814, 0 8px 14px rgba(0, 0, 0, 0.5);
+}
+.btn-card-inspect:hover { box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.15), 0 3px 0 #1a0f24, 0 5px 0 #0e0814, 0 0 20px var(--neon-purple); }
+.btn-card-inspect:active { transform: translateY(4px); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 1px 0 #1a0f24, 0 3px 8px rgba(0, 0, 0, 0.5); }
+
+/* COMPARE: lower profile, same press */
+.btn-card-compare { box-shadow: 0 2px 0 rgba(0, 0, 0, 0.65); }
+.btn-card-compare:active { transform: translateY(2px); box-shadow: none; }
+
+/* Wishlist crosshair: a raised round button on the photo */
+.card-wish { box-shadow: var(--raised); }
+.card-wish:active { transform: translateY(2px); box-shadow: var(--raised-pressed); }
+
+/* Price: a faint glow in its own colour, so it reads as lit rather than printed */
+.pc-price { text-shadow: 0 0 18px color-mix(in srgb, var(--neon-green) 35%, transparent); }

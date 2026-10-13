@@ -21,6 +21,7 @@
 @import url('gallery/card-back.css');
 @import url('gallery/ui-lock.css');
 @import url('components/texture.css');
+@import url('components/card-body.css');
 
 @import url('responsive/tablet.css');
 @import url('responsive/mobile.css');

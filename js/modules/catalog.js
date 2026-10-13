@@ -195,7 +195,7 @@ export function renderCard() {
     c.innerHTML = `
         <div class="holo-card-inner">
             <div class="hero-img-frame" onclick="openGallery()" style="cursor:pointer;"><img src="${escUrl(pc.images && pc.images[0]) || 'assets/images/bg.jpg'}" class="hero-img">${(pc.images || []).length > 1 ? `<span class="hero-photos" aria-hidden="true"><i class="ph-bold ph-images"></i> ${pc.images.length}</span>` : ''}</div>
-            <button onclick="toggleWishlist('${pcId}')" style="position:absolute; top:15px; right:15px; background:rgba(0,0,0,0.7); border:1px solid ${wishColor}; color:${wishColor}; border-radius:50%; width:40px; height:40px; display:flex; justify-content:center; align-items:center; cursor:pointer; z-index:10; transition:all 0.3s;">
+            <button class="card-wish" onclick="toggleWishlist('${pcId}')" style="position:absolute; top:15px; right:15px; background:rgba(0,0,0,0.7); border:1px solid ${wishColor}; color:${wishColor}; border-radius:50%; width:40px; height:40px; display:flex; justify-content:center; align-items:center; cursor:pointer; z-index:10; transition:all 0.3s;">
                 <i class="ph-bold ph-crosshair" style="font-size:1.3rem;"></i>
             </button>
             ${stockHTML}${pc.communityDrop ? `<div class="community-badge"><i class="ph-fill ph-users-three"></i> ${esc(window.t ? window.t('communityDropBadge') : 'COMMUNITY DROP')}</div>` : ''}
