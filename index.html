@@ -277,7 +277,7 @@ Type 'help' for a list of commands.
     <div class="chat-widget" id="chat-widget">
         <div class="chat-body">
             <div class="chat-top">
-                <span data-i18n="chatTop">Quick answers</span>
+                <span class="chat-top-text"><span class="info-kicker">&gt;// HELP_NODE</span><span class="chat-title" data-i18n="chatTop">Buying help</span></span>
                 <button type="button" class="chat-close" onclick="toggleChat()" data-i18n-aria="closeLabel" aria-label="Close"><i class="ph-bold ph-x"></i></button>
             </div>
             <div class="chat-menu">
@@ -306,6 +306,8 @@ Type 'help' for a list of commands.
             </div>
             <button class="yg-gallery-btn right" id="yg-arrow-right" onclick="playClick(); changeGalleryImage(1)"><i class="ph-bold ph-caret-right"></i></button>
         </div>
+        <!-- One pill per photo, the current one lit; also the counter for "1 / 4" (renderGalleryDots in gallery.js) -->
+        <div class="yg-img-dots" id="yg-img-dots" aria-hidden="true"></div>
 
         <div class="yg-price-section">
             <div class="yg-current-price" id="yg-price-live">€0</div>

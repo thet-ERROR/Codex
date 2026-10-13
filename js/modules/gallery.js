@@ -425,20 +425,80 @@ export function updateGalleryArrows() {
     const arrowRight = document.getElementById('yg-arrow-right');
     if (arrowLeft) arrowLeft.classList.toggle('hidden-arrow', imgCount <= 1);
     if (arrowRight) arrowRight.classList.toggle('hidden-arrow', imgCount <= 1);
+    renderGalleryDots(); // called whenever the photo set changes (open, paint on/off)
 }
 
 export function updateGalleryImage() {
     const img = document.getElementById('yg-main-img');
     const imgs = getActiveImages(state.currentGalleryPC);
     if (img && imgs.length) img.src = imgs[state.galleryIndex] || imgs[0];
+    renderGalleryDots();
 }
 
-export function changeGalleryImage(d) {
+// One pill per photo under the picture (current one lit) plus "2 / 4". Nothing for a single photo.
+export function renderGalleryDots() {
+    const box = document.getElementById('yg-img-dots');
+    if (!box) return;
+    const n = getActiveImages(state.currentGalleryPC).length;
+    box.classList.toggle('hidden', n < 2);
+    if (n < 2) return;
+    if (box.querySelectorAll('.yg-dot').length !== n) {
+        box.innerHTML = '<span class="yg-dot"></span>'.repeat(n) + '<span class="yg-img-count"></span>';
+    }
+    box.querySelectorAll('.yg-dot').forEach((d, i) => d.classList.toggle('active', i === state.galleryIndex));
+    box.querySelector('.yg-img-count').textContent = `${state.galleryIndex + 1} / ${n}`;
+}
+
+let slideBusy = false;
+
+// d > 0: next photo, d < 0: previous. The current photo slides out the way you're going while the
+// next slides in from the other side — the next one is loaded and decoded FIRST, so it never slides
+// in as an empty frame. Fast repeated taps skip the animation instead of queueing it.
+export async function changeGalleryImage(d) {
     const imgs = getActiveImages(state.currentGalleryPC);
     if (!imgs.length) return;
-    state.galleryIndex = (state.galleryIndex + d + imgs.length) % imgs.length;
-    updateGalleryImage();
+    const img = document.getElementById('yg-main-img');
+    const next = (state.galleryIndex + d + imgs.length) % imgs.length;
+    if (imgs.length < 2 || !img || slideBusy || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        state.galleryIndex = next;
+        updateGalleryImage();
+        return;
+    }
+    slideBusy = true;
+    state.galleryIndex = next;
+    renderGalleryDots(); // the pill moves at once
+    try {
+        const pre = new Image();
+        pre.src = imgs[next];
+        // Bounded waits: a hidden tab or a slow photo must never leave the slider stuck mid-way
+        const within = (p, ms) => Promise.race([p, new Promise(r => setTimeout(r, ms))]);
+        await within(pre.decode().catch(() => {}), 1500);
+        const dir = d > 0 ? 1 : -1;
+        const out = img.animate(
+            [{ transform: 'translateX(0)', opacity: 1 }, { transform: `translateX(${-dir * 40}px)`, opacity: 0 }],
+            { duration: 140, easing: 'ease-in', fill: 'forwards' });
+        await within(out.finished.catch(() => {}), 400);
+        img.src = imgs[next];
+        img.animate(
+            [{ transform: `translateX(${dir * 40}px)`, opacity: 0 }, { transform: 'translateX(0)', opacity: 1 }],
+            { duration: 200, easing: 'cubic-bezier(0.2, 0.8, 0.3, 1)' });
+        out.cancel();
+    } finally { slideBusy = false; }
 }
+
+// Swipe the photo itself on a touch screen (arrows stay for desktop)
+document.addEventListener('DOMContentLoaded', () => {
+    const frame = document.querySelector('.yg-image-frame');
+    if (!frame) return;
+    let x0 = null, y0 = 0;
+    frame.addEventListener('touchstart', (e) => { x0 = e.touches[0].clientX; y0 = e.touches[0].clientY; }, { passive: true });
+    frame.addEventListener('touchend', (e) => {
+        if (x0 === null) return;
+        const dx = e.changedTouches[0].clientX - x0, dy = e.changedTouches[0].clientY - y0;
+        x0 = null;
+        if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy) * 1.5) changeGalleryImage(dx < 0 ? 1 : -1);
+    }, { passive: true });
+});
 
 export function toggleBenchmarksView() {
     const panel = document.getElementById('fps-panel');
