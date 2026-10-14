@@ -1,5 +1,6 @@
 // js/modules/catalog.js
 import { state } from '../state.js';
+import { blocksHTML } from './blocks.js';
 import { esc, escUrl, formatPrice, priceCentsOf, stockState, stockLabel, membersOnlyActive, formatShortDateTime } from '../utils.js';
 
 // --- STAGE HEADING ---
@@ -194,7 +195,7 @@ export function renderCard() {
     const pcId = esc(pc._id || pc.id);
     c.innerHTML = `
         <div class="holo-card-inner">
-            <div class="hero-img-frame" onclick="openGallery()" style="cursor:pointer;">${cubeScene()}<img src="${escUrl(pc.images && pc.images[0]) || 'assets/images/bg.jpg'}" class="hero-img">${(pc.images || []).length > 1 ? `<span class="hero-photos" aria-hidden="true"><i class="ph-bold ph-images"></i> ${pc.images.length}</span>` : ''}</div>
+            <div class="hero-img-frame" onclick="openGallery()" style="cursor:pointer;"><img src="${escUrl(pc.images && pc.images[0]) || 'assets/images/bg.jpg'}" class="hero-img">${(pc.images || []).length > 1 ? `<span class="hero-photos" aria-hidden="true"><i class="ph-bold ph-images"></i> ${pc.images.length}</span>` : ''}</div>
             <button class="card-wish" onclick="toggleWishlist('${pcId}')" style="position:absolute; top:15px; right:15px; background:rgba(0,0,0,0.7); border:1px solid ${wishColor}; color:${wishColor}; border-radius:50%; width:40px; height:40px; display:flex; justify-content:center; align-items:center; cursor:pointer; z-index:10; transition:all 0.3s;">
                 <i class="ph-bold ph-crosshair" style="font-size:1.3rem;"></i>
             </button>
@@ -216,6 +217,7 @@ export function renderCard() {
                 ${esc(inCompare ? (window.t ? window.t('addedToVs') : 'ADDED TO VS') : (window.t ? window.t('compareBtn') : 'COMPARE'))}
             </button>
         </div>
+        ${blocksHTML()}
     `;
     
     // On phones the brief is clamped to 3 lines (mobile.css) so INSPECT SYSTEM isn't pushed under the
@@ -239,48 +241,6 @@ export function renderCard() {
 
 // The next swipe lands on a photo that's already downloaded and decoded, instead of an empty frame that
 // pops in a moment after the card slides.
-// --- CUBE ARCHITECTURE behind the photo ---
-// The photo frame is wider than most (portrait) PC photos, which left two black slabs either side.
-// They now hold a small isometric "architecture": stacked blocks with floating cubes breaking off
-// above them, lit by glowing seams in the visitor's accent colour (.cube-seam in card-body.css).
-// Plain SVG polygons, three shades per cube for the three visible faces — no filters, no blur,
-// built once and reused, so the swipe pays nothing for it.
-let cubeSceneCache = null;
-
-function isoCube(x, y, w, seam) {
-    const h = w * 0.62;              // side height
-    const q = w / 4, half = w / 2;
-    const top = `${x},${y} ${x + half},${y + q} ${x},${y + half} ${x - half},${y + q}`;
-    const left = `${x - half},${y + q} ${x},${y + half} ${x},${y + half + h} ${x - half},${y + q + h}`;
-    const right = `${x},${y + half} ${x + half},${y + q} ${x + half},${y + q + h} ${x},${y + half + h}`;
-    let s = `<polygon class="cube-top" points="${top}"/><polygon class="cube-left" points="${left}"/><polygon class="cube-right" points="${right}"/>`;
-    if (seam) {
-        // A lit slit down the middle of one side face, with a wider faint stroke behind it for glow
-        const sx = seam === 'L' ? x - q : x + q;
-        const y1 = y + 3 * w / 8 + 2, y2 = y + 3 * w / 8 + h - 2;
-        s += `<line class="cube-glow" x1="${sx}" y1="${y1}" x2="${sx}" y2="${y2}"/><line class="cube-seam" x1="${sx}" y1="${y1}" x2="${sx}" y2="${y2}"/>`;
-    }
-    return s;
-}
-
-function cubeScene() {
-    if (cubeSceneCache) return cubeSceneCache;
-    // [x, y, size, seam] for the LEFT cluster; the right one is its mirror image
-    const left = [
-        [62, 24, 12, null], [36, 50, 15, 'R'], [92, 46, 17, null], [68, 74, 22, 'L'], [112, 92, 14, 'R'],
-        [44, 104, 30, 'R'], [86, 118, 34, 'L'], [52, 142, 40, 'L'], [100, 156, 40, 'R']
-    ];
-    const cubes = [];
-    left.forEach(([x, y, w, seam]) => {
-        cubes.push([x, y, w, seam]);
-        cubes.push([400 - x, y, w, seam === 'L' ? 'R' : seam === 'R' ? 'L' : null]);
-    });
-    cubes.sort((a, b) => a[1] - b[1]); // back to front
-    cubeSceneCache = `<svg class="cube-scene" viewBox="0 0 400 220" preserveAspectRatio="xMidYMax slice" aria-hidden="true" focusable="false">`
-        + cubes.map(c => isoCube(...c)).join('') + `</svg>`;
-    return cubeSceneCache;
-}
-
 function preloadNeighbours() {
     const n = state.filtered.length;
     if (n < 2) return;

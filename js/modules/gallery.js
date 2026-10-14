@@ -1,6 +1,7 @@
 // js/modules/gallery.js
 import { state } from '../state.js';
 import { t } from '../i18n.js';
+import { blocksHTML } from './blocks.js';
 import { esc, formatPrice, priceCentsOf, stockState, stockLabel, membersOnlyActive } from '../utils.js';
 
 // --- EXTRAS: normalisation, pricing, image sets ---
@@ -211,6 +212,11 @@ export function openGallery(pc) {
 
     const cardInner = document.getElementById('yg-card');
     if(cardInner) cardInner.classList.remove('flipped');
+
+    // The same block architecture as the PC card, around the card's container — not inside the faces,
+    // so it stays put while the card flips (blocks.css)
+    const frameHost = document.querySelector('.yg-card-container');
+    if (frameHost && !frameHost.querySelector('.bk')) frameHost.insertAdjacentHTML('beforeend', blocksHTML());
 
     // 1. Basic Info
     const elTitle = document.getElementById('yg-title');
