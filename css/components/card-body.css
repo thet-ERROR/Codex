@@ -5,6 +5,7 @@
                then its cast shadow
      sunken  — the photo sits in a recessed window; the brief is a panel cut into the card
      raised  — the buttons stand off the card and sink into it when pressed
+   (The block architecture around the card lives in blocks.css.)
    Every rule covers the swipe snapshot too (.card-ghost > .holo-card), so the card doesn't change
    look in the frame it's thrown. The hard 0-blur "sides" are cheap to paint — only the one cast
    shadow is blurred, and it's smaller on phones (tokens). */
@@ -67,12 +68,20 @@ body.night-mode #main-card {
 /* Price: a faint glow in its own colour, so it reads as lit rather than printed */
 .pc-price { text-shadow: 0 0 18px color-mix(in srgb, var(--neon-green) 35%, transparent); }
 
-/* Cube architecture behind the photo (cubeScene in catalog.js). Three shades per cube for its three
-   visible faces, seams lit in the accent colour. Sits under the photo; the photo stays on top. */
-.cube-scene { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; opacity: 0.9; }
-.cube-top { fill: #3b3b46; }
-.cube-left { fill: #24242c; }
-.cube-right { fill: #16161b; }
-.cube-seam { stroke: var(--neon-green); stroke-width: 1.6; stroke-linecap: round; }
-.cube-glow { stroke: color-mix(in srgb, var(--neon-green) 30%, transparent); stroke-width: 6; stroke-linecap: round; }
+
+/* The photo is an opening in the block structure (js/modules/blocks.js): a stepped lip around it,
+   and the slabs either side of a portrait photo are the dark inside of the opening — faint vertical
+   ribs and light seeping in from the edges, in the accent colour. Same on the swipe snapshot. */
+.hero-img-frame {
+    background:
+        repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.03) 0 1px, transparent 1px 16px),
+        radial-gradient(70% 60% at 50% 40%, #16161c, #07070a);
+    box-shadow: var(--sunken), 0 0 0 3px #1b1b22, 0 0 0 4px #08080b;
+}
+.hero-img-frame {
+    background:
+        linear-gradient(90deg, color-mix(in srgb, var(--neon-green) 9%, transparent), transparent 20%, transparent 80%, color-mix(in srgb, var(--neon-green) 9%, transparent)),
+        repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.03) 0 1px, transparent 1px 16px),
+        radial-gradient(70% 60% at 50% 40%, #16161c, #07070a);
+}
 .hero-img { position: relative; z-index: 1; }

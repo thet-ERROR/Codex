@@ -1,0 +1,33 @@
+/* ===== Block architecture of the cards (js/modules/blocks.js) =====
+   A layer inside the PC card and the INSPECT card: cube clusters grow out of the four corners and lit
+   slits run down the sides, so the card reads as one built object and the photo as an opening in it.
+   It lives on the card's own box, so the swipe snapshot (.card-ghost > .holo-card is a clone of it)
+   looks the same. Static: nothing here animates, no filters. */
+.bk { --bk: 140px; position: absolute; inset: 0; z-index: 3; pointer-events: none; }
+@media (max-width: 768px) { .bk { --bk: 100px; } }
+/* INSPECT sits 15px from the screen edge on a phone: smaller overhang so nothing is cut off */
+@media (max-width: 480px) { .yg-card-container > .bk { --bk: 74px; } }
+
+/* A cluster's SVG is 100 units; the card's corner sits 20 units in from the svg's corner */
+.bk-cl { position: absolute; width: var(--bk); height: var(--bk); overflow: visible; }
+.bk-tl { left: calc(var(--bk) * -0.2); top: calc(var(--bk) * -0.2); }
+.bk-tr { right: calc(var(--bk) * -0.2); top: calc(var(--bk) * -0.2); transform: scaleX(-1); }
+.bk-bl { left: calc(var(--bk) * -0.2); bottom: calc(var(--bk) * -0.2); }
+.bk-br { right: calc(var(--bk) * -0.2); bottom: calc(var(--bk) * -0.2); transform: scaleX(-1); }
+
+/* Three shades per cube for its three visible faces; seams lit in the accent colour */
+.bk-top { fill: #44444f; }
+.bk-left { fill: #26262e; }
+.bk-right { fill: #17171c; }
+.bk-seam { stroke: var(--neon-green); stroke-width: 5; stroke-linecap: round; }
+.bk-glow { stroke: color-mix(in srgb, var(--neon-green) 30%, transparent); stroke-width: 12; stroke-linecap: round; }
+
+/* Light leaking from between two blocks, straddling the card's side edge */
+.bk-slit {
+    position: absolute; width: 4px; height: 13%; border-radius: 2px;
+    background: var(--neon-green); box-shadow: 0 0 7px var(--neon-green);
+}
+.bk-sl1, .bk-sl2 { left: -2px; }
+.bk-sr1, .bk-sr2 { right: -2px; }
+.bk-sl1, .bk-sr1 { top: 27%; }
+.bk-sl2, .bk-sr2 { top: 61%; height: 8%; }
