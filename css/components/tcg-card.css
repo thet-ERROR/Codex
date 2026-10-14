@@ -1,0 +1,153 @@
+/* ===== The PC card as a collectible card (renderCard in js/modules/catalog.js) =====
+   Loaded LAST in style.css: the older card rules (stage / tablet / mobile / card-body / texture) are
+   still in those files for the other panels that share classes, and several of them are !important —
+   so everything here restates what it needs, with the same weight, and wins on order.
+
+   Anatomy, top to bottom, inside a foil frame:  title bar (name + round badge) · stars (tier) ·
+   photo window · type line (stock / community / members) · text box (the brief) · stat strip.
+   The proportions are a real card's, 63:88; if the brief is opened the card simply grows.
+
+   The foil is the visitor's accent colour (--neon-green) run through a metallic gradient, so it follows
+   the colour they picked in Settings. Browsers without color-mix() get a plain gold foil.
+   Text sizes use cqw (1% of the card's width), so the card looks the same at any width.
+   Static: nothing here animates, and the swipe snapshot (.card-ghost > .holo-card) is a clone of it. */
+
+.card-col { --tc-w: min(380px, 95vw); }
+@media (max-width: 768px) { .card-col { --tc-w: min(80vw, 340px); } }
+
+/* --- the card: a foil slab ---------------------------------------------------------------------- */
+#main-card, .card-ghost > .holo-card, body.night-mode #main-card, body.night-mode .card-ghost > .holo-card {
+    width: var(--tc-w) !important; max-width: none !important; height: auto; aspect-ratio: 63 / 88;
+    padding: 9px !important; box-sizing: border-box; border: 0 !important; border-radius: 12px;
+    display: flex; flex-direction: column; align-items: stretch; text-align: left;
+    container-type: inline-size;
+    background: linear-gradient(135deg, #f0dc8a 0%, #c9a940 18%, #7d6420 36%, #e7cf74 52%, #6f581c 70%, #c9a940 88%, #f0dc8a 100%) !important;
+    box-shadow:
+        inset 1px 1px 0 rgba(255, 255, 255, 0.5), inset -1px -1px 0 rgba(0, 0, 0, 0.55),
+        0 2px 0 #0d0d10, 0 4px 0 #0a0a0d, 0 6px 0 #08080a, 0 8px 0 #060608,
+        0 30px 70px rgba(0, 0, 0, 0.75);
+}
+@supports (color: color-mix(in srgb, red, blue)) {
+    #main-card, .card-ghost > .holo-card, body.night-mode #main-card, body.night-mode .card-ghost > .holo-card {
+        /* a little grey mixed in keeps it metal rather than neon */
+        background: linear-gradient(135deg,
+            color-mix(in srgb, var(--neon-green) 55%, #f2f2f2) 0%,
+            color-mix(in srgb, var(--neon-green) 82%, #777) 16%,
+            color-mix(in srgb, var(--neon-green) 38%, #000) 34%,
+            color-mix(in srgb, var(--neon-green) 60%, #e0e0e0) 50%,
+            color-mix(in srgb, var(--neon-green) 34%, #000) 68%,
+            color-mix(in srgb, var(--neon-green) 82%, #777) 86%,
+            color-mix(in srgb, var(--neon-green) 55%, #f2f2f2) 100%) !important;
+    }
+}
+body.night-mode #main-card { box-shadow: inset 1px 1px 0 rgba(255, 255, 255, 0.5), inset -1px -1px 0 rgba(0, 0, 0, 0.55), 0 2px 0 #0d0d10, 0 4px 0 #0a0a0d, 0 6px 0 #08080a, 0 8px 0 #060608, 0 30px 70px rgba(0, 0, 0, 0.8), var(--night-glow); }
+/* The snapshot is the card's size and has no blurred cast shadow — it is only in the air for a moment */
+.card-ghost > .holo-card, body.night-mode .card-ghost > .holo-card {
+    width: 100% !important; height: 100% !important; aspect-ratio: auto;
+    box-shadow: inset 1px 1px 0 rgba(255, 255, 255, 0.5), inset -1px -1px 0 rgba(0, 0, 0, 0.55), 0 2px 0 #0d0d10, 0 4px 0 #0a0a0d, 0 6px 0 #08080a;
+}
+@media (hover: hover) {
+    #main-card:hover { box-shadow: inset 1px 1px 0 rgba(255, 255, 255, 0.5), inset -1px -1px 0 rgba(0, 0, 0, 0.55), 0 2px 0 #0d0d10, 0 4px 0 #0a0a0d, 0 6px 0 #08080a, 0 8px 0 #060608, 0 44px 90px rgba(0, 0, 0, 0.8); }
+}
+
+/* --- the face: the dark card inside the foil, framed by two engraved lines ------------------------ */
+.tc-face {
+    position: relative; flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; gap: 6px; padding: 11px 11px 10px;
+    border-radius: 5px;
+    background:
+        radial-gradient(110% 40% at 50% 0%, rgba(255, 255, 255, 0.04), transparent 70%),
+        linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px) 0 0 / 22px 22px,
+        linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px) 0 0 / 22px 22px,
+        #0c0c10;
+    box-shadow: inset 0 0 0 1px #000, inset 0 0 0 2px rgba(255, 255, 255, 0.08), inset 0 0 0 4px #07070a, inset 0 0 0 5px rgba(255, 255, 255, 0.14);
+}
+@supports (color: color-mix(in srgb, red, blue)) {
+    .tc-face { box-shadow: inset 0 0 0 1px #000, inset 0 0 0 2px rgba(255, 255, 255, 0.08), inset 0 0 0 4px #07070a, inset 0 0 0 5px color-mix(in srgb, var(--neon-green) 45%, #000); }
+}
+.tc-face .card-empty { margin: auto; }
+/* Small gems on the four corners of the face */
+.tc-orn { position: absolute; width: 7px; height: 7px; background: radial-gradient(circle at 35% 30%, #fff, #b9b9c2 60%, #55555f); transform: rotate(45deg); box-shadow: 0 0 0 1px #000; }
+.tc-o1 { left: -3px; top: -3px; } .tc-o2 { right: -3px; top: -3px; } .tc-o3 { left: -3px; bottom: -3px; } .tc-o4 { right: -3px; bottom: -3px; }
+
+/* --- title bar -------------------------------------------------------------------------------------- */
+.tc-title {
+    display: flex; align-items: center; gap: 8px; padding: 4px 6px 4px 10px; border-radius: 4px;
+    background: linear-gradient(180deg, #1b1b22, #0a0a0e);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08), inset 0 -2px 0 rgba(0, 0, 0, 0.55);
+}
+.tc-name {
+    flex: 1; min-width: 0; font-family: var(--font-ui); font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; color: #fff;
+    font-size: 1.15rem; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-shadow: 0 1px 0 #000;
+    font-size: 5.6cqw;
+}
+.tc-attr {
+    flex: none; display: grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; color: #101010; font-size: 1rem;
+    background: radial-gradient(circle at 35% 30%, #fff3b0, #c9a940 55%, #5d4a14);
+    box-shadow: 0 0 0 1px #000, 0 1px 0 rgba(255, 255, 255, 0.2);
+    width: 8.2cqw; height: 8.2cqw; font-size: 4.8cqw;
+}
+@supports (color: color-mix(in srgb, red, blue)) {
+    .tc-attr { background: radial-gradient(circle at 35% 30%, color-mix(in srgb, var(--neon-green) 40%, #fff), var(--neon-green) 55%, color-mix(in srgb, var(--neon-green) 35%, #000)); }
+}
+
+/* --- stars: the tier, aligned right like on the real thing -------------------------------------------- */
+.tc-stars { display: flex; justify-content: flex-end; gap: 1px; padding-right: 2px; color: var(--neon-green); font-size: 0.8rem; line-height: 1; font-size: 3.7cqw; }
+.tc-stars i { filter: drop-shadow(0 0 3px rgba(0, 0, 0, 0.8)); }
+
+/* --- photo window: a thick frame in the foil's colour, the picture sunk into it ------------------------ */
+.tc-art {
+    position: relative; flex: 1 1 auto; min-height: 120px; overflow: hidden; border-radius: 3px; cursor: pointer;
+    background:
+        linear-gradient(90deg, rgba(255, 255, 255, 0.05), transparent 20%, transparent 80%, rgba(255, 255, 255, 0.05)),
+        repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.03) 0 1px, transparent 1px 16px),
+        radial-gradient(70% 60% at 50% 40%, #16161c, #07070a);
+    box-shadow: 0 0 0 1px #000, 0 0 0 3px #5d4a14, 0 0 0 4px #000;
+    min-height: 28cqw;
+}
+@supports (color: color-mix(in srgb, red, blue)) {
+    .tc-art { box-shadow: 0 0 0 1px #000, 0 0 0 3px color-mix(in srgb, var(--neon-green) 55%, #000), 0 0 0 4px #000; }
+}
+.tc-art::after { content: ''; position: absolute; inset: 0; z-index: 2; pointer-events: none; box-shadow: inset 0 8px 14px rgba(0, 0, 0, 0.5), inset 0 -1px 0 rgba(255, 255, 255, 0.06); }
+.tc-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; display: block; z-index: 1; }
+.tc-art .hero-photos { z-index: 3; }
+.card-wish {
+    position: absolute; top: 8px; right: 8px; z-index: 4; display: grid; place-items: center; width: 34px; height: 34px; padding: 0;
+    border-radius: 50%; background: rgba(0, 0, 0, 0.72); border: 1px solid var(--wc, #555); color: var(--wc, #555); cursor: pointer; transition: border-color 0.3s, color 0.3s;
+}
+.card-wish i { font-size: 1.15rem; }
+
+/* --- type line --------------------------------------------------------------------------------------- */
+.tc-type { display: flex; flex-wrap: wrap; align-items: center; gap: 5px; min-height: 22px; }
+.tc-type .stock-badge, .tc-type .community-badge, .tc-type .members-badge { margin: 0 !important; padding: 3px 8px !important; font-size: 0.66rem; line-height: 1.2; width: auto; }
+.tc-type:empty { display: none; }
+
+/* --- text box ---------------------------------------------------------------------------------------- */
+.tc-brief { padding: 6px 9px 7px; border-radius: 3px; border-left: 2px solid var(--neon-purple); background: rgba(0, 0, 0, 0.55); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.05); }
+.tc-brief-title { font-family: var(--font-ui); font-weight: 800; font-size: 0.62rem; letter-spacing: 2px; text-transform: uppercase; color: var(--neon-purple); margin-bottom: 3px; }
+.tc-brief-text { font-family: var(--font-body); font-style: italic; color: #aaa; font-size: 0.76rem; line-height: 1.4; font-size: 3.3cqw; }
+.tc-brief:not(.expanded) .tc-brief-text { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; line-clamp: 3; overflow: hidden; }
+.tc-brief-more { background: none; border: 0; padding: 4px 0 0; cursor: pointer; font-family: var(--font-ui); font-weight: 800; font-size: 0.68rem; letter-spacing: 1px; text-transform: uppercase; color: var(--neon-purple); }
+
+/* --- stat strip: what it runs on, and what it costs ---------------------------------------------------- */
+.tc-stat { display: flex; align-items: stretch; gap: 6px; }
+.tc-stat > * { display: flex; align-items: center; padding: 5px 9px; border-radius: 3px; background: linear-gradient(180deg, #17171d, #09090c); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08), inset 0 -2px 0 rgba(0, 0, 0, 0.5); }
+.tc-stat-spec { flex: 1 1 0; min-width: 0; gap: 6px; }
+.tc-stat-k { font-family: var(--font-ui); font-weight: 800; font-size: 0.62rem; letter-spacing: 1.5px; color: #8a8a94; }
+.tc-stat-v { min-width: 0; font-family: var(--font-ui); font-weight: 700; font-size: 0.8rem; color: #e6e6ec; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tc-price { flex: none; margin-left: auto; font-family: var(--font-ui); font-weight: 800; font-size: 1.15rem; line-height: 1; color: var(--neon-green); text-shadow: 0 0 14px color-mix(in srgb, var(--neon-green) 35%, transparent); font-size: 5.6cqw; }
+
+/* --- the buttons under the card ---------------------------------------------------------------------- */
+.card-actions { width: var(--tc-w); display: flex; gap: 8px; align-items: stretch; }
+.card-actions:empty { display: none; }
+.card-actions .btn-card-inspect { flex: 2 1 0; width: auto; min-width: 0; margin: 0 !important; padding: 11px 10px !important; font-size: 0.9rem !important; }
+/* They sit on the scene now, not on a dark card: give them an opaque dark base so the colour reads */
+.card-actions .btn-card-inspect { background: linear-gradient(180deg, rgba(176, 38, 255, 0.3), rgba(176, 38, 255, 0.1)), #130b1d; }
+.card-actions .btn-card-compare { background: #0b0b0e; }
+.card-actions .btn-card-compare.selected { background: var(--neon-green); }
+.card-actions .btn-card-compare { flex: 1 1 0; width: auto; min-width: 0; margin: 0 !important; padding: 6px !important; font-size: 0.68rem !important; line-height: 1.15; }
+
+/* Phone: the finger hint sits over the photo window (the card starts with its title bar, so lower than before) */
+@media (max-width: 768px) { .swipe-hint { top: 130px; } }
+.card-actions .btn-card-inspect:hover { background: var(--neon-purple); }
+.card-actions .btn-card-compare:hover { background: #15150a; }
+.card-actions .btn-card-compare.selected:hover { background: var(--neon-green); }
