@@ -66,3 +66,13 @@ body.night-mode #main-card {
 
 /* Price: a faint glow in its own colour, so it reads as lit rather than printed */
 .pc-price { text-shadow: 0 0 18px color-mix(in srgb, var(--neon-green) 35%, transparent); }
+
+/* Cube architecture behind the photo (cubeScene in catalog.js). Three shades per cube for its three
+   visible faces, seams lit in the accent colour. Sits under the photo; the photo stays on top. */
+.cube-scene { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; opacity: 0.9; }
+.cube-top { fill: #3b3b46; }
+.cube-left { fill: #24242c; }
+.cube-right { fill: #16161b; }
+.cube-seam { stroke: var(--neon-green); stroke-width: 1.6; stroke-linecap: round; }
+.cube-glow { stroke: color-mix(in srgb, var(--neon-green) 30%, transparent); stroke-width: 6; stroke-linecap: round; }
+.hero-img { position: relative; z-index: 1; }
