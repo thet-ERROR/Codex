@@ -42,7 +42,7 @@ const BOTTOM = [
 
 const cluster = (cubes, pos) => {
     const uses = [...cubes].sort((a, b) => a[1] - b[1]).map(([x, y, w, s]) =>
-        `<use href="#bk-c${s ? s.toLowerCase() : ''}" x="${x - w / 2}" y="${y}" width="${w}" height="${(w * 1.12).toFixed(1)}"/>`).join('');
+        `<use ${s ? "" : "class=\"bk-fl\" "}href="#bk-c${s ? s.toLowerCase() : ""}" x="${x - w / 2}" y="${y}" width="${w}" height="${(w * 1.12).toFixed(1)}"/>`).join('');
     return `<svg class="bk-cl bk-${pos}" viewBox="0 0 100 100" aria-hidden="true" focusable="false">${uses}</svg>`;
 };
 

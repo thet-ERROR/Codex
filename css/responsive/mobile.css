@@ -60,8 +60,8 @@
     .gallery-overlay.active { display: block !important; }
     .gallery-overlay { padding-bottom: 100px !important; overflow-y: auto !important; -webkit-overflow-scrolling: touch !important; align-items: flex-start !important; padding: 20px 0 !important; }
     .gallery-overlay::after { content: ""; display: block; height: 110px !important; width: 100%; flex-shrink: 0; }
-    .yg-card-container { position: absolute !important; top: 50% !important; left: 50% !important; transform: translate(-50%, -50%) !important; width: 90vw !important; height: 85vh !important; margin: 0 !important; }
-    .gallery-overlay .yg-card { width: 100% !important; height: auto !important; min-height: 85vh !important; margin: auto !important; background: rgba(15, 15, 20, 0.98) !important; }
+    .yg-card-container { position: absolute !important; top: 50% !important; left: 50% !important; transform: translate(-50%, -50%) !important; width: 84vw !important; max-width: 380px !important; height: 82vh !important; margin: 0 !important; }
+    .gallery-overlay .yg-card { width: 100% !important; height: auto !important; min-height: 82vh !important; margin: auto !important; background: rgba(15, 15, 20, 0.98) !important; }
     .gallery-overlay .yg-project-name { font-size: 22px !important; margin-bottom: 10px !important; }
     .gallery-overlay .yg-gallery-btn { padding: 5px 10px !important; }
     .mobile-hide { display: none !important; }
@@ -87,7 +87,7 @@
     /* Compact stage card: less scroll to see everything on phones */
     .stage-heading { margin-bottom: 10px; }
     .sh-title { font-size: 1.05rem; letter-spacing: 2px; }
-    #main-card, .holo-card { padding: 15px !important; }
+    #main-card, .holo-card { padding: 14px !important; width: 84vw !important; max-width: 360px !important; }
     .hero-img-frame { height: 140px !important; margin: 0 auto 6px auto !important; }
     /* No arrows on phones — swiping the card is the way to browse there (initCardSwipe in
        catalog.js). In their place, a small floating hint at photo height: 85px = card padding (15)
