@@ -1,6 +1,5 @@
 // js/modules/catalog.js
 import { state } from '../state.js';
-import { blocksHTML } from './blocks.js';
 import { esc, escUrl, formatPrice, priceCentsOf, stockState, stockLabel, membersOnlyActive, formatShortDateTime } from '../utils.js';
 
 // --- STAGE HEADING ---
@@ -167,16 +166,21 @@ export function prevPC() {
     } 
 }
 
-export function renderCard() { 
+// The round badge in the card's title bar says what kind of build it is (like a card's attribute)
+const PACK_ICONS = { drop: 'ph-lightning', gaming: 'ph-game-controller', streaming: 'ph-broadcast', coding: 'ph-code' };
+
+export function renderCard() {
     const c = document.getElementById('main-card'); 
     if (!c) return;
     updateSwipeHint(); // before the early return, so an empty list hides it too
     renderDots();
     renderStageHeading(); // count + language
+    const actions = document.getElementById('card-actions');
     if (!state.filtered.length) {
         // An empty list says so in the visitor's language, inside the card frame
         const t = window.t || (k => k);
-        c.innerHTML = `<div class="card-empty"><i class="ph-duotone ph-cpu"></i><div>${esc(t('stageEmpty'))}</div>${priceFilter ? `<button type="button" class="card-empty-btn" onclick="clearPriceFilter()">${esc(t('budgetClear'))}</button>` : ''}</div>`;
+        c.innerHTML = `<div class="tc-face"><div class="card-empty"><i class="ph-duotone ph-cpu"></i><div>${esc(t('stageEmpty'))}</div>${priceFilter ? `<button type="button" class="card-empty-btn" onclick="clearPriceFilter()">${esc(t('budgetClear'))}</button>` : ''}</div></div>`;
+        if (actions) actions.innerHTML = '';
         return;
     }
 
@@ -193,44 +197,56 @@ export function renderCard() {
     const wishColor = inWishlist ? "var(--neon-green)" : "#555";
 
     const pcId = esc(pc._id || pc.id);
+    // The card is a collectible, laid out like a trading card (css/components/tcg-card.css): a title
+    // bar with the name and a badge for the kind of build, a row of stars for its tier, the photo as a
+    // framed window, a type line, the brief as the text box and a stat strip at the bottom. The
+    // buttons are not on it — they sit under it (#card-actions), so the card stays a clean object.
+    const score = pc.multitasking || 0;
+    const stars = score > 80 ? 8 : (score > 50 ? 6 : 4);   // same S / A / B tiers as the INSPECT card
+    const spec = (pc.specs && (pc.specs.gpu ? ['GPU', pc.specs.gpu] : pc.specs.cpu ? ['CPU', pc.specs.cpu] : null));
+    const specHTML = spec ? `<div class="tc-stat-spec"><span class="tc-stat-k">${spec[0]}</span><span class="tc-stat-v">${esc(spec[1].split(' ').slice(0, 3).join(' '))}</span></div>` : '';
+    const nPhotos = (pc.images || []).length;
     c.innerHTML = `
-        <div class="holo-card-inner">
-            <div class="hero-img-frame" onclick="openGallery()" style="cursor:pointer;"><img src="${escUrl(pc.images && pc.images[0]) || 'assets/images/bg.jpg'}" class="hero-img">${(pc.images || []).length > 1 ? `<span class="hero-photos" aria-hidden="true"><i class="ph-bold ph-images"></i> ${pc.images.length}</span>` : ''}</div>
-            <button class="card-wish" onclick="toggleWishlist('${pcId}')" style="position:absolute; top:15px; right:15px; background:rgba(0,0,0,0.7); border:1px solid ${wishColor}; color:${wishColor}; border-radius:50%; width:40px; height:40px; display:flex; justify-content:center; align-items:center; cursor:pointer; z-index:10; transition:all 0.3s;">
-                <i class="ph-bold ph-crosshair" style="font-size:1.3rem;"></i>
-            </button>
-            ${stockHTML}${pc.communityDrop ? `<div class="community-badge"><i class="ph-fill ph-users-three"></i> ${esc(window.t ? window.t('communityDropBadge') : 'COMMUNITY DROP')}</div>` : ''}
-            ${membersOnlyActive(pc) ? `<div class="members-badge"><i class="ph-fill ph-lock-key"></i> ${esc(window.t ? window.t('membersOnlyBadge', { until: formatShortDateTime(pc.membersOnlyUntil) }) : 'MEMBERS FIRST')}</div>` : ''}
-            <div class="pc-title">${esc(pc.name)}</div>
-            <div class="card-price-row">
-                <div class="pc-price">${formatPrice(priceCentsOf(pc))}</div>
+        <div class="tc-face">
+            <i class="tc-orn tc-o1"></i><i class="tc-orn tc-o2"></i><i class="tc-orn tc-o3"></i><i class="tc-orn tc-o4"></i>
+            <div class="tc-title">
+                <span class="tc-name">${esc(pc.name)}</span>
+                <span class="tc-attr"><i class="ph-fill ${PACK_ICONS[pc.category] || PACK_ICONS.drop}"></i></span>
             </div>
-
-            <div class="sys-brief">
-                <div class="sys-brief-title">${esc(window.t ? window.t('classifiedBrief') : '>// CLASSIFIED_BRIEF')}</div>
-                <div class="sys-brief-text">${esc(pcLore)}</div>
-                <button type="button" class="sys-brief-more hidden">${esc(window.t ? window.t('briefMore') : 'more')}</button>
+            <div class="tc-stars" aria-hidden="true">${'<i class="ph-fill ph-star"></i>'.repeat(stars)}</div>
+            <div class="tc-art" onclick="openGallery()">
+                <img src="${escUrl(pc.images && pc.images[0]) || 'assets/images/bg.jpg'}" class="tc-img" alt="">
+                ${nPhotos > 1 ? `<span class="hero-photos" aria-hidden="true"><i class="ph-bold ph-images"></i> ${nPhotos}</span>` : ''}
+                <button class="card-wish" onclick="event.stopPropagation(); toggleWishlist('${pcId}')" style="--wc:${wishColor}"><i class="ph-bold ph-crosshair"></i></button>
             </div>
-
-            <button class="btn-card-inspect" onclick="openGallery()">${esc(window.t ? window.t('inspectSystemBtn') : 'INSPECT SYSTEM')}</button>
-            <button class="btn-card-compare ${inCompare ? 'selected' : ''}" onclick="toggleCompare('${pcId}', this)">
-                ${esc(inCompare ? (window.t ? window.t('addedToVs') : 'ADDED TO VS') : (window.t ? window.t('compareBtn') : 'COMPARE'))}
-            </button>
+            <div class="tc-type">
+                ${stockHTML}${pc.communityDrop ? `<div class="community-badge"><i class="ph-fill ph-users-three"></i> ${esc(window.t ? window.t('communityDropBadge') : 'COMMUNITY DROP')}</div>` : ''}
+                ${membersOnlyActive(pc) ? `<div class="members-badge"><i class="ph-fill ph-lock-key"></i> ${esc(window.t ? window.t('membersOnlyBadge', { until: formatShortDateTime(pc.membersOnlyUntil) }) : 'MEMBERS FIRST')}</div>` : ''}
+            </div>
+            <div class="tc-brief">
+                <div class="tc-brief-title">${esc(window.t ? window.t('classifiedBrief') : '>// CLASSIFIED_BRIEF')}</div>
+                <div class="tc-brief-text">${esc(pcLore)}</div>
+                <button type="button" class="tc-brief-more hidden">${esc(window.t ? window.t('briefMore') : 'more')}</button>
+            </div>
+            <div class="tc-stat">${specHTML}<div class="tc-price">${formatPrice(priceCentsOf(pc))}</div></div>
         </div>
-        ${blocksHTML()}
     `;
-    
-    // On phones the brief is clamped to 3 lines (mobile.css) so INSPECT SYSTEM isn't pushed under the
-    // bottom bar. The toggle only appears when the clamp actually cut something — short lore, or any
-    // desktop layout (no clamp there), never shows it.
-    const briefText = c.querySelector('.sys-brief-text');
-    const briefMore = c.querySelector('.sys-brief-more');
+    if (actions) actions.innerHTML = `
+        <button class="btn-card-inspect" onclick="openGallery()">${esc(window.t ? window.t('inspectSystemBtn') : 'INSPECT SYSTEM')}</button>
+        <button class="btn-card-compare ${inCompare ? 'selected' : ''}" onclick="toggleCompare('${pcId}', this)">
+            ${esc(inCompare ? (window.t ? window.t('addedToVs') : 'ADDED TO VS') : (window.t ? window.t('compareBtn') : 'COMPARE'))}
+        </button>`;
+
+    // The brief is clamped to 3 lines so the card keeps its proportions. The toggle only appears when
+    // the clamp actually cut something; opening it lets the card grow.
+    const briefText = c.querySelector('.tc-brief-text');
+    const briefMore = c.querySelector('.tc-brief-more');
     if (briefText && briefMore) {
         const t = window.t || (k => k);
         briefMore.classList.toggle('hidden', briefText.scrollHeight <= briefText.clientHeight + 1);
         briefMore.addEventListener('click', (ev) => {
             ev.stopPropagation();
-            const brief = briefMore.closest('.sys-brief');
+            const brief = briefMore.closest('.tc-brief');
             const open = brief.classList.toggle('expanded');
             briefMore.textContent = open ? t('briefLess') : t('briefMore');
         });

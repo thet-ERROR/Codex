@@ -163,6 +163,8 @@ Type 'help' for a list of commands.
             <button class="nav-arrow" onclick="playClick(); swipeCard(-1)" aria-label="Previous PC"><i class="ph-bold ph-caret-left"></i></button>
             <div class="card-col">
                 <div id="main-card"></div>
+                <!-- INSPECT and COMPARE sit under the card, not on it (renderCard in catalog.js) -->
+                <div class="card-actions" id="card-actions"></div>
                 <!-- Position indicator, not controls: one pill per PC, the current one lit (renderDots in catalog.js) -->
                 <div class="pc-dots hidden" id="pc-dots" aria-hidden="true"></div>
             </div>
