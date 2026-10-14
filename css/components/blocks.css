@@ -1,34 +1,47 @@
-/* ===== Block architecture of the cards (js/modules/blocks.js) =====
-   A layer inside the PC card and the INSPECT card: cube clusters grow out of the four corners and lit
-   slits run down the sides, so the card reads as one built object and the photo as an opening in it.
-   It lives on the card's own box, so the swipe snapshot (.card-ghost > .holo-card is a clone of it)
-   looks the same. Static: nothing here animates, no filters. */
-.bk { --bk: 120px; opacity: 0.92; position: absolute; inset: 0; z-index: 3; pointer-events: none; }
-@media (max-width: 768px) { .bk { --bk: 84px; } .bk-fl { display: none; } }
-/* INSPECT sits 15px from the screen edge on a phone: smaller overhang so nothing is cut off */
-@media (max-width: 480px) { .yg-card-container > .bk { --bk: 70px; } }
+/* ===== Heatsink architecture of the cards (js/modules/blocks.js) =====
+   A layer inside the PC card and the INSPECT card: fins down both sides, heat pipes along the top and
+   bottom, a bracket and a screw in each corner. It sits on the card's own box, so the swipe snapshot
+   (.card-ghost > .holo-card is a clone of it) looks the same. Static: nothing here animates, no
+   filters. The accent colour only marks things — a dashed spine and a slit per corner. */
+.bk { --fin: 17px; position: absolute; inset: 0; z-index: 3; pointer-events: none; }
+.bk i { position: absolute; display: block; }
+@media (max-width: 768px) { .bk { --fin: 14px; } }
+/* INSPECT sits 15px from the screen edge on a phone: shorter fins so nothing is cut off */
+@media (max-width: 480px) { .yg-card-container > .bk { --fin: 11px; } }
 
-/* A cluster's SVG is 100 units; the card's corner sits 20 units in from the svg's corner */
-.bk-cl { position: absolute; width: var(--bk); height: var(--bk); overflow: visible; }
-.bk-tl { left: calc(var(--bk) * -0.2); top: calc(var(--bk) * -0.2); }
-.bk-tr { right: calc(var(--bk) * -0.2); top: calc(var(--bk) * -0.2); transform: scaleX(-1); }
-.bk-bl { left: calc(var(--bk) * -0.2); bottom: calc(var(--bk) * -0.2); }
-.bk-br { right: calc(var(--bk) * -0.2); bottom: calc(var(--bk) * -0.2); transform: scaleX(-1); }
-
-/* Three shades per cube for its three visible faces; seams lit in the accent colour */
-.bk-top { fill: #3a3a44; }
-.bk-left { fill: #22222a; }
-.bk-right { fill: #17171c; }
-.bk-seam { stroke: var(--neon-green); stroke-width: 5; stroke-linecap: round; }
-.bk-glow { stroke: color-mix(in srgb, var(--neon-green) 30%, transparent); stroke-width: 12; stroke-linecap: round; }
-
-/* Light leaking from between two blocks, straddling the card's side edge */
-.bk-slit {
-    position: absolute; width: 3px; height: 10%; border-radius: 2px;
-    background: var(--neon-green); box-shadow: 0 0 5px var(--neon-green);
+/* Fins: thin plates with a lit top edge and a dark underside, fading out as they leave the card */
+.bk-fins {
+    top: 11%; bottom: 11%; width: var(--fin);
+    background: repeating-linear-gradient(180deg, #5d5d68 0 1px, #2f2f37 1px 3px, #0c0c10 3px 4px, transparent 4px 8px);
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 35%);
+    mask-image: linear-gradient(90deg, transparent, #000 35%);
 }
-.bk-sl1, .bk-sl2 { left: -1px; }
-.bk-sr1, .bk-sr2 { right: -1px; }
-.bk-sl1, .bk-sr1 { top: 27%; }
-.bk-sl2, .bk-sr2 { top: 62%; height: 6%; }
-@media (max-width: 768px) { .bk-slit { width: 2px; box-shadow: 0 0 4px var(--neon-green); } }
+.bk-fl { left: calc(var(--fin) * -1); }
+.bk-fr { right: calc(var(--fin) * -1); transform: scaleX(-1); }
+
+/* Spine: light seeping between the fins and the card — dashed, and fading at both ends */
+.bk-spine {
+    top: 11%; bottom: 11%; width: 2px;
+    background: repeating-linear-gradient(180deg, var(--neon-green) 0 24px, transparent 24px 32px);
+    -webkit-mask-image: linear-gradient(180deg, transparent, #000 20%, #000 80%, transparent);
+    mask-image: linear-gradient(180deg, transparent, #000 20%, #000 80%, transparent);
+    box-shadow: 0 0 5px color-mix(in srgb, var(--neon-green) 70%, transparent);
+    opacity: 0.7;
+}
+.bk-sl { left: -1px; } .bk-sr { right: -1px; }
+
+/* Heat pipes along the top and bottom edge */
+.bk-pipe { left: 22%; right: 22%; height: 6px; border-radius: 3px; background: linear-gradient(180deg, #666672, #2c2c34 55%, #101014); box-shadow: 0 1px 0 #000; }
+.bk-pt { top: -6px; } .bk-pb { bottom: -6px; }
+.bk-pipe::before, .bk-pipe::after { content: ''; position: absolute; top: -2px; width: 8px; height: 10px; border-radius: 2px; background: linear-gradient(90deg, #55555f, #1c1c22); }
+.bk-pipe::before { left: -4px; } .bk-pipe::after { right: -4px; }
+
+/* Corner brackets (drawn once, mirrored) with a lit slit in the horizontal arm */
+.bk-corner { width: 28px; height: 28px; border: 4px solid #3c3c46; border-right: 0; border-bottom: 0; border-radius: 9px 0 0 0; box-shadow: inset 1px 1px 0 rgba(255, 255, 255, 0.14), 2px 2px 0 #08080a; }
+.bk-corner::after { content: ''; position: absolute; left: 9px; top: -3px; width: 12px; height: 2px; background: var(--neon-green); box-shadow: 0 0 4px var(--neon-green); }
+.bk-ctl { left: -6px; top: -6px; }
+.bk-ctr { right: -6px; top: -6px; transform: scaleX(-1); }
+.bk-cbl { left: -6px; bottom: -6px; transform: scaleY(-1); }
+.bk-cbr { right: -6px; bottom: -6px; transform: scale(-1, -1); }
+.bk-screw { width: 7px; height: 7px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #77777f, #26262d 70%); box-shadow: 0 1px 0 #000; }
+.bk-s1 { left: 6px; top: 6px; } .bk-s2 { right: 6px; top: 6px; } .bk-s3 { left: 6px; bottom: 6px; } .bk-s4 { right: 6px; bottom: 6px; }
