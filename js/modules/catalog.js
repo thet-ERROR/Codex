@@ -26,7 +26,7 @@ export function renderStageHeading() {
         gear:    { k: 'ARMORY',         title: t('armoryLocked') }
     }[kind] || { k: '', title: '' };
     if (kind === 'starter') renderPackCounts();
-    if (kicker) kicker.textContent = '>// ' + view.k;
+    if (kicker) kicker.textContent = view.k.replace(/_/g, ' ');
     title.textContent = view.title;
     if (count) {
         // Only where a list of PCs is on screen
@@ -224,9 +224,8 @@ export function renderCard() {
                 <button type="button" class="card-wish${inWishlist ? ' on' : ''}${wishSpin}" aria-pressed="${inWishlist}" aria-label="Wishlist" onclick="event.stopPropagation(); cardWish('${pcId}')"><i class="ph-bold ph-crosshair"></i></button>
             </div>
             <div class="tc-type">
-                ${stockHTML}${pc.communityDrop ? `<div class="community-badge"><i class="ph-fill ph-users-three"></i> ${esc(window.t ? window.t('communityDropBadge') : 'COMMUNITY DROP')}</div>` : ''}
-                ${membersOnlyActive(pc) ? `<div class="members-badge"><i class="ph-fill ph-lock-key"></i> ${esc(window.t ? window.t('membersOnlyBadge', { until: formatShortDateTime(pc.membersOnlyUntil) }) : 'MEMBERS FIRST')}</div>` : ''}
-                <div class="tc-price">${formatPrice(priceCentsOf(pc))}</div>
+                <div class="tc-row">${stockHTML}<div class="tc-price">${formatPrice(priceCentsOf(pc))}</div></div>
+                ${(pc.communityDrop || membersOnlyActive(pc)) ? `<div class="tc-flags">${pc.communityDrop ? `<div class="community-badge"><i class="ph-fill ph-users-three"></i> ${esc(window.t ? window.t('communityDropBadge') : 'COMMUNITY DROP')}</div>` : ''}${membersOnlyActive(pc) ? `<div class="members-badge"><i class="ph-fill ph-lock-key"></i> ${esc(window.t ? window.t('membersOnlyBadge', { until: formatShortDateTime(pc.membersOnlyUntil) }) : 'MEMBERS FIRST')}</div>` : ''}</div>` : ''}
             </div>
             <div class="tc-brief">
                 <div class="tc-brief-title">${esc(window.t ? window.t('classifiedBrief') : '>// CLASSIFIED_BRIEF')}</div>
