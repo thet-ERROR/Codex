@@ -5,12 +5,21 @@
 /* Heading over the card: >// kicker (terminal voice), the title between two hairlines, a count chip.
    Same vocabulary as the card's ">// ΣΤΟΙΧΕΙΑ ΜΟΝΑΔΑΣ" and the VS modal's section titles. */
 .stage-heading { display: flex; flex-direction: column; align-items: center; gap: 4px; width: min(460px, 92vw); margin-bottom: 16px; pointer-events: none; }
-.sh-kicker { font-family: 'Courier New', monospace; font-size: 0.72rem; font-weight: 700; letter-spacing: 1.5px; color: var(--neon-green); opacity: 0.85; }
+/* The label over the title: plain words, a small lit dot, and a slow float up and down */
+.sh-kicker { display: inline-flex; align-items: center; gap: 7px; font-family: var(--font-ui); font-size: 0.7rem; font-weight: 800; letter-spacing: 3px; text-transform: uppercase; color: var(--neon-green); animation: shKickFloat 3.8s ease-in-out infinite; }
+.sh-kicker::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--neon-green); box-shadow: 0 0 8px var(--neon-green); }
+@keyframes shKickFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
+@media (prefers-reduced-motion: reduce) { .sh-kicker { animation: none; } }
 .sh-row { display: flex; align-items: center; gap: 14px; width: 100%; }
 .sh-line { flex: 1; height: 1px; background: linear-gradient(90deg, transparent, rgba(176, 38, 255, 0.55)); }
 .sh-row .sh-line:last-child { background: linear-gradient(90deg, rgba(176, 38, 255, 0.55), transparent); }
 .sh-title { margin: 0; font-family: var(--font-ui); font-weight: 800; font-size: 1.35rem; letter-spacing: 3px; text-transform: uppercase; color: #fff; white-space: nowrap; text-shadow: 0 0 18px rgba(176, 38, 255, 0.35); }
-.sh-count { margin-top: 2px; padding: 2px 10px; border-radius: 999px; border: 1px solid rgba(255, 255, 255, 0.14); color: #9a9aa2; font-family: var(--font-ui); font-weight: 700; font-size: 0.72rem; letter-spacing: 1px; }
+/* How many systems: a chip with the accent colour and a small light, calm rather than loud */
+.sh-count { display: inline-flex; align-items: center; gap: 6px; margin-top: 2px; padding: 3px 12px; border-radius: 999px; border: 1px solid rgba(255, 255, 255, 0.18); background: rgba(255, 255, 255, 0.05); color: #e6e6ec; font-family: var(--font-ui); font-weight: 700; font-size: 0.72rem; letter-spacing: 1px; }
+.sh-count::before { content: ""; width: 5px; height: 5px; border-radius: 50%; background: var(--neon-green); box-shadow: 0 0 6px var(--neon-green); }
+@supports (color: color-mix(in srgb, red, blue)) {
+    .sh-count { border-color: color-mix(in srgb, var(--neon-green) 55%, transparent); background: linear-gradient(180deg, color-mix(in srgb, var(--neon-green) 20%, transparent), color-mix(in srgb, var(--neon-green) 7%, transparent)); box-shadow: 0 0 14px color-mix(in srgb, var(--neon-green) 18%, transparent); }
+}
 
 /* Back from a pack to the pack list. Red like the STARTER PACKS tab and the pack cards' hover, an
    outlined pill with an arrow that nudges — it was a grey pill that read as disabled. */
