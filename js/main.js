@@ -55,6 +55,12 @@ document.addEventListener('visibilitychange', () => {
 window.addEventListener('pagehide', pauseForLeaving);
 // Back/forward cache: the page comes back as it was, so the music should too
 window.addEventListener('pageshow', (e) => { if (e.persisted && document.visibilityState === 'visible') resumeAfterReturn(); });
+// Back-ups for the cases where a phone browser doesn't send visibilitychange straight away — e.g. iOS
+// Safari's tab overview, or Chrome freezing a background tab. The window losing focus to another tab
+// or app pauses as well; it resumes when the window has focus again and the page is on screen.
+document.addEventListener('freeze', pauseForLeaving);
+window.addEventListener('blur', () => { if (!document.hasFocus()) pauseForLeaving(); });
+window.addEventListener('focus', () => { if (document.visibilityState === 'visible') resumeAfterReturn(); });
 
 // --- GLOBAL SETTINGS FUNCTIONS ---
 window.toggleAudio = () => {
