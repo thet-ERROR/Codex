@@ -270,8 +270,13 @@ Type 'help' for a list of commands.
         </div>
     </div>
 
+    <!-- VS shortcut. One PC picked: it shows "half" — one lit slot, one empty slot with a + — so it reads
+         as "add another one"; two picked: lit all the way and it opens the comparison (compare.js) -->
     <div class="compare-float" id="compare-float" onclick="playClick(); openCompareModal()">
-        <i class="ph-bold ph-scales"></i> <span data-i18n="vsModeReady">VS MODE READY</span>
+        <span class="cf-slot cf-a"><i class="ph-bold ph-scales"></i></span>
+        <span class="cf-label cf-ready" data-i18n="vsModeReady">VS MODE READY</span>
+        <span class="cf-label cf-wait" data-i18n="vsHalf">1/2 · ADD ONE MORE</span>
+        <span class="cf-slot cf-b"><i class="ph-bold ph-plus"></i></span>
     </div>
 
     <div class="chat-widget" id="chat-widget">
