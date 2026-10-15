@@ -250,3 +250,44 @@ body.night-mode #main-card { box-shadow: inset 1px 1px 0 rgba(255, 255, 255, 0.5
 /* Vote drop: the title is gradient text (vote.css), so no shadow behind it; the badge is gold too */
 .yg-card.vote-mode .yg-titlebar .yg-project-name { text-shadow: none; }
 .yg-card.vote-mode .tc-attr { background: radial-gradient(circle at 35% 30%, #fff3b0, var(--vote-gold) 55%, #5d4a14); }
+
+/* ===== The VOTE card (plan step 6) — the same collectible, in the vote's gold foil =====
+   No wrapper in the markup: the foil is the border (border-box background), the dark face is the
+   padding-box background, and the engraved lines are inset shadows. Same width as the stage card. */
+.vote-container {
+    width: 380px; max-width: 95vw; padding: 16px 18px 18px; border: 9px solid transparent; border-radius: 12px;
+    background:
+        radial-gradient(120% 50% at 50% 0%, rgba(255, 196, 61, 0.07), transparent 70%) padding-box,
+        linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px) 0 0 / 22px 22px padding-box,
+        linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px) 0 0 / 22px 22px padding-box,
+        linear-gradient(#0c0c10, #0c0c10) padding-box,
+        var(--foil-vote) border-box;
+    box-shadow:
+        inset 0 0 0 1px #000, inset 0 0 0 2px rgba(255, 255, 255, 0.08), inset 0 0 0 4px #07070a, inset 0 0 0 5px #5d4a14,
+        0 2px 0 #0d0d10, 0 4px 0 #0a0a0d, 0 6px 0 #08080a, 0 8px 0 #060608, 0 30px 70px rgba(0, 0, 0, 0.75);
+}
+.vote-container > .tc-orn { z-index: 4; }
+/* The teaser photo: a window sunk into the face, like the stage card's */
+.mystery-img-wrap { border: 0; border-radius: 4px; box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.8), inset 0 8px 14px rgba(0, 0, 0, 0.5); }
+@media (max-width: 1024px) {
+    .vote-container { width: 380px; max-width: 95vw; padding: 12px 14px 14px; }
+}
+/* Phone: the stage card is laid out at min(80vw, 340px) and drawn at 85% (mobile.css scales the
+   carousel). The vote card does exactly the same, so both tabs show the same size of card and text.
+   "How it works" keeps only its icon there (its name is the aria-label), so both pills fit on a line. */
+@media (max-width: 768px) {
+    .vote-container { width: min(80vw, 340px); max-width: none; }
+    #vote-view { transform: scale(0.85); transform-origin: top center; }
+    .vote-info-btn { padding: 0; width: 34px; justify-content: center; }
+    .vote-info-btn span { display: none; }
+}
+
+/* ===== Windows (the shared .info-box shell, modals.css) — the same body as the cards =====
+   The plain accent line on top becomes a strip of the foil, and the box gets the cards' thickness:
+   lit top-left edge, a few stacked dark sides, then its shadow. */
+.info-box {
+    border-top: 1px solid rgba(176, 38, 255, 0.28);
+    background: var(--foil) top / 100% 3px no-repeat, linear-gradient(180deg, #0e0e14 0%, #09090c 60%);
+    box-shadow: inset 1px 1px 0 rgba(255, 255, 255, 0.06), 0 2px 0 #0d0d10, 0 4px 0 #0a0a0d, 0 6px 0 #08080a, 0 30px 80px rgba(0, 0, 0, 0.85);
+}
+.vote-info-box { background: var(--foil-vote) top / 100% 3px no-repeat, linear-gradient(180deg, #0e0e14 0%, #09090c 60%); }

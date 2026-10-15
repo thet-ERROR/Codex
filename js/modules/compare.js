@@ -29,15 +29,25 @@ export function toggleCompare(id, btnElement) {
         } 
     } 
     
-    // Ανανεώνουμε το πλωτό κουμπί (float button) του Compare
-    const b = document.getElementById('compare-float'); 
-    if(b) {
-        if(state.compareList.length === 2) b.classList.add('active'); 
-        else b.classList.remove('active'); 
-    }
+    updateCompareFloat();
+}
+
+// The floating VS button: hidden with nothing picked, "half" with one (it invites a second pick),
+// lit and ready with two
+function updateCompareFloat() {
+    const b = document.getElementById('compare-float');
+    if (!b) return;
+    const n = state.compareList.length;
+    b.classList.toggle('active', n === 2);
+    b.classList.toggle('half', n === 1);
 }
 
 export function openCompareModal() {
+    if (state.compareList.length === 1) {
+        // Half-filled: tapping it says what's missing instead of doing nothing
+        if (window.showToast) window.showToast(window.t ? window.t('vsAddOne') : 'Pick one more system to compare', 'normal');
+        return;
+    }
     if(state.compareList.length !== 2) return;
 
     // Actually opening the side-by-side is the moment VS mode was used — adding to the list isn't

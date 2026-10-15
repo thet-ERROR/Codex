@@ -1,5 +1,26 @@
 .compare-float { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%) translateY(200px); background: #000; border: 2px solid var(--neon-green); padding: 15px 40px; border-radius: 50px; z-index: 9999; transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); cursor: pointer; display: flex; align-items: center; gap: 10px; font-family: var(--font-ui); font-weight: bold; color: var(--neon-green); box-shadow: 0 0 30px rgba(204, 255, 0, 0.2); }
 .compare-float.active { transform: translateX(-50%) translateY(0); }
+/* Two slots and a label (index.html): slot A lit = one PC picked, slot B = room for the second.
+   One picked: "half" — the pill shows, its left half lit and its right half dashed and empty, the +
+   slot breathing gently, so it reads as "add one more". Two picked: lit all the way, ready. */
+#compare-float { padding: 7px 9px; gap: 10px; }
+/* Desktop: low enough to clear the pills under the card, still above the ticker */
+@media (min-width: 1025px) { #compare-float { bottom: 42px; } }
+.cf-slot { flex: none; display: grid; place-items: center; width: 30px; height: 30px; border-radius: 50%; font-size: 1rem; }
+.cf-a { background: var(--neon-green); color: #000; box-shadow: 0 0 10px var(--neon-green); }
+.cf-b { border: 1.5px dashed var(--neon-green); color: var(--neon-green); }
+.compare-float.active .cf-b { border-style: solid; background: var(--neon-green); color: #000; box-shadow: 0 0 10px var(--neon-green); }
+.compare-float.active .cf-b i { visibility: hidden; }
+.cf-label { padding: 0 2px; white-space: nowrap; }
+.cf-wait, .compare-float.half .cf-ready { display: none; }
+.compare-float.half .cf-wait { display: inline; }
+.compare-float.half { transform: translateX(-50%) translateY(0); border-style: dashed; background: linear-gradient(90deg, #1a2200 0 50%, #000 50%); }
+@supports (color: color-mix(in srgb, red, blue)) {
+    .compare-float.half { background: linear-gradient(90deg, color-mix(in srgb, var(--neon-green) 22%, #000) 0 50%, #000 50%); box-shadow: 0 0 18px color-mix(in srgb, var(--neon-green) 15%, transparent); }
+}
+.compare-float.half .cf-b { animation: cfInvite 1.6s ease-in-out infinite; }
+@keyframes cfInvite { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.14); } }
+@media (prefers-reduced-motion: reduce) { .compare-float.half .cf-b { animation: none; } }
 
 /* --- VS MODE (renderComparison in js/modules/compare.js) ---
    Head-to-head: each spec label appears once, in a narrow middle column, with the two values either
