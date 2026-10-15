@@ -1,8 +1,7 @@
 // js/modules/gallery.js
 import { state } from '../state.js';
 import { t } from '../i18n.js';
-import { blocksHTML } from './blocks.js';
-import { esc, formatPrice, priceCentsOf, stockState, stockLabel, membersOnlyActive } from '../utils.js';
+import { esc, formatPrice, priceCentsOf, stockState, stockLabel, membersOnlyActive, PACK_ICONS } from '../utils.js';
 
 // --- EXTRAS: normalisation, pricing, image sets ---
 
@@ -213,10 +212,18 @@ export function openGallery(pc) {
     const cardInner = document.getElementById('yg-card');
     if(cardInner) cardInner.classList.remove('flipped');
 
-    // The same block architecture as the PC card, around the card's container — not inside the faces,
-    // so it stays put while the card flips (blocks.css)
-    const frameHost = document.querySelector('.yg-card-container');
-    if (frameHost && !frameHost.querySelector('.bk')) frameHost.insertAdjacentHTML('beforeend', blocksHTML());
+    // The title bar's round badge: the same kind-of-build icon as on the stage card
+    const attrIcon = document.querySelector('#yg-attr i');
+    if (attrIcon) attrIcon.className = 'ph-fill ' + (PACK_ICONS[state.currentGalleryPC.category] || PACK_ICONS.drop);
+
+    // The wishlist target shows whether this PC is already on the list. "still" keeps it from spinning
+    // just because the card opened — it only spins when pressed (card-body of tcg-card.css)
+    const lockBtn = document.querySelector('.yg-target-lock');
+    if (lockBtn) {
+        const pid = state.currentGalleryPC._id || state.currentGalleryPC.id;
+        lockBtn.classList.add('still');
+        lockBtn.classList.toggle('locked', state.wishlist.some(p => (p._id || p.id) === pid));
+    }
 
     // 1. Basic Info
     const elTitle = document.getElementById('yg-title');

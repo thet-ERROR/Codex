@@ -1,6 +1,6 @@
 // js/modules/catalog.js
 import { state } from '../state.js';
-import { esc, escUrl, formatPrice, priceCentsOf, stockState, stockLabel, membersOnlyActive, formatShortDateTime } from '../utils.js';
+import { esc, escUrl, formatPrice, priceCentsOf, stockState, stockLabel, membersOnlyActive, formatShortDateTime, PACK_ICONS } from '../utils.js';
 
 // --- STAGE HEADING ---
 // The title over the card: a >// kicker in the terminal's voice, a translated title, and how many PCs
@@ -166,8 +166,6 @@ export function prevPC() {
     } 
 }
 
-// The round badge in the card's title bar says what kind of build it is (like a card's attribute)
-const PACK_ICONS = { drop: 'ph-lightning', gaming: 'ph-game-controller', streaming: 'ph-broadcast', coding: 'ph-code' };
 
 // The wishlist target on the card. toggleWishlist (wishlist.js) rebuilds the card, so the id is noted
 // for that one render: the fresh button comes out spinning, and lit if it's now on the list.

@@ -89,5 +89,8 @@ export function formatShortDateTime(value) {
     return new Intl.DateTimeFormat(lang, { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }).format(new Date(value));
 }
 
+// The round badge in a card's title bar says what kind of build it is (stage card and INSPECT card)
+export const PACK_ICONS = { drop: 'ph-lightning', gaming: 'ph-game-controller', streaming: 'ph-broadcast', coding: 'ph-code' };
+
 window.esc = esc;
 window.formatPrice = formatPrice;
