@@ -291,3 +291,18 @@ body.night-mode #main-card { box-shadow: inset 1px 1px 0 rgba(255, 255, 255, 0.5
     box-shadow: inset 1px 1px 0 rgba(255, 255, 255, 0.06), 0 2px 0 #0d0d10, 0 4px 0 #0a0a0d, 0 6px 0 #08080a, 0 30px 80px rgba(0, 0, 0, 0.85);
 }
 .vote-info-box { background: var(--foil-vote) top / 100% 3px no-repeat, linear-gradient(180deg, #0e0e14 0%, #09090c 60%); }
+
+/* ===== INSPECT open / close (plan 1β, gallery.js playOpen / animateGalleryClose) =====
+   #yg-morph wraps the card and carries the grow-from-the-card morph; it also holds the perspective the
+   flip needs (it used to come straight from .yg-card-container). The sheen is one strip of light that
+   runs across the foil once as the card arrives — a transform on a pseudo-element, nothing repainted. */
+.yg-morph { width: 100%; height: 100%; perspective: 2000px; transform-origin: center center; will-change: transform; }
+.yg-card.sheen .yg-card-front::before {
+    content: ''; position: absolute; top: -10%; bottom: -10%; left: 0; width: 45%; z-index: 7; pointer-events: none;
+    background: linear-gradient(100deg, transparent 0%, rgba(255, 255, 255, 0) 20%, rgba(255, 255, 255, 0.5) 48%, rgba(255, 255, 255, 0) 80%, transparent 100%);
+    mix-blend-mode: overlay;
+    transform: translateX(-120%) skewX(-12deg);
+    animation: ygSheen 0.9s cubic-bezier(0.3, 0.6, 0.4, 1) 0.12s forwards;
+}
+@keyframes ygSheen { to { transform: translateX(300%) skewX(-12deg); } }
+@media (prefers-reduced-motion: reduce) { .yg-card.sheen .yg-card-front::before { animation: none; display: none; } }

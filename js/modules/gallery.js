@@ -192,6 +192,12 @@ export function openProConfigInfo() {
 export function openGallery(pc) {
     state.currentGalleryPC = pc || state.filtered[state.index];
     if(!state.currentGalleryPC) return;
+    // A card closing a moment ago is still shrinking away — finish that first
+    finishClose();
+    // What the INSPECT card grows out of: the stage card, or the vote card for the vote drop.
+    // Opened from elsewhere (the VS comparison) it just rises in place.
+    galleryOrigin = !pc ? document.getElementById('main-card')
+        : (pc.isVoteEvent ? document.getElementById('vote-container') : null);
 
     // Vote mode: gold/purple dress, and nothing configurable — the drop isn't for sale yet
     const isVote = !!state.currentGalleryPC.isVoteEvent;
@@ -375,8 +381,92 @@ export function openGallery(pc) {
     }
     const elFpsList = document.getElementById('yg-fps-list');
     if (elFpsList) elFpsList.innerHTML = benchH;
-    
+
     if(window.openModal) window.openModal('gallery-overlay');
+    playOpen();
+}
+
+// --- OPEN / CLOSE: the card on the stage becomes the INSPECT card (plan 1β) ---
+// The INSPECT card starts exactly over the card that was tapped — same position and size — and grows
+// into place while the backdrop fades in and a strip of light runs across the foil. Closing plays it
+// backwards into the same card. A FLIP morph: the final layout is measured once, and only transform
+// and opacity animate (on #yg-morph, a wrapper — #yg-card keeps its own flip transform). Nothing moves
+// for prefers-reduced-motion. If the origin card isn't on screen it simply rises and fades in.
+const MOTION_OFF = window.matchMedia('(prefers-reduced-motion: reduce)');
+let galleryOrigin = null;
+let closing = null;   // { anims, done } while the close animation runs
+
+function originRect() {
+    const el = galleryOrigin;
+    if (!el || !el.isConnected || el.offsetParent === null) return null;
+    const r = el.getBoundingClientRect();
+    if (r.width < 40 || r.height < 40 || r.bottom <= 0 || r.top >= window.innerHeight) return null;
+    return r;
+}
+
+// The transform that puts the morph wrapper (laid out at `to`) exactly over `from`
+function flipFrom(from, to) {
+    const dx = (from.left + from.width / 2) - (to.left + to.width / 2);
+    const dy = (from.top + from.height / 2) - (to.top + to.height / 2);
+    return `translate(${dx}px, ${dy}px) scale(${from.width / to.width}, ${from.height / to.height})`;
+}
+
+function playOpen() {
+    if (MOTION_OFF.matches) return;
+    const morph = document.getElementById('yg-morph');
+    const overlay = document.getElementById('gallery-overlay');
+    if (!morph || !overlay || !morph.animate) return;
+    morph.getAnimations().forEach(a => a.cancel());   // a leftover from a quick close-and-reopen
+    overlay.getAnimations().forEach(a => a.cancel());
+    const to = morph.getBoundingClientRect();
+    if (!to.width || !to.height) return;
+    const from = originRect();
+    const start = from ? { transform: flipFrom(from, to), opacity: 0.7 } : { transform: 'translateY(24px) scale(0.94)', opacity: 0 };
+    morph.animate([start, { transform: 'none', opacity: 1 }], { duration: from ? 460 : 320, easing: 'cubic-bezier(0.2, 0.8, 0.3, 1)' });
+    overlay.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 280, easing: 'ease-out' });
+    const card = document.getElementById('yg-card');
+    if (card) {
+        card.classList.remove('sheen');
+        void card.offsetWidth;            // restart the sweep if it's still running
+        card.classList.add('sheen');
+        setTimeout(() => card.classList.remove('sheen'), 1000);
+    }
+}
+
+// Called by closeModal('gallery-overlay') (modals.js). Returns true when it takes care of hiding the
+// overlay itself — after the shrink — and false when the caller should hide it now.
+export function animateGalleryClose(hide) {
+    if (closing) { finishClose(); return true; }
+    const morph = document.getElementById('yg-morph');
+    const overlay = document.getElementById('gallery-overlay');
+    if (MOTION_OFF.matches || !morph || !overlay || !morph.animate || overlay.style.display !== 'flex') return false;
+    // Closed while still growing: stop that, so the card is measured where it really sits
+    morph.getAnimations().forEach(a => a.cancel());
+    overlay.getAnimations().forEach(a => a.cancel());
+    const to = morph.getBoundingClientRect();
+    if (!to.width || !to.height) return false;
+    const from = originRect();
+    const end = from ? { transform: flipFrom(from, to), opacity: 0.6 } : { transform: 'translateY(24px) scale(0.94)', opacity: 0 };
+    overlay.style.pointerEvents = 'none';  // a tap during the shrink lands on the page, not on the closing card
+    const anims = [
+        morph.animate([{ transform: 'none', opacity: 1 }, end], { duration: from ? 340 : 240, easing: 'cubic-bezier(0.4, 0, 0.7, 0.2)', fill: 'forwards' }),
+        overlay.animate([{ opacity: 1 }, { opacity: 0 }], { duration: from ? 340 : 240, easing: 'ease-in', fill: 'forwards' })
+    ];
+    const done = () => {
+        if (!closing) return;
+        closing = null;
+        hide();
+        overlay.style.pointerEvents = '';
+        anims.forEach(a => a.cancel());   // drop the end pose, so the next open starts clean
+    };
+    closing = { anims, done };
+    anims[0].onfinish = done;
+    setTimeout(done, 700);                // safety net (hidden tab, cancelled animation)
+    return true;
+}
+
+function finishClose() {
+    if (closing) closing.done();
 }
 
 export function openSpecInfo(key) {
@@ -530,6 +620,7 @@ export function toggleBenchmarksView() {
 
 // Εξαγωγή στο window
 window.openGallery = openGallery;
+window.animateGalleryClose = animateGalleryClose;
 window.openSpecInfo = openSpecInfo;
 window.updatePrice = updatePrice;
 window.toggleCardFlip = toggleCardFlip;

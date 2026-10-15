@@ -57,7 +57,8 @@ export function closeModal(id) {
     let m = resolveModal(id);
     if(m) {
         m.classList.remove('active');
-        if (id === 'gallery-overlay') m.style.display = 'none';
+        // INSPECT shrinks back into its card first when it can (gallery.js), then hides itself
+        if (id === 'gallery-overlay' && !(window.animateGalleryClose && window.animateGalleryClose(() => { m.style.display = 'none'; }))) m.style.display = 'none';
         const i = modalStack.findIndex(s => s.el === m);
         if (i !== -1) {
             const [{ opener }] = modalStack.splice(i, 1);
