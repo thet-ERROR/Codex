@@ -37,6 +37,25 @@ const bgMusic = new Audio('assets/audio/bg.mp3');
 bgMusic.loop = true;
 bgMusic.volume = state.bgVolume;
 
+// Leaving the site stops the sound, like any site: switching tab or app, locking the phone, closing the
+// page. Coming back resumes the music only if it was playing when you left and the sound is still on.
+let resumeMusicOnReturn = false;
+function pauseForLeaving() {
+    if (!bgMusic.paused) resumeMusicOnReturn = true;
+    bgMusic.pause();
+    audioStart.pause();
+}
+function resumeAfterReturn() {
+    if (resumeMusicOnReturn && state.audioEnabled) bgMusic.play().catch(() => {});
+    resumeMusicOnReturn = false;
+}
+document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'hidden') pauseForLeaving(); else resumeAfterReturn();
+});
+window.addEventListener('pagehide', pauseForLeaving);
+// Back/forward cache: the page comes back as it was, so the music should too
+window.addEventListener('pageshow', (e) => { if (e.persisted && document.visibilityState === 'visible') resumeAfterReturn(); });
+
 // --- GLOBAL SETTINGS FUNCTIONS ---
 window.toggleAudio = () => {
     state.audioEnabled = !state.audioEnabled;
