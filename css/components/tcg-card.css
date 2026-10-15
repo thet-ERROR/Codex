@@ -3,14 +3,14 @@
    still in those files for the other panels that share classes, and several of them are !important —
    so everything here restates what it needs, with the same weight, and wins on order.
 
-   Anatomy, top to bottom, inside a foil frame:  title bar (name + round badge) · stars (tier) ·
-   photo window · type line (stock / community / members) · text box (the brief) · stat strip.
-   The proportions are a real card's, 63:88; if the brief is opened the card simply grows.
+   Anatomy, top to bottom, inside a foil frame:  title bar (name + round badge) · photo window ·
+   type line (stock / badges / price) · text box (the brief) · INSPECT + COMPARE.
+   The proportions are a real card's, 63:88; opening the brief takes its room from the photo.
 
    The foil is the visitor's accent colour (--neon-green) run through a metallic gradient, so it follows
    the colour they picked in Settings. Browsers without color-mix() get a plain gold foil.
    Text sizes use cqw (1% of the card's width), so the card looks the same at any width.
-   Static: nothing here animates, and the swipe snapshot (.card-ghost > .holo-card) is a clone of it. */
+   Only the wishlist target moves (when pressed); the swipe snapshot (.card-ghost > .holo-card) is a clone of it. */
 
 .card-col { --tc-w: min(380px, 95vw); }
 @media (max-width: 768px) { .card-col { --tc-w: min(80vw, 340px); } }
@@ -90,36 +90,47 @@ body.night-mode #main-card { box-shadow: inset 1px 1px 0 rgba(255, 255, 255, 0.5
     .tc-attr { background: radial-gradient(circle at 35% 30%, color-mix(in srgb, var(--neon-green) 40%, #fff), var(--neon-green) 55%, color-mix(in srgb, var(--neon-green) 35%, #000)); }
 }
 
-/* --- stars: the tier, aligned right like on the real thing -------------------------------------------- */
-.tc-stars { display: flex; justify-content: flex-end; gap: 1px; padding-right: 2px; color: var(--neon-green); font-size: 0.8rem; line-height: 1; font-size: 3.7cqw; }
-.tc-stars i { filter: drop-shadow(0 0 3px rgba(0, 0, 0, 0.8)); }
-
-/* --- photo window: a thick frame in the foil's colour, the picture sunk into it ------------------------ */
+/* --- photo window: sunk into the face, no coloured frame --------------------------------------------- */
 .tc-art {
-    position: relative; flex: 1 1 auto; min-height: 120px; overflow: hidden; border-radius: 3px; cursor: pointer;
+    position: relative; flex: 1 1 auto; min-height: 120px; overflow: hidden; border-radius: 4px; cursor: pointer;
     background:
         linear-gradient(90deg, rgba(255, 255, 255, 0.05), transparent 20%, transparent 80%, rgba(255, 255, 255, 0.05)),
         repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.03) 0 1px, transparent 1px 16px),
         radial-gradient(70% 60% at 50% 40%, #16161c, #07070a);
-    box-shadow: 0 0 0 1px #000, 0 0 0 3px #5d4a14, 0 0 0 4px #000;
     min-height: 28cqw;
 }
-@supports (color: color-mix(in srgb, red, blue)) {
-    .tc-art { box-shadow: 0 0 0 1px #000, 0 0 0 3px color-mix(in srgb, var(--neon-green) 55%, #000), 0 0 0 4px #000; }
-}
-.tc-art::after { content: ''; position: absolute; inset: 0; z-index: 2; pointer-events: none; box-shadow: inset 0 8px 14px rgba(0, 0, 0, 0.5), inset 0 -1px 0 rgba(255, 255, 255, 0.06); }
+.tc-art::after { content: ''; position: absolute; inset: 0; z-index: 2; pointer-events: none; border-radius: inherit; box-shadow: inset 0 8px 14px rgba(0, 0, 0, 0.55), inset 0 0 0 1px rgba(255, 255, 255, 0.05); }
 .tc-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; display: block; z-index: 1; }
 .tc-art .hero-photos { z-index: 3; }
+
+/* --- wishlist target: dim when off, lit in the accent when on; pressing it spins it -------------------- */
 .card-wish {
     position: absolute; top: 8px; right: 8px; z-index: 4; display: grid; place-items: center; width: 34px; height: 34px; padding: 0;
-    border-radius: 50%; background: rgba(0, 0, 0, 0.72); border: 1px solid var(--wc, #555); color: var(--wc, #555); cursor: pointer; transition: border-color 0.3s, color 0.3s;
+    border-radius: 50%; background: rgba(0, 0, 0, 0.72); border: 1px solid rgba(255, 255, 255, 0.22); color: #8a8a94; cursor: pointer;
+    transition: background-color 0.25s, border-color 0.25s, color 0.25s, box-shadow 0.25s;
 }
-.card-wish i { font-size: 1.15rem; }
+.card-wish i { font-size: 1.15rem; display: block; }
+@media (hover: hover) { .card-wish:not(.on):hover { border-color: var(--neon-green); color: var(--neon-green); } }
+.card-wish.on { background: var(--neon-green); border-color: var(--neon-green); color: #0a0a0c; box-shadow: 0 0 12px var(--neon-green); }
+@supports (color: color-mix(in srgb, red, blue)) {
+    .card-wish.on { box-shadow: 0 0 0 3px color-mix(in srgb, var(--neon-green) 25%, transparent), 0 0 14px color-mix(in srgb, var(--neon-green) 70%, transparent); }
+}
+/* Just pressed: a full turn that overshoots a little and settles; switching on also sends out a ring */
+.card-wish.spin i { animation: wishSpinOn 0.6s cubic-bezier(0.2, 0.8, 0.3, 1.15); }
+.card-wish.spin:not(.on) i { animation-name: wishSpinOff; }
+.card-wish.spin.on::after {
+    content: ''; position: absolute; inset: -2px; border-radius: 50%; border: 2px solid var(--neon-green); pointer-events: none;
+    opacity: 0; animation: wishPing 0.6s ease-out;
+}
+@keyframes wishSpinOn { 0% { transform: rotate(0) scale(1); } 45% { transform: rotate(250deg) scale(1.3); } 100% { transform: rotate(360deg) scale(1); } }
+@keyframes wishSpinOff { 0% { transform: rotate(0) scale(1); } 100% { transform: rotate(-180deg) scale(1); } }
+@keyframes wishPing { 0% { opacity: 0.9; transform: scale(1); } 100% { opacity: 0; transform: scale(1.9); } }
+@media (prefers-reduced-motion: reduce) { .card-wish.spin i, .card-wish.spin.on::after { animation: none; } }
 
-/* --- type line --------------------------------------------------------------------------------------- */
+/* --- type line: stock and badges on the left, the price on the right ---------------------------------- */
 .tc-type { display: flex; flex-wrap: wrap; align-items: center; gap: 5px; min-height: 22px; }
 .tc-type .stock-badge, .tc-type .community-badge, .tc-type .members-badge { margin: 0 !important; padding: 3px 8px !important; font-size: 0.66rem; line-height: 1.2; width: auto; }
-.tc-type:empty { display: none; }
+.tc-price { margin-left: auto; font-family: var(--font-ui); font-weight: 800; font-size: 1.15rem; line-height: 1; color: var(--neon-green); text-shadow: 0 0 14px color-mix(in srgb, var(--neon-green) 35%, transparent); font-size: 5.4cqw; }
 
 /* --- text box ---------------------------------------------------------------------------------------- */
 .tc-brief { padding: 6px 9px 7px; border-radius: 3px; border-left: 2px solid var(--neon-purple); background: rgba(0, 0, 0, 0.55); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.05); }
@@ -128,26 +139,17 @@ body.night-mode #main-card { box-shadow: inset 1px 1px 0 rgba(255, 255, 255, 0.5
 .tc-brief:not(.expanded) .tc-brief-text { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; line-clamp: 3; overflow: hidden; }
 .tc-brief-more { background: none; border: 0; padding: 4px 0 0; cursor: pointer; font-family: var(--font-ui); font-weight: 800; font-size: 0.68rem; letter-spacing: 1px; text-transform: uppercase; color: var(--neon-purple); }
 
-/* --- stat strip: what it runs on, and what it costs ---------------------------------------------------- */
-.tc-stat { display: flex; align-items: stretch; gap: 6px; }
-.tc-stat > * { display: flex; align-items: center; padding: 5px 9px; border-radius: 3px; background: linear-gradient(180deg, #17171d, #09090c); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08), inset 0 -2px 0 rgba(0, 0, 0, 0.5); }
-.tc-stat-spec { flex: 1 1 0; min-width: 0; gap: 6px; }
-.tc-stat-k { font-family: var(--font-ui); font-weight: 800; font-size: 0.62rem; letter-spacing: 1.5px; color: #8a8a94; }
-.tc-stat-v { min-width: 0; font-family: var(--font-ui); font-weight: 700; font-size: 0.8rem; color: #e6e6ec; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.tc-price { flex: none; margin-left: auto; font-family: var(--font-ui); font-weight: 800; font-size: 1.15rem; line-height: 1; color: var(--neon-green); text-shadow: 0 0 14px color-mix(in srgb, var(--neon-green) 35%, transparent); font-size: 5.6cqw; }
+/* --- the two buttons, at the bottom of the card ------------------------------------------------------- */
+.tc-actions { display: flex; gap: 6px; align-items: stretch; }
+.tc-actions .btn-card-inspect {
+    flex: 2 1 0; width: auto; min-width: 0; margin: 0 !important; padding: 9px 6px !important; letter-spacing: 0.3px;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    font-size: 0.8rem !important; font-size: 3.5cqw !important;
+}
+.tc-actions .btn-card-compare {
+    flex: 1 1 0; width: auto; min-width: 0; margin: 0 !important; padding: 6px 4px !important; line-height: 1.15;
+    font-size: 0.66rem !important; font-size: 2.9cqw !important;
+}
 
-/* --- the buttons under the card ---------------------------------------------------------------------- */
-.card-actions { width: var(--tc-w); display: flex; gap: 8px; align-items: stretch; }
-.card-actions:empty { display: none; }
-.card-actions .btn-card-inspect { flex: 2 1 0; width: auto; min-width: 0; margin: 0 !important; padding: 11px 10px !important; font-size: 0.9rem !important; }
-/* They sit on the scene now, not on a dark card: give them an opaque dark base so the colour reads */
-.card-actions .btn-card-inspect { background: linear-gradient(180deg, rgba(176, 38, 255, 0.3), rgba(176, 38, 255, 0.1)), #130b1d; }
-.card-actions .btn-card-compare { background: #0b0b0e; }
-.card-actions .btn-card-compare.selected { background: var(--neon-green); }
-.card-actions .btn-card-compare { flex: 1 1 0; width: auto; min-width: 0; margin: 0 !important; padding: 6px !important; font-size: 0.68rem !important; line-height: 1.15; }
-
-/* Phone: the finger hint sits over the photo window (the card starts with its title bar, so lower than before) */
-@media (max-width: 768px) { .swipe-hint { top: 130px; } }
-.card-actions .btn-card-inspect:hover { background: var(--neon-purple); }
-.card-actions .btn-card-compare:hover { background: #15150a; }
-.card-actions .btn-card-compare.selected:hover { background: var(--neon-green); }
+/* Phone: the finger hint sits over the middle of the photo window */
+@media (max-width: 768px) { .swipe-hint { top: 150px; } }
