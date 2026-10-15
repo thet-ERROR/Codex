@@ -293,16 +293,21 @@ Type 'help' for a list of commands.
         <div class="yg-card" id="yg-card">
 
 <div class="yg-card-face yg-card-front">
-    <div class="yg-close-btn" onclick="playClick(); closeModal('gallery-overlay')"><i class="ph-bold ph-x"></i></div>
-    <button type="button" class="yg-target-lock" title="Save to Wishlist" onclick="toggleWishlist(this)"><i class="ph-bold ph-crosshair"></i></button>
+    <i class="tc-orn tc-o1"></i><i class="tc-orn tc-o2"></i><i class="tc-orn tc-o3"></i><i class="tc-orn tc-o4"></i>
 
     <div class="yg-card-content">
-        <h1 class="yg-project-name" id="yg-title">Project Cali</h1>
+        <!-- Same title bar as the card on the stage: name, a round badge for the kind of build, and the close button -->
+        <div class="yg-titlebar">
+            <h1 class="yg-project-name" id="yg-title">Project Cali</h1>
+            <span class="tc-attr" id="yg-attr"><i class="ph-fill ph-lightning"></i></span>
+            <div class="yg-close-btn" onclick="playClick(); closeModal('gallery-overlay')"><i class="ph-bold ph-x"></i></div>
+        </div>
 
         <div class="yg-image-row" id="yg-image-row">
             <button class="yg-gallery-btn left" id="yg-arrow-left" onclick="playClick(); changeGalleryImage(-1)"><i class="ph-bold ph-caret-left"></i></button>
             <div class="yg-image-frame">
                 <img src="" id="yg-main-img" alt="PC Build" class="yg-pc-image" onclick="playClick(); changeGalleryImage(1)" title="Next Image">
+                <button type="button" class="yg-target-lock" title="Save to Wishlist" onclick="this.classList.remove('still'); toggleWishlist(this)"><i class="ph-bold ph-crosshair"></i></button>
             </div>
             <button class="yg-gallery-btn right" id="yg-arrow-right" onclick="playClick(); changeGalleryImage(1)"><i class="ph-bold ph-caret-right"></i></button>
         </div>
@@ -330,6 +335,7 @@ Type 'help' for a list of commands.
 </div>
 
 <div class="yg-card-face yg-card-back">
+    <i class="tc-orn tc-o1"></i><i class="tc-orn tc-o2"></i><i class="tc-orn tc-o3"></i><i class="tc-orn tc-o4"></i>
     <div class="yg-close-back" onclick="playClick(); closeModal('gallery-overlay')"><i class="ph-bold ph-x"></i></div>
     <div class="scroll-fix-wrapper">
         <div class="yg-back-header">

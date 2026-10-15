@@ -12,6 +12,33 @@
    Text sizes use cqw (1% of the card's width), so the card looks the same at any width.
    Only the wishlist target moves (when pressed); the swipe snapshot (.card-ghost > .holo-card) is a clone of it. */
 
+/* The foil, shared by the stage card and the INSPECT card. A little grey mixed in keeps it metal rather
+   than neon; the vote drop is dressed in its own gold. Plain gold where color-mix() is missing. */
+:root {
+    --foil: linear-gradient(135deg, #f0dc8a 0%, #c9a940 18%, #7d6420 36%, #e7cf74 52%, #6f581c 70%, #c9a940 88%, #f0dc8a 100%);
+    --foil-vote: var(--foil);
+}
+@supports (color: color-mix(in srgb, red, blue)) {
+    :root {
+        --foil: linear-gradient(135deg,
+            color-mix(in srgb, var(--neon-green) 55%, #f2f2f2) 0%,
+            color-mix(in srgb, var(--neon-green) 82%, #777) 16%,
+            color-mix(in srgb, var(--neon-green) 38%, #000) 34%,
+            color-mix(in srgb, var(--neon-green) 60%, #e0e0e0) 50%,
+            color-mix(in srgb, var(--neon-green) 34%, #000) 68%,
+            color-mix(in srgb, var(--neon-green) 82%, #777) 86%,
+            color-mix(in srgb, var(--neon-green) 55%, #f2f2f2) 100%);
+        --foil-vote: linear-gradient(135deg,
+            color-mix(in srgb, var(--vote-gold, #ffc43d) 55%, #f2f2f2) 0%,
+            color-mix(in srgb, var(--vote-gold, #ffc43d) 82%, #777) 16%,
+            color-mix(in srgb, var(--vote-gold, #ffc43d) 38%, #000) 34%,
+            color-mix(in srgb, var(--vote-gold, #ffc43d) 60%, #e0e0e0) 50%,
+            color-mix(in srgb, var(--vote-gold, #ffc43d) 34%, #000) 68%,
+            color-mix(in srgb, var(--vote-gold, #ffc43d) 82%, #777) 86%,
+            color-mix(in srgb, var(--vote-gold, #ffc43d) 55%, #f2f2f2) 100%);
+    }
+}
+
 .card-col { --tc-w: min(380px, 95vw); }
 @media (max-width: 768px) { .card-col { --tc-w: min(80vw, 340px); } }
 
@@ -21,24 +48,11 @@
     padding: 9px !important; box-sizing: border-box; border: 0 !important; border-radius: 12px;
     display: flex; flex-direction: column; align-items: stretch; text-align: left;
     container-type: inline-size;
-    background: linear-gradient(135deg, #f0dc8a 0%, #c9a940 18%, #7d6420 36%, #e7cf74 52%, #6f581c 70%, #c9a940 88%, #f0dc8a 100%) !important;
+    background: var(--foil) !important;
     box-shadow:
         inset 1px 1px 0 rgba(255, 255, 255, 0.5), inset -1px -1px 0 rgba(0, 0, 0, 0.55),
         0 2px 0 #0d0d10, 0 4px 0 #0a0a0d, 0 6px 0 #08080a, 0 8px 0 #060608,
         0 30px 70px rgba(0, 0, 0, 0.75);
-}
-@supports (color: color-mix(in srgb, red, blue)) {
-    #main-card, .card-ghost > .holo-card, body.night-mode #main-card, body.night-mode .card-ghost > .holo-card {
-        /* a little grey mixed in keeps it metal rather than neon */
-        background: linear-gradient(135deg,
-            color-mix(in srgb, var(--neon-green) 55%, #f2f2f2) 0%,
-            color-mix(in srgb, var(--neon-green) 82%, #777) 16%,
-            color-mix(in srgb, var(--neon-green) 38%, #000) 34%,
-            color-mix(in srgb, var(--neon-green) 60%, #e0e0e0) 50%,
-            color-mix(in srgb, var(--neon-green) 34%, #000) 68%,
-            color-mix(in srgb, var(--neon-green) 82%, #777) 86%,
-            color-mix(in srgb, var(--neon-green) 55%, #f2f2f2) 100%) !important;
-    }
 }
 body.night-mode #main-card { box-shadow: inset 1px 1px 0 rgba(255, 255, 255, 0.5), inset -1px -1px 0 rgba(0, 0, 0, 0.55), 0 2px 0 #0d0d10, 0 4px 0 #0a0a0d, 0 6px 0 #08080a, 0 8px 0 #060608, 0 30px 70px rgba(0, 0, 0, 0.8), var(--night-glow); }
 /* The snapshot is the card's size and has no blurred cast shadow — it is only in the air for a moment */
@@ -166,3 +180,73 @@ body.night-mode #main-card { box-shadow: inset 1px 1px 0 rgba(255, 255, 255, 0.5
     .tc-actions .btn-card-compare:hover { background: linear-gradient(180deg, color-mix(in srgb, var(--neon-green) 40%, #0b0b0e), color-mix(in srgb, var(--neon-green) 16%, #0b0b0e)); }
     .tc-actions .btn-card-compare.selected { background: var(--neon-green); color: #000; }
 }
+
+/* ===== The INSPECT card (#yg-card in index.html, opened by openGallery in gallery.js) =====
+   The same collectible: a foil frame on both faces, the dark face inside it, the same title bar (name,
+   round badge for the kind of build, close), the photo as a window with the arrows over it, and the
+   wishlist target on the photo like on the stage card. The vote drop gets its gold foil. */
+.yg-card-front, .yg-card-back, body.night-mode .yg-card-front, body.night-mode .yg-card-back {
+    padding: 9px !important; border: 0 !important; border-radius: 12px !important; box-sizing: border-box; container-type: inline-size;
+    background: var(--foil) !important;
+    box-shadow: inset 1px 1px 0 rgba(255, 255, 255, 0.5), inset -1px -1px 0 rgba(0, 0, 0, 0.55), 0 2px 0 #0d0d10, 0 4px 0 #0a0a0d, 0 6px 0 #08080a, 0 30px 70px rgba(0, 0, 0, 0.7);
+}
+.yg-card.vote-mode .yg-card-face { background: var(--foil-vote) !important; }
+/* The dark face inside the foil (front: the content block; back: the scroll wrapper), engraved by two lines */
+.yg-card-content, .scroll-fix-wrapper {
+    position: relative; flex: 1 1 auto; min-height: 0; border-radius: 5px;
+    background:
+        radial-gradient(110% 40% at 50% 0%, rgba(255, 255, 255, 0.04), transparent 70%),
+        linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px) 0 0 / 22px 22px,
+        linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px) 0 0 / 22px 22px,
+        #0c0c10;
+    box-shadow: inset 0 0 0 1px #000, inset 0 0 0 2px rgba(255, 255, 255, 0.08), inset 0 0 0 4px #07070a, inset 0 0 0 5px rgba(255, 255, 255, 0.14);
+}
+@supports (color: color-mix(in srgb, red, blue)) {
+    .yg-card-content, .scroll-fix-wrapper { box-shadow: inset 0 0 0 1px #000, inset 0 0 0 2px rgba(255, 255, 255, 0.08), inset 0 0 0 4px #07070a, inset 0 0 0 5px color-mix(in srgb, var(--neon-green) 45%, #000); }
+}
+.yg-card-content { padding: 11px 12px 12px !important; gap: 8px !important; }
+.yg-card-face > .tc-orn { z-index: 6; }
+.yg-card-face > .tc-o1 { left: 6px; top: 6px; } .yg-card-face > .tc-o2 { right: 6px; top: 6px; }
+.yg-card-face > .tc-o3 { left: 6px; bottom: 6px; } .yg-card-face > .tc-o4 { right: 6px; bottom: 6px; }
+.yg-close-back { top: 19px; right: 19px; }
+
+/* Title bar: the same one as on the stage card */
+.yg-titlebar {
+    flex: none; display: flex; align-items: center; gap: 8px; padding: 4px 6px 4px 10px; border-radius: 4px;
+    background: linear-gradient(180deg, #1b1b22, #0a0a0e); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08), inset 0 -2px 0 rgba(0, 0, 0, 0.55);
+}
+.yg-titlebar .yg-project-name {
+    flex: 1; min-width: 0; margin: 0 !important; text-align: left; text-transform: uppercase; letter-spacing: 0.5px; line-height: 1.2;
+    font-family: var(--font-ui); font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-shadow: 0 1px 0 #000;
+    font-size: 1.1rem !important; font-size: 5.4cqw !important;
+}
+.yg-titlebar .yg-close-btn {
+    position: static; flex: none; display: grid; place-items: center; width: 26px; height: 26px; border-radius: 50%; font-size: 0.95rem;
+    border: 1px solid rgba(255, 255, 255, 0.2); background: rgba(0, 0, 0, 0.4);
+}
+
+/* Photo window: no coloured frame, sunk into the face; the arrows sit over it, the target in its corner */
+.yg-image-row { position: relative; gap: 0; }
+.yg-image-frame { border: 0 !important; animation: none !important; border-radius: 4px; background: radial-gradient(70% 60% at 50% 40%, #16161c, #07070a); box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.8), inset 0 8px 14px rgba(0, 0, 0, 0.5); }
+.yg-gallery-btn {
+    position: absolute; top: 50%; transform: translateY(-50%); z-index: 4; display: grid; place-items: center; width: 30px; height: 30px; padding: 0;
+    border-radius: 50%; background: rgba(0, 0, 0, 0.6); border: 1px solid rgba(255, 255, 255, 0.18);
+}
+.yg-gallery-btn.left { left: 6px; } .yg-gallery-btn.right { right: 6px; }
+.yg-image-frame .yg-target-lock {
+    position: absolute; top: 8px; right: 8px; z-index: 6; display: grid; place-items: center; width: 34px; height: 34px; padding: 0; font-size: 1.15rem;
+    border-radius: 50%; background: rgba(0, 0, 0, 0.72); border: 1px solid rgba(255, 255, 255, 0.22); color: #8a8a94; box-shadow: none;
+    transition: background-color 0.25s, border-color 0.25s, color 0.25s, box-shadow 0.25s;
+}
+@media (hover: hover) { .yg-image-frame .yg-target-lock:not(.locked):hover { background: rgba(0, 0, 0, 0.72); border-color: var(--neon-green); color: var(--neon-green); box-shadow: none; } }
+.yg-image-frame .yg-target-lock.locked { background: var(--neon-green); border-color: var(--neon-green); color: #0a0a0c; box-shadow: 0 0 12px var(--neon-green); }
+@supports (color: color-mix(in srgb, red, blue)) {
+    .yg-image-frame .yg-target-lock.locked { box-shadow: 0 0 0 3px color-mix(in srgb, var(--neon-green) 25%, transparent), 0 0 14px color-mix(in srgb, var(--neon-green) 70%, transparent); }
+}
+/* Pressed on: a turn and a ring (not when the card merely opens on a PC already on the list) */
+.yg-target-lock.locked:not(.still) i { animation: wishSpinOn 0.6s cubic-bezier(0.2, 0.8, 0.3, 1.15); }
+.yg-target-lock.locked:not(.still)::after { content: ''; position: absolute; inset: -2px; border-radius: 50%; border: 2px solid var(--neon-green); pointer-events: none; opacity: 0; animation: wishPing 0.6s ease-out; }
+@media (prefers-reduced-motion: reduce) { .yg-target-lock.locked:not(.still) i, .yg-target-lock.locked:not(.still)::after { animation: none; } }
+/* Vote drop: the title is gradient text (vote.css), so no shadow behind it; the badge is gold too */
+.yg-card.vote-mode .yg-titlebar .yg-project-name { text-shadow: none; }
+.yg-card.vote-mode .tc-attr { background: radial-gradient(circle at 35% 30%, #fff3b0, var(--vote-gold) 55%, #5d4a14); }

@@ -5,7 +5,6 @@
                then its cast shadow
      sunken  — the photo sits in a recessed window; the brief is a panel cut into the card
      raised  — the buttons stand off the card and sink into it when pressed
-   (The block architecture around the card lives in blocks.css.)
    Every rule covers the swipe snapshot too (.card-ghost > .holo-card), so the card doesn't change
    look in the frame it's thrown. The hard 0-blur "sides" are cheap to paint — only the one cast
    shadow is blurred, and it's smaller on phones (tokens). */
@@ -68,20 +67,3 @@ body.night-mode #main-card {
 /* Price: a faint glow in its own colour, so it reads as lit rather than printed */
 .pc-price { text-shadow: 0 0 18px color-mix(in srgb, var(--neon-green) 35%, transparent); }
 
-
-/* The photo is an opening in the block structure (js/modules/blocks.js): a stepped lip around it,
-   and the slabs either side of a portrait photo are the dark inside of the opening — faint vertical
-   ribs and light seeping in from the edges, in the accent colour. Same on the swipe snapshot. */
-.hero-img-frame {
-    background:
-        repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.03) 0 1px, transparent 1px 16px),
-        radial-gradient(70% 60% at 50% 40%, #16161c, #07070a);
-    box-shadow: var(--sunken), 0 0 0 3px #1b1b22, 0 0 0 4px #08080b;
-}
-.hero-img-frame {
-    background:
-        linear-gradient(90deg, color-mix(in srgb, var(--neon-green) 9%, transparent), transparent 20%, transparent 80%, color-mix(in srgb, var(--neon-green) 9%, transparent)),
-        repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.03) 0 1px, transparent 1px 16px),
-        radial-gradient(70% 60% at 50% 40%, #16161c, #07070a);
-}
-.hero-img { position: relative; z-index: 1; }
