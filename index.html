@@ -219,10 +219,11 @@ Type 'help' for a list of commands.
              Specs and FPS open in the shared inspect card (openVoteGallery). -->
         <div id="vote-view" class="hidden">
             <div class="vote-container" id="vote-container" data-phase="loading" data-user="guest">
+                <i class="tc-orn tc-o1"></i><i class="tc-orn tc-o2"></i><i class="tc-orn tc-o3"></i><i class="tc-orn tc-o4"></i>
                 <div class="vote-top">
                     <span class="vote-status" id="v-status">...</span>
                     <!-- Text set by openVoteInfo() from SiteConfig.voteInfoText/-El (admin GLOBAL SETTINGS) -->
-                    <button type="button" class="vote-info-btn" onclick="playClick(); openVoteInfo();">
+                    <button type="button" class="vote-info-btn" onclick="playClick(); openVoteInfo();" data-i18n-aria="voteHowItWorks">
                         <i class="ph-bold ph-info"></i> <span data-i18n="voteHowItWorks">How it works</span>
                     </button>
                 </div>
