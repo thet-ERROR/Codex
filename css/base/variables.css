@@ -36,6 +36,11 @@ body {
     -webkit-tap-highlight-color: transparent;
 }
 
+/* Quick repeated taps (photo arrows, the wishlist target, INSPECT…) made iOS Safari zoom the page. It
+   doesn't always honour this on <body> alone, so the root and every tappable thing say it too. Only the
+   double-tap zoom goes: pinch-zoom still works, and the card's own pan-y (stage.css) still applies. */
+html, button, a, label, select, img, [onclick], [role="button"] { touch-action: manipulation; }
+
 .hidden { display: none !important; }
 
 input, textarea, select { font-size: 16px; }
