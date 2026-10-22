@@ -507,3 +507,21 @@ window.onVoteTabShown = () => {
     renderVoteState();
     if (Date.now() - lastFetchAt > 10000) refreshVoteEvent();
 };
+
+// A plain summary of the vote for other parts of the site (the terminal's `vote` command) — the same
+// phase and clock logic the card uses, without any of its markup.
+export function voteSummary() {
+    const e = ev();
+    const phase = votePhase(e);
+    const { end } = e ? windowOf(e) : { end: null };
+    const left = end !== null ? end - (Date.now() + serverOffset) : null;
+    return {
+        phase,
+        title: e ? e.title : '',
+        votes: e ? (e.currentVotes || 0) : 0,
+        target: e ? (e.targetVotes || 0) : 0,
+        hasVoted: !!(e && e.hasVoted),
+        timeLeft: (phase === 'open' && left !== null && left > 0) ? formatDuration(left) : ''
+    };
+}
+window.voteSummary = voteSummary;

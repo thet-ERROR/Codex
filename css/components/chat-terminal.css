@@ -70,3 +70,21 @@
 .chat-sub-title::before { content: '>// '; color: var(--neon-purple); }
 .chat-response { border-left: 2px solid var(--neon-purple); border-radius: 0 8px 8px 0; border-top: none; border-right: none; border-bottom: none; background: rgba(0, 0, 0, 0.45); }
 @media (prefers-reduced-motion: reduce) { .chat-title::after { animation: none; } }
+
+/* Terminal command chips: the bar under the output, and the colour picker `color` prints inline.
+   One row that scrolls sideways on a phone; each chip is a comfortable thumb target. */
+.cli-chips { display: flex; gap: 8px; margin: 0 0 10px; padding: 2px 0 4px; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+.cli-chips::-webkit-scrollbar { display: none; }
+.cli-chips-inline { flex-wrap: wrap; overflow: visible; margin: 6px 0 4px; }
+.cli-chip {
+    flex: none; min-height: 34px; padding: 0 14px; border-radius: 999px; cursor: pointer;
+    font: inherit; font-size: 0.85rem; color: #0f0; background: rgba(0, 255, 0, 0.06); border: 1px solid rgba(0, 255, 0, 0.35);
+    transition: background-color 0.15s, transform 0.08s;
+}
+.cli-chip:hover { background: rgba(0, 255, 0, 0.16); }
+.cli-chip:active { transform: scale(0.95); }
+.cli-chip:focus-visible { outline: 2px solid #0f0; outline-offset: 2px; }
+/* A colour chip is drawn in the colour it would set */
+.cli-chip[style*="--chip"] { color: var(--chip); border-color: var(--chip); background: rgba(255, 255, 255, 0.04); }
+.cli-chip.locked { opacity: 0.5; }
+@media (max-width: 768px) { .cli-chip { min-height: 38px; font-size: 0.9rem; } }
