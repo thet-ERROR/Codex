@@ -243,6 +243,7 @@ export function renderCard() {
                 <button class="btn-card-compare ${inCompare ? 'selected' : ''}" onclick="toggleCompare('${pcId}', this)">${esc(inCompare ? (window.t ? window.t('addedToVs') : 'ADDED TO VS') : (window.t ? window.t('compareBtn') : 'COMPARE'))}</button>
             </div>
         </div>
+        <i class="tc-holo" aria-hidden="true"></i>
     `;
 
     // The brief is clamped to 3 lines so the card keeps its proportions. The toggle only appears when
@@ -508,6 +509,52 @@ function initCardSwipe() {
     wrapper.addEventListener('touchcancel', release, { passive: true });
 }
 initCardSwipe();
+
+// --- HOLO TILT (desktop) ---
+// With a mouse, the card leans towards the pointer and a holographic sheen in the accent colour slides
+// across it (.tc-holo, tcg-card.css) — a collectible caught in the light. Only where there's a real
+// hover and a fine pointer: on a phone the same finger swipes the card, and the two would fight.
+// The lean uses the separate `rotate` property, not `transform`, so it composes with the deck
+// transition and the INSPECT morph (both animate `transform`) instead of being overwritten by them.
+const TILT_MAX_DEG = 8;
+const FINE_POINTER = window.matchMedia('(hover: hover) and (pointer: fine)');
+
+function initCardTilt() {
+    const card = document.getElementById('main-card');
+    if (!card) return;
+    let raf = 0, last = null;
+
+    const apply = () => {
+        raf = 0;
+        if (!last) return;
+        const r = card.getBoundingClientRect();
+        if (!r.width) return;
+        const nx = Math.max(-1, Math.min(1, ((last.x - r.left) / r.width) * 2 - 1));
+        const ny = Math.max(-1, Math.min(1, ((last.y - r.top) / r.height) * 2 - 1));
+        const mag = Math.min(1, Math.hypot(nx, ny));
+        // Axis (-ny, nx): pointer on the right → right edge goes away, pointer at the top → top goes away
+        card.style.rotate = mag > 0.02 ? `${(-ny).toFixed(3)} ${nx.toFixed(3)} 0 ${(mag * TILT_MAX_DEG).toFixed(2)}deg` : '';
+        card.style.setProperty('--mx', `${((nx + 1) * 50).toFixed(1)}%`);
+        card.style.setProperty('--my', `${((ny + 1) * 50).toFixed(1)}%`);
+        card.classList.add('tilting');
+    };
+    const reset = () => {
+        last = null;
+        cancelAnimationFrame(raf); raf = 0;
+        card.classList.remove('tilting');
+        card.style.rotate = '';
+    };
+
+    card.addEventListener('pointermove', (e) => {
+        if (e.pointerType !== 'mouse' || !FINE_POINTER.matches || REDUCED_MOTION.matches || state.filtered.length === 0) return;
+        last = { x: e.clientX, y: e.clientY };
+        if (!raf) raf = requestAnimationFrame(apply);
+    });
+    card.addEventListener('pointerleave', reset);
+    // Straight before INSPECT measures the card for its morph, and before a click does anything else
+    card.addEventListener('pointerdown', reset);
+}
+initCardTilt();
 
 // ←/→ on desktop, when the PC carousel is what's on screen. Not while typing (terminal, forms), not
 // over a modal or the inspect card, and not during the tour — driver.js uses the arrows to step.
