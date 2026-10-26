@@ -112,10 +112,10 @@ export function refreshProgressionUI() {
     const statsEl = document.getElementById('dossier-stats');
     if (statsEl) {
         statsEl.innerHTML = `
-            <div class="dossier-stat-chip">${state.xp} XP</div>
-            <div class="dossier-stat-chip">${state.wishlist.length} ${esc(t('chipWishlist'))}</div>
-            <div class="dossier-stat-chip">${unlockedCount}/${total} ${esc(t('chipAchievements'))}</div>
-            <div class="dossier-stat-chip">${state.cart.length} ${esc(t('chipInCart'))}</div>
+            <div class="dossier-stat-chip"><i class="ph-fill ph-star" aria-hidden="true"></i> ${state.xp} XP</div>
+            <div class="dossier-stat-chip"><i class="ph-bold ph-crosshair" aria-hidden="true"></i> ${state.wishlist.length} ${esc(t('chipWishlist'))}</div>
+            <div class="dossier-stat-chip"><i class="ph-bold ph-medal" aria-hidden="true"></i> ${unlockedCount}/${total} ${esc(t('chipAchievements'))}</div>
+            <div class="dossier-stat-chip"><i class="ph-bold ph-shopping-cart" aria-hidden="true"></i> ${state.cart.length} ${esc(t('chipInCart'))}</div>
         `;
     }
 

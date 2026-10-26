@@ -90,17 +90,17 @@ const translations = {
         loginTitle: "Σύνδεση", usernamePlaceholder: "Όνομα χρήστη", passwordPlaceholder: "Κωδικός",
         loginBtn: "Σύνδεση", lostAccessLink: "[ Ξέχασες τον κωδικό; ]",
 
-        dossierProfileLabel: "[Προφίλ]", dossierOrdersHeading: ">// Οι παραγγελίες μου", dossierNoOrders: "> Δεν υπάρχουν παραγγελίες ακόμα.",
-        dossierWishlistHeading: ">// Λίστα επιθυμιών", dossierWishlistSub: "(Αποθηκευμένα συστήματα)",
-        dossierAchievementsHeading: ">// Επιτεύγματα", dossierSignIn: "> Σύνδεση", dossierRegister: "> Εγγραφή", dossierSignOut: "> Αποσύνδεση",
+        dossierProfileLabel: "[Προφίλ]", dossierOrdersHeading: "Οι παραγγελίες μου", dossierNoOrders: "Δεν υπάρχουν παραγγελίες ακόμα.", dossierNoOrdersSub: "Ξεκίνησε τις αγορές σου και θα βλέπεις εδώ τις παραγγελίες σου.", dossierJourney: "Το ταξίδι σου ξεκινά εδώ",
+        dossierWishlistHeading: "Λίστα επιθυμιών", dossierWishlistSub: "(Αποθηκευμένα συστήματα)",
+        dossierAchievementsHeading: "Επιτεύγματα", dossierSignIn: "> Σύνδεση", dossierRegister: "> Εγγραφή", dossierSignOut: "Αποσύνδεση",
         dossierNoTargets: "> Κανένας στόχος κλειδωμένος.", dossierRemoveTarget: "Αφαίρεση από τη λίστα",
 
         // Προόδος πράκτορα. Τα ονόματα των βαθμίδων ζουν στο CONFIG.RANK_NAMES, όχι εδώ — τα
         // κατεβάζει ο server με το id τους και το config κρατά μόνο την εμφάνιση.
         achUnlocked: "ΞΕΚΛΕΙΔΩΤΟ", achLocked: "ΚΛΕΙΔΩΜΕΝΟ", achUnlockedPrefix: "ΕΠΙΤΕΥΓΜΑ",
-        xpToNextRank: "{xp} XP — {next} XP για {rank}", xpMaxRank: "{xp} XP — ανώτατη βαθμίδα",
+        xpToNextRank: "{xp} XP → {next} XP για {rank}", xpMaxRank: "{xp} XP — ανώτατη βαθμίδα",
         chipWishlist: "ΛΙΣΤΑ", chipAchievements: "ΕΠΙΤΕΥΓΜΑΤΑ", chipInCart: "ΣΤΟ ΚΑΛΑΘΙ",
-        achViewAll: "> ΟΛΑ ΤΑ ΕΠΙΤΕΥΓΜΑΤΑ",
+        achViewAll: "ΟΛΑ ΤΑ ΕΠΙΤΕΥΓΜΑΤΑ",
 
         signupTitle: "Νέα εγγραφή", emailPlaceholder: "Email",
         regSubscribeLabel: "🔔 Θέλω ειδοποιήσεις για νέα drops", signupBtn: "Εγγραφή",
@@ -142,7 +142,7 @@ const translations = {
         wheelSkinNew: "> ΞΕΚΛΕΙΔΩΣΕΣ ΤΟ SKIN {name} — ΕΦΑΡΜΟΣΤΗΚΕ ΣΤΟ SITE.", wheelSkinAgain: "> ΤΟ SKIN {name} ΤΟ ΕΙΧΕΣ ΗΔΗ — ΕΦΑΡΜΟΣΤΗΚΕ ΞΑΝΑ.",
         wheelCouponWon: "> ΚΕΡΔΙΣΕΣ ΚΟΥΠΟΝΙ -{p}%: {code} — ισχύει έως {until}. Το βρίσκεις στο προφίλ σου και στο καλάθι.",
         wheelCouponToast: "🎟 Κέρδισες κουπόνι -{p}%!", wheelBlank: "> ΤΙΠΟΤΑ ΑΥΤΗ ΤΗ ΦΟΡΑ — ΔΟΚΙΜΑΣΕ ΞΑΝΑ.", wheelBlankLast: "> ΤΙΠΟΤΑ ΑΥΤΗ ΤΗ ΦΟΡΑ — ΤΕΛΕΙΩΣΑΝ ΟΙ ΠΡΟΣΠΑΘΕΙΕΣ.",
-        dossierCouponsHeading: ">// Κουπόνια", dossierNoCoupons: "> Κανένα κουπόνι ακόμα — κέρδισε ένα στον Ημερήσιο Τροχό.",
+        dossierCouponsHeading: "Κουπόνια", dossierNoCoupons: "> Κανένα κουπόνι ακόμα — κέρδισε ένα στον Ημερήσιο Τροχό.",
         couponUsed: "Χρησιμοποιήθηκε", couponValidUntil: "Ισχύει έως {until}", couponCopy: "Αντιγραφή κωδικού", couponCopied: "Ο κωδικός {code} αντιγράφηκε",
         cartCouponLabel: "Κουπόνι", cartCouponNone: "Χωρίς κουπόνι", cartCouponLine: "Έκπτωση κουπονιού (-{p}%)",
         orderMsgCoupon: "Κουπόνι", orderMsgAccount: "Λογαριασμός",
@@ -301,17 +301,17 @@ const translations = {
         loginTitle: "AGENT SIGN-IN", usernamePlaceholder: "USERNAME", passwordPlaceholder: "PASSWORD",
         loginBtn: "AUTHENTICATE", lostAccessLink: "[ LOST ACCESS? ]",
 
-        dossierProfileLabel: "[AGENT PROFILE]", dossierOrdersHeading: ">// MY ORDERS", dossierNoOrders: "> NO ORDERS YET.",
-        dossierWishlistHeading: ">// WISHLIST", dossierWishlistSub: "(SAVED SYSTEMS)",
-        dossierAchievementsHeading: ">// ACHIEVEMENTS", dossierSignIn: "> SIGN IN", dossierRegister: "> REGISTER", dossierSignOut: "> SIGN OUT",
+        dossierProfileLabel: "[AGENT PROFILE]", dossierOrdersHeading: "My orders", dossierNoOrders: "No orders yet.", dossierNoOrdersSub: "Start shopping and your orders will show up here.", dossierJourney: "Your journey begins here",
+        dossierWishlistHeading: "Wishlist", dossierWishlistSub: "(SAVED SYSTEMS)",
+        dossierAchievementsHeading: "Achievements", dossierSignIn: "> SIGN IN", dossierRegister: "> REGISTER", dossierSignOut: "SIGN OUT",
         dossierNoTargets: "> NO TARGETS LOCKED.", dossierRemoveTarget: "Remove from wishlist",
 
         // Agent progression. Rank display names live in CONFIG.RANK_NAMES, not here — the API
         // reports a rank by id and the config holds only its presentation.
         achUnlocked: "UNLOCKED", achLocked: "LOCKED", achUnlockedPrefix: "ACHIEVEMENT UNLOCKED",
-        xpToNextRank: "{xp} XP — {next} XP for {rank}", xpMaxRank: "{xp} XP — max rank",
+        xpToNextRank: "{xp} XP → {next} XP for {rank}", xpMaxRank: "{xp} XP — max rank",
         chipWishlist: "WISHLIST", chipAchievements: "ACHIEVEMENTS", chipInCart: "IN CART",
-        achViewAll: "> VIEW ALL RECORDS",
+        achViewAll: "VIEW ALL RECORDS",
 
         signupTitle: "AGENT REGISTRATION", emailPlaceholder: "EMAIL",
         regSubscribeLabel: "🔔 I WANT NOTIFICATIONS FOR NEW DROPS", signupBtn: "REGISTER",
@@ -353,7 +353,7 @@ const translations = {
         wheelSkinNew: "> SKIN {name} UNLOCKED — APPLIED TO THE SITE.", wheelSkinAgain: "> YOU ALREADY HAD SKIN {name} — RE-APPLIED.",
         wheelCouponWon: "> YOU WON A -{p}% COUPON: {code} — valid until {until}. It's in your profile and your cart.",
         wheelCouponToast: "🎟 You won a -{p}% coupon!", wheelBlank: "> NOTHING THIS TIME — TRY AGAIN.", wheelBlankLast: "> NOTHING THIS TIME — NO SPINS LEFT.",
-        dossierCouponsHeading: ">// Coupons", dossierNoCoupons: "> No coupons yet — win one on the Daily Wheel.",
+        dossierCouponsHeading: "Coupons", dossierNoCoupons: "> No coupons yet — win one on the Daily Wheel.",
         couponUsed: "Used", couponValidUntil: "Valid until {until}", couponCopy: "Copy code", couponCopied: "Code {code} copied",
         cartCouponLabel: "Coupon", cartCouponNone: "No coupon", cartCouponLine: "Coupon discount (-{p}%)",
         orderMsgCoupon: "Coupon", orderMsgAccount: "Account",
