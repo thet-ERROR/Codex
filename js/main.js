@@ -23,6 +23,7 @@ import './modules/whoami.js';
 import './modules/wheel.js';
 import './modules/info.js';
 import './modules/qr.js';
+import './modules/mascot.js';
 
 // --- ΠΡΟΣΘΕΣΕ ΑΥΤΕΣ ΤΙΣ 3 ΓΡΑΜΜΕΣ ΕΔΩ ---
 // 3. UI Helpers (Παράθυρα, Ήχοι, Ειδοποιήσεις)

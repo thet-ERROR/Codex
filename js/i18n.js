@@ -3,6 +3,7 @@ const translations = {
     el: {
         sideSettings: "Ρυθμίσεις συστήματος", sideInfo: "Πληροφορίες: εγγύηση, όροι, υποστήριξη",
         sideWheel: "Καθημερινή περιστροφή", sideLang: "Αλλαγή γλώσσας", sideSocial: "Κοινωνικά δίκτυα", sideDiscord: "Discord",
+        mascotAdminTitle: "Ο admin σε περιμένει!", mascotAdminText: "Πάτα από κάτω και γράψ' του στο WhatsApp.", mascotAdminGo: "Πάμε στο WhatsApp",
         sideQr: "QR για το κινητό", qrTitle: "Άνοιξέ το στο κινητό", qrText: "Σκάναρε τον κωδικό με την κάμερα του κινητού σου και το site ανοίγει εκεί.",
         qrCopy: "Αντιγραφή συνδέσμου", qrShare: "Κοινοποίηση", qrLoading: "Φόρτωση…", qrFailed: "Ο κωδικός QR δεν φόρτωσε. Αντέγραψε τον σύνδεσμο από κάτω.",
         sideInstagram: "Instagram", sideDropAlerts: "Ειδοποιήσεις νέων PC", sideReviews: "Κριτικές", sideTerminal: "Τερματικό",
@@ -213,6 +214,7 @@ const translations = {
     en: {
         sideSettings: "System Settings", sideInfo: "Information: warranty, terms, support",
         sideWheel: "Daily Spin", sideLang: "Toggle Language", sideSocial: "Social Networks", sideDiscord: "Discord",
+        mascotAdminTitle: "The admin is waiting for you!", mascotAdminText: "Tap below to message them on WhatsApp.", mascotAdminGo: "Go to WhatsApp",
         sideQr: "QR for your phone", qrTitle: "Open it on your phone", qrText: "Scan the code with your phone's camera and the site opens there.",
         qrCopy: "Copy link", qrShare: "Share", qrLoading: "Loading…", qrFailed: "The QR code didn't load. Copy the link below instead.",
         sideInstagram: "Instagram", sideDropAlerts: "Drop Alerts", sideReviews: "Reviews", sideTerminal: "Terminal",

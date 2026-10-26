@@ -62,6 +62,8 @@ export function toggleChat() {
     const c = document.getElementById('chat-widget');
     if (c) c.classList.toggle('open');
     if (window.playClick) window.playClick();
+    // The admin choice plays the phoenix's flight (mascot.js) — have its image ready by then
+    if (c && c.classList.contains('open') && window.preloadMascot) window.preloadMascot();
 }
 
 // Opens (never closes) — used by the Support tab's entry, where a toggle could shut a widget that
@@ -129,7 +131,11 @@ function run(go) {
     else if (go.budget) window.setPriceFilter(go.budget[0], go.budget[1]);
     else if (go.live) { window.clearPriceFilter(); window.switchTab('live'); }
     else if (go.info) window.openInfo(go.info);
-    else if (go.whatsapp) window.open(`https://wa.me/${CONFIG.WHATSAPP_NUM}`, '_blank');
+    // The phoenix carries the message off and hands over the WhatsApp link in its bubble (mascot.js)
+    else if (go.whatsapp) {
+        if (window.mascotToAdmin) window.mascotToAdmin();
+        else window.open(`https://wa.me/${CONFIG.WHATSAPP_NUM}`, '_blank');
+    }
 }
 
 document.addEventListener('click', (e) => {
