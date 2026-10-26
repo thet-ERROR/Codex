@@ -22,6 +22,7 @@ import './modules/achievements.js';
 import './modules/whoami.js';
 import './modules/wheel.js';
 import './modules/info.js';
+import './modules/qr.js';
 
 // --- ΠΡΟΣΘΕΣΕ ΑΥΤΕΣ ΤΙΣ 3 ΓΡΑΜΜΕΣ ΕΔΩ ---
 // 3. UI Helpers (Παράθυρα, Ήχοι, Ειδοποιήσεις)
