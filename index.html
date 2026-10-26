@@ -166,8 +166,7 @@ Type 'help' for a list of commands.
             <div class="card-col">
                 <div id="main-card"></div>
                 <!-- Position indicator, not controls: one pill per PC, the current one lit (renderDots in catalog.js) -->
-                <div class="pc-dots hidden" id="pc-dots" aria-hidden="true"></div>
-            </div>
+                <div class="pc-dots hidden" id="pc-dots" aria-hidden="true"></div>            </div>
             <button class="nav-arrow" onclick="playClick(); swipeCard(1)" aria-label="Next PC"><i class="ph-bold ph-caret-right"></i></button>
             <!-- Phones only, in place of the arrows (mobile.css). A finger that presses and drags left over
                  the photo; hidden for good once the visitor has swiped once, and whenever there's only one
@@ -271,15 +270,6 @@ Type 'help' for a list of commands.
                 </button>
             </div>
         </div>
-    </div>
-
-    <!-- VS shortcut. One PC picked: it shows "half" — one lit slot, one empty slot with a + — so it reads
-         as "add another one"; two picked: lit all the way and it opens the comparison (compare.js) -->
-    <div class="compare-float" id="compare-float" onclick="playClick(); openCompareModal()">
-        <span class="cf-slot cf-a"><i class="ph-bold ph-scales"></i></span>
-        <span class="cf-label cf-ready" data-i18n="vsModeReady">VS MODE READY</span>
-        <span class="cf-label cf-wait" data-i18n="vsHalf">1/2 · ADD ONE MORE</span>
-        <span class="cf-slot cf-b"><i class="ph-bold ph-plus"></i></span>
     </div>
 
     <div class="chat-widget" id="chat-widget">
