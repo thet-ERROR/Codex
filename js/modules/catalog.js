@@ -299,9 +299,12 @@ const SWIPE_LEARNED_KEY = 'codex_swipe_learned';
 const LOCK_PX = 8;              // movement needed before deciding "sideways drag" vs "page scroll"
 const COMMIT_RATIO = 0.22;      // dragged past this share of the card's width → go to the next PC
 const COMMIT_VELOCITY = 0.45;   // px/ms — a quick flick commits even when it's short
-const THROW_MS = 260;           // old card flying off
-const RISE_MS = 300;            // new card settling in underneath
-const SPRING_MS = 280;          // cancelled drag returning to centre
+// Kept quiet on purpose: the change of PC should feel like a soft slide, not a show — a small lean,
+// a short throw, and a new card that is almost already in place when it appears.
+const THROW_MS = 200;           // old card flying off
+const RISE_MS = 220;            // new card settling in underneath
+const SPRING_MS = 260;          // cancelled drag returning to centre
+const TILT_DEG = 4;             // lean at a full card width of drag
 const EASE_OUT = 'cubic-bezier(0.2, 0.8, 0.3, 1)';
 let drag = null;
 
@@ -323,8 +326,8 @@ function updateSwipeHint() {
 // the GPU runs it without repainting anything.
 const REDUCED_MOTION = window.matchMedia('(prefers-reduced-motion: reduce)');
 
-// The card leans the way it's dragged: ~10° at a full card width, like a card held at the bottom
-const pose = (x, width) => `translate3d(${x}px, 0, 0) rotate(${(x / (width || 1)) * 10}deg)`;
+// The card leans the way it's dragged (TILT_DEG at a full card width), like a card held at the bottom
+const pose = (x, width) => `translate3d(${x}px, 0, 0) rotate(${(x / (width || 1)) * TILT_DEG}deg)`;
 
 function stopCardAnimations(card) {
     if (card.getAnimations) card.getAnimations().forEach(a => a.cancel());
@@ -361,10 +364,10 @@ function throwGhost(card, dir, fromX, velocity) {
     const endX = -dir * w * 1.15;
     // A fast flick keeps its speed instead of slowing to the fixed duration
     const speed = Math.abs(velocity);
-    const duration = speed > 0.6 ? Math.max(160, Math.min(THROW_MS, Math.abs(endX - fromX) / speed)) : THROW_MS;
+    const duration = speed > 0.6 ? Math.max(140, Math.min(THROW_MS, Math.abs(endX - fromX) / speed)) : THROW_MS;
     const anim = ghost.animate([
         { transform: pose(fromX, w), opacity: 1 },
-        { transform: `translate3d(${endX}px, 18px, 0) rotate(${(endX / w) * 10}deg)`, opacity: 0 }
+        { transform: `translate3d(${endX}px, 6px, 0) rotate(${(endX / w) * TILT_DEG}deg)`, opacity: 0 }
     ], { duration, easing: 'cubic-bezier(0.3, 0.6, 0.4, 1)', fill: 'forwards' });
     const done = () => ghost.remove();
     anim.onfinish = done;
@@ -396,7 +399,7 @@ function showNewCard(animate) {
     card.style.opacity = '';
     if (!animate) return;
     card.animate([
-        { transform: 'translate3d(0, 12px, 0) scale(0.94)', opacity: 0.35 },
+        { transform: 'translate3d(0, 4px, 0) scale(0.98)', opacity: 0.8 },
         { transform: 'none', opacity: 1 }
     ], { duration: RISE_MS, easing: EASE_OUT });
 }
@@ -431,7 +434,7 @@ function springBack(card, fromX, width) {
     if (!fromX || REDUCED_MOTION.matches) return;
     // A touch of overshoot so it settles like something physical, not a snap
     card.animate([{ transform: pose(fromX, width) }, { transform: 'none' }],
-        { duration: SPRING_MS, easing: 'cubic-bezier(0.3, 1.35, 0.5, 1)' });
+        { duration: SPRING_MS, easing: 'cubic-bezier(0.3, 1.2, 0.5, 1)' });
 }
 
 function initCardSwipe() {
