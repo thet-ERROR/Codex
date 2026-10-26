@@ -16,7 +16,8 @@ const hasBottomBar = () => window.matchMedia('(max-width: 1024px)').matches;
 
 const COPY = {
     en: {
-        welcome: ['WELCOME AGENT', 'Initiating System Override. Let us give you a quick tour of the CODEX Terminal.'],
+        welcome: ['WELCOME TO PHOENIX!', "I'm the guardian of this place. Let me show you around — this is where we build your ultimate gaming PC."],
+        mascot: ["I'M RIGHT HERE", 'Whenever you need help, tap me: I take you to the right PC or the ones in your budget, or put you in touch with the admin.'],
         logo: ['IDENTITY CHECK', "Tap the logo anytime to see who's really running this operation."],
         live: ['LIVE DROPS', 'Every custom-built rig, ready for deployment. A blinking red badge means only one unit is left; COMING SOON builds wait at the end of the list.'],
         vote: ['VOTE', "The community votes to unlock a mystery PC — one vote per signed-in agent with a verified email. Reach the target and it unlocks straight into Live Drops — members can order it first."],
@@ -32,7 +33,8 @@ const COPY = {
         reviews: ['MISSION CODES', 'Found a code in your PC box? Enter it here to leave a review — or to start a return if something\'s wrong.']
     },
     el: {
-        welcome: ['ΚΑΛΩΣΟΡΙΣΕΣ, ΠΡΑΚΤΟΡΑ', 'Ενεργοποιείται παράκαμψη συστήματος. Ας σου κάνουμε μια γρήγορη ξενάγηση στο CODEX Terminal.'],
+        welcome: ['ΚΑΛΩΣ ΗΡΘΕΣ ΣΤΗΝ PHOENIX!', 'Είμαι ο φύλακας του site. Έλα να σου δείξω γρήγορα πού είναι τι — εδώ φτιάχνουμε το δικό σου απόλυτο gaming PC.'],
+        mascot: ['ΕΓΩ ΕΙΜΑΙ ΕΔΩ', 'Όποτε χρειαστείς βοήθεια, πάτα με: σε πάω στο σωστό PC ή σε όσα χωράνε στο budget σου, ή σε φέρνω σε επαφή με τον admin.'],
         logo: ['ΕΛΕΓΧΟΣ ΤΑΥΤΟΤΗΤΑΣ', 'Πάτα το λογότυπο όποτε θες, για να δεις ποιος πραγματικά τρέχει αυτή την επιχείρηση.'],
         live: ['LIVE DROPS', 'Όλα τα χειροποίητα gaming rigs, έτοιμα για παράδοση. Κόκκινο badge που αναβοσβήνει σημαίνει ότι έμεινε μόνο ένα τεμάχιο· όσα έρχονται ΣΥΝΤΟΜΑ είναι στο τέλος της λίστας.'],
         vote: ['VOTE', 'Η κοινότητα ψηφίζει για να ξεκλειδώσει ένα μυστηριώδες PC — μία ψήφος ανά συνδεδεμένο πράκτορα με επιβεβαιωμένο email. Μόλις μαζευτούν οι ψήφοι, ξεκλειδώνει και μπαίνει αμέσως στα Live Drops — με προτεραιότητα για τα μέλη.'],
@@ -53,9 +55,9 @@ function buildSteps(lang) {
     const c = COPY[lang];
     const phone = isPhone();
     const bar = hasBottomBar();
-    const step = (element, key, side, align = 'center') => ({
+    const step = (element, key, side, align = 'center', popoverClass = '') => ({
         ...(element ? { element } : {}),
-        popover: { title: c[key][0], description: c[key][1], side, align }
+        popover: { title: c[key][0], description: c[key][1], side, align, ...(popoverClass ? { popoverClass } : {}) }
     });
 
     const tabs = [
@@ -90,7 +92,29 @@ function buildSteps(lang) {
         step(bar ? '.mobile-reviews-btn' : '.add-review-btn', 'reviews', bar ? 'top' : 'left')
     ];
 
-    return [step(null, 'welcome', 'over'), ...header, ...sidebar];
+    // The phoenix opens the tour (it greets you) and closes it on its own button — the help button
+    // (css/components/mascot.css), at the end of the bottom bar / foot of the desktop rail.
+    return [
+        step(null, 'welcome', 'over', 'center', 'tour-mascot'),
+        ...header,
+        ...sidebar,
+        step('.mascot-btn', 'mascot', sideSide, bar ? 'end' : 'center', 'tour-mascot tour-mascot-sm')
+    ];
+}
+
+// The phoenix stands on top of its steps' popovers. driver.js reuses one popover element for every
+// step, so the picture is taken out again on the others.
+function mascotOnPopover(popover) {
+    const wrap = popover && popover.wrapper;
+    if (!wrap) return;
+    wrap.querySelectorAll('.tour-mascot-img').forEach(n => n.remove());
+    if (!wrap.classList.contains('tour-mascot')) return;
+    const img = document.createElement('img');
+    img.className = 'tour-mascot-img';
+    img.src = 'assets/mascot/phoenix-full.png';
+    img.alt = '';
+    img.setAttribute('aria-hidden', 'true');
+    wrap.prepend(img);
 }
 
 export function initInteractiveTutorial() {
@@ -110,6 +134,7 @@ export function startTutorialTour(lang) {
     if (window.setLanguage) window.setLanguage(lang === 'el' ? 'el' : 'en');
 
     const driver = window.driver.js.driver;
+    if (window.preloadMascot) window.preloadMascot(); // the phoenix greets on the first step
     const isEl = lang === 'el';
 
     const tour = driver({
@@ -118,6 +143,7 @@ export function startTutorialTour(lang) {
         doneBtnText: isEl ? 'ΤΕΛΟΣ' : 'FINISH',
         nextBtnText: isEl ? 'ΕΠΟΜΕΝΟ >' : 'NEXT >',
         prevBtnText: isEl ? '< ΠΙΣΩ' : '< PREV',
+        onPopoverRendered: mascotOnPopover,
         onDestroyed: () => {
             if (window.showToast) window.showToast(isEl ? 'Η ΞΕΝΑΓΗΣΗ ΟΛΟΚΛΗΡΩΘΗΚΕ' : 'ONBOARDING COMPLETE', 'achievement');
         },
