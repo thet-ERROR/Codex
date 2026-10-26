@@ -66,8 +66,12 @@ export function getBreakdown() {
     return { base, lines, total: lines.reduce((sum, l) => sum + l.price, base) };
 }
 
-// Builds the extras block for the PC currently open. Called on openGallery and again on a
-// language switch (prices/hours are baked into the strings, so data-i18n can't cover them).
+// The block under the price is two tabs: the PC's brief ("unit data", as on the stage card) and its
+// extras. Opens on the brief; resets on every openGallery, survives a language switch.
+let ygTab = 'lore';
+
+// Builds that block for the PC currently open. Called on openGallery and again on a language switch
+// (prices/hours are baked into the strings, so data-i18n can't cover them).
 export function renderExtras() {
     const host = document.getElementById('yg-extras-section');
     const pc = state.currentGalleryPC;
@@ -77,18 +81,28 @@ export function renderExtras() {
     const showStorage = opts.storage.enabled && (opts.storage.hdd > 0 || opts.storage.ssd > 0);
     const showPro = !!opts.proConfig.enabled;
     const showPaint = !!opts.paint.enabled;
+    const hasExtras = showStorage || showPro || showPaint;
+    if (!hasExtras) ygTab = 'lore';
 
-    // Nothing enabled for this build: hide the whole block rather than leave an empty frame
-    host.classList.toggle('hidden', !showStorage && !showPro && !showPaint);
+    host.classList.remove('hidden');
+    host.classList.toggle('no-extras', !hasExtras);
 
-    let html = `<div class="yg-extras-label">${esc(t('extrasLabel'))}</div>`;
+    const isGreek = (localStorage.getItem('codex_lang') || 'en') === 'el';
+    const lore = (isGreek && pc.loreEl) ? pc.loreEl : (pc.lore || t('loreFallback'));
+    const tab = (id, icon, label, extra = '') => `
+        <button type="button" class="yg-tab${ygTab === id ? ' active' : ''}" role="tab" id="yg-tab-${id}" aria-controls="yg-panel-${id}"
+            aria-selected="${ygTab === id}" tabindex="${ygTab === id ? 0 : -1}" data-yg-tab="${id}">
+            <i class="${icon}"></i><span>${esc(label)}</span>${extra}
+        </button>`;
+
+    let extrasHtml = '';
 
     if (showStorage) {
         const hddOpt = opts.storage.hdd > 0
             ? `<option value="hdd" ${state.build.storage === 'hdd' ? 'selected' : ''}>${esc(t('storageOptHdd'))} (+${formatPrice(eurosToCents(opts.storage.hdd))})</option>` : '';
         const ssdOpt = opts.storage.ssd > 0
             ? `<option value="ssd" ${state.build.storage === 'ssd' ? 'selected' : ''}>${esc(t('storageOptSsd'))} (+${formatPrice(eurosToCents(opts.storage.ssd))})</option>` : '';
-        html += `
+        extrasHtml += `
         <div class="yg-extra-block">
             <div class="yg-storage-label">${esc(t('storageLabel'))}</div>
             <select class="yg-storage-select" id="storage-select" onchange="onStorageChange(this.value)">
@@ -99,7 +113,7 @@ export function renderExtras() {
     }
 
     if (showPro) {
-        html += `
+        extrasHtml += `
         <label class="yg-extra-toggle">
             <input type="checkbox" id="opt-proconfig" ${state.build.proConfig ? 'checked' : ''} onchange="onProConfigChange(this.checked)">
             <span class="yg-extra-body">
@@ -111,7 +125,7 @@ export function renderExtras() {
 
     if (showPaint) {
         const name = paintName(opts);
-        html += `
+        extrasHtml += `
         <label class="yg-extra-toggle">
             <input type="checkbox" id="opt-paint" ${state.build.paint ? 'checked' : ''} onchange="onPaintChange(this.checked)">
             <span class="yg-extra-body">
@@ -124,10 +138,65 @@ export function renderExtras() {
         </label>`;
     }
 
-    html += `<div class="yg-price-breakdown" id="yg-price-breakdown"></div>`;
-    host.innerHTML = html;
+    extrasHtml += `<div class="yg-price-breakdown" id="yg-price-breakdown"></div>`;
+
+    // Both panels share one grid cell (card-front.css), so the block is as tall as the taller of
+    // the two and switching tabs never makes the card jump
+    host.innerHTML = `
+        ${hasExtras ? `<div class="yg-tabs" role="tablist">
+            ${tab('lore', 'ph-fill ph-scroll', t('inspectTabLore'))}
+            ${tab('extras', 'ph-fill ph-gear-six', t('extrasLabel'), '<span class="yg-tab-count" id="yg-tab-count" hidden></span>')}
+        </div>` : ''}
+        <div class="yg-tab-panels">
+            <div class="yg-tab-panel yg-lore${ygTab === 'lore' ? ' active' : ''}" id="yg-panel-lore" ${hasExtras ? 'role="tabpanel" aria-labelledby="yg-tab-lore"' : ''}>
+                <div class="yg-lore-title">${esc(t('classifiedBrief'))}</div>
+                <div class="yg-lore-text">${esc(lore)}</div>
+                <button type="button" class="yg-lore-more" hidden>${esc(t('briefMore'))}</button>
+            </div>
+            ${hasExtras ? `<div class="yg-tab-panel yg-extras${ygTab === 'extras' ? ' active' : ''}" id="yg-panel-extras" role="tabpanel" aria-labelledby="yg-tab-extras">${extrasHtml}</div>` : ''}
+        </div>`;
+
+    // "More" only when the 3-line clamp actually cut something (as on the stage card)
+    const text = host.querySelector('.yg-lore-text');
+    const more = host.querySelector('.yg-lore-more');
+    if (text && more) more.hidden = text.scrollHeight <= text.clientHeight + 1;
     updatePrice();
 }
+
+function setYgTab(id, { focus = false } = {}) {
+    const host = document.getElementById('yg-extras-section');
+    if (!host || !host.querySelector(`[data-yg-tab="${id}"]`)) return;
+    ygTab = id;
+    host.querySelectorAll('[data-yg-tab]').forEach(b => {
+        const on = b.dataset.ygTab === id;
+        b.classList.toggle('active', on);
+        b.setAttribute('aria-selected', String(on));
+        b.tabIndex = on ? 0 : -1;
+        if (on && focus) b.focus();
+    });
+    host.querySelectorAll('.yg-tab-panel').forEach(p => p.classList.toggle('active', p.id === `yg-panel-${id}`));
+    // Measured now that the brief is on show — a hidden panel's text has no height to compare
+    const text = host.querySelector('.yg-lore-text');
+    const more = host.querySelector('.yg-lore-more');
+    if (id === 'lore' && text && more && !host.querySelector('.yg-lore.expanded')) more.hidden = text.scrollHeight <= text.clientHeight + 1;
+}
+
+document.addEventListener('click', (e) => {
+    const tabBtn = e.target.closest('#yg-extras-section [data-yg-tab]');
+    if (tabBtn) { if (window.playClick) window.playClick(); setYgTab(tabBtn.dataset.ygTab); return; }
+    const more = e.target.closest('#yg-extras-section .yg-lore-more');
+    if (more) {
+        if (window.playClick) window.playClick();
+        const open = more.closest('.yg-lore').classList.toggle('expanded');
+        more.textContent = open ? t('briefLess') : t('briefMore');
+    }
+});
+document.addEventListener('keydown', (e) => {
+    const tabBtn = e.target.closest && e.target.closest('#yg-extras-section [data-yg-tab]');
+    if (!tabBtn || (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight')) return;
+    e.preventDefault();
+    setYgTab(tabBtn.dataset.ygTab === 'lore' ? 'extras' : 'lore', { focus: true });
+});
 
 export function onStorageChange(value) {
     state.build.storage = value || '';
@@ -255,6 +324,7 @@ export function openGallery(pc) {
         const extrasHost = document.getElementById('yg-extras-section');
         if (extrasHost) extrasHost.innerHTML = '';
     } else {
+        ygTab = 'lore'; // every PC opens on its brief
         renderExtras();
     }
 
@@ -499,10 +569,17 @@ export function updatePrice() {
         bd.hidden = lines.length === 0;
         bd.innerHTML = lines.length === 0 ? '' :
             `<div class="yg-bd-row"><span>${esc(t('priceBaseLabel'))}</span><span>${formatPrice(base)}</span></div>` +
-            lines.map(l => `<div class="yg-bd-row"><span>+ ${esc(l.label)}</span><span>+${formatPrice(l.price)}</span></div>`).join('') +
+            // The storage labels already start with "+" ("+ 1TB HDD") — no second one in front
+            lines.map(l => `<div class="yg-bd-row"><span>+ ${esc(String(l.label).replace(/^\+\s*/, ''))}</span><span>+${formatPrice(l.price)}</span></div>`).join('') +
             `<div class="yg-bd-row yg-bd-total"><span>${esc(t('priceTotalLabel'))}</span><span>${formatPrice(total)}</span></div>`;
     }
 
+    // How many extras are picked, on the Extras tab — visible from the brief too
+    const count = document.getElementById('yg-tab-count');
+    if (count) {
+        count.hidden = lines.length === 0;
+        count.textContent = String(lines.length);
+    }
 }
 
 export function toggleCardFlip() {

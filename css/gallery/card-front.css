@@ -139,25 +139,62 @@ body.night-mode .yg-card-front, body.night-mode .yg-card-back { background: var(
     text-shadow: 0 0 10px rgba(204,255,0,0.3);
 }
 
-/* --- EXTRAS (storage / pro config / custom paint) --- */
+/* --- UNIT DATA / EXTRAS: two tabs under the price (renderExtras in js/modules/gallery.js) --- */
 .yg-extras-section {
-    background: rgba(255,255,255,0.03);
-    border: 1px solid #2a2a2a;
-    border-radius: 10px;
-    padding: 10px 14px;
     flex-shrink: 0;
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 6px;
 }
-.yg-extras-label {
-    font-family: var(--font-ui);
-    font-size: 0.65rem;
-    color: var(--neon-green);
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    opacity: 0.8;
+.yg-tabs {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 3px; padding: 3px;
+    border-radius: 9px; border: 1px solid #2a2a2e; background: rgba(255, 255, 255, 0.03);
 }
+.yg-tab {
+    position: relative; display: flex; align-items: center; justify-content: center; gap: 6px; min-height: 36px; padding: 6px 8px;
+    border: 1px solid transparent; border-radius: 7px; background: transparent; color: #8d8d96; cursor: pointer;
+    font-family: var(--font-ui); font-weight: 800; font-size: 0.72rem; letter-spacing: 0.5px; text-transform: uppercase; line-height: 1.1;
+    transition: color 0.2s, background-color 0.2s, border-color 0.2s;
+}
+.yg-tab i { flex: none; font-size: 0.95rem; }
+.yg-tab:hover { color: #fff; }
+.yg-tab.active { color: var(--neon-green); border-color: rgba(204, 255, 0, 0.35); background: rgba(204, 255, 0, 0.1); box-shadow: inset 0 -2px 0 var(--neon-green); }
+@supports (color: color-mix(in srgb, red, blue)) {
+    .yg-tab.active { border-color: color-mix(in srgb, var(--neon-green) 40%, transparent); background: color-mix(in srgb, var(--neon-green) 12%, transparent); }
+}
+.yg-tab:focus-visible { outline: 2px solid var(--neon-green); outline-offset: 1px; }
+body.pointer-input .yg-tab:focus-visible { outline: none; }
+.yg-tab-count {
+    min-width: 17px; height: 17px; padding: 0 4px; display: inline-grid; place-items: center; border-radius: 9px;
+    background: var(--neon-green); color: #000; font-size: 0.65rem; letter-spacing: 0;
+}
+.yg-tab-count[hidden] { display: none; }
+
+/* Both panels in one grid cell: the block is as tall as the taller one, so switching never jumps */
+.yg-tab-panels { display: grid; }
+.yg-tab-panel {
+    grid-area: 1 / 1; visibility: hidden; min-width: 0;
+    display: flex; flex-direction: column; gap: 10px;
+    padding: 10px 14px; border-radius: 10px; border: 1px solid #2a2a2a; background: rgba(255, 255, 255, 0.03);
+}
+.yg-tab-panel.active { visibility: visible; animation: fadeIn 0.18s ease; }
+.no-extras .yg-tab-panel.yg-lore { visibility: visible; }
+
+/* Unit data: the stage card's brief treatment — purple rule, >// heading, 3 lines then "more" */
+.yg-lore { gap: 4px; border-left: 2px solid var(--neon-purple); border-radius: 0 10px 10px 0; background: rgba(0, 0, 0, 0.45); text-align: left; }
+.yg-lore-title { font-family: var(--font-ui); font-weight: 800; font-size: 0.68rem; letter-spacing: 2px; color: var(--neon-purple); text-transform: uppercase; }
+.yg-lore-text {
+    font-size: 0.85rem; line-height: 1.5; color: #b9b9c2; font-style: italic;
+    display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; line-clamp: 3; overflow: hidden;
+}
+.yg-lore.expanded .yg-lore-text { -webkit-line-clamp: unset; line-clamp: unset; display: block; }
+.yg-lore-more {
+    align-self: flex-start; margin-top: auto; padding: 4px 0; border: none; background: none; cursor: pointer;
+    font-family: var(--font-ui); font-weight: 800; font-size: 0.7rem; letter-spacing: 1px; text-transform: uppercase; color: var(--neon-purple);
+}
+.yg-lore-more[hidden] { display: none; }
+.yg-lore-more:hover { color: #fff; }
+@media (prefers-reduced-motion: reduce) { .yg-tab-panel.active { animation: none; } }
 
 /* Toggle row: hidden native checkbox drives the whole row's look via :checked */
 .yg-extra-toggle {
