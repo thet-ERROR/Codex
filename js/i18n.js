@@ -26,7 +26,7 @@ const translations = {
         armoryLocked: "Οπλοστάσιο κλειδωμένο", voteProgressLabel: "Πρόοδος",
         vsModeReady: "Λειτουργία VS έτοιμη", vsHalf: "1/2 · πρόσθεσε άλλο ένα", vsAddOne: "Διάλεξε ακόμα ένα σύστημα για να τα συγκρίνεις", chatTop: "Βοήθεια επιλογής", chatBack: "ΠΙΣΩ",
 
-        extrasLabel: "Επιπλέον επιλογές",
+        extrasLabel: "Επιπλέον επιλογές", inspectTabLore: "Στοιχεία μονάδας",
         storageLabel: "Επέκταση αποθηκευτικού χώρου", storageOptStandard: "Στάνταρ (χωρίς επιπλέον)",
         storageOptHdd: "+ 1TB HDD", storageOptSsd: "+ 1TB SSD",
 
@@ -237,7 +237,7 @@ const translations = {
         armoryLocked: "ARMORY LOCKED", voteProgressLabel: "PROGRESS",
         vsModeReady: "VS MODE READY", vsHalf: "1/2 · ADD ONE MORE", vsAddOne: "Pick one more system to compare them", chatTop: "Buying help", chatBack: "BACK",
 
-        extrasLabel: "EXTRAS",
+        extrasLabel: "EXTRAS", inspectTabLore: "UNIT DATA",
         storageLabel: "Storage Expansion", storageOptStandard: "Standard (No Extra)",
         storageOptHdd: "+ 1TB HDD", storageOptSsd: "+ 1TB SSD",
 
