@@ -1,0 +1,38 @@
+/* ===== The mascot: a robot phoenix, the site's guardian =====
+   Today it is the help button (index.html .mascot-btn → toggleChat): the head in a round frame,
+   breathing slowly. Quiet on purpose — it never moves on its own beyond that and never pops up;
+   it only answers when pressed. Art: assets/mascot/ (cut from the user's sticker sheet). */
+.side-btn.mascot-btn {
+    width: 54px; height: 54px; padding: 0; border-radius: 50%; overflow: hidden;
+    border: 2px solid var(--neon-green);
+    background: radial-gradient(circle at 50% 40%, #3a1460 0%, #170826 60%, #0a0410 100%);
+    box-shadow: 0 0 12px rgba(204, 255, 0, 0.28), inset 0 0 10px rgba(0, 0, 0, 0.6);
+    animation: mascotGlow 3.6s ease-in-out infinite;
+}
+@supports (color: color-mix(in srgb, red, blue)) {
+    .side-btn.mascot-btn { box-shadow: 0 0 12px color-mix(in srgb, var(--neon-green) 30%, transparent), inset 0 0 10px rgba(0, 0, 0, 0.6); }
+}
+.mascot-head {
+    width: 112%; height: 112%; margin-top: 8%; object-fit: cover; display: block; pointer-events: none;
+    transform-origin: 50% 80%; animation: mascotBreathe 3.6s ease-in-out infinite;
+}
+@keyframes mascotBreathe { 0%, 100% { transform: translateY(0) scale(1); } 50% { transform: translateY(-2%) scale(1.04); } }
+@keyframes mascotGlow { 0%, 100% { filter: brightness(1); } 50% { filter: brightness(1.18); } }
+
+@media (hover: hover) {
+    .side-btn.mascot-btn:hover { transform: translateY(-2px) scale(1.06); }
+    .side-btn.mascot-btn:hover .mascot-head { animation-duration: 1.2s; }
+}
+.side-btn.mascot-btn:active .mascot-head { transform: scale(0.94); }
+
+/* Phone bottom bar (60px tall): a touch bigger than the 40px icons so the face reads, still inside the bar.
+   The !important matches mobile.css's .side-btn sizing it has to beat. */
+@media (max-width: 768px) {
+    .side-btn.mascot-btn { width: 48px !important; height: 48px !important; }
+}
+@media (min-width: 769px) and (max-width: 1024px) {
+    .side-btn.mascot-btn { width: 46px; height: 46px; }
+}
+@media (prefers-reduced-motion: reduce) {
+    .side-btn.mascot-btn, .mascot-head { animation: none; }
+}
