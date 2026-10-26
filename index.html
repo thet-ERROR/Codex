@@ -101,6 +101,7 @@ Type 'help' for a list of commands.
         <button class="side-btn" onclick="playClick(); showToast('DISCORD SERVER: COMING SOON', 'normal')" title="Discord" data-i18n-title="sideDiscord"><i class="ph-duotone ph-discord-logo"></i></button>
         <button class="side-btn" onclick="playClick(); window.open('https://instagram.com/codex_rigs', '_blank')" title="Instagram" data-i18n-title="sideInstagram"><i class="ph-duotone ph-instagram-logo"></i></button>
         <button class="side-btn" onclick="playClick(); openModal('newsletter')" title="Drop Alerts" data-i18n-title="sideDropAlerts"><i class="ph-duotone ph-envelope-simple"></i></button>
+        <button class="side-btn" onclick="playClick(); openQr()" title="QR" data-i18n-title="sideQr"><i class="ph-duotone ph-qr-code"></i></button>
     </div>
 
     <div class="right-sidebar">
@@ -550,6 +551,21 @@ Type 'help' for a list of commands.
                 </div>
 
                 <button type="button" class="set-link" onclick="playClick(); closeModal('settings-modal'); replayTour()"><i class="ph-bold ph-arrow-counter-clockwise"></i> <span data-i18n="settingsReplayTour">Replay the tour</span></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Share menu → QR of this page (js/modules/qr.js); moved into the window shell by modals.js -->
+    <div class="modal-overlay" id="qr-modal">
+        <div class="modal-content" style="width:420px;">
+            <span class="close-modal" onclick="closeModal('qr-modal')">X</span>
+            <h2 class="modal-title" data-i18n="qrTitle">QR LINK</h2>
+            <p class="qr-text" data-i18n="qrText">Scan it with your phone's camera to open the site there.</p>
+            <div class="qr-tile" id="qr-tile"></div>
+            <div class="qr-url" id="qr-url"></div>
+            <div class="info-actions qr-actions">
+                <button type="button" class="info-btn primary" onclick="playClick(); copyQrLink()"><i class="ph-bold ph-copy"></i> <span data-i18n="qrCopy">Copy link</span></button>
+                <button type="button" class="info-btn" id="qr-share-btn" onclick="playClick(); shareQrLink()" hidden><i class="ph-bold ph-share-network"></i> <span data-i18n="qrShare">Share</span></button>
             </div>
         </div>
     </div>

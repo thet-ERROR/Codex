@@ -216,6 +216,20 @@ body.lang-el .info-terms li { font-size: 0.85rem; }
     .info-box::after { bottom: calc(8px + env(safe-area-inset-bottom)); }
 }
 
+/* QR window (js/modules/qr.js): a white tile so any phone camera reads it, framed in the accent */
+.qr-text { margin: 0 0 16px; line-height: 1.5; color: #b4b4bb; text-align: center; }
+.qr-tile {
+    width: min(240px, 70vw); aspect-ratio: 1 / 1; margin: 0 auto; padding: 10px; display: grid; place-items: center;
+    background: #fff; border-radius: 12px; border: 2px solid var(--neon-green);
+    box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.6), 0 0 22px rgba(204, 255, 0, 0.25);
+}
+.qr-tile svg { width: 100%; height: 100%; display: block; }
+.qr-tile.is-loading { background: #111; }
+.qr-wait { padding: 12px; color: #9a9aa2; font-size: 0.85rem; text-align: center; line-height: 1.4; }
+.qr-url { margin: 12px 0 16px; text-align: center; font-family: 'Courier New', monospace; font-size: 0.8rem; color: var(--neon-green); overflow-wrap: anywhere; }
+.qr-actions { justify-content: center; }
+.qr-actions .info-btn[hidden] { display: none; }
+
 /* ===== Older windows moved into the shell (upgradeModalShells in js/ui/modals.js) ===== */
 .info-box--sm { width: min(440px, calc(100vw - 32px)); }
 .info-head { text-align: left; }
