@@ -423,28 +423,10 @@ const translations = {
 
 let currentLang = localStorage.getItem('codex_lang') || 'en';
 
-// Flag icons, shown for the language you'd switch TO, not the currently active one. Greek is the neon
-// bar icon (assets/icons/bar, see .side-ico in sidebars.css); the UK one is still the pixel-art SVG
-// until its neon version exists.
+// Flag icons, shown for the language you'd switch TO, not the currently active one — the neon bar
+// icons (assets/icons/bar, see .side-ico in sidebars.css).
 const FLAG_GR = `<img class="side-ico" src="assets/icons/bar/flag-gr.png" alt="" aria-hidden="true">`;
-// Union Jack, second attempt: built layer-by-layer like the real flag (blue field -> white
-// diagonal saltire -> red diagonal saltire -> white straight cross -> red straight cross), each
-// diagonal as a 4-step staircase of plain rects (crispEdges won't pixelate an actual diagonal
-// line/polygon, only axis-aligned rects, hence the staircase). Still unverified without a
-// browser — flag if it looks wrong and I'll adjust the step coordinates.
-const FLAG_UK = `<svg width="24" height="16" viewBox="0 0 24 16" shape-rendering="crispEdges" xmlns="http://www.w3.org/2000/svg">
-    <rect width="24" height="16" fill="#00247D"/>
-    <rect x="0" y="0" width="6" height="4" fill="#fff"/><rect x="6" y="4" width="6" height="4" fill="#fff"/>
-    <rect x="12" y="8" width="6" height="4" fill="#fff"/><rect x="18" y="12" width="6" height="4" fill="#fff"/>
-    <rect x="18" y="0" width="6" height="4" fill="#fff"/><rect x="12" y="4" width="6" height="4" fill="#fff"/>
-    <rect x="6" y="8" width="6" height="4" fill="#fff"/><rect x="0" y="12" width="6" height="4" fill="#fff"/>
-    <rect x="2" y="0" width="2" height="4" fill="#CF142B"/><rect x="8" y="4" width="2" height="4" fill="#CF142B"/>
-    <rect x="14" y="8" width="2" height="4" fill="#CF142B"/><rect x="20" y="12" width="2" height="4" fill="#CF142B"/>
-    <rect x="20" y="0" width="2" height="4" fill="#CF142B"/><rect x="14" y="4" width="2" height="4" fill="#CF142B"/>
-    <rect x="8" y="8" width="2" height="4" fill="#CF142B"/><rect x="2" y="12" width="2" height="4" fill="#CF142B"/>
-    <rect x="0" y="6" width="24" height="4" fill="#fff"/><rect x="10" y="0" width="4" height="16" fill="#fff"/>
-    <rect x="0" y="7" width="24" height="2" fill="#CF142B"/><rect x="11" y="0" width="2" height="16" fill="#CF142B"/>
-</svg>`;
+const FLAG_UK = `<img class="side-ico" src="assets/icons/bar/flag-uk.png" alt="" aria-hidden="true">`;
 
 export function applyLanguage(lang) {
     document.body.classList.toggle('lang-el', lang === 'el');
