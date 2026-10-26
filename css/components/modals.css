@@ -185,6 +185,18 @@ body.lang-el .info-terms li { font-size: 0.85rem; }
 .info-terms li + li { padding-top: 16px; border-top: 1px solid rgba(255, 255, 255, 0.06); }
 .info-terms li + li::before { top: 17px; }
 
+/* Every item in all three tabs is numbered 01 / 02 / 03 the same way, and split by a rule whose first
+   stretch is lit in the accent — so the paragraphs read as a neat numbered list, not one block. */
+.info-panel { counter-reset: info-item; }
+.info-row, .info-action { counter-increment: info-item; }
+.info-row h3::before, .info-action strong::before {
+    content: counter(info-item, decimal-leading-zero); margin-right: 8px;
+    font-family: 'Courier New', monospace; font-weight: 700; letter-spacing: 0; color: var(--neon-green);
+}
+.info-row { border-bottom: 1px solid; border-image: linear-gradient(90deg, var(--neon-green) 0 28px, rgba(255, 255, 255, 0.14) 28px) 1; }
+.info-terms li + li { border-top: 1px solid; border-image: linear-gradient(90deg, var(--neon-green) 0 28px, rgba(255, 255, 255, 0.14) 28px) 1; }
+.info-action { margin-bottom: 12px; }
+
 /* Support rows: HUD cards with a lit left edge on hover */
 .info-action { position: relative; border-radius: 10px; border-color: rgba(255, 255, 255, 0.08); background: linear-gradient(90deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.015)); overflow: hidden; }
 .info-action::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 2px; background: var(--neon-green); opacity: 0; transition: opacity 0.2s; }
