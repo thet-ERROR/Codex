@@ -421,16 +421,10 @@ const translations = {
 
 let currentLang = localStorage.getItem('codex_lang') || 'en';
 
-// Small "pixel art" flag icons (hard-edged rects, shape-rendering:crispEdges) — shown for the
-// language you'd switch TO, not the currently active one.
-const FLAG_GR = `<svg width="24" height="16" viewBox="0 0 27 18" shape-rendering="crispEdges" xmlns="http://www.w3.org/2000/svg">
-    <rect width="27" height="18" fill="#fff"/>
-    <rect y="0" width="27" height="2" fill="#0D5EAF"/><rect y="4" width="27" height="2" fill="#0D5EAF"/>
-    <rect y="8" width="27" height="2" fill="#0D5EAF"/><rect y="12" width="27" height="2" fill="#0D5EAF"/>
-    <rect y="16" width="27" height="2" fill="#0D5EAF"/>
-    <rect x="0" y="0" width="10" height="10" fill="#0D5EAF"/>
-    <rect x="4" y="0" width="2" height="10" fill="#fff"/><rect x="0" y="4" width="10" height="2" fill="#fff"/>
-</svg>`;
+// Flag icons, shown for the language you'd switch TO, not the currently active one. Greek is the neon
+// bar icon (assets/icons/bar, see .side-ico in sidebars.css); the UK one is still the pixel-art SVG
+// until its neon version exists.
+const FLAG_GR = `<img class="side-ico" src="assets/icons/bar/flag-gr.png" alt="" aria-hidden="true">`;
 // Union Jack, second attempt: built layer-by-layer like the real flag (blue field -> white
 // diagonal saltire -> red diagonal saltire -> white straight cross -> red straight cross), each
 // diagonal as a 4-step staircase of plain rects (crispEdges won't pixelate an actual diagonal

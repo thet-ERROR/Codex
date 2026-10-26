@@ -23,6 +23,13 @@
     }
 }
 
+/* Focus: the browser's own ring (system colour — orange on some setups) stayed on a bar button after
+   a tap. Keyboard users get the site's ring in the accent; a tap or click shows none (body.pointer-input
+   is set in js/ui/modals.js on pointerdown and cleared on the next key press). */
+.side-btn:focus { outline: none; }
+.side-btn:focus-visible { outline: 2px solid var(--neon-green); outline-offset: 2px; }
+body.pointer-input .side-btn:focus-visible { outline: none; }
+
 .left-sidebar, .right-sidebar { position: fixed; top: 100px; bottom: 60px; z-index: 4000; display: flex; flex-direction: column; align-items: center; padding: 20px 0; pointer-events: auto; }
 .left-sidebar { left: 0; width: 80px; border-right: 1px solid rgba(255,255,255,0.05); background: linear-gradient(to right, rgba(0,0,0,0.8), transparent); }
 .right-sidebar { right: 0; width: 300px; border-left: 1px solid rgba(255,255,255,0.05); background: linear-gradient(to left, rgba(0,0,0,0.8), transparent); padding: 20px; align-items: stretch; z-index: 9990 !important; }
@@ -36,6 +43,14 @@
 .side-btn-info { flex-direction: column; gap: 2px; color: #00f0ff; border-color: rgba(0, 240, 255, 0.35); }
 .side-label { font-family: var(--font-ui); font-size: 0.55rem; font-weight: 800; letter-spacing: 1px; line-height: 1; color: #aaa; }
 .side-btn-info i { font-size: 1.3rem; }
+
+/* Neon bar icons (assets/icons/bar/*.png, 96px). Rendered on black, then keyed so the black became
+   transparency and the glow stayed (alpha = brightest channel). Sized in em so the phone and tablet
+   bars, which shrink the button's font-size, shrink them too. */
+.side-ico { display: block; width: 1.3em; height: 1.3em; object-fit: contain; pointer-events: none; transition: transform 0.25s ease, filter 0.25s ease; }
+.side-btn-info .side-ico, #lang-toggle-btn .side-ico { width: 1.05em; height: 1.05em; }
+@media (hover: hover) { .side-btn:hover .side-ico { transform: scale(1.08); filter: brightness(1.2); } }
+.side-btn:active .side-ico { transform: scale(0.92); }
 
 /* Flag with the target language's code under it — see applyLanguage() in js/i18n.js */
 #lang-toggle-btn { flex-direction: column; gap: 2px; }

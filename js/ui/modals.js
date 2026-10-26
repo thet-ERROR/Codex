@@ -290,6 +290,11 @@ document.addEventListener('click', (e) => {
     }
 });
 
+// Tap/click vs keyboard, for the bar's focus ring (sidebars.css): some browsers count a tap on a button
+// whose content is then rebuilt (the language button) as focus-visible, and kept the ring on it
+document.addEventListener('pointerdown', () => document.body.classList.add('pointer-input'), { capture: true, passive: true });
+document.addEventListener('keydown', () => document.body.classList.remove('pointer-input'), { capture: true });
+
 // Εξαγωγή στο global scope
 window.playClick = playClick;
 window.playHover = playHover;
