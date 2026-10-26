@@ -81,7 +81,6 @@
 
     /* VS shortcut: one compact line above the bottom bar (60px) + ticker (30px), instead of a
        two-line pill parked on top of the card */
-    .compare-float { bottom: calc(100px + env(safe-area-inset-bottom)); padding: 10px 18px; font-size: 0.85rem; white-space: nowrap; gap: 8px; box-shadow: 0 6px 24px rgba(0, 0, 0, 0.7), 0 0 18px rgba(204, 255, 0, 0.25); }
 
 
     /* Compact stage card: less scroll to see everything on phones */

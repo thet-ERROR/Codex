@@ -1,11 +1,18 @@
-.compare-float { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%) translateY(200px); background: #000; border: 2px solid var(--neon-green); padding: 15px 40px; border-radius: 50px; z-index: 9999; transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); cursor: pointer; display: flex; align-items: center; gap: 10px; font-family: var(--font-ui); font-weight: bold; color: var(--neon-green); box-shadow: 0 0 30px rgba(204, 255, 0, 0.2); }
-.compare-float.active { transform: translateX(-50%) translateY(0); }
 /* Two slots and a label (index.html): slot A lit = one PC picked, slot B = room for the second.
    One picked: "half" — the pill shows, its left half lit and its right half dashed and empty, the +
    slot breathing gently, so it reads as "add one more". Two picked: lit all the way, ready. */
-#compare-float { padding: 7px 9px; gap: 10px; }
-/* Desktop: low enough to clear the pills under the card, still above the ticker */
-@media (min-width: 1025px) { #compare-float { bottom: 42px; } }
+/* It lives in the card column, under the pills. On a phone or tablet it is in the flow (the page scrolls
+   there, so it simply makes room); on a desktop it hangs just below the pills without moving the card. */
+.compare-float {
+    display: none; align-items: center; gap: 10px; padding: 7px 9px; border-radius: 50px; cursor: pointer; z-index: 5;
+    background: #000; border: 2px solid var(--neon-green); color: var(--neon-green);
+    font-family: var(--font-ui); font-weight: bold; box-shadow: 0 0 30px rgba(204, 255, 0, 0.2);
+}
+.compare-float.active, .compare-float.half { display: flex; animation: cfIn 0.35s cubic-bezier(0.2, 0.8, 0.3, 1); }
+@keyframes cfIn { from { opacity: 0; transform: translateY(-8px) scale(0.96); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .compare-float.active, .compare-float.half { animation: none; } }
+@media (max-width: 1024px) { .compare-float { margin-top: 2px; min-height: 44px; } }
+@media (min-width: 1025px) { .compare-float { position: absolute; left: 50%; top: calc(100% + 6px); translate: -50% 0; } }
 .cf-slot { flex: none; display: grid; place-items: center; width: 30px; height: 30px; border-radius: 50%; font-size: 1rem; }
 .cf-a { background: var(--neon-green); color: #000; box-shadow: 0 0 10px var(--neon-green); }
 .cf-b { border: 1.5px dashed var(--neon-green); color: var(--neon-green); }
@@ -14,7 +21,7 @@
 .cf-label { padding: 0 2px; white-space: nowrap; }
 .cf-wait, .compare-float.half .cf-ready { display: none; }
 .compare-float.half .cf-wait { display: inline; }
-.compare-float.half { transform: translateX(-50%) translateY(0); border-style: dashed; background: linear-gradient(90deg, #1a2200 0 50%, #000 50%); }
+.compare-float.half { border-style: dashed; background: linear-gradient(90deg, #1a2200 0 50%, #000 50%); }
 @supports (color: color-mix(in srgb, red, blue)) {
     .compare-float.half { background: linear-gradient(90deg, color-mix(in srgb, var(--neon-green) 22%, #000) 0 50%, #000 50%); box-shadow: 0 0 18px color-mix(in srgb, var(--neon-green) 15%, transparent); }
 }

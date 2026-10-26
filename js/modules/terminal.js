@@ -131,9 +131,10 @@ const COMMANDS = {
         toggleCLI();
     },
     theme(arg) {
-        const night = document.body.classList.contains('night-mode');
-        // With no argument it flips what you're looking at, by hand
-        const next = (arg === 'night' || arg === 'day' || arg === 'auto') ? arg : (arg ? null : (night ? 'day' : 'night'));
+        // With no argument it steps through the three modes: night → day → auto → night …
+        const order = ['night', 'day', 'auto'];
+        const cur = window.getDayNightMode ? window.getDayNightMode() : 'auto';
+        const next = (arg === 'night' || arg === 'day' || arg === 'auto') ? arg : (arg ? null : order[(order.indexOf(cur) + 1) % 3]);
         if (!next) { print(T('termThemeUsage') + '\n'); return; }
         if (window.setDayNightMode) window.setDayNightMode(next);
         print('>> ' + T('termThemeSet', { mode: T('termMode_' + next) }) + '\n');
