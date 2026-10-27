@@ -148,7 +148,10 @@
    invisible, untouchable and still (its animations paused); opening only reveals it. The JS still
    reads style.display === 'flex' as "open", which is unchanged. */
 #gallery-overlay:not([style*="display: flex"]) { display: flex !important; }
-#gallery-overlay:not([style*="display: flex"]) * { animation-play-state: paused !important; }
+/* Every descendant too, not only the overlay: visibility is inherited but a child can turn it back on,
+   and the active tab panel does (`.yg-tab-panel.active { visibility: visible }`) — the brief stayed on
+   screen over the whole site after INSPECT closed. Hidden elements also never catch a tap. */
+#gallery-overlay:not([style*="display: flex"]) * { animation-play-state: paused !important; visibility: hidden !important; }
 
 /* --- lighter to open: the morph (gallery.js playOpen) grows the whole card, so nothing in it may
    repaint on every frame. The old foil's effects did — a shimmer over both faces in a blend mode,
