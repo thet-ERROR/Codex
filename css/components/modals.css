@@ -52,6 +52,11 @@ body:has(.modal-overlay.active) #toast-container { top: max(16px, env(safe-area-
 .driver-popover-footer button { background-color: transparent !important; border: 1px solid var(--neon-purple, #b026ff) !important; color: #fff !important; text-shadow: 0 0 5px var(--neon-purple, #b026ff) !important; transition: 0.3s ease !important; font-family: 'Chakra Petch', sans-serif !important; border-radius: 4px !important; }
 .driver-popover-footer button:hover { background-color: var(--neon-purple, #b026ff) !important; color: #000 !important; text-shadow: none !important; }
 .driver-popover-close-btn { color: #fff !important; }
+/* driver.css sets overflow: hidden on the parent of whatever the tour highlights. On a phone the profile
+   button's parent is a cell of the header grid (mobile.css), and a grid item with overflow: hidden may
+   shrink to nothing — the cell went to 0 px on the "Agent profile" step, the cart slid on top of the
+   button and the spotlight sat beside it. The profile menu hangs out of that box anyway. */
+.profile-container:has(> .driver-active-element) { overflow: visible !important; }
 /* ===== UNIFIED WINDOW SHELL — Information and Settings (the other windows follow) =====
    One header (title + a 44px close button that doesn't scroll away), optional tabs, and a body that
    is the only part that scrolls. On phones it becomes a bottom sheet. */
