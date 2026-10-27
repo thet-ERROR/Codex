@@ -290,7 +290,7 @@ export function openGallery(pc) {
     const fpsPanelReset = document.getElementById('fps-panel');
     if (fpsPanelReset) fpsPanelReset.classList.remove('active');
     const benchBtnReset = document.getElementById('bench-toggle-btn');
-    if (benchBtnReset) benchBtnReset.innerHTML = '<i class="ph-bold ph-crosshair"></i> SHOW FPS';
+    if (benchBtnReset) setBenchBtn(benchBtnReset, false);
     state.galleryIndex = 0;
     // Every build starts unconfigured — extras never leak from the previously viewed PC
     state.build = { storage: '', proConfig: false, paint: false };
@@ -394,8 +394,8 @@ export function openGallery(pc) {
         // CPU/GPU σε ξεχωριστά "stat boxes" (ATK/DEF style)
         if (specs.cpu || specs.gpu) {
             backH += `<div class="yg-stat-highlight">`;
-            if (specs.cpu) backH += `<div class="yg-stat-box"><div class="label">CPU POWER</div><div class="value">${esc(specs.cpu)}</div></div>`;
-            if (specs.gpu) backH += `<div class="yg-stat-box"><div class="label">GPU POWER</div><div class="value">${esc(specs.gpu)}</div></div>`;
+            if (specs.cpu) backH += `<div class="yg-stat-box"><div class="label">${esc(t('cpuPower'))}</div><div class="value">${esc(specs.cpu)}</div></div>`;
+            if (specs.gpu) backH += `<div class="yg-stat-box"><div class="label">${esc(t('gpuPower'))}</div><div class="value">${esc(specs.gpu)}</div></div>`;
             backH += `</div>`;
         }
 
@@ -415,19 +415,11 @@ export function openGallery(pc) {
     }
 
     // Flavor text — δικό του αν υπάρχει, αλλιώς auto-generate ανά tier
+    // (i18n keys flavorS1…flavorB2, in both languages)
     const flavorPool = {
-        'S-TIER': [
-            "Forged for war, built to dominate. This rig doesn't compete — it conquers.",
-            "Legends aren't found. They're assembled, component by component, right here."
-        ],
-        'A-TIER': [
-            "A balanced warrior — strong enough for any battlefield you throw at it.",
-            "Reliable power for those who take their game seriously."
-        ],
-        'B-TIER': [
-            "Every legend starts somewhere. This is where yours begins.",
-            "Solid, dependable, ready to run. The first step into the arena."
-        ]
+        'S-TIER': [t('flavorS1'), t('flavorS2')],
+        'A-TIER': [t('flavorA1'), t('flavorA2')],
+        'B-TIER': [t('flavorB1'), t('flavorB2')]
     };
     let flavor = state.currentGalleryPC.flavorText;
     if (!flavor) {
@@ -445,9 +437,9 @@ export function openGallery(pc) {
         const sorted = [...fpsData].sort((a, b) => parseInt(b.score) - parseInt(a.score));
         sorted.forEach((f, idx) => {
             const game = String(f.game || '');
-            let settings = "Competitive / Low";
-            if (game.toLowerCase().includes('cyberpunk') || game.toLowerCase().includes('gta')) settings = "High / Ultra";
-            const bestBadge = idx === 0 ? '<span class="yg-fps-best-badge">BEST</span>' : '';
+            let settings = t('fpsSetLow');
+            if (game.toLowerCase().includes('cyberpunk') || game.toLowerCase().includes('gta')) settings = t('fpsSetHigh');
+            const bestBadge = idx === 0 ? `<span class="yg-fps-best-badge">${esc(t('fpsBest'))}</span>` : '';
             benchH += `
             <div class="yg-fps-row ${idx === 0 ? 'yg-fps-top' : ''}">
                 <div>
@@ -458,7 +450,7 @@ export function openGallery(pc) {
             </div>`;
         });
     } else {
-        benchH = "<div style='color:#888; font-size:0.8rem; font-style:italic; text-align:center; padding:30px 20px;'>No benchmark data available yet.</div>";
+        benchH = "<div style='color:#888; font-size:0.8rem; font-style:italic; text-align:center; padding:30px 20px;'>" + esc(t('fpsNoData')) + "</div>";
     }
     const elFpsList = document.getElementById('yg-fps-list');
     if (elFpsList) elFpsList.innerHTML = benchH;
@@ -557,7 +549,7 @@ export function openSpecInfo(key) {
     const titleEl = document.getElementById('spec-info-title');
     const descEl = document.getElementById('spec-info-desc');
 
-    if(titleEl) titleEl.innerText = key.toUpperCase() + " INFO";
+    if(titleEl) titleEl.innerText = t('specInfoTitle', { key: key.toUpperCase() });
     
     if(pc.specDetails && pc.specDetails[key]) {
         if(descEl) descEl.innerText = pc.specDetails[key];
@@ -600,7 +592,7 @@ export function toggleCardFlip() {
     if (fpsPanel && fpsPanel.classList.contains('active')) {
         fpsPanel.classList.remove('active');
         const btn = document.getElementById('bench-toggle-btn');
-        if (btn) btn.innerHTML = '<i class="ph-bold ph-crosshair"></i> SHOW FPS';
+        if (btn) setBenchBtn(btn, false);
     }
 
     if (cardInner) {
@@ -691,6 +683,13 @@ document.addEventListener('DOMContentLoaded', () => {
     }, { passive: true });
 });
 
+// The FPS button on the spec side: "show" with a crosshair, or "close" with an arrow while the drawer is up
+function setBenchBtn(btn, open) {
+    btn.innerHTML = open
+        ? `<i class="ph-bold ph-arrow-down"></i> ${esc(t('fpsHide'))}`
+        : `<i class="ph-bold ph-crosshair"></i> ${esc(t('fpsShow'))}`;
+}
+
 export function toggleBenchmarksView() {
     const panel = document.getElementById('fps-panel');
     const btn = document.getElementById('bench-toggle-btn');
@@ -699,10 +698,10 @@ export function toggleBenchmarksView() {
     const isShowing = panel.classList.toggle('active');
 
     if (isShowing) {
-        btn.innerHTML = '<i class="ph-bold ph-arrow-down"></i> CLOSE FPS';
+        setBenchBtn(btn, true);
         if (window.checkAchievement) window.checkAchievement('benchmarker');
     } else {
-        btn.innerHTML = '<i class="ph-bold ph-crosshair"></i> SHOW FPS';
+        setBenchBtn(btn, false);
     }
 }
 

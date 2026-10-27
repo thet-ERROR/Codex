@@ -1,0 +1,97 @@
+/* ===== The VOTE card in the HUD style (#vote-container in index.html, js/modules/vote.js) =====
+   The same glass slab and panels as the stage card (card-hud.css) and INSPECT (inspect-hud.css), in
+   the vote's gold so a community drop still reads as "a vote" at a glance — the user's choice. Looks
+   only: the markup, the phases (data-phase) and the unlock sequence are untouched. Loaded after
+   tcg-card.css, whose gold foil frame it replaces, so the rules that must beat it are !important.
+   Colour roles stay as vote.css has them: gold = the vote, purple = the vote button, lime = buying. */
+
+.vote-container {
+    --hc: var(--vote-gold);
+    --hc-line: rgba(255, 196, 61, 0.5);
+    --hc-soft: rgba(255, 196, 61, 0.12);
+    --hc-glow: rgba(255, 196, 61, 0.3);
+    --hc-bg: #0d0a06;
+    --hc-panel: #0e0b07;
+}
+
+/* --- the slab --- */
+.vote-container {
+    padding: 12px !important; border: 1.5px solid transparent !important; border-radius: 20px !important;
+    background:
+        radial-gradient(120% 40% at 50% 0%, var(--hc-soft), transparent 70%) padding-box,
+        linear-gradient(180deg, var(--hc-bg), #060509) padding-box,
+        linear-gradient(145deg, var(--hc), var(--hc-line) 38%, var(--hc-glow) 62%, var(--hc)) border-box !important;
+    box-shadow: 0 0 26px var(--hc-glow), inset 0 0 38px var(--hc-soft), 0 30px 70px rgba(0, 0, 0, 0.75) !important;
+    display: flex; flex-direction: column; gap: 8px;
+}
+.vote-container > .tc-orn { display: none; }
+
+/* --- shared panel look --- */
+.vote-container .vote-title, .vote-container .mystery-img-wrap, .vote-container .vote-progress, .vote-container .vote-brief {
+    border: 1px solid var(--hc-line); border-radius: 13px;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.008)), var(--hc-panel);
+    box-shadow: inset 0 0 16px var(--hc-soft);
+}
+
+/* --- status and "how it works" over the title --- */
+.vote-top { padding: 0 2px; }
+
+/* --- the title as the title bar: a cube, the name, the accent underline --- */
+.vote-container .vote-title {
+    position: relative; display: flex; align-items: center; gap: 10px; margin: 0; padding: 9px 12px;
+    text-align: left; font-size: 1.35rem; text-shadow: 0 0 14px var(--hc-glow);
+}
+.vote-container .vote-title::before {
+    content: ''; flex: none; width: 1.3em; height: 1.3em; background: var(--hc); filter: drop-shadow(0 0 5px var(--hc-glow));
+    -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Cpath d='M223.7 66.15 135.7 17.5a15.9 15.9 0 0 0-15.4 0L32.3 66.15A16 16 0 0 0 24 80.1v95.8a16 16 0 0 0 8.3 14l88 48.65a15.9 15.9 0 0 0 15.4 0l88-48.65a16 16 0 0 0 8.3-14V80.1a16 16 0 0 0-8.3-13.95ZM128 32l80.3 44.4L128 120.8 47.7 76.4Zm-8 191.1-80-44.2V92.7l80 44.1Zm16 0v-86.4l80-44.1v86.2Z' fill='black'/%3E%3C/svg%3E") center / contain no-repeat;
+    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Cpath d='M223.7 66.15 135.7 17.5a15.9 15.9 0 0 0-15.4 0L32.3 66.15A16 16 0 0 0 24 80.1v95.8a16 16 0 0 0 8.3 14l88 48.65a15.9 15.9 0 0 0 15.4 0l88-48.65a16 16 0 0 0 8.3-14V80.1a16 16 0 0 0-8.3-13.95ZM128 32l80.3 44.4L128 120.8 47.7 76.4Zm-8 191.1-80-44.2V92.7l80 44.1Zm16 0v-86.4l80-44.1v86.2Z' fill='black'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+.vote-container .vote-title::after { content: ''; position: absolute; left: 14px; bottom: -1px; width: 26%; height: 2px; border-radius: 2px; background: var(--hc); box-shadow: 0 0 8px var(--hc); }
+.vote-container[data-phase="loading"] .vote-title::before { opacity: 0.3; }
+/* The estimate under the title, in the price's voice */
+.vote-container .vote-price { margin: 0; padding: 0 4px; text-align: left; text-shadow: 0 0 12px rgba(204, 255, 0, 0.3); }
+
+/* --- the teaser photo window --- */
+.vote-container .mystery-img-wrap { margin: 0; border-radius: 14px; background: radial-gradient(70% 60% at 50% 40%, #17130b, #07060a); }
+
+/* --- progress as a panel --- */
+.vote-container .vote-progress { margin: 0; padding: 10px 12px 12px; }
+.vote-container .vote-progress-wrap { margin: 8px 0 10px; height: 10px; border-radius: 999px; background: rgba(255, 255, 255, 0.06); }
+.vote-container .vote-progress-fill { border-radius: 999px; }
+.vote-container .vote-timer { border-radius: 999px; }
+
+.vote-container .vote-message { margin: 0; padding: 0 4px; }
+
+/* --- the vote button: the HUD button shape, purple for "vote" as before --- */
+.vote-container .vote-btn {
+    min-height: 52px; border-radius: 14px;
+    background: linear-gradient(135deg, rgba(176, 38, 255, 0.85), rgba(176, 38, 255, 0.45));
+    box-shadow: 0 0 16px rgba(176, 38, 255, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+}
+.vote-container .vote-btn[data-action="login"], .vote-container .vote-btn[data-action="notify"] { background: rgba(176, 38, 255, 0.08); box-shadow: inset 0 0 14px rgba(176, 38, 255, 0.15); }
+.vote-container .vote-btn[data-action="verify"] { background: rgba(255, 170, 0, 0.06); box-shadow: none; }
+.vote-container .vote-btn[data-action="golive"] { background: var(--neon-green); box-shadow: 0 0 16px rgba(204, 255, 0, 0.3); }
+.vote-container .vote-btn[data-action="voted"], .vote-container .vote-btn[data-action="voted"]:disabled { background: var(--hc-soft); box-shadow: none; }
+.vote-container .vote-helper { margin: 0; }
+
+/* --- the brief as the stage card's panel: gold title, three lines --- */
+.vote-container .vote-brief { margin: 0; padding: 10px 12px 8px; border-left: 1px solid var(--hc-line); }
+.vote-container .vote-brief .sys-brief-title { color: var(--hc); }
+.vote-container .vote-brief .sys-brief-more { color: var(--hc); }
+
+/* --- INSPECT: the HUD button in gold (on tablets and phones vote.css keeps it a quiet link) --- */
+@media (min-width: 1025px) {
+    .vote-container .vote-inspect {
+        margin: 0; min-height: 48px; border-radius: 14px !important; border: 1px solid var(--hc-line) !important; color: #fff !important;
+        background: linear-gradient(135deg, rgba(255, 196, 61, 0.42), rgba(255, 196, 61, 0.12)) !important;
+        box-shadow: 0 0 16px var(--hc-soft), inset 0 1px 0 rgba(255, 255, 255, 0.12) !important;
+    }
+}
+
+/* --- touch screens: one glow, no inner blurs (as the stage card) --- */
+@media (hover: none), (pointer: coarse), (max-width: 1024px) {
+    .vote-container { box-shadow: 0 0 18px var(--hc-glow) !important; }
+    .vote-container .vote-title, .vote-container .mystery-img-wrap, .vote-container .vote-progress, .vote-container .vote-brief { box-shadow: none; }
+    .vote-container .vote-title::before { filter: none; }
+    .vote-container .vote-btn { box-shadow: none; }
+}

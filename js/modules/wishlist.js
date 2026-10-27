@@ -34,13 +34,13 @@ export function toggleWishlist(param) {
     if (index > -1) {
         // Υπάρχει ήδη -> Αφαίρεση
         state.wishlist.splice(index, 1);
-        if (window.showToast) window.showToast("TARGET REMOVED FROM WISHLIST", "normal");
+        if (window.showToast) window.showToast(window.t('toastWishRemoved'), "normal");
         if (isBtn && btn) btn.classList.remove('locked');
         added = false;
     } else {
         // Δεν υπάρχει -> Προσθήκη
         state.wishlist.push(pc);
-        if (window.showToast) window.showToast("TARGET LOCKED: SAVED TO PROFILE", "achievement");
+        if (window.showToast) window.showToast(window.t('toastWishSaved'), "achievement");
         if (isBtn && btn) btn.classList.add('locked');
         added = true;
     }
@@ -57,9 +57,9 @@ export function toggleWishlist(param) {
         }).catch((e) => {
             if (!window.showToast) return;
             if (e && e.code === 'EMAIL_NOT_VERIFIED') {
-                window.showToast("⚠ VERIFY YOUR EMAIL TO SYNC WISHLIST TO YOUR ACCOUNT", "error");
+                window.showToast(window.t('toastWishVerify'), "error");
             } else {
-                window.showToast("WISHLIST SYNC FAILED — SAVED LOCALLY ONLY", "error");
+                window.showToast(window.t('toastWishSyncFail'), "error");
             }
         });
     }

@@ -197,12 +197,12 @@ const initApp = async () => {
             const result = await api.verifyEmail(verifyToken);
             if (result.success) {
                 state.emailVerified = true;
-                if (window.showToast) window.showToast('✅ EMAIL VERIFIED — FULL ACCESS UNLOCKED', 'achievement');
+                if (window.showToast) window.showToast(window.t('toastEmailVerified'), 'achievement');
             } else if (window.showToast) {
-                window.showToast('❌ ' + (result.error || 'VERIFICATION LINK INVALID OR EXPIRED'), 'error');
+                window.showToast('❌ ' + (result.error || window.t('toastVerifyLinkBad')), 'error');
             }
         } catch (e) {
-            if (window.showToast) window.showToast('CONNECTION ERROR DURING VERIFICATION', 'error');
+            if (window.showToast) window.showToast(window.t('toastVerifyConnErr'), 'error');
         }
         // Strip the token from the URL — a refresh, share, or browser-history entry shouldn't
         // keep resubmitting (or exposing) it once it's been used.
@@ -218,14 +218,14 @@ const initApp = async () => {
         try {
             const result = await api.reportUnauthorizedSignup(reportToken);
             if (result.success && result.alreadyVerified) {
-                if (window.showToast) window.showToast('THIS ACCOUNT IS ALREADY VERIFIED — NO ACTION NEEDED', 'normal');
+                if (window.showToast) window.showToast(window.t('toastAlreadyVerifiedNoAction'), 'normal');
             } else if (result.success) {
                 if (window.showToast) window.showToast('🔒 ACCOUNT SECURED — LOCKED FOR 5 DAYS', 'achievement');
             } else if (window.showToast) {
-                window.showToast('❌ ' + (result.error || 'INVALID OR EXPIRED SECURITY LINK'), 'error');
+                window.showToast('❌ ' + (result.error || window.t('toastSecurityLinkBad')), 'error');
             }
         } catch (e) {
-            if (window.showToast) window.showToast('CONNECTION ERROR', 'error');
+            if (window.showToast) window.showToast(window.t('toastConnError'), 'error');
         }
         history.replaceState({}, '', location.pathname);
     }
@@ -330,7 +330,7 @@ document.addEventListener('visibilitychange', async () => {
         // became true — reaching here at all means it did.
         state.emailVerified = true;
         if (window.updateAuthUI) window.updateAuthUI(localStorage.getItem('codex_username'));
-        if (window.showToast) window.showToast('✅ EMAIL VERIFIED — FULL ACCESS UNLOCKED', 'achievement');
+        if (window.showToast) window.showToast(window.t('toastEmailVerified'), 'achievement');
         // If the dossier happens to be open right now, its banner and RESEND button are stale too
         const dashboard = document.getElementById('agent-dashboard-modal');
         if (dashboard && dashboard.classList.contains('active') && window.openAgentDashboard) {
