@@ -150,8 +150,10 @@
 #gallery-overlay:not([style*="display: flex"]) { display: flex !important; }
 /* Every descendant too, not only the overlay: visibility is inherited but a child can turn it back on,
    and the active tab panel does (`.yg-tab-panel.active { visibility: visible }`) — the brief stayed on
-   screen over the whole site after INSPECT closed. Hidden elements also never catch a tap. */
-#gallery-overlay:not([style*="display: flex"]) * { animation-play-state: paused !important; visibility: hidden !important; }
+   screen over the whole site after INSPECT closed. Hidden elements also never catch a tap.
+   No transitions while closed: the buttons have `transition: all`, and a transition on visibility only
+   hides at its END — they lingered over the page for 0.3 s after the rest of the card had gone. */
+#gallery-overlay:not([style*="display: flex"]) * { animation-play-state: paused !important; visibility: hidden !important; transition: none !important; }
 
 /* --- lighter to open: the morph (gallery.js playOpen) grows the whole card, so nothing in it may
    repaint on every frame. The old foil's effects did — a shimmer over both faces in a blend mode,
