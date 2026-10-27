@@ -163,6 +163,13 @@ export function renderExtras() {
     updatePrice();
 }
 
+// The stage card's Extras rows: INSPECT opens straight on the tab where the choices are made
+export function openGalleryExtras() {
+    openGallery();
+    setYgTab('extras');
+}
+window.openGalleryExtras = openGalleryExtras;
+
 function setYgTab(id, { focus = false } = {}) {
     const host = document.getElementById('yg-extras-section');
     if (!host || !host.querySelector(`[data-yg-tab="${id}"]`)) return;

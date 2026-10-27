@@ -26,5 +26,7 @@
 @import url('responsive/tablet.css');
 @import url('responsive/mobile.css');
 @import url('components/tcg-card.css');
+@import url('components/card-hud.css');
+@import url('components/inspect-hud.css');
 @import url('components/mascot.css');
 @import url('components/dossier-hud.css');

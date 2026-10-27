@@ -1,0 +1,180 @@
+/* ===== The stage card as a HUD panel (renderCard in js/modules/catalog.js) =====
+   The user's second design: a glass card with a glowing edge, a title bar with a cube and the kind-of-build
+   badge, the photo with arrows and "which PC" dots ON it, a price box next to the stock, two tabs
+   (Unit data / Extras), the brief, and INSPECT + COMPARE. It replaces the collectible's metal foil frame
+   and its 63:88 proportions; what stays from before is the holo tilt (.tc-holo, initCardTilt).
+
+   The colour is the visitor's accent (--neon-green), like everything else on the site — the design's
+   purple is just what that looked like in the mockup. Loaded after tcg-card.css, which it overrides:
+   its card rules are !important, so the ones here that have to beat them are too.
+   Text sizes are cqw (1% of the card's width), so the card looks the same at any width. */
+
+.card-col {
+    --hc: var(--neon-green);
+    --hc-line: rgba(204, 255, 0, 0.5);
+    --hc-soft: rgba(204, 255, 0, 0.12);
+    --hc-glow: rgba(204, 255, 0, 0.3);
+    --hc-bg: #09071a;
+    --hc-panel: #0b0916;
+}
+@supports (color: color-mix(in srgb, red, blue)) {
+    .card-col {
+        --hc-line: color-mix(in srgb, var(--neon-green) 55%, transparent);
+        --hc-soft: color-mix(in srgb, var(--neon-green) 14%, transparent);
+        --hc-glow: color-mix(in srgb, var(--neon-green) 32%, transparent);
+        --hc-bg: color-mix(in srgb, var(--neon-green) 6%, #07050f);
+        --hc-panel: color-mix(in srgb, var(--neon-green) 4%, #0a0812);
+    }
+}
+
+/* --- the card: a dark glass slab with a glowing rim, as tall as its content --- */
+#main-card, .card-ghost > .holo-card, body.night-mode #main-card, body.night-mode .card-ghost > .holo-card {
+    width: var(--tc-w) !important; height: auto !important; aspect-ratio: auto !important;
+    padding: 10px !important; border: 1.5px solid transparent !important; border-radius: 20px !important;
+    background:
+        radial-gradient(120% 40% at 50% 0%, var(--hc-soft), transparent 70%) padding-box,
+        linear-gradient(180deg, var(--hc-bg), #06040c) padding-box,
+        linear-gradient(145deg, var(--hc), var(--hc-line) 38%, var(--hc-glow) 62%, var(--hc)) border-box !important;
+    box-shadow: 0 0 26px var(--hc-glow), inset 0 0 38px var(--hc-soft), 0 30px 70px rgba(0, 0, 0, 0.75) !important;
+}
+#main-card:hover { box-shadow: 0 0 34px var(--hc-glow), inset 0 0 38px var(--hc-soft), 0 40px 90px rgba(0, 0, 0, 0.8) !important; }
+/* The swipe snapshot is the card's size and in the air for a moment: no cast shadow */
+.card-ghost > .holo-card, body.night-mode .card-ghost > .holo-card { width: 100% !important; height: 100% !important; box-shadow: 0 0 26px var(--hc-glow), inset 0 0 38px var(--hc-soft) !important; }
+
+.tc-face {
+    padding: 0; gap: 8px; border-radius: 0; background: none; box-shadow: none;
+}
+.tc-holo { border-radius: 20px; }
+
+/* --- shared panel look: a rounded box with a thin accent edge and a faint inner glow --- */
+.tc-title, .tc-art, .tc-price, .tc-type .stock-badge, .tc-tabs, .tc-brief, .tc-extras {
+    border: 1px solid var(--hc-line); border-radius: 13px;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.008)), var(--hc-panel);
+    box-shadow: inset 0 0 16px var(--hc-soft);
+}
+
+/* --- title bar --- */
+.tc-title { position: relative; gap: 10px; padding: 7px 8px 7px 12px; }
+.tc-title::after { content: ''; position: absolute; left: 14px; bottom: -1px; width: 26%; height: 2px; border-radius: 2px; background: var(--hc); box-shadow: 0 0 8px var(--hc); }
+.tc-cube { flex: none; font-size: 7.4cqw; color: var(--hc); filter: drop-shadow(0 0 5px var(--hc-glow)); }
+.tc-name { font-size: 5.8cqw; text-shadow: 0 0 14px var(--hc-glow); }
+.tc-attr {
+    width: 10cqw; height: 10cqw; font-size: 5.4cqw; color: #08060f;
+    box-shadow: 0 0 0 2px var(--hc-line), 0 0 14px var(--hc-glow);
+}
+
+/* --- the photo window: arrows and dots sit on it --- */
+.tc-art { flex: none; aspect-ratio: 4 / 3; min-height: 0; overflow: hidden; border-radius: 14px; background: radial-gradient(70% 60% at 50% 40%, #15131f, #06050b); }
+.tc-art::after { box-shadow: inset 0 0 22px var(--hc-soft), inset 0 8px 14px rgba(0, 0, 0, 0.45); }
+.card-wish { top: 9px; right: 9px; z-index: 5; }
+.tc-nav {
+    position: absolute; top: 50%; z-index: 5; display: grid; place-items: center; width: max(40px, 11cqw); height: max(52px, 17cqw); padding: 0;
+    transform: translateY(-50%); border-radius: 11px; border: 1px solid var(--hc-line); cursor: pointer;
+    background: rgba(8, 6, 16, 0.74); color: #fff; font-size: 5cqw; box-shadow: 0 0 12px var(--hc-soft);
+    transition: background-color 0.2s, color 0.2s, border-color 0.2s, transform 0.1s;
+}
+.tc-nav-l { left: 2.4cqw; } .tc-nav-r { right: 2.4cqw; }
+.tc-nav:active { transform: translateY(-50%) scale(0.93); }
+@media (hover: hover) { .tc-nav:hover { background: var(--hc); border-color: var(--hc); color: #000; } }
+.tc-dots {
+    position: absolute; left: 50%; bottom: 9px; z-index: 4; transform: translateX(-50%); display: flex; gap: 6px; max-width: 86%; overflow: hidden;
+    padding: 5px 9px; border-radius: 999px; background: rgba(6, 4, 12, 0.6); pointer-events: none;
+}
+.tc-dot { flex: none; width: 16px; height: 4px; border-radius: 4px; background: rgba(255, 255, 255, 0.28); }
+.tc-dot.active { width: 28px; background: var(--hc); box-shadow: 0 0 9px var(--hc); }
+
+/* --- price and stock --- */
+.tc-type { gap: 6px; }
+.tc-row { align-items: stretch; gap: 8px; min-height: 0; }
+.tc-price {
+    flex: none; display: flex; align-items: center; padding: 6px 14px 6px 12px; font-size: 7.2cqw; letter-spacing: 0.5px;
+    color: #fff; text-shadow: 0 0 16px var(--hc), 0 0 4px var(--hc-glow);
+}
+.tc-type .stock-badge {
+    flex: 1; min-width: 0; display: flex; align-items: center; justify-content: center; gap: 6px; margin: 0 !important; padding: 6px 8px !important;
+    font-size: 3.1cqw; letter-spacing: 0.5px; text-align: center; line-height: 1.15;
+    border: 1px solid currentColor;
+}
+.tc-flags { gap: 6px; }
+
+/* --- tabs: the active one is filled in the accent, with a slanted edge --- */
+.tc-tabs { display: grid; grid-template-columns: 1fr 1fr; padding: 0; overflow: hidden; }
+.tc-tab {
+    display: flex; align-items: center; justify-content: center; gap: 7px; min-height: 42px; padding: 6px 8px; margin: 0;
+    border: 0; background: transparent; color: #9692b4; cursor: pointer;
+    font-family: var(--font-ui); font-weight: 800; font-size: 3.1cqw; letter-spacing: 0.4px; text-transform: uppercase; line-height: 1.1;
+    transition: color 0.2s, background-color 0.2s;
+}
+.tc-tab i { flex: none; font-size: 4.6cqw; }
+.tc-tab:hover { color: #fff; }
+.tc-tab.active { color: #fff; background: linear-gradient(135deg, var(--hc-line), var(--hc-soft)); }
+@supports (color: color-mix(in srgb, red, blue)) {
+    .tc-tab.active { background: linear-gradient(135deg, color-mix(in srgb, var(--neon-green) 52%, #120e22), color-mix(in srgb, var(--neon-green) 20%, #120e22)); text-shadow: 0 0 8px rgba(0, 0, 0, 0.5); }
+}
+.tc-tab:first-child.active { clip-path: polygon(0 0, 100% 0, calc(100% - 14px) 100%, 0 100%); }
+.tc-tab:last-child.active { clip-path: polygon(14px 0, 100% 0, 100% 100%, 0 100%); }
+.tc-tab:focus-visible { outline: 2px solid var(--hc); outline-offset: -2px; }
+body.pointer-input .tc-tab:focus-visible { outline: none; }
+
+/* --- the panels under the tabs share one cell, so a card never changes height when you switch --- */
+.tc-panels { display: grid; min-height: 32cqw; }
+.tc-face.no-tabs .tc-panels { min-height: 0; }
+.tc-panel { grid-area: 1 / 1; min-width: 0; visibility: hidden; }
+.tc-panel.active { visibility: visible; }
+.tc-brief { padding: 10px 12px 8px; border-left: 1px solid var(--hc-line); }
+.tc-brief-row { display: flex; align-items: flex-start; gap: 9px; }
+.tc-chev { flex: none; margin-top: 0.5cqw; font-size: 5cqw; color: var(--hc); filter: drop-shadow(0 0 5px var(--hc-glow)); }
+.tc-brief-text { flex: 1; min-width: 0; font-size: 3.4cqw; line-height: 1.5; color: #c3bfdc; }
+.tc-brief-more { margin: 4px 0 0 7cqw; padding: 4px 0 0; font-size: 3cqw; color: var(--hc); }
+
+.tc-extras { display: flex; flex-direction: column; justify-content: center; gap: 5px; padding: 8px; }
+.tc-ex-row {
+    display: flex; align-items: center; gap: 10px; min-height: 8.6cqw; padding: 5px 10px; margin: 0; border-radius: 9px; cursor: pointer; text-align: left;
+    border: 1px solid transparent; background: rgba(255, 255, 255, 0.035); color: #fff; font-family: var(--font-ui); font-size: 3.2cqw;
+    transition: border-color 0.2s, background-color 0.2s;
+}
+.tc-ex-row > i:first-child { flex: none; font-size: 5cqw; color: var(--hc); }
+.tc-ex-row span { flex: 1; min-width: 0; font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tc-ex-row b { flex: none; font-weight: 800; color: var(--hc); white-space: nowrap; }
+.tc-ex-go { flex: none; font-size: 3.4cqw; color: #77739a; }
+.tc-ex-swatch { flex: none; width: 4.4cqw; height: 4.4cqw; border-radius: 4px; border: 1px solid rgba(255, 255, 255, 0.4); }
+@media (hover: hover) { .tc-ex-row:hover { border-color: var(--hc-line); background: var(--hc-soft); } }
+
+/* --- the buttons --- */
+.tc-actions { gap: 8px; }
+.tc-actions .btn-card-inspect {
+    flex: 2 1 0; display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 50px; padding: 8px 10px !important;
+    border-radius: 14px !important; border: 1px solid var(--hc-line) !important; color: #fff !important; text-shadow: 0 0 8px rgba(0, 0, 0, 0.5);
+    background: linear-gradient(135deg, var(--hc-line), var(--hc-soft)) !important; box-shadow: 0 0 16px var(--hc-soft), inset 0 1px 0 rgba(255, 255, 255, 0.12) !important;
+    font-size: 3cqw !important; letter-spacing: 0.2px; white-space: normal; text-align: center; line-height: 1.15; overflow: hidden;
+}
+@supports (color: color-mix(in srgb, red, blue)) {
+    .tc-actions .btn-card-inspect { background: linear-gradient(135deg, color-mix(in srgb, var(--neon-green) 55%, #130f24), color-mix(in srgb, var(--neon-green) 22%, #130f24)) !important; }
+}
+/* A cube before and a chevron after, drawn as masks so compare.js can keep rewriting the text */
+.tc-actions .btn-card-inspect::before, .tc-actions .btn-card-inspect::after {
+    content: ''; flex: none; width: 5.2cqw; height: 5.2cqw; background: currentColor;
+    -webkit-mask: var(--ico) center / contain no-repeat; mask: var(--ico) center / contain no-repeat;
+}
+.tc-actions .btn-card-inspect::before { --ico: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Cpath d='M223.7 66.15 135.7 17.5a15.9 15.9 0 0 0-15.4 0L32.3 66.15A16 16 0 0 0 24 80.1v95.8a16 16 0 0 0 8.3 14l88 48.65a15.9 15.9 0 0 0 15.4 0l88-48.65a16 16 0 0 0 8.3-14V80.1a16 16 0 0 0-8.3-13.95ZM128 32l80.3 44.4L128 120.8 47.7 76.4Zm-8 191.1-80-44.2V92.7l80 44.1Zm16 0v-86.4l80-44.1v86.2Z' fill='black'/%3E%3C/svg%3E"); }
+.tc-actions .btn-card-inspect::after { --ico: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Cpath d='m181.66 133.66-80 80a8 8 0 0 1-11.32-11.32L164.69 128 90.34 53.66a8 8 0 0 1 11.32-11.32l80 80a8 8 0 0 1 0 11.32Z' fill='black'/%3E%3C/svg%3E"); }
+.tc-actions .btn-card-compare {
+    flex: 1 1 0; display: flex; align-items: center; justify-content: center; min-height: 50px; padding: 6px 6px !important;
+    border-radius: 14px !important; border: 1px solid var(--hc-line) !important; background: var(--hc-panel) !important; color: #fff !important; box-shadow: inset 0 0 14px var(--hc-soft) !important;
+    font-size: 3cqw !important; letter-spacing: 0.4px; text-align: center; line-height: 1.15;
+}
+@media (hover: hover) { .tc-actions .btn-card-compare:hover { background: var(--hc-soft) !important; } }
+.tc-actions .btn-card-compare.selected { background: var(--hc) !important; color: #000 !important; box-shadow: 0 0 16px var(--hc-glow) !important; }
+.tc-actions .btn-card-inspect:active, .tc-actions .btn-card-compare:active { transform: scale(0.97); }
+
+/* The VS strip (compare.css) keeps its look; it just needs to match the new corners */
+.compare-float { border-radius: 12px; }
+
+/* --- the old outside arrows and the old dots row are replaced by the ones on the photo --- */
+.nav-arrow, .pc-dots { display: none !important; }
+.carousel-wrapper { gap: 0; }
+@media (max-width: 768px) { .swipe-hint { top: 175px; } }
+
+/* --- the title over the card, in the same voice: a glowing title, a bordered count --- */
+.sh-count { border-radius: 999px; }
+#stage-label { text-shadow: 0 0 22px var(--hc-glow, rgba(204, 255, 0, 0.3)); }
