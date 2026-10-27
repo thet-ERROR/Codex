@@ -140,3 +140,33 @@
 .yg-spec-item:hover { border-color: var(--hc); background: var(--hc-soft); }
 .yg-flavor-text { border-color: var(--hc-line); border-radius: 13px; background: var(--hc-soft); }
 .yg-flavor-text::before { color: var(--hc); }
+
+/* --- kept laid out while closed: modals.js shows and hides INSPECT with an inline display (flex/none),
+   and display: none threw its whole layout away, so every open rebuilt both faces, the specs and the
+   FPS drawer from scratch, inside the tap — playOpen has to measure the card, which forced that work
+   there and then (~200 ms on a slowed CPU, the "lag" on a phone). Closed, it now stays built but
+   invisible, untouchable and still (its animations paused); opening only reveals it. The JS still
+   reads style.display === 'flex' as "open", which is unchanged. */
+#gallery-overlay:not([style*="display: flex"]) { display: flex !important; }
+#gallery-overlay:not([style*="display: flex"]) * { animation-play-state: paused !important; }
+
+/* --- lighter to open: the morph (gallery.js playOpen) grows the whole card, so nothing in it may
+   repaint on every frame. The old foil's effects did — a shimmer over both faces in a blend mode,
+   a glare sweeping the photo (it animated `left`), moving gradient text — and they never stopped,
+   even while the card just sat open. The HUD look doesn't need them; the one sweep of light as the
+   card arrives stays, as a plain translucent strip (no blend mode, so it's only moved, not repainted). */
+.yg-card-front::after, .yg-card-back::after, .yg-image-frame::before, .yg-stat-box::before { display: none !important; animation: none !important; }
+.yg-back-title { animation: none; }
+.yg-card.sheen .yg-card-front::before {
+    mix-blend-mode: normal; will-change: transform;
+    background: linear-gradient(100deg, transparent 0%, rgba(255, 255, 255, 0) 25%, rgba(255, 255, 255, 0.1) 50%, rgba(255, 255, 255, 0) 75%, transparent 100%);
+}
+/* Touch screens: one glow instead of a stack of blurred shadows, as on the stage card */
+@media (hover: none), (pointer: coarse), (max-width: 1024px) {
+    .yg-card-front, .yg-card-back, body.night-mode .yg-card-front, body.night-mode .yg-card-back,
+    .yg-card.vote-mode .yg-card-face { box-shadow: 0 0 18px var(--hc-glow) !important; }
+    .yg-titlebar, .yg-image-frame, .yg-price-section, .yg-tabs, .yg-tab-panel, .yg-back-header, .yg-fps-panel, .yg-stat-box { box-shadow: none; }
+    .yg-titlebar::before { filter: none; }
+    .yg-btn-cart, .yg-btn-fps, .yg-btn-specs { box-shadow: none; }
+    .yg-btn-breathe { animation: none; }
+}
