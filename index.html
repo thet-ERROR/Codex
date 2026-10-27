@@ -67,7 +67,9 @@ Type 'help' for a list of commands.
     
     <div id="toast-container" role="status" aria-live="polite"></div>
 
-    <div class="bg-layer"></div>
+    <!-- The moving background: a short muted loop (was a 2 MB GIF; the MP4 is a sixth of that). The poster
+         is its first frame, shown until the video plays and kept for "reduce motion" (main.js pauses it). -->
+    <div class="bg-layer"><video class="bg-video" src="assets/images/bg.mp4" poster="assets/images/bg.jpg" autoplay muted loop playsinline preload="auto" aria-hidden="true" tabindex="-1"></video></div>
     <div class="vignette"></div>
     <div class="grid-overlay"></div>
     <div class="moon-glow"></div>
