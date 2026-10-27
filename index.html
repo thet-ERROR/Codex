@@ -735,10 +735,19 @@ Type 'help' for a list of commands.
                          nineteen badges the 200px column above is a keyhole, so this is the way in
                          to the full-size grid. -->
                     <button class="ach-viewall-btn" onclick="playClick(); openAchievements();"><span data-i18n="achViewAll">VIEW ALL RECORDS</span> <i class="ph-bold ph-caret-right" aria-hidden="true"></i></button>
-                    <!-- The rank ladder lands here (dossier step D3); until then the crest and a line -->
+                    <!-- The rank ladder (renderRankLadder in modules/achievements.js, from the server's
+                         ladder in state.ranks). Offline or on an old backend there is no ladder: the
+                         crest and a line stay instead. -->
                     <div class="dossier-ladder" id="dossier-ladder">
-                        <img class="dossier-ladder-crest" src="assets/images/logo.png" alt="" aria-hidden="true">
-                        <div class="dossier-ladder-line" data-i18n="dossierJourney">Your journey begins here</div>
+                        <div class="dossier-ladder-head">
+                            <span class="dossier-ladder-title"><i class="ph-bold ph-trend-up" aria-hidden="true"></i> <span data-i18n="rankLadderTitle">RANKS</span></span>
+                            <button type="button" class="rank-info-btn" onclick="playClick(); openModal('rank-info-modal')" data-i18n-aria="rankInfoTitle" aria-label="How ranks work"><i class="ph-bold ph-info" aria-hidden="true"></i></button>
+                        </div>
+                        <div class="dossier-ladder-list" id="dossier-ladder-list"></div>
+                        <div class="dossier-ladder-empty">
+                            <img class="dossier-ladder-crest" src="assets/images/logo.png" alt="" aria-hidden="true">
+                            <div class="dossier-ladder-line" data-i18n="dossierJourney">Your journey begins here</div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -753,6 +762,27 @@ Type 'help' for a list of commands.
                 <button id="dossier-logout-btn" class="yg-btn yg-btn-specs dossier-btn-logout" onclick="playClick(); logout(); closeModal('agent-dashboard-modal')" data-i18n="dossierSignOut">
                     > SIGN OUT
                 </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- "How ranks work" — the (i) in the profile's ladder. Moved into the window shell by modals.js;
+         after the profile in the page so it opens on top of it. -->
+    <div class="modal-overlay" id="rank-info-modal">
+        <div class="modal-content" style="width:460px;">
+            <span class="close-modal" onclick="closeModal('rank-info-modal')">X</span>
+            <h2 class="modal-title" data-i18n="rankInfoTitle">How ranks work</h2>
+            <p class="rank-info-lead" data-i18n="rankInfoIntro">Every achievement you unlock gives XP, and XP raises your rank.</p>
+            <ol class="rank-info-list">
+                <li><i class="ph-bold ph-medal" aria-hidden="true"></i><span data-i18n="rankInfoXp">Earn XP from achievements: confirm your email, save systems to your wishlist, vote, write a review and more.</span></li>
+                <li><i class="ph-bold ph-trend-up" aria-hidden="true"></i><span data-i18n="rankInfoRank">Each rank has an XP threshold. The bar shows how far you are from the next one.</span></li>
+                <li><i class="ph-bold ph-gift" aria-hidden="true"></i><span data-i18n="rankInfoSpins">Some ranks give bonus wheel spins. They are saved for you and used after your 3 daily attempts, without delaying them.</span></li>
+                <li><i class="ph-bold ph-palette" aria-hidden="true"></i><span data-i18n="rankInfoColors">Some ranks unlock an accent colour — Ultraviolet, Arctic, Phantom — that you can only get this way, never on the wheel.</span></li>
+                <li><i class="ph-bold ph-seal-check" aria-hidden="true"></i><span data-i18n="rankInfoBadge">Your rank shows as a badge on your profile and next to your name on the reviews you write while signed in.</span></li>
+            </ol>
+            <p class="rank-info-note"><i class="ph-bold ph-check-circle" aria-hidden="true"></i> <span data-i18n="rankInfoOnce">Each reward is given once — the first time you reach that rank.</span></p>
+            <div class="info-actions">
+                <button type="button" class="info-btn primary" onclick="playClick(); closeModal('rank-info-modal'); openAchievements()"><i class="ph-bold ph-medal"></i> <span data-i18n="achViewAll">VIEW ALL RECORDS</span></button>
             </div>
         </div>
     </div>

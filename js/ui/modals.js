@@ -144,9 +144,9 @@ const SHELL_KICKERS = {
     'login-modal': 'AUTH', 'signup-modal': 'NEW_RECRUIT', 'forgot-modal': 'RECOVERY', 'reset-modal': 'RECOVERY',
     'achievements-modal': 'AGENT_RECORD', 'newsletter-modal': 'DROP_ALERTS', 'review-code-modal': 'FIELD_REPORT',
     'spec-info-modal': 'COMPONENT', 'proconfig-info-modal': 'PRO_CONFIG', 'paint-consent-modal': 'CUSTOM_PAINT',
-    'tutorial-lang-modal': 'TOUR', 'qr-modal': 'SCAN_LINK'
+    'tutorial-lang-modal': 'TOUR', 'qr-modal': 'SCAN_LINK', 'rank-info-modal': 'RANK_INFO'
 };
-const SHELL_SMALL = ['login-modal', 'signup-modal', 'forgot-modal', 'reset-modal', 'newsletter-modal', 'review-code-modal', 'spec-info-modal', 'tutorial-lang-modal', 'qr-modal'];
+const SHELL_SMALL = ['login-modal', 'signup-modal', 'forgot-modal', 'reset-modal', 'newsletter-modal', 'review-code-modal', 'spec-info-modal', 'tutorial-lang-modal', 'qr-modal', 'rank-info-modal'];
 
 function upgradeModalShells() {
     Object.keys(SHELL_KICKERS).forEach(id => {

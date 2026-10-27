@@ -184,16 +184,76 @@
 #agent-dashboard-modal .ach-viewall-btn i { color: var(--d-pink); }
 #agent-dashboard-modal .ach-viewall-btn:hover { --fill: linear-gradient(90deg, #3b1666, #45163f); box-shadow: none; }
 
-/* The lower right: the crest and a line, until the rank ladder (D3) moves in */
+/* The lower right: the rank ladder (renderRankLadder). With no ladder from the server (offline, an old
+   backend) the crest and a line stay instead. */
 #agent-dashboard-modal .dossier-ladder {
     --c: 14px;
     --edge: rgba(176, 38, 255, 0.45);
     --rim: linear-gradient(135deg, rgba(176, 38, 255, 0.45), rgba(109, 40, 217, 0.35));
     --fill: repeating-linear-gradient(135deg, #0f0820 0 10px, #0a0616 10px 20px);
-    flex: 1; min-height: 200px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; padding: 20px;
+    flex: 1; min-height: 200px; display: flex; flex-direction: column; gap: 10px; padding: 14px;
 }
+#agent-dashboard-modal .dossier-ladder-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+#agent-dashboard-modal .dossier-ladder-title { display: flex; align-items: center; gap: 8px; font-family: var(--font-ui); font-weight: 800; font-size: 0.85rem; letter-spacing: 1px; color: #f1e9ff; text-transform: uppercase; }
+#agent-dashboard-modal .dossier-ladder-title i { color: var(--d-purple); filter: drop-shadow(0 0 4px rgba(176, 38, 255, 0.7)); }
+#agent-dashboard-modal .rank-info-btn {
+    flex: none; width: 40px; height: 40px; display: grid; place-items: center; padding: 0; border-radius: 50%; cursor: pointer;
+    border: 1px solid rgba(176, 38, 255, 0.6); background: rgba(176, 38, 255, 0.12); color: #c084fc; font-size: 1.15rem;
+    box-shadow: 0 0 10px rgba(176, 38, 255, 0.25); transition: background-color 0.2s, color 0.2s, box-shadow 0.2s;
+}
+#agent-dashboard-modal .rank-info-btn:hover { background: rgba(176, 38, 255, 0.3); color: #fff; box-shadow: 0 0 16px rgba(255, 61, 166, 0.45); }
+
+#agent-dashboard-modal .dossier-ladder-list { display: none; flex-direction: column; gap: 6px; }
+#agent-dashboard-modal .dossier-ladder.has-ranks .dossier-ladder-list { display: flex; }
+#agent-dashboard-modal .dossier-ladder-empty { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; padding: 10px 0; }
+#agent-dashboard-modal .dossier-ladder.has-ranks .dossier-ladder-empty { display: none; }
 #agent-dashboard-modal .dossier-ladder-crest { width: 120px; opacity: 0.4; filter: drop-shadow(0 0 14px rgba(176, 38, 255, 0.7)); }
 #agent-dashboard-modal .dossier-ladder-line { font-family: var(--font-ui); font-size: 0.75rem; letter-spacing: 6px; text-transform: uppercase; color: #8f80b8; text-align: center; }
+
+/* A step: badge · name + XP + what it gives · state. Reached steps are lit, the current one burns
+   pink, the next one is dashed — "this is what you're going for" — and the rest are dimmed. */
+#agent-dashboard-modal .rank-step {
+    display: flex; align-items: center; gap: 12px; padding: 8px 10px; border-radius: 10px;
+    border: 1px solid rgba(176, 38, 255, 0.22); background: rgba(176, 38, 255, 0.04);
+}
+#agent-dashboard-modal .rank-step-ico {
+    flex: none; width: 38px; height: 38px; display: grid; place-items: center; border-radius: 50%; font-size: 1.3rem;
+    border: 1.5px solid rgba(176, 38, 255, 0.35); background: #0b0617; color: #54456f;
+}
+#agent-dashboard-modal .rank-step-body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px; }
+#agent-dashboard-modal .rank-step-body strong { font-family: var(--font-ui); font-weight: 800; font-size: 0.85rem; letter-spacing: 0.5px; color: #6f6288; text-transform: uppercase; }
+#agent-dashboard-modal .rank-step-body small { font-family: var(--font-ui); font-size: 0.7rem; color: #5f5379; }
+#agent-dashboard-modal .rk-chips { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 3px; }
+#agent-dashboard-modal .rk-chip {
+    display: inline-flex; align-items: center; gap: 4px; padding: 2px 7px; border-radius: 999px; font-family: var(--font-ui); font-size: 0.64rem; font-weight: 700;
+    border: 1px solid rgba(176, 38, 255, 0.3); color: #7d7099; background: rgba(0, 0, 0, 0.25);
+}
+#agent-dashboard-modal .rk-chip i { font-size: 0.8rem; }
+#agent-dashboard-modal .rk-dot { width: 9px; height: 9px; border-radius: 50%; border: 1px solid rgba(255, 255, 255, 0.5); }
+#agent-dashboard-modal .rank-step-mark { flex: none; min-width: 22px; text-align: center; font-size: 1rem; color: #4b3f66; }
+
+#agent-dashboard-modal .rank-step.done { border-color: rgba(176, 38, 255, 0.5); background: rgba(176, 38, 255, 0.09); }
+#agent-dashboard-modal .rank-step.done .rank-step-ico { color: #c084fc; border-color: rgba(176, 38, 255, 0.7); }
+#agent-dashboard-modal .rank-step.done .rank-step-body strong { color: #e6d9ff; }
+#agent-dashboard-modal .rank-step.done .rank-step-body small { color: var(--d-dim); }
+#agent-dashboard-modal .rank-step.done .rk-chip { color: #c9b8ec; border-color: rgba(176, 38, 255, 0.5); }
+#agent-dashboard-modal .rank-step.done .rank-step-mark { color: #2ee87a; }
+
+#agent-dashboard-modal .rank-step.current {
+    border-color: var(--d-pink); background: linear-gradient(90deg, rgba(255, 61, 166, 0.18), rgba(176, 38, 255, 0.1));
+    box-shadow: 0 0 14px rgba(255, 61, 166, 0.25), inset 0 0 12px rgba(176, 38, 255, 0.12);
+}
+#agent-dashboard-modal .rank-step.current .rank-step-ico { color: var(--d-pink); border-color: var(--d-pink); filter: drop-shadow(0 0 6px rgba(255, 61, 166, 0.6)); }
+#agent-dashboard-modal .rank-step.current .rank-step-body strong { color: #fff; }
+#agent-dashboard-modal .rank-step.current .rank-step-body small { color: #d9c8f5; }
+#agent-dashboard-modal .rank-step.current .rk-chip { color: #fff; border-color: rgba(255, 61, 166, 0.6); }
+#agent-dashboard-modal .rank-step.current .rank-step-mark { font-family: var(--font-ui); font-weight: 800; font-size: 0.62rem; letter-spacing: 1px; color: var(--d-pink); }
+
+#agent-dashboard-modal .rank-step.next { border-style: dashed; border-color: rgba(255, 61, 166, 0.5); }
+#agent-dashboard-modal .rank-step.next .rank-step-body strong { color: #cbb8ee; }
+#agent-dashboard-modal .rank-step.next .rank-step-body small { color: var(--d-pink); }
+#agent-dashboard-modal .rank-step.next .rank-step-ico { color: #8b6fc0; }
+#agent-dashboard-modal .rank-step.next .rk-chip { color: #b9a6dc; }
 #agent-dashboard-modal .dossier-right { display: flex; flex-direction: column; }
 
 /* --- sign out: a wide cut-corner bar --- */
@@ -219,3 +279,14 @@
     #agent-dashboard-modal .dossier-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     #agent-dashboard-modal .dossier-ladder { min-height: 150px; }
 }
+
+/* --- the "How ranks work" window (#rank-info-modal, in the window shell): the profile's purple --- */
+#rank-info-modal .info-box { border-color: rgba(176, 38, 255, 0.5); border-top-color: var(--d-purple, #b026ff); }
+#rank-info-modal .rank-info-lead { margin: 0 0 14px; color: #e6d9ff; line-height: 1.5; font-weight: 600; }
+#rank-info-modal .rank-info-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+#rank-info-modal .rank-info-list li { display: flex; align-items: flex-start; gap: 12px; padding: 11px 0; border-top: 1px solid rgba(176, 38, 255, 0.2); line-height: 1.45; font-size: 0.9rem; }
+#rank-info-modal .rank-info-list li:first-child { border-top: none; }
+#rank-info-modal .rank-info-list li i { flex: none; width: 32px; height: 32px; display: grid; place-items: center; border-radius: 50%; font-size: 1.05rem; color: #c084fc; border: 1px solid rgba(176, 38, 255, 0.5); background: rgba(176, 38, 255, 0.1); }
+#rank-info-modal .rank-info-note { display: flex; align-items: center; gap: 8px; margin: 10px 0 16px; padding: 10px 12px; border-radius: 8px; font-size: 0.82rem; color: #ffd0e8; border: 1px solid rgba(255, 61, 166, 0.4); background: rgba(255, 61, 166, 0.07); }
+#rank-info-modal .rank-info-note i { flex: none; color: #ff3da6; }
+#rank-info-modal .info-btn.primary { background: linear-gradient(90deg, #7c3aed, #d6249f); border-color: transparent; }
