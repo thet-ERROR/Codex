@@ -63,19 +63,13 @@
     box-shadow: 0 0 0 2px var(--hc-line), 0 0 14px var(--hc-glow);
 }
 
-/* --- the photo window: arrows and dots sit on it --- */
+/* --- the photo window: the dots sit on it, and the Community / Members badges in its top-left corner
+   (on the photo rather than under it, so a PC that has one is not taller than one that doesn't) --- */
 .tc-art { flex: none; aspect-ratio: 4 / 3; min-height: 0; overflow: hidden; border-radius: 14px; background: radial-gradient(70% 60% at 50% 40%, #15131f, #06050b); }
 .tc-art::after { box-shadow: inset 0 0 22px var(--hc-soft), inset 0 8px 14px rgba(0, 0, 0, 0.45); }
 .card-wish { top: 9px; right: 9px; z-index: 5; }
-.tc-nav {
-    position: absolute; top: 50%; z-index: 5; display: grid; place-items: center; width: max(40px, 11cqw); height: max(52px, 17cqw); padding: 0;
-    transform: translateY(-50%); border-radius: 11px; border: 1px solid var(--hc-line); cursor: pointer;
-    background: rgba(8, 6, 16, 0.74); color: #fff; font-size: 5cqw; box-shadow: 0 0 12px var(--hc-soft);
-    transition: background-color 0.2s, color 0.2s, border-color 0.2s, transform 0.1s;
-}
-.tc-nav-l { left: 2.4cqw; } .tc-nav-r { right: 2.4cqw; }
-.tc-nav:active { transform: translateY(-50%) scale(0.93); }
-@media (hover: hover) { .tc-nav:hover { background: var(--hc); border-color: var(--hc); color: #000; } }
+.tc-art .tc-flags { position: absolute; top: 9px; left: 9px; right: 54px; z-index: 5; display: flex; flex-wrap: wrap; gap: 5px; pointer-events: none; }
+.tc-art .community-badge, .tc-art .members-badge { margin: 0 !important; padding: 3px 8px !important; font-size: 0.66rem; line-height: 1.2; width: auto; background-color: rgba(8, 6, 16, 0.82); }
 .tc-dots {
     position: absolute; left: 50%; bottom: 9px; z-index: 4; transform: translateX(-50%); display: flex; gap: 6px; max-width: 86%; overflow: hidden;
     padding: 5px 9px; border-radius: 999px; background: rgba(6, 4, 12, 0.6); pointer-events: none;
@@ -95,7 +89,8 @@
     font-size: 3.1cqw; letter-spacing: 0.5px; text-align: center; line-height: 1.15;
     border: 1px solid currentColor;
 }
-.tc-flags { gap: 6px; }
+/* One line whatever the label ("LOW STOCK: 3 UNITS", "COMING SOON"), so the row never grows */
+.tc-type .stock-badge { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
 /* --- tabs: the active one is filled in the accent, with a slanted edge --- */
 .tc-tabs { display: grid; grid-template-columns: 1fr 1fr; padding: 0; overflow: hidden; }
@@ -116,9 +111,16 @@
 .tc-tab:focus-visible { outline: 2px solid var(--hc); outline-offset: -2px; }
 body.pointer-input .tc-tab:focus-visible { outline: none; }
 
-/* --- the panels under the tabs share one cell, so a card never changes height when you switch --- */
-.tc-panels { display: grid; min-height: 32cqw; }
-.tc-face.no-tabs .tc-panels { min-height: 0; }
+/* --- the panels under the tabs share one cell, so a card never changes height when you switch ---
+   Every card is the same height, too: the panels have a set height (3 lines of brief and its "more"),
+   and a PC without extras gives the space of the missing tabs to them. A card that changed height
+   from one PC to the next made the whole page jump on a phone, where the page scrolls.
+   Only "more" opened by hand lets the card grow. */
+.tc-panels { display: grid; height: 34cqw; }
+.tc-face.no-tabs .tc-panels { height: calc(34cqw + 50px); }
+.tc-panels:has(.tc-brief.expanded) { height: auto; min-height: 34cqw; }
+.tc-panel { overflow: hidden; }
+.tc-brief-more.hidden { display: block !important; visibility: hidden; }
 .tc-panel { grid-area: 1 / 1; min-width: 0; visibility: hidden; }
 .tc-panel.active { visibility: visible; }
 .tc-brief { padding: 10px 12px 8px; border-left: 1px solid var(--hc-line); }
@@ -170,9 +172,25 @@ body.pointer-input .tc-tab:focus-visible { outline: none; }
 /* The VS strip (compare.css) keeps its look; it just needs to match the new corners */
 .compare-float { border-radius: 12px; }
 
-/* --- the old outside arrows and the old dots row are replaced by the ones on the photo --- */
-.nav-arrow, .pc-dots { display: none !important; }
-.carousel-wrapper { gap: 0; }
+/* --- the arrows: beside the card, with a mouse only (on a touch screen the card is swiped) --- */
+.pc-dots { display: none !important; }
+.carousel-wrapper { gap: 22px; }
+.nav-arrow {
+    position: static; transform: none; /* tablet.css used to pin them over the card's edges */
+    flex: none; width: 46px; height: 92px; padding: 0; clip-path: none; border-radius: 14px; cursor: pointer;
+    border: 1px solid var(--hc-line, rgba(204, 255, 0, 0.5)); background: rgba(8, 6, 16, 0.74); color: #fff; font-size: 1.4rem;
+    box-shadow: 0 0 14px var(--hc-soft, rgba(204, 255, 0, 0.12)), inset 0 0 12px var(--hc-soft, rgba(204, 255, 0, 0.12));
+    transition: background-color 0.2s, color 0.2s, border-color 0.2s, box-shadow 0.2s, transform 0.1s;
+}
+.nav-arrow:hover { background: var(--neon-green); border-color: var(--neon-green); color: #000; box-shadow: 0 0 20px var(--hc-glow, rgba(204, 255, 0, 0.3)); }
+.nav-arrow:active { transform: scale(0.94); }
+@supports (color: color-mix(in srgb, red, blue)) {
+    .nav-arrow { --hc-line: color-mix(in srgb, var(--neon-green) 55%, transparent); --hc-soft: color-mix(in srgb, var(--neon-green) 14%, transparent); --hc-glow: color-mix(in srgb, var(--neon-green) 32%, transparent); }
+}
+@media (hover: none), (pointer: coarse), (max-width: 768px) {
+    .nav-arrow { display: none !important; }
+    .carousel-wrapper { gap: 0; }
+}
 /* The swiped-away snapshot flies a card's width off to the side. Throwing right, it pushed past the
    screen edge and iOS Safari let the whole page widen and pan sideways (it ignores overflow on body
    for that). Clipping sideways here, on the full-width row, keeps it inside; the card's glow still
@@ -183,3 +201,21 @@ body.pointer-input .tc-tab:focus-visible { outline: none; }
 /* --- the title over the card, in the same voice: a glowing title, a bordered count --- */
 .sh-count { border-radius: 999px; }
 #stage-label { text-shadow: 0 0 22px var(--hc-glow, rgba(204, 255, 0, 0.3)); }
+
+/* --- touch screens: the same look, lighter to draw, so the swipe stays smooth ---
+   Each swipe builds a new card and snapshots the old one, and every soft shadow, filter and blend in
+   them has to be painted again on a phone. So: one glow round the card instead of three, the panels'
+   inner glows become a plain tint, no glow filters on the icons, and the flying snapshot has no
+   shadow at all (it fades out in a fraction of a second — tablet.css did the same for the old card).
+   The holo sheen is for the mouse tilt, which touch screens don't have. */
+@media (hover: none), (pointer: coarse), (max-width: 1024px) {
+    #main-card, body.night-mode #main-card { box-shadow: 0 0 18px var(--hc-glow) !important; }
+    .card-ghost > .holo-card, body.night-mode .card-ghost > .holo-card { box-shadow: none !important; }
+    .tc-title, .tc-art, .tc-price, .tc-type .stock-badge, .tc-tabs, .tc-brief, .tc-extras { box-shadow: none; }
+    .tc-art::after { box-shadow: inset 0 8px 14px rgba(0, 0, 0, 0.45); }
+    .tc-cube, .tc-chev { filter: none; }
+    .tc-name, .tc-price { text-shadow: 0 0 10px var(--hc-glow); }
+    .tc-actions .btn-card-inspect { box-shadow: none !important; }
+    .tc-actions .btn-card-compare { box-shadow: none !important; }
+    .tc-holo { display: none; }
+}

@@ -176,8 +176,6 @@ const translations = {
         compareSpecs: "Προδιαγραφές", compareFps: "Απόδοση (FPS)", compareView: "Δες το",
         briefMore: "Περισσότερα ▾", briefLess: "Λιγότερα ▴",
         cartHintTitle: "Προστέθηκε στο καλάθι", cartHintText: "Το καλάθι σου είναι εδώ — πάτα όποτε είσαι έτοιμος.",
-        tickerDelivery: "⚡ Ασφαλής παράδοση 24H σε όλη τη Θεσσαλονίκη ⚡", tickerAssembled: "Συστήματα πλήρως συναρμολογημένα & ελεγμένα",
-        tickerProcessed: "⚡ Οι παραγγελίες επεξεργάζονται εντός 24 ωρών ⚡", tickerDiagnostic: "Πλήρης διαγνωστικός έλεγχος πριν από κάθε αποστολή",
 
         classifiedBrief: ">// ΣΤΟΙΧΕΙΑ ΜΟΝΑΔΑΣ", inspectSystemBtn: "Επιθεώρηση συστήματος", addedToVs: "Προστέθηκε στο VS", compareBtn: "Σύγκριση",
         descFallback: "Αναλυτικές προδιαγραφές για αυτό το σύστημα.", taglineFallback: "Εξουσιοδοτημένη κατασκευή συστήματος", systemDetailsFallback: "Στοιχεία συστήματος",
@@ -397,8 +395,6 @@ const translations = {
         compareSpecs: "SPECS", compareFps: "PERFORMANCE (FPS)", compareView: "VIEW",
         briefMore: "MORE ▾", briefLess: "LESS ▴",
         cartHintTitle: "ADDED TO CART", cartHintText: "Your cart is right here — tap it whenever you're ready.",
-        tickerDelivery: "⚡ 24H SECURE DELIVERY ACROSS SKG ⚡", tickerAssembled: "SYSTEMS FULLY ASSEMBLED & TESTED",
-        tickerProcessed: "⚡ ORDERS PROCESSED WITHIN 24 HOURS ⚡", tickerDiagnostic: "FULL DIAGNOSTIC CHECK BEFORE EVERY SHIPMENT",
 
         classifiedBrief: ">// UNIT_DATA", inspectSystemBtn: "INSPECT SYSTEM", addedToVs: "ADDED TO VS", compareBtn: "COMPARE",
         descFallback: "Detailed specifications for this system.", taglineFallback: "AUTHORIZED SYSTEM BUILD", systemDetailsFallback: "System Details",

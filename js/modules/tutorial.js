@@ -21,8 +21,8 @@ const COPY = {
         logo: ['IDENTITY CHECK', "Tap the logo anytime to see who's really running this operation."],
         live: ['LIVE DROPS', 'Every custom-built rig, ready for deployment. A blinking red badge means only one unit is left; COMING SOON builds wait at the end of the list.'],
         vote: ['VOTE', "The community votes to unlock a mystery PC — one vote per signed-in agent with a verified email. Reach the target and it unlocks straight into Live Drops — members can order it first."],
-        browsePhone: ['BROWSE SYSTEMS', 'Swipe the card left or right (or tap the arrows on the photo) to see the next PC — the dots show where you are. The tabs switch between the unit data and the extras; INSPECT SYSTEM opens full specs, FPS and options.'],
-        browseDesktop: ['BROWSE SYSTEMS', 'Use the arrows on the photo to see the next PC — the dots show where you are. The tabs switch between the unit data and the extras; INSPECT SYSTEM opens full specs, FPS and options.'],
+        browsePhone: ['BROWSE SYSTEMS', 'Swipe the card left or right to see the next PC — the dots show where you are. The tabs switch between the unit data and the extras; INSPECT SYSTEM opens full specs, FPS and options.'],
+        browseDesktop: ['BROWSE SYSTEMS', 'Use the arrows beside the card (or ← →) to see the next PC — the dots show where you are. The tabs switch between the unit data and the extras; INSPECT SYSTEM opens full specs, FPS and options.'],
         cart: ['YOUR LOOT', 'Everything you pick lands here. Check your total, then send the order straight to us on WhatsApp.'],
         cli: ['THE TERMINAL', 'Tap here (or press [`] on a keyboard) to open the command line. Tap a command inside it — try "theme" or "color".'],
         profile: ['AGENT PROFILE', 'Sign in or register here to save your wishlist, track your rank, and unlock rewards.'],
@@ -38,8 +38,8 @@ const COPY = {
         logo: ['ΕΛΕΓΧΟΣ ΤΑΥΤΟΤΗΤΑΣ', 'Πάτα το λογότυπο όποτε θες, για να δεις ποιος πραγματικά τρέχει αυτή την επιχείρηση.'],
         live: ['LIVE DROPS', 'Όλα τα χειροποίητα gaming rigs, έτοιμα για παράδοση. Κόκκινο badge που αναβοσβήνει σημαίνει ότι έμεινε μόνο ένα τεμάχιο· όσα έρχονται ΣΥΝΤΟΜΑ είναι στο τέλος της λίστας.'],
         vote: ['VOTE', 'Η κοινότητα ψηφίζει για να ξεκλειδώσει ένα μυστηριώδες PC — μία ψήφος ανά συνδεδεμένο πράκτορα με επιβεβαιωμένο email. Μόλις μαζευτούν οι ψήφοι, ξεκλειδώνει και μπαίνει αμέσως στα Live Drops — με προτεραιότητα για τα μέλη.'],
-        browsePhone: ['ΠΕΡΙΗΓΗΣΗ', 'Σύρε την κάρτα αριστερά ή δεξιά (ή πάτα τα βελάκια στη φωτογραφία) για να δεις το επόμενο PC — οι τελίτσες δείχνουν πού βρίσκεσαι. Οι καρτέλες αλλάζουν ανάμεσα στα στοιχεία και στις επιπλέον επιλογές· το ΕΠΙΘΕΩΡΗΣΗ ΣΥΣΤΗΜΑΤΟΣ δείχνει πλήρη specs, FPS και επιλογές.'],
-        browseDesktop: ['ΠΕΡΙΗΓΗΣΗ', 'Με τα βελάκια στη φωτογραφία βλέπεις το επόμενο PC — οι τελίτσες δείχνουν πού βρίσκεσαι. Οι καρτέλες αλλάζουν ανάμεσα στα στοιχεία και στις επιπλέον επιλογές· το ΕΠΙΘΕΩΡΗΣΗ ΣΥΣΤΗΜΑΤΟΣ δείχνει πλήρη specs, FPS και επιλογές.'],
+        browsePhone: ['ΠΕΡΙΗΓΗΣΗ', 'Σύρε την κάρτα αριστερά ή δεξιά για να δεις το επόμενο PC — οι τελίτσες δείχνουν πού βρίσκεσαι. Οι καρτέλες αλλάζουν ανάμεσα στα στοιχεία και στις επιπλέον επιλογές· το ΕΠΙΘΕΩΡΗΣΗ ΣΥΣΤΗΜΑΤΟΣ δείχνει πλήρη specs, FPS και επιλογές.'],
+        browseDesktop: ['ΠΕΡΙΗΓΗΣΗ', 'Με τα βελάκια δίπλα στην κάρτα (ή ← →) βλέπεις το επόμενο PC — οι τελίτσες δείχνουν πού βρίσκεσαι. Οι καρτέλες αλλάζουν ανάμεσα στα στοιχεία και στις επιπλέον επιλογές· το ΕΠΙΘΕΩΡΗΣΗ ΣΥΣΤΗΜΑΤΟΣ δείχνει πλήρη specs, FPS και επιλογές.'],
         cart: ['Η ΛΕΙΑ ΣΟΥ', 'Ό,τι διαλέγεις μπαίνει εδώ. Δες το σύνολο και στείλε μας την παραγγελία κατευθείαν στο WhatsApp.'],
         cli: ['ΤΟ ΤΕΡΜΑΤΙΚΟ', 'Πάτα εδώ (ή το πλήκτρο [`] σε πληκτρολόγιο) για να ανοίξεις τη γραμμή εντολών. Πάτα μια εντολή μέσα — δοκίμασε το "theme" ή το "color".'],
         profile: ['ΠΡΟΦΙΛ ΠΡΑΚΤΟΡΑ', 'Συνδέσου ή κάνε εγγραφή εδώ για να αποθηκεύσεις τη λίστα επιθυμιών σου, να παρακολουθείς το rank σου και να ξεκλειδώνεις έπαθλα.'],
@@ -65,7 +65,9 @@ function buildSteps(lang) {
         step('#tab-vote', 'vote', 'bottom', 'start')
     ];
     // The card sits mid-screen; "top" keeps the popover off the card it's describing
-    const browse = step('#carousel-wrapper', phone ? 'browsePhone' : 'browseDesktop', 'top');
+    // The arrows only exist with a mouse (card-hud.css); on a touch screen the card is swiped
+    const touch = phone || !window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+    const browse = step('#carousel-wrapper', touch ? 'browsePhone' : 'browseDesktop', 'top');
 
     const header = phone
         ? [...tabs,
