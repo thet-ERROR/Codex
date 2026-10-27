@@ -1,6 +1,7 @@
 // js/modules/catalog.js
 import { state } from '../state.js';
 import { esc, escUrl, formatPrice, priceCentsOf, stockState, stockLabel, membersOnlyActive, formatShortDateTime, PACK_ICONS } from '../utils.js';
+import { getOptions } from './gallery.js';
 
 // --- STAGE HEADING ---
 // The title over the card: a >// kicker in the terminal's voice, a translated title, and how many PCs
@@ -209,10 +210,18 @@ export function renderCard() {
     // bar with the name and a badge for the kind of build, the photo as a window, a type line with the
     // stock and the price, the brief as the text box, and the two buttons at the bottom.
     const nPhotos = (pc.images || []).length;
+    const nPcs = state.filtered.length;
+    const tr = (k, fb) => (window.t ? window.t(k) : fb);
+    const extrasRows = cardExtrasRows(pc);
+    // Arrows and the "which PC" dots live on the photo (card-hud.css). They are part of the card, so the
+    // swipe snapshot carries them too.
+    const navL = nPcs > 1 ? `<button type="button" class="tc-nav tc-nav-l" aria-label="Previous PC" onclick="event.stopPropagation(); playClick(); swipeCard(-1)"><i class="ph-bold ph-caret-left"></i></button>` : '';
+    const navR = nPcs > 1 ? `<button type="button" class="tc-nav tc-nav-r" aria-label="Next PC" onclick="event.stopPropagation(); playClick(); swipeCard(1)"><i class="ph-bold ph-caret-right"></i></button>` : '';
+    const dots = nPcs > 1 ? `<div class="tc-dots" aria-hidden="true">${Array.from({ length: nPcs }, (_, i) => `<span class="tc-dot${i === state.index ? ' active' : ''}"></span>`).join('')}</div>` : '';
     c.innerHTML = `
-        <div class="tc-face">
-            <i class="tc-orn tc-o1"></i><i class="tc-orn tc-o2"></i><i class="tc-orn tc-o3"></i><i class="tc-orn tc-o4"></i>
+        <div class="tc-face${extrasRows ? '' : ' no-tabs'}">
             <div class="tc-title">
+                <i class="ph-bold ph-cube tc-cube" aria-hidden="true"></i>
                 <span class="tc-name">${esc(pc.name)}</span>
                 <span class="tc-attr"><i class="ph-fill ${PACK_ICONS[pc.category] || PACK_ICONS.drop}"></i></span>
             </div>
@@ -220,15 +229,25 @@ export function renderCard() {
                 <img src="${escUrl(pc.images && pc.images[0]) || 'assets/images/bg.jpg'}" class="tc-img" alt="">
                 ${nPhotos > 1 ? `<span class="hero-photos" aria-hidden="true"><i class="ph-bold ph-images"></i> ${nPhotos}</span>` : ''}
                 <button type="button" class="card-wish${inWishlist ? ' on' : ''}${wishSpin}" aria-pressed="${inWishlist}" aria-label="Wishlist" onclick="event.stopPropagation(); cardWish('${pcId}')"><i class="ph-bold ph-crosshair"></i></button>
+                ${navL}${navR}${dots}
             </div>
             <div class="tc-type">
-                <div class="tc-row">${stockHTML}<div class="tc-price">${formatPrice(priceCentsOf(pc))}</div></div>
+                <div class="tc-row"><div class="tc-price">${formatPrice(priceCentsOf(pc))}</div>${stockHTML}</div>
                 ${(pc.communityDrop || membersOnlyActive(pc)) ? `<div class="tc-flags">${pc.communityDrop ? `<div class="community-badge"><i class="ph-fill ph-users-three"></i> ${esc(window.t ? window.t('communityDropBadge') : 'COMMUNITY DROP')}</div>` : ''}${membersOnlyActive(pc) ? `<div class="members-badge"><i class="ph-fill ph-lock-key"></i> ${esc(window.t ? window.t('membersOnlyBadge', { until: formatShortDateTime(pc.membersOnlyUntil) }) : 'MEMBERS FIRST')}</div>` : ''}</div>` : ''}
             </div>
-            <div class="tc-brief">
-                <div class="tc-brief-title">${esc(window.t ? window.t('classifiedBrief') : '>// CLASSIFIED_BRIEF')}</div>
-                <div class="tc-brief-text">${esc(pcLore)}</div>
-                <button type="button" class="tc-brief-more hidden">${esc(window.t ? window.t('briefMore') : 'more')}</button>
+            ${extrasRows ? `<div class="tc-tabs" role="tablist">
+                <button type="button" class="tc-tab active" role="tab" aria-selected="true" data-tc-tab="lore" onclick="cardTab('lore', this)"><i class="ph-fill ph-scroll"></i><span>${esc(tr('inspectTabLore', 'UNIT DATA'))}</span></button>
+                <button type="button" class="tc-tab" role="tab" aria-selected="false" data-tc-tab="extras" onclick="cardTab('extras', this)"><i class="ph-fill ph-gear-six"></i><span>${esc(tr('extrasLabel', 'EXTRAS'))}</span></button>
+            </div>` : ''}
+            <div class="tc-panels">
+                <div class="tc-panel tc-brief active" data-tc-panel="lore">
+                    <div class="tc-brief-row">
+                        <i class="ph-bold ph-caret-double-right tc-chev" aria-hidden="true"></i>
+                        <div class="tc-brief-text">${esc(pcLore)}</div>
+                    </div>
+                    <button type="button" class="tc-brief-more hidden">${esc(window.t ? window.t('briefMore') : 'more')}</button>
+                </div>
+                ${extrasRows ? `<div class="tc-panel tc-extras" data-tc-panel="extras">${extrasRows}</div>` : ''}
             </div>
             <!-- The VS strip (compare.js updateCompareFloat): inside the card, between the brief and the buttons, so it can
                  never cover them. One PC picked: "half" — a lit slot and an empty one with a + ("add one more"); two: ready. -->
@@ -263,6 +282,51 @@ export function renderCard() {
 
     preloadNeighbours();
 }
+
+// The card's second tab: what can be added to this build, with prices. Read-only here — picking happens
+// in INSPECT (the paint needs its consent window, and the choices are only ever kept there) — so every
+// row opens INSPECT straight on its Extras tab. '' when the PC offers nothing (the card then has no tabs).
+const cents = (euros) => Math.round((Number(euros) || 0) * 100);
+function cardExtrasRows(pc) {
+    const t = window.t || (k => k);
+    const o = getOptions(pc);
+    const row = (icon, title, price, swatch = '') => `
+        <button type="button" class="tc-ex-row" onclick="event.stopPropagation(); playClick(); openGalleryExtras()">
+            ${swatch || `<i class="ph-bold ${icon}" aria-hidden="true"></i>`}
+            <span>${esc(title)}</span>
+            <b>${esc(price)}</b>
+            <i class="ph-bold ph-caret-right tc-ex-go" aria-hidden="true"></i>
+        </button>`;
+    const rows = [];
+    const st = o.storage;
+    if (st.enabled && (st.hdd > 0 || st.ssd > 0)) {
+        const lowest = Math.min(...[st.hdd, st.ssd].filter(v => v > 0));
+        rows.push(row('ph-hard-drives', t('storageLabel'), t('cardExtraFrom', { price: formatPrice(cents(lowest)) })));
+    }
+    if (o.proConfig.enabled) rows.push(row('ph-sliders-horizontal', t('proConfigTitle'), '+' + formatPrice(cents(state.proConfigPrice))));
+    if (o.paint.enabled) {
+        const isGreek = (localStorage.getItem('codex_lang') || 'en') === 'el';
+        const name = (isGreek && o.paint.colorNameEl) ? o.paint.colorNameEl : (o.paint.colorName || '');
+        const swatch = `<i class="tc-ex-swatch" style="background:${esc(o.paint.colorHex || '#1a1a1a')}" aria-hidden="true"></i>`;
+        rows.push(row('', name ? `${t('paintTitle')} — ${name}` : t('paintTitle'), '+' + formatPrice(cents(o.paint.price)), swatch));
+    }
+    return rows.join('');
+}
+
+// Tab buttons on the stage card (Unit data / Extras). Both panels share one grid cell, so the card
+// keeps its size; the card is rebuilt on the next swipe, which opens it on Unit data again.
+export function cardTab(id, btn) {
+    const card = btn && btn.closest('#main-card');
+    if (!card) return;
+    if (window.playClick) window.playClick();
+    card.querySelectorAll('.tc-tab').forEach(b => {
+        const on = b === btn;
+        b.classList.toggle('active', on);
+        b.setAttribute('aria-selected', String(on));
+    });
+    card.querySelectorAll('.tc-panel').forEach(p => p.classList.toggle('active', p.dataset.tcPanel === id));
+}
+window.cardTab = cardTab;
 
 // The next swipe lands on a photo that's already downloaded and decoded, instead of an empty frame that
 // pops in a moment after the card slides.
