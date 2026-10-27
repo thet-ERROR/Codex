@@ -37,7 +37,13 @@ import './ui/ui-lock.js';
 // --- SYSTEM AUDIO SETUP ---
 const audioStart = new Audio('assets/audio/startup.mp3');
 const bgMusic = new Audio('assets/audio/bg.mp3');
+// Nothing is fetched until the music is switched on: most visits never play it, and it's the biggest file
+bgMusic.preload = 'none';
 bgMusic.loop = true;
+
+// "Reduce motion": the background stays on its first frame
+const bgVideo = document.querySelector('.bg-video');
+if (bgVideo && window.matchMedia('(prefers-reduced-motion: reduce)').matches) { bgVideo.removeAttribute('autoplay'); bgVideo.pause(); }
 bgMusic.volume = state.bgVolume;
 
 // Leaving the site stops the sound, like any site: switching tab or app, locking the phone, closing the

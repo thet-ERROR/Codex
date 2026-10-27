@@ -13,10 +13,32 @@ function rankBadge(rank) {
     return ` <i class="ph-fill ${icon} r-rank${rank === 'phantom' ? ' r-rank-top' : ''}" title="${esc(name)}" aria-label="${esc(name)}" role="img"></i>`;
 }
 
-export async function checkMissionCode() {
+// A red toast instead of the browser's alert box, which on a phone blocks the page and looks broken
+function notify(msg) {
+    if (window.showToast) window.showToast(msg, 'error'); else alert(msg);
+}
+
+// Opens the "code on the box" window (it used to be the browser's prompt() box)
+export function checkMissionCode() {
+    const input = document.getElementById('mc-code');
+    const err = document.getElementById('mc-error');
+    if (input) input.value = '';
+    if (err) { err.hidden = true; err.textContent = ''; }
+    if (window.openModal) window.openModal('mission-code-modal');
+    // Focus only with a mouse: on a phone the keyboard would jump up over the window as it opens
+    if (input && window.matchMedia('(hover: hover) and (pointer: fine)').matches) setTimeout(() => input.focus(), 50);
+}
+
+export async function submitMissionCode() {
     const t = window.t || (k => k);
-    const code = prompt(t('missionPromptCode'));
-    if(!code) return;
+    const input = document.getElementById('mc-code');
+    const err = document.getElementById('mc-error');
+    const btn = document.getElementById('mc-submit');
+    const code = input ? input.value.trim() : '';
+    const showError = (msg) => { if (err) { err.textContent = msg; err.hidden = false; } else notify(msg); };
+    if (!code) { showError(t('missionCodeEmpty')); return; }
+    if (err) err.hidden = true;
+    if (btn) btn.disabled = true;
 
     try {
         // Κλήση μέσω του κεντρικού api.js — read-only, δεν ξεκινάει ακόμα το 48ωρο
@@ -24,7 +46,7 @@ export async function checkMissionCode() {
 
         if (!data.valid) {
             // data.msg already starts with its own ❌ (server.js) — adding another showed two
-            alert(data.msg);
+            showError(data.msg || t('missionCodeInvalid'));
             return;
         }
 
@@ -32,8 +54,10 @@ export async function checkMissionCode() {
         // όχι κάποιο αυτόματο GET) είναι που ξεκινάει επίσημα το 48ωρο παράθυρο επικύρωσης.
         if (!data.activated) {
             data = await api.activateMissionCode(code);
-            if (!data.valid) { alert("❌ " + (data.msg || t('connectionErrorAlert'))); return; }
+            if (!data.valid) { showError("❌ " + (data.msg || t('connectionErrorAlert'))); return; }
         }
+
+        if (window.closeModal) window.closeModal('mission-code-modal');
 
         if (data.expired) {
             // The code only covers the review window now (2 days). Returns have their own route, so
@@ -53,7 +77,9 @@ export async function checkMissionCode() {
         if (window.openModal) window.openModal('mission-modal');
     } catch (error) {
         console.error("⛔ CONNECTION ERROR:", error);
-        alert(t('connectionErrorAlert'));
+        showError(t('connectionErrorAlert'));
+    } finally {
+        if (btn) btn.disabled = false;
     }
 }
 
@@ -93,7 +119,7 @@ export async function submitReviewCode() {
     const text = document.getElementById('rc-text').value.trim();
 
     if(!code || !user || !text) {
-        alert(window.t ? window.t('alertAllFieldsReview') : "SYSTEM ALERT: ALL FIELDS REQUIRED");
+        notify(window.t ? window.t('alertAllFieldsReview') : "SYSTEM ALERT: ALL FIELDS REQUIRED");
         return;
     }
 
@@ -109,10 +135,10 @@ export async function submitReviewCode() {
             if(window.showToast) window.showToast("TRANSMISSION SUCCESSFUL", "achievement");
             if(window.closeModal) window.closeModal('review-code-modal');
         } else {
-            alert(data.error || (window.t ? window.t('alertTransmissionFailed') : "TRANSMISSION FAILED"));
+            notify(data.error || (window.t ? window.t('alertTransmissionFailed') : "TRANSMISSION FAILED"));
         }
     } catch(e) {
-        alert(window.t ? window.t('alertServerError') : "SERVER ERROR");
+        notify(window.t ? window.t('alertServerError') : "SERVER ERROR");
     }
 }
 
@@ -124,7 +150,7 @@ export function requestReturn() {
     const pcName = pcNameEl ? pcNameEl.innerText : "Unknown";
     
     if (!reasonValue) {
-        alert(window.t ? window.t('alertSelectErrorProtocol') : "⚠️ SYSTEM ALERT: Please select a valid Error Protocol.");
+        notify(window.t ? window.t('alertSelectErrorProtocol') : "⚠️ SYSTEM ALERT: Please select a valid Error Protocol.");
         return; 
     }
     
@@ -206,6 +232,7 @@ export async function submitNewsletter() {
 
 // Εξαγωγή στο global scope για τα onclick του HTML
 window.checkMissionCode = checkMissionCode;
+window.submitMissionCode = submitMissionCode;
 window.startMissionTimer = startMissionTimer;
 window.openReviewForm = openReviewForm;
 window.submitReviewCode = submitReviewCode;

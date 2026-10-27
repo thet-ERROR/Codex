@@ -67,7 +67,9 @@ Type 'help' for a list of commands.
     
     <div id="toast-container" role="status" aria-live="polite"></div>
 
-    <div class="bg-layer"></div>
+    <!-- The moving background: a short muted loop (was a 2 MB GIF; the MP4 is a sixth of that). The poster
+         is its first frame, shown until the video plays and kept for "reduce motion" (main.js pauses it). -->
+    <div class="bg-layer"><video class="bg-video" src="assets/images/bg.mp4" poster="assets/images/bg.jpg" autoplay muted loop playsinline preload="auto" aria-hidden="true" tabindex="-1"></video></div>
     <div class="vignette"></div>
     <div class="grid-overlay"></div>
     <div class="moon-glow"></div>
@@ -598,6 +600,21 @@ Type 'help' for a list of commands.
                 <textarea id="rc-text" class="auth-input" style="height:80px; resize:none;" placeholder="System performance..." data-i18n-placeholder="rcTextPlaceholder"></textarea>
                 <button class="btn-inspect" onclick="submitReviewCode()" data-i18n="reviewCodeBtn">SUBMIT TRANSMISSION</button>
             </div>
+        </div>
+    </div>
+
+    <!-- Asks for the code on the box before a review (checkMissionCode / submitMissionCode in
+         modules/reviews.js). Was the browser's prompt() box; a wrong code is said here, under the field. -->
+    <div class="modal-overlay" id="mission-code-modal">
+        <div class="modal-content" style="width:400px;">
+            <span class="close-modal" onclick="closeModal('mission-code-modal')">X</span>
+            <h2 class="modal-title" data-i18n="missionCodeTitle">WRITE A REVIEW</h2>
+            <form class="auth-form" onsubmit="event.preventDefault(); submitMissionCode()">
+                <label for="mc-code" class="mc-label" data-i18n="missionPromptCode">Enter the code you'll find inside your PC's box.</label>
+                <input type="text" id="mc-code" class="auth-input" placeholder="CDX-XXXXXX" autocomplete="off" autocapitalize="characters" spellcheck="false">
+                <p class="mc-error" id="mc-error" role="alert" hidden></p>
+                <button type="submit" class="btn-inspect" id="mc-submit" data-i18n="missionCodeBtn">CHECK CODE</button>
+            </form>
         </div>
     </div>
 

@@ -3,6 +3,11 @@ import { state } from '../state.js';
 import { api } from '../api.js';
 import { applyProfile, pushLocalAchievements } from './achievements.js';
 
+// A red toast instead of the browser's alert box, which on a phone blocks the page and looks broken
+function notify(msg) {
+    if (window.showToast) window.showToast(msg, 'error'); else alert(msg);
+}
+
 // --- AUTHENTICATION UI UPDATER ---
 export function updateAuthUI(username) {
     const menu = document.getElementById('profile-menu');
@@ -125,7 +130,7 @@ export async function handleLogin() {
     const pass = document.getElementById('login-pass').value;
 
     if (!user || !pass) {
-        alert(window.t ? window.t('alertBothFields') : "SYSTEM ALERT: ENTER BOTH USERNAME & PASSWORD");
+        notify(window.t ? window.t('alertBothFields') : "SYSTEM ALERT: ENTER BOTH USERNAME & PASSWORD");
         return;
     }
 
@@ -138,7 +143,7 @@ export async function handleLogin() {
         // the request can still reach and be processed by the server even when the browser
         // then blocks reading the response, so silence here is actively misleading.
         console.error("Login request failed:", e);
-        alert(window.t ? window.t('connectionErrorAlert') : "⚠️ CONNECTION ERROR!\nThe server is not responding.");
+        notify(window.t ? window.t('connectionErrorAlert') : "⚠️ CONNECTION ERROR!\nThe server is not responding.");
         return;
     }
 
@@ -160,7 +165,7 @@ export async function handleLogin() {
         // Not awaited: the modal should close on the login, not on a cold dyno's first response.
         if (state.emailVerified) hydrateProfile().catch(() => {});
     } else {
-        alert(d?.error || (window.t ? window.t('alertInvalidCreds') : "ACCESS DENIED: INVALID CREDENTIALS"));
+        notify(d?.error || (window.t ? window.t('alertInvalidCreds') : "ACCESS DENIED: INVALID CREDENTIALS"));
     }
 }
 
@@ -172,7 +177,7 @@ export async function handleSignup() {
     const subscribed = document.getElementById('reg-subscribe')?.checked || false;
 
     if(!user || !email || !pass) {
-        alert(window.t ? window.t('alertAllFieldsRecruit') : "SYSTEM ALERT: ALL FIELDS REQUIRED FOR RECRUITMENT");
+        notify(window.t ? window.t('alertAllFieldsRecruit') : "SYSTEM ALERT: ALL FIELDS REQUIRED FOR RECRUITMENT");
         return;
     }
 
@@ -184,7 +189,7 @@ export async function handleSignup() {
         // silently did nothing, especially here — the account can still end up created
         // server-side even though the browser never let this code see the response.
         console.error("Register request failed:", e);
-        alert(window.t ? window.t('connectionErrorAlert') : "⚠️ CONNECTION ERROR!\nThe server is not responding.");
+        notify(window.t ? window.t('connectionErrorAlert') : "⚠️ CONNECTION ERROR!\nThe server is not responding.");
         return;
     }
 
@@ -202,7 +207,7 @@ export async function handleSignup() {
         // No achievement to report: a brand-new account is unverified, so every account-bound
         // badge stays locked until the email link is used — which is the whole point of the gate.
     } else {
-        alert(d?.error || (window.t ? window.t('alertRegistrationFailed') : "REGISTRATION FAILED"));
+        notify(d?.error || (window.t ? window.t('alertRegistrationFailed') : "REGISTRATION FAILED"));
     }
 }
 
@@ -317,7 +322,7 @@ export async function requestReset() {
     const t = window.t || (k => k);
 
     if (!email) {
-        alert(t('alertEnterEmail'));
+        notify(t('alertEnterEmail'));
         return;
     }
 
@@ -330,7 +335,7 @@ export async function requestReset() {
         if (window.openModal) window.openModal('reset-modal');
     } catch (e) {
         console.error("Password reset request failed:", e);
-        alert(t('connectionErrorAlert'));
+        notify(t('connectionErrorAlert'));
     }
 }
 
@@ -343,7 +348,7 @@ export async function completeReset() {
     const t = window.t || (k => k);
 
     if (!token || !newPass) {
-        alert(t('alertTokenAndPassword'));
+        notify(t('alertTokenAndPassword'));
         return;
     }
 
@@ -356,7 +361,7 @@ export async function completeReset() {
         if (window.openModal) window.openModal('login-modal');
     } catch (e) {
         // Surfaces the backend's own reason (expired/invalid token, password too short)
-        alert(e && e.error ? e.error : t('connectionErrorAlert'));
+        notify(e && e.error ? e.error : t('connectionErrorAlert'));
     }
 }
 
