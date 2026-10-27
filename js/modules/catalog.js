@@ -213,10 +213,9 @@ export function renderCard() {
     const nPcs = state.filtered.length;
     const tr = (k, fb) => (window.t ? window.t(k) : fb);
     const extrasRows = cardExtrasRows(pc);
-    // Arrows and the "which PC" dots live on the photo (card-hud.css). They are part of the card, so the
-    // swipe snapshot carries them too.
-    const navL = nPcs > 1 ? `<button type="button" class="tc-nav tc-nav-l" aria-label="Previous PC" onclick="event.stopPropagation(); playClick(); swipeCard(-1)"><i class="ph-bold ph-caret-left"></i></button>` : '';
-    const navR = nPcs > 1 ? `<button type="button" class="tc-nav tc-nav-r" aria-label="Next PC" onclick="event.stopPropagation(); playClick(); swipeCard(1)"><i class="ph-bold ph-caret-right"></i></button>` : '';
+    // The "which PC" dots live on the photo (card-hud.css), so the swipe snapshot carries them too. The
+    // arrows are outside the card (.nav-arrow in index.html), with a mouse only — on touch you swipe.
+    document.querySelectorAll('.nav-arrow').forEach(b => b.classList.toggle('hidden', nPcs < 2));
     const dots = nPcs > 1 ? `<div class="tc-dots" aria-hidden="true">${Array.from({ length: nPcs }, (_, i) => `<span class="tc-dot${i === state.index ? ' active' : ''}"></span>`).join('')}</div>` : '';
     c.innerHTML = `
         <div class="tc-face${extrasRows ? '' : ' no-tabs'}">
@@ -229,11 +228,11 @@ export function renderCard() {
                 <img src="${escUrl(pc.images && pc.images[0]) || 'assets/images/bg.jpg'}" class="tc-img" alt="">
                 ${nPhotos > 1 ? `<span class="hero-photos" aria-hidden="true"><i class="ph-bold ph-images"></i> ${nPhotos}</span>` : ''}
                 <button type="button" class="card-wish${inWishlist ? ' on' : ''}${wishSpin}" aria-pressed="${inWishlist}" aria-label="Wishlist" onclick="event.stopPropagation(); cardWish('${pcId}')"><i class="ph-bold ph-crosshair"></i></button>
-                ${navL}${navR}${dots}
+                ${dots}
+                ${(pc.communityDrop || membersOnlyActive(pc)) ? `<div class="tc-flags">${pc.communityDrop ? `<div class="community-badge"><i class="ph-fill ph-users-three"></i> ${esc(window.t ? window.t('communityDropBadge') : 'COMMUNITY DROP')}</div>` : ''}${membersOnlyActive(pc) ? `<div class="members-badge"><i class="ph-fill ph-lock-key"></i> ${esc(window.t ? window.t('membersOnlyBadge', { until: formatShortDateTime(pc.membersOnlyUntil) }) : 'MEMBERS FIRST')}</div>` : ''}</div>` : ''}
             </div>
             <div class="tc-type">
                 <div class="tc-row"><div class="tc-price">${formatPrice(priceCentsOf(pc))}</div>${stockHTML}</div>
-                ${(pc.communityDrop || membersOnlyActive(pc)) ? `<div class="tc-flags">${pc.communityDrop ? `<div class="community-badge"><i class="ph-fill ph-users-three"></i> ${esc(window.t ? window.t('communityDropBadge') : 'COMMUNITY DROP')}</div>` : ''}${membersOnlyActive(pc) ? `<div class="members-badge"><i class="ph-fill ph-lock-key"></i> ${esc(window.t ? window.t('membersOnlyBadge', { until: formatShortDateTime(pc.membersOnlyUntil) }) : 'MEMBERS FIRST')}</div>` : ''}</div>` : ''}
             </div>
             ${extrasRows ? `<div class="tc-tabs" role="tablist">
                 <button type="button" class="tc-tab active" role="tab" aria-selected="true" data-tc-tab="lore" onclick="cardTab('lore', this)"><i class="ph-fill ph-scroll"></i><span>${esc(tr('inspectTabLore', 'UNIT DATA'))}</span></button>
