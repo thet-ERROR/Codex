@@ -339,7 +339,7 @@ body.night-mode #main-card { box-shadow: inset 1px 1px 0 rgba(255, 255, 255, 0.5
     /* Eases back to flat when the mouse leaves; follows closely while it moves */
     #main-card { transition: transform 0.25s ease, box-shadow 0.25s ease, rotate 0.5s cubic-bezier(0.2, 0.8, 0.3, 1); }
     #main-card.tilting { transition: transform 0.25s ease, box-shadow 0.25s ease, rotate 0.12s linear; }
-    #main-card.tilting .tc-holo { opacity: 0.8; }
+    #main-card.tilting .tc-holo { opacity: 0.3; }
 }
 .card-ghost .tc-holo { display: none; }
 @media (prefers-reduced-motion: reduce) { .tc-holo { display: none; } }

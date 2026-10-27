@@ -173,6 +173,11 @@ body.pointer-input .tc-tab:focus-visible { outline: none; }
 /* --- the old outside arrows and the old dots row are replaced by the ones on the photo --- */
 .nav-arrow, .pc-dots { display: none !important; }
 .carousel-wrapper { gap: 0; }
+/* The swiped-away snapshot flies a card's width off to the side. Throwing right, it pushed past the
+   screen edge and iOS Safari let the whole page widen and pan sideways (it ignores overflow on body
+   for that). Clipping sideways here, on the full-width row, keeps it inside; the card's glow still
+   fits in the margin around it, and nothing is cut top or bottom. */
+@media (max-width: 1024px) { .carousel-wrapper { overflow-x: clip; } }
 @media (max-width: 768px) { .swipe-hint { top: 175px; } }
 
 /* --- the title over the card, in the same voice: a glowing title, a bordered count --- */

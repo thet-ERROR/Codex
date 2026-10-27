@@ -580,7 +580,7 @@ initCardSwipe();
 // hover and a fine pointer: on a phone the same finger swipes the card, and the two would fight.
 // The lean uses the separate `rotate` property, not `transform`, so it composes with the deck
 // transition and the INSPECT morph (both animate `transform`) instead of being overwritten by them.
-const TILT_MAX_DEG = 8;
+const TILT_MAX_DEG = 4;
 const FINE_POINTER = window.matchMedia('(hover: hover) and (pointer: fine)');
 
 function initCardTilt() {
