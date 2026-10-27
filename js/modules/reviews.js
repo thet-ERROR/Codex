@@ -4,6 +4,15 @@ import { api } from '../api.js';
 import { CONFIG } from '../config.js';
 import { esc } from '../utils.js';
 
+// The reviewer's rank badge, when the review was written from a signed-in account (the server stores
+// the rank on it). Only known ranks — the value comes from the database, so it's checked, not trusted.
+function rankBadge(rank) {
+    const icon = CONFIG.RANK_ICONS[rank];
+    if (!icon) return '';
+    const name = window.rankName ? window.rankName(rank) : rank;
+    return ` <i class="ph-fill ${icon} r-rank${rank === 'phantom' ? ' r-rank-top' : ''}" title="${esc(name)}" aria-label="${esc(name)}" role="img"></i>`;
+}
+
 export async function checkMissionCode() {
     const t = window.t || (k => k);
     const code = prompt(t('missionPromptCode'));
@@ -158,7 +167,7 @@ export function renderGlobalReviews() {
             const rating = Number(r.rating) || 0;
             return `<div class="review-card">
                         <span class="r-date">${esc(date)}</span>
-                        <div class="r-user">${esc(r.user)} <span class="r-stars">★${rating}</span></div>
+                        <div class="r-user">${esc(r.user)}${rankBadge(r.rank)} <span class="r-stars">★${rating}</span></div>
                         <div style="font-size:0.7rem; color:var(--neon-purple); margin-bottom:4px; font-weight:bold;">${esc(window.t ? window.t('purchasedLabel') : 'PURCHASED')}: ${esc(r.pcName)}</div>
                         <div class="r-text">"${esc(r.text)}"</div>
                     </div>`;

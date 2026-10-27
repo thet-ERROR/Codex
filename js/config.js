@@ -92,6 +92,18 @@ export const CONFIG = {
         specialist: { en: 'SPECIALIST',  el: 'ΕΙΔΙΚΟΣ' },
         eliteAgent: { en: 'ELITE AGENT', el: 'ΕΠΙΛΕΚΤΟΣ' },
         phantom:    { en: 'PHANTOM',     el: 'ΦΑΝΤΑΣΜΑ' }
+    },
+    // Each rank's badge: the profile emblem and the mark by a reviewer's name
+    RANK_ICONS: {
+        recruit: 'ph-user-circle', operative: 'ph-shield-check', fieldAgent: 'ph-crosshair',
+        specialist: 'ph-identification-card', eliteAgent: 'ph-star-four', phantom: 'ph-crown'
+    },
+    // The accent colours only a rank unlocks (never on the wheel). Which rank gives which comes from
+    // the server's ladder (state.ranks); the hex and the name are the frontend's to show.
+    RANK_COLORS: {
+        ultraviolet: { hex: '#7c4dff', name: 'Ultraviolet' },
+        arctic:      { hex: '#8fe8ff', name: 'Arctic' },
+        phantom:     { hex: '#e9e4ff', name: 'Phantom' }
     }
 };
 

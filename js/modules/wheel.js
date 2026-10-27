@@ -25,7 +25,9 @@ const SPIN_MS = 4600;
 
 let spinning = false;
 let currentRotation = 0;
-let status = { attemptsLeft: 3, maxAttempts: 3, nextAvailableAt: null };
+let status = { attemptsLeft: 3, maxAttempts: 3, nextAvailableAt: null, bonusSpins: 0 };
+// The day's attempts first, then the banked bonus spins a rank gave (the server spends them in that order)
+const canSpin = () => status.attemptsLeft > 0 || status.bonusSpins > 0;
 
 function sliceFill(i) {
     return i % 2 === 0 ? '#111' : '#1a1a1a';
@@ -72,8 +74,10 @@ export function applyWheelData(data) {
         if (window.updateCartUI) window.updateCartUI();
     }
     if (typeof data.attemptsLeft === 'number') {
-        status = { attemptsLeft: data.attemptsLeft, maxAttempts: data.maxAttempts || 3, nextAvailableAt: data.nextAvailableAt || null };
+        status = { ...status, attemptsLeft: data.attemptsLeft, maxAttempts: data.maxAttempts || 3, nextAvailableAt: data.nextAvailableAt || null };
     }
+    // Also arrives on its own with every profile (achievements.js applyProfile)
+    if (typeof data.bonusSpins === 'number') { status.bonusSpins = data.bonusSpins; updateAttemptsDisplay(); }
 }
 
 function formatCountdown(ms) {
@@ -84,7 +88,8 @@ function formatCountdown(ms) {
 
 function updateAttemptsDisplay() {
     const el = document.getElementById('wheel-attempts');
-    if (el) el.textContent = t('wheelSpinsLeft', { n: Math.max(status.attemptsLeft, 0), max: status.maxAttempts });
+    if (el) el.textContent = t('wheelSpinsLeft', { n: Math.max(status.attemptsLeft, 0), max: status.maxAttempts })
+        + (status.bonusSpins > 0 ? t('wheelBonusSpins', { n: status.bonusSpins }) : '');
 }
 
 function authHeaders() {
@@ -109,7 +114,7 @@ export async function openWheelFromSettings() {
         applyWheelData(data);
     } catch (e) { notify(t('wheelError')); return; }
 
-    if (status.attemptsLeft <= 0) {
+    if (!canSpin()) {
         const wait = status.nextAvailableAt ? Date.parse(status.nextAvailableAt) - Date.now() : 0;
         notify(t('wheelNoSpins', { time: formatCountdown(wait) }));
         return;
@@ -159,14 +164,14 @@ function resolveSpin(data) {
         text = t('wheelCouponWon', { p: reward.coupon.percent, code: reward.coupon.code, until: formatShortDateTime(reward.coupon.expiresAt) });
         notify(t('wheelCouponToast', { p: reward.coupon.percent }), 'achievement');
     } else {
-        text = status.attemptsLeft > 0 ? t('wheelBlank') : t('wheelBlankLast');
+        text = canSpin() ? t('wheelBlank') : t('wheelBlankLast');
     }
     if (resultEl) resultEl.textContent = text;
-    if (btn) btn.disabled = status.attemptsLeft <= 0;
+    if (btn) btn.disabled = !canSpin();
 }
 
 export async function spinWheel() {
-    if (spinning || status.attemptsLeft <= 0) return;
+    if (spinning || !canSpin()) return;
     const wheel = document.getElementById('wheel');
     if (!wheel) return;
 
@@ -186,7 +191,7 @@ export async function spinWheel() {
         if (!res.ok) {
             spinning = false;
             if (data.code === 'NO_SPINS') {
-                status = { ...status, attemptsLeft: 0, nextAvailableAt: data.nextAvailableAt };
+                status = { ...status, attemptsLeft: 0, bonusSpins: 0, nextAvailableAt: data.nextAvailableAt };
                 updateAttemptsDisplay();
                 notify(t('wheelNoSpins', { time: formatCountdown(Date.parse(data.nextAvailableAt) - Date.now()) }));
             } else if (res.status === 401) {

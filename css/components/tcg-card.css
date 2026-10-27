@@ -306,3 +306,40 @@ body.night-mode #main-card { box-shadow: inset 1px 1px 0 rgba(255, 255, 255, 0.5
 }
 @keyframes ygSheen { to { transform: translateX(300%) skewX(-12deg); } }
 @media (prefers-reduced-motion: reduce) { .yg-card.sheen .yg-card-front::before { animation: none; display: none; } }
+
+/* ===== Holo tilt (desktop, initCardTilt in js/modules/catalog.js) =====
+   The card leans towards the mouse (the `rotate` property, set inline) and a holographic sheen in the
+   accent colour follows it: a soft light where the pointer is, and bands of the foil's own colour
+   sliding the other way, like a foil card turned in the light. Hidden at rest and on touch screens. */
+.tc-holo {
+    position: absolute; inset: 0; z-index: 4; border-radius: 12px; pointer-events: none; opacity: 0;
+    transition: opacity 0.35s ease;
+    background:
+        radial-gradient(circle at var(--mx, 50%) var(--my, 50%), rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.04) 26%, transparent 50%),
+        linear-gradient(115deg, transparent 22%, rgba(204, 255, 0, 0.22) 36%, rgba(255, 255, 255, 0.18) 44%, rgba(204, 255, 0, 0.12) 52%, rgba(204, 255, 0, 0.26) 62%, transparent 78%);
+    background-size: 100% 100%, 260% 260%;
+    background-position: center, calc(100% - var(--mx, 50%)) calc(100% - var(--my, 50%));
+    mix-blend-mode: screen;
+}
+@supports (color: color-mix(in srgb, red, blue)) {
+    .tc-holo {
+        background:
+            radial-gradient(circle at var(--mx, 50%) var(--my, 50%), rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.04) 26%, transparent 50%),
+            linear-gradient(115deg, transparent 22%,
+                color-mix(in srgb, var(--neon-green) 24%, transparent) 36%,
+                color-mix(in srgb, var(--neon-green) 30%, rgba(255, 255, 255, 0.5)) 44%,
+                color-mix(in srgb, var(--neon-green) 12%, transparent) 52%,
+                color-mix(in srgb, var(--neon-green) 28%, transparent) 62%, transparent 78%);
+        background-size: 100% 100%, 260% 260%;
+        background-position: center, calc(100% - var(--mx, 50%)) calc(100% - var(--my, 50%));
+    }
+}
+@media (hover: hover) and (pointer: fine) {
+    .card-col { perspective: 1100px; }
+    /* Eases back to flat when the mouse leaves; follows closely while it moves */
+    #main-card { transition: transform 0.25s ease, box-shadow 0.25s ease, rotate 0.5s cubic-bezier(0.2, 0.8, 0.3, 1); }
+    #main-card.tilting { transition: transform 0.25s ease, box-shadow 0.25s ease, rotate 0.12s linear; }
+    #main-card.tilting .tc-holo { opacity: 0.8; }
+}
+.card-ghost .tc-holo { display: none; }
+@media (prefers-reduced-motion: reduce) { .tc-holo { display: none; } }

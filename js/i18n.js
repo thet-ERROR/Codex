@@ -58,8 +58,10 @@ const translations = {
 
         settingsTitle: "Ρυθμίσεις συστήματος", accentColorLabel: "Χρώμα τονισμού",
         settingsSound: "Ήχος & μουσική", settingsLanguage: "Γλώσσα", settingsReplayTour: "Δες ξανά την ξενάγηση",
-        colorsLockedNote: "Τα 4 κάτω ξεκλειδώνουν στον Ημερήσιο Τροχό (απαιτείται σύνδεση).", colorsSpinBtn: "Γύρνα τον τροχό",
-        toastColorLocked: "Κλειδωμένο χρώμα — γύρνα τον Ημερήσιο Τροχό για να το ξεκλειδώσεις.",
+        colorsLockedNote: "Η 2η σειρά ξεκλειδώνει στον Ημερήσιο Τροχό, η 3η ανεβαίνοντας επίπεδο στο προφίλ σου (απαιτείται σύνδεση).", colorsSpinBtn: "Γύρνα τον τροχό",
+        toastColorLocked: "Κλειδωμένο χρώμα — γύρνα τον Ημερήσιο Τροχό για να το ξεκλειδώσεις.", toastColorRankLocked: "Κλειδωμένο χρώμα — ξεκλειδώνει στο επίπεδο {rank}.", toastColorRankLockedAny: "Κλειδωμένο χρώμα — ξεκλειδώνει ανεβαίνοντας επίπεδο στο προφίλ σου.",
+        rankUpToast: "ΝΕΟ ΕΠΙΠΕΔΟ: {rank}", rankUpSpins: "+{n} περιστροφές στον τροχό", rankUpColor: "χρώμα {name}",
+        rewardUltraviolet: "Skin Ultraviolet", rewardArctic: "Skin Arctic", rewardPhantom: "Skin Phantom",
         colorLime: "Lime", colorCyan: "Cyan", colorRed: "Κόκκινο", colorPurple: "Μωβ",
         closeLabel: "Κλείσιμο",
 
@@ -90,17 +92,17 @@ const translations = {
         loginTitle: "Σύνδεση", usernamePlaceholder: "Όνομα χρήστη", passwordPlaceholder: "Κωδικός",
         loginBtn: "Σύνδεση", lostAccessLink: "[ Ξέχασες τον κωδικό; ]",
 
-        dossierProfileLabel: "[Προφίλ]", dossierOrdersHeading: ">// Οι παραγγελίες μου", dossierNoOrders: "> Δεν υπάρχουν παραγγελίες ακόμα.",
-        dossierWishlistHeading: ">// Λίστα επιθυμιών", dossierWishlistSub: "(Αποθηκευμένα συστήματα)",
-        dossierAchievementsHeading: ">// Επιτεύγματα", dossierSignIn: "> Σύνδεση", dossierRegister: "> Εγγραφή", dossierSignOut: "> Αποσύνδεση",
+        dossierProfileLabel: "[Προφίλ]", dossierOrdersHeading: "Οι παραγγελίες μου", dossierNoOrders: "Δεν υπάρχουν παραγγελίες ακόμα.", dossierNoOrdersSub: "Ξεκίνησε τις αγορές σου και θα βλέπεις εδώ τις παραγγελίες σου.", dossierJourney: "Το ταξίδι σου ξεκινά εδώ",
+        dossierWishlistHeading: "Λίστα επιθυμιών", dossierWishlistSub: "(Αποθηκευμένα συστήματα)",
+        dossierAchievementsHeading: "Επιτεύγματα", dossierSignIn: "> Σύνδεση", dossierRegister: "> Εγγραφή", dossierSignOut: "Αποσύνδεση",
         dossierNoTargets: "> Κανένας στόχος κλειδωμένος.", dossierRemoveTarget: "Αφαίρεση από τη λίστα",
 
         // Προόδος πράκτορα. Τα ονόματα των βαθμίδων ζουν στο CONFIG.RANK_NAMES, όχι εδώ — τα
         // κατεβάζει ο server με το id τους και το config κρατά μόνο την εμφάνιση.
         achUnlocked: "ΞΕΚΛΕΙΔΩΤΟ", achLocked: "ΚΛΕΙΔΩΜΕΝΟ", achUnlockedPrefix: "ΕΠΙΤΕΥΓΜΑ",
-        xpToNextRank: "{xp} XP — {next} XP για {rank}", xpMaxRank: "{xp} XP — ανώτατη βαθμίδα",
+        xpToNextRank: "{xp} XP → {next} XP για {rank}", xpMaxRank: "{xp} XP — ανώτατη βαθμίδα",
         chipWishlist: "ΛΙΣΤΑ", chipAchievements: "ΕΠΙΤΕΥΓΜΑΤΑ", chipInCart: "ΣΤΟ ΚΑΛΑΘΙ",
-        achViewAll: "> ΟΛΑ ΤΑ ΕΠΙΤΕΥΓΜΑΤΑ",
+        achViewAll: "ΟΛΑ ΤΑ ΕΠΙΤΕΥΓΜΑΤΑ",
 
         signupTitle: "Νέα εγγραφή", emailPlaceholder: "Email",
         regSubscribeLabel: "🔔 Θέλω ειδοποιήσεις για νέα drops", signupBtn: "Εγγραφή",
@@ -137,12 +139,12 @@ const translations = {
         voteInfoDefault: "Κοινοτικά drops: η κοινότητα ψηφίζει για να ξεκλειδώσει ένα μυστηριώδες PC.\n\n1. Η ψηφοφορία ανοίγει την ημερομηνία που φαίνεται.\n2. Κάθε συνδεδεμένος πράκτορας με επιβεβαιωμένο email έχει μία ψήφο.\n3. Αν μαζευτούν οι ψήφοι πριν λήξει ο χρόνος, το PC ξεκλειδώνει και μπαίνει αμέσως στα Live Drops, έτοιμο για παραγγελία.\n4. Αν λήξει πρώτα ο χρόνος, το PC έρχεται κι αυτό στα Live Drops με το κλείσιμο της ψηφοφορίας.",
         communityDropBadge: "ΚΟΙΝΟΤΙΚΟ DROP",
         // Τροχός + κουπόνια (wheel.js, dashboard, καλάθι)
-        wheelSpinsLeft: "ΠΡΟΣΠΑΘΕΙΕΣ: {n}/{max}", wheelLoginRequired: "Συνδέσου για να γυρίσεις τον τροχό.",
+        wheelSpinsLeft: "ΠΡΟΣΠΑΘΕΙΕΣ: {n}/{max}", wheelBonusSpins: " · +{n} ΜΠΟΝΟΥΣ", wheelLoginRequired: "Συνδέσου για να γυρίσεις τον τροχό.",
         wheelError: "Ο τροχός δεν απάντησε — δοκίμασε ξανά σε λίγο.", wheelNoSpins: "Τελείωσαν οι προσπάθειες — ξανά σε {time}.",
         wheelSkinNew: "> ΞΕΚΛΕΙΔΩΣΕΣ ΤΟ SKIN {name} — ΕΦΑΡΜΟΣΤΗΚΕ ΣΤΟ SITE.", wheelSkinAgain: "> ΤΟ SKIN {name} ΤΟ ΕΙΧΕΣ ΗΔΗ — ΕΦΑΡΜΟΣΤΗΚΕ ΞΑΝΑ.",
         wheelCouponWon: "> ΚΕΡΔΙΣΕΣ ΚΟΥΠΟΝΙ -{p}%: {code} — ισχύει έως {until}. Το βρίσκεις στο προφίλ σου και στο καλάθι.",
         wheelCouponToast: "🎟 Κέρδισες κουπόνι -{p}%!", wheelBlank: "> ΤΙΠΟΤΑ ΑΥΤΗ ΤΗ ΦΟΡΑ — ΔΟΚΙΜΑΣΕ ΞΑΝΑ.", wheelBlankLast: "> ΤΙΠΟΤΑ ΑΥΤΗ ΤΗ ΦΟΡΑ — ΤΕΛΕΙΩΣΑΝ ΟΙ ΠΡΟΣΠΑΘΕΙΕΣ.",
-        dossierCouponsHeading: ">// Κουπόνια", dossierNoCoupons: "> Κανένα κουπόνι ακόμα — κέρδισε ένα στον Ημερήσιο Τροχό.",
+        dossierCouponsHeading: "Κουπόνια", dossierNoCoupons: "> Κανένα κουπόνι ακόμα — κέρδισε ένα στον Ημερήσιο Τροχό.",
         couponUsed: "Χρησιμοποιήθηκε", couponValidUntil: "Ισχύει έως {until}", couponCopy: "Αντιγραφή κωδικού", couponCopied: "Ο κωδικός {code} αντιγράφηκε",
         cartCouponLabel: "Κουπόνι", cartCouponNone: "Χωρίς κουπόνι", cartCouponLine: "Έκπτωση κουπονιού (-{p}%)",
         orderMsgCoupon: "Κουπόνι", orderMsgAccount: "Λογαριασμός",
@@ -269,8 +271,10 @@ const translations = {
 
         settingsTitle: "SYSTEM PREFERENCES", accentColorLabel: "ACCENT COLOR",
         settingsSound: "Sound & music", settingsLanguage: "Language", settingsReplayTour: "Replay the tour",
-        colorsLockedNote: "The bottom 4 unlock on the Daily Spin (sign-in required).", colorsSpinBtn: "Spin the wheel",
-        toastColorLocked: "Locked colour — spin the Daily Wheel to unlock it.",
+        colorsLockedNote: "Row 2 unlocks on the Daily Spin, row 3 by ranking up on your profile (sign-in required).", colorsSpinBtn: "Spin the wheel",
+        toastColorLocked: "Locked colour — spin the Daily Wheel to unlock it.", toastColorRankLocked: "Locked colour — it unlocks at rank {rank}.", toastColorRankLockedAny: "Locked colour — it unlocks as you rank up on your profile.",
+        rankUpToast: "NEW RANK: {rank}", rankUpSpins: "+{n} wheel spins", rankUpColor: "{name} colour",
+        rewardUltraviolet: "ULTRAVIOLET SKIN", rewardArctic: "ARCTIC SKIN", rewardPhantom: "PHANTOM SKIN",
         colorLime: "Lime", colorCyan: "Cyan", colorRed: "Red", colorPurple: "Purple",
         closeLabel: "Close",
 
@@ -301,17 +305,17 @@ const translations = {
         loginTitle: "AGENT SIGN-IN", usernamePlaceholder: "USERNAME", passwordPlaceholder: "PASSWORD",
         loginBtn: "AUTHENTICATE", lostAccessLink: "[ LOST ACCESS? ]",
 
-        dossierProfileLabel: "[AGENT PROFILE]", dossierOrdersHeading: ">// MY ORDERS", dossierNoOrders: "> NO ORDERS YET.",
-        dossierWishlistHeading: ">// WISHLIST", dossierWishlistSub: "(SAVED SYSTEMS)",
-        dossierAchievementsHeading: ">// ACHIEVEMENTS", dossierSignIn: "> SIGN IN", dossierRegister: "> REGISTER", dossierSignOut: "> SIGN OUT",
+        dossierProfileLabel: "[AGENT PROFILE]", dossierOrdersHeading: "My orders", dossierNoOrders: "No orders yet.", dossierNoOrdersSub: "Start shopping and your orders will show up here.", dossierJourney: "Your journey begins here",
+        dossierWishlistHeading: "Wishlist", dossierWishlistSub: "(SAVED SYSTEMS)",
+        dossierAchievementsHeading: "Achievements", dossierSignIn: "> SIGN IN", dossierRegister: "> REGISTER", dossierSignOut: "SIGN OUT",
         dossierNoTargets: "> NO TARGETS LOCKED.", dossierRemoveTarget: "Remove from wishlist",
 
         // Agent progression. Rank display names live in CONFIG.RANK_NAMES, not here — the API
         // reports a rank by id and the config holds only its presentation.
         achUnlocked: "UNLOCKED", achLocked: "LOCKED", achUnlockedPrefix: "ACHIEVEMENT UNLOCKED",
-        xpToNextRank: "{xp} XP — {next} XP for {rank}", xpMaxRank: "{xp} XP — max rank",
+        xpToNextRank: "{xp} XP → {next} XP for {rank}", xpMaxRank: "{xp} XP — max rank",
         chipWishlist: "WISHLIST", chipAchievements: "ACHIEVEMENTS", chipInCart: "IN CART",
-        achViewAll: "> VIEW ALL RECORDS",
+        achViewAll: "VIEW ALL RECORDS",
 
         signupTitle: "AGENT REGISTRATION", emailPlaceholder: "EMAIL",
         regSubscribeLabel: "🔔 I WANT NOTIFICATIONS FOR NEW DROPS", signupBtn: "REGISTER",
@@ -348,12 +352,12 @@ const translations = {
         voteInfoDefault: "Community drops: the network votes to unlock a mystery PC.\n\n1. Voting opens on the date shown.\n2. Every signed-in agent with a verified email gets one vote.\n3. Reach the target before time runs out and the PC unlocks — it goes straight to Live Drops, ready to order.\n4. If time runs out first, the PC still comes to Live Drops when voting closes.",
         communityDropBadge: "COMMUNITY DROP",
         // Wheel + coupons (wheel.js, dashboard, cart)
-        wheelSpinsLeft: "SPINS LEFT: {n}/{max}", wheelLoginRequired: "Sign in to spin the wheel.",
+        wheelSpinsLeft: "SPINS LEFT: {n}/{max}", wheelBonusSpins: " · +{n} BONUS", wheelLoginRequired: "Sign in to spin the wheel.",
         wheelError: "The wheel didn't respond — try again in a moment.", wheelNoSpins: "No spins left — next in {time}.",
         wheelSkinNew: "> SKIN {name} UNLOCKED — APPLIED TO THE SITE.", wheelSkinAgain: "> YOU ALREADY HAD SKIN {name} — RE-APPLIED.",
         wheelCouponWon: "> YOU WON A -{p}% COUPON: {code} — valid until {until}. It's in your profile and your cart.",
         wheelCouponToast: "🎟 You won a -{p}% coupon!", wheelBlank: "> NOTHING THIS TIME — TRY AGAIN.", wheelBlankLast: "> NOTHING THIS TIME — NO SPINS LEFT.",
-        dossierCouponsHeading: ">// Coupons", dossierNoCoupons: "> No coupons yet — win one on the Daily Wheel.",
+        dossierCouponsHeading: "Coupons", dossierNoCoupons: "> No coupons yet — win one on the Daily Wheel.",
         couponUsed: "Used", couponValidUntil: "Valid until {until}", couponCopy: "Copy code", couponCopied: "Code {code} copied",
         cartCouponLabel: "Coupon", cartCouponNone: "No coupon", cartCouponLine: "Coupon discount (-{p}%)",
         orderMsgCoupon: "Coupon", orderMsgAccount: "Account",
@@ -423,28 +427,10 @@ const translations = {
 
 let currentLang = localStorage.getItem('codex_lang') || 'en';
 
-// Flag icons, shown for the language you'd switch TO, not the currently active one. Greek is the neon
-// bar icon (assets/icons/bar, see .side-ico in sidebars.css); the UK one is still the pixel-art SVG
-// until its neon version exists.
+// Flag icons, shown for the language you'd switch TO, not the currently active one — the neon bar
+// icons (assets/icons/bar, see .side-ico in sidebars.css).
 const FLAG_GR = `<img class="side-ico" src="assets/icons/bar/flag-gr.png" alt="" aria-hidden="true">`;
-// Union Jack, second attempt: built layer-by-layer like the real flag (blue field -> white
-// diagonal saltire -> red diagonal saltire -> white straight cross -> red straight cross), each
-// diagonal as a 4-step staircase of plain rects (crispEdges won't pixelate an actual diagonal
-// line/polygon, only axis-aligned rects, hence the staircase). Still unverified without a
-// browser — flag if it looks wrong and I'll adjust the step coordinates.
-const FLAG_UK = `<svg width="24" height="16" viewBox="0 0 24 16" shape-rendering="crispEdges" xmlns="http://www.w3.org/2000/svg">
-    <rect width="24" height="16" fill="#00247D"/>
-    <rect x="0" y="0" width="6" height="4" fill="#fff"/><rect x="6" y="4" width="6" height="4" fill="#fff"/>
-    <rect x="12" y="8" width="6" height="4" fill="#fff"/><rect x="18" y="12" width="6" height="4" fill="#fff"/>
-    <rect x="18" y="0" width="6" height="4" fill="#fff"/><rect x="12" y="4" width="6" height="4" fill="#fff"/>
-    <rect x="6" y="8" width="6" height="4" fill="#fff"/><rect x="0" y="12" width="6" height="4" fill="#fff"/>
-    <rect x="2" y="0" width="2" height="4" fill="#CF142B"/><rect x="8" y="4" width="2" height="4" fill="#CF142B"/>
-    <rect x="14" y="8" width="2" height="4" fill="#CF142B"/><rect x="20" y="12" width="2" height="4" fill="#CF142B"/>
-    <rect x="20" y="0" width="2" height="4" fill="#CF142B"/><rect x="14" y="4" width="2" height="4" fill="#CF142B"/>
-    <rect x="8" y="8" width="2" height="4" fill="#CF142B"/><rect x="2" y="12" width="2" height="4" fill="#CF142B"/>
-    <rect x="0" y="6" width="24" height="4" fill="#fff"/><rect x="10" y="0" width="4" height="16" fill="#fff"/>
-    <rect x="0" y="7" width="24" height="2" fill="#CF142B"/><rect x="11" y="0" width="2" height="16" fill="#CF142B"/>
-</svg>`;
+const FLAG_UK = `<img class="side-ico" src="assets/icons/bar/flag-uk.png" alt="" aria-hidden="true">`;
 
 export function applyLanguage(lang) {
     document.body.classList.toggle('lang-el', lang === 'el');

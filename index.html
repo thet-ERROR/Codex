@@ -546,6 +546,10 @@ Type 'help' for a list of commands.
                         <button type="button" class="color-btn locked" data-id="toxicOrange" style="background:#ff5e00;" data-color="#ff5e00" onclick="setTheme('#ff5e00','toxicOrange')" data-i18n-aria="rewardToxicOrange" aria-label="Toxic Orange"><i class="ph-fill ph-lock-simple color-lock-icon"></i></button>
                         <button type="button" class="color-btn locked" data-id="neonPink" style="background:#ff2bd6;" data-color="#ff2bd6" onclick="setTheme('#ff2bd6','neonPink')" data-i18n-aria="rewardNeonPink" aria-label="Neon Pink"><i class="ph-fill ph-lock-simple color-lock-icon"></i></button>
                         <button type="button" class="color-btn locked" data-id="matrixGreen" style="background:#00ff41;" data-color="#00ff41" onclick="setTheme('#00ff41','matrixGreen')" data-i18n-aria="rewardMatrixGreen" aria-label="Matrix Green"><i class="ph-fill ph-lock-simple color-lock-icon"></i></button>
+                        <!-- Rank colours: unlocked by ranking up (server grantRankRewards), never on the wheel -->
+                        <button type="button" class="color-btn locked rank-color" data-id="ultraviolet" style="background:#7c4dff;" data-color="#7c4dff" onclick="setTheme('#7c4dff','ultraviolet')" data-i18n-aria="rewardUltraviolet" aria-label="Ultraviolet"><i class="ph-fill ph-medal color-lock-icon"></i></button>
+                        <button type="button" class="color-btn locked rank-color" data-id="arctic" style="background:#8fe8ff;" data-color="#8fe8ff" onclick="setTheme('#8fe8ff','arctic')" data-i18n-aria="rewardArctic" aria-label="Arctic"><i class="ph-fill ph-medal color-lock-icon"></i></button>
+                        <button type="button" class="color-btn locked rank-color" data-id="phantom" style="background:#e9e4ff;" data-color="#e9e4ff" onclick="setTheme('#e9e4ff','phantom')" data-i18n-aria="rewardPhantom" aria-label="Phantom"><i class="ph-fill ph-crown color-lock-icon"></i></button>
                     </div>
                     <p class="set-note"><i class="ph-bold ph-lock-simple"></i> <span data-i18n="colorsLockedNote">The bottom 4 unlock on the Daily Spin.</span></p>
                     <button type="button" class="info-btn" onclick="playClick(); closeModal('settings-modal'); openWheelFromSettings()"><i class="ph-bold ph-gift"></i> <span data-i18n="colorsSpinBtn">Spin the wheel</span></button>
@@ -667,18 +671,25 @@ Type 'help' for a list of commands.
         <div class="dossier-box">
             <button class="modal-close" onclick="closeModal('agent-dashboard-modal')">X</button>
             
+            <!-- Styled by css/components/dossier-hud.css: a HUD panel with cut corners, the rank emblem
+                 on the left and the phoenix crest as a watermark on the right -->
             <div class="dossier-header">
-                <div class="dossier-title" data-i18n="dossierProfileLabel">[AGENT PROFILE]</div>
-                <div class="agent-handle-box">
-                    <span class="dossier-label">> </span> 
-                    <span class="typewriter-text terminal-name" id="dossier-username">UNKNOWN_USER</span>
+                <div class="dossier-head-row">
+                    <div class="dossier-emblem" aria-hidden="true"><i class="ph-duotone ph-identification-card"></i></div>
+                    <div class="dossier-head-text">
+                        <div class="dossier-title"><i class="ph-bold ph-caret-double-right" aria-hidden="true"></i> <span data-i18n="dossierProfileLabel">[AGENT PROFILE]</span></div>
+                        <div class="agent-handle-box">
+                            <span class="typewriter-text terminal-name" id="dossier-username">UNKNOWN_USER</span>
+                        </div>
+                        <div class="agent-rank">RANK: <span id="dossier-rank" class="neon-purple-text">RECRUIT</span></div>
+                        <div class="dossier-rank-bar"><div class="dossier-rank-fill" id="dossier-rank-fill"></div></div>
+                        <!-- XP total and the gap to the next rank. Both come from /api/me — the client
+                             never computes them. See refreshProgressionUI() in modules/achievements.js. -->
+                        <div class="dossier-xp" id="dossier-xp">0 XP</div>
+                        <div class="network-status"><div class="live-dot"></div> STATUS: <span class="neon-green-text">ONLINE</span></div>
+                    </div>
+                    <img class="dossier-crest" src="assets/images/logo.png" alt="" aria-hidden="true">
                 </div>
-                <div class="agent-rank">RANK: <span id="dossier-rank" class="neon-purple-text">RECRUIT</span></div>
-                <div class="dossier-rank-bar"><div class="dossier-rank-fill" id="dossier-rank-fill"></div></div>
-                <!-- XP total and the gap to the next rank. Both come from /api/me — the client
-                     never computes them. See refreshProgressionUI() in modules/achievements.js. -->
-                <div class="dossier-xp" id="dossier-xp">0 XP</div>
-                <div class="network-status"><div class="live-dot"></div> STATUS: <span class="neon-green-text">ONLINE</span></div>
                 <!-- Filled/shown only when state.emailVerified is false — see openAgentDashboard() -->
                 <div class="dossier-verify-banner hidden" id="dossier-verify-banner">
                     <span>⚠ EMAIL NOT VERIFIED — wishlist, achievements & voting are locked</span>
@@ -692,20 +703,23 @@ Type 'help' for a list of commands.
             <div class="dossier-grid">
                 <div class="dossier-col dossier-left">
                     <div>
-                        <h3 class="dossier-heading" data-i18n="dossierOrdersHeading">>// MY ORDERS</h3>
+                        <h3 class="dossier-heading"><i class="ph-bold ph-caret-double-right" aria-hidden="true"></i> <span data-i18n="dossierOrdersHeading">MY ORDERS</span></h3>
                         <div class="dossier-list" id="dossier-orders">
-                            <div class="dossier-empty" data-i18n="dossierNoOrders">> NO ORDERS YET.</div>
+                            <div class="dossier-empty dossier-empty-rich">
+                                <i class="ph-duotone ph-package" aria-hidden="true"></i>
+                                <div><strong data-i18n="dossierNoOrders">No orders yet.</strong><small data-i18n="dossierNoOrdersSub">Start shopping and your orders will show up here.</small></div>
+                            </div>
                         </div>
                     </div>
 
                     <!-- Coupons won on the daily wheel — filled by renderDossierCoupons() (achievements.js) -->
                     <div>
-                        <h3 class="dossier-heading coupon-heading" data-i18n="dossierCouponsHeading">&gt;// COUPONS</h3>
+                        <h3 class="dossier-heading coupon-heading"><i class="ph-bold ph-ticket" aria-hidden="true"></i> <span data-i18n="dossierCouponsHeading">COUPONS</span></h3>
                         <div class="dossier-list coupon-list" id="dossier-coupons"></div>
                     </div>
 
                     <div>
-                        <h3 class="dossier-heading"><span data-i18n="dossierWishlistHeading">&gt;// WISHLIST</span> <span style="font-size: 0.6em; color: #888;" data-i18n="dossierWishlistSub">(SAVED SYSTEMS)</span></h3>
+                        <h3 class="dossier-heading"><i class="ph-bold ph-crosshair" aria-hidden="true"></i> <span data-i18n="dossierWishlistHeading">WISHLIST</span> <span class="dossier-heading-sub" data-i18n="dossierWishlistSub">(SAVED SYSTEMS)</span></h3>
                         <div class="wishlist-grid" id="dossier-wishlist">
                              <div class="dossier-empty">> NO SAVED SYSTEMS.</div>
                         </div>
@@ -713,14 +727,19 @@ Type 'help' for a list of commands.
                 </div>
 
                 <div class="dossier-col dossier-right">
-                    <h3 class="dossier-heading purple-heading" data-i18n="dossierAchievementsHeading">>// ACHIEVEMENTS</h3>
+                    <h3 class="dossier-heading purple-heading"><i class="ph-fill ph-chart-bar" aria-hidden="true"></i> <span data-i18n="dossierAchievementsHeading">ACHIEVEMENTS</span></h3>
                     <div class="dossier-list" id="dossier-achievements">
                         <div class="dossier-empty">> NO ACHIEVEMENTS UNLOCKED.</div>
                     </div>
                     <!-- #achievements-modal already existed but nothing ever opened it. With
                          nineteen badges the 200px column above is a keyhole, so this is the way in
                          to the full-size grid. -->
-                    <button class="ach-viewall-btn" onclick="playClick(); openAchievements();" data-i18n="achViewAll">> VIEW ALL RECORDS</button>
+                    <button class="ach-viewall-btn" onclick="playClick(); openAchievements();"><span data-i18n="achViewAll">VIEW ALL RECORDS</span> <i class="ph-bold ph-caret-right" aria-hidden="true"></i></button>
+                    <!-- The rank ladder lands here (dossier step D3); until then the crest and a line -->
+                    <div class="dossier-ladder" id="dossier-ladder">
+                        <img class="dossier-ladder-crest" src="assets/images/logo.png" alt="" aria-hidden="true">
+                        <div class="dossier-ladder-line" data-i18n="dossierJourney">Your journey begins here</div>
+                    </div>
                 </div>
             </div>
             

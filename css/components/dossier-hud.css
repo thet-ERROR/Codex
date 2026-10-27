@@ -1,0 +1,221 @@
+/* ===== The profile window as a HUD (index.html #agent-dashboard-modal) =====
+   The user's mockup: panels with cut corners and neon purple/pink edges, a rank emblem, a gradient XP
+   bar, icon chips, gold coupons. Its own fixed purple/pink — the profile has an identity of its own,
+   the way the vote drop has its gold — rather than the visitor's accent.
+   Loaded last and scoped to the modal's id, so it wins over dossier.css / texture.css / mobile.css
+   without !important wars; those files still hold the layout this restyles.
+
+   --fill must be ONE image layer (a gradient): it is used as ar(--fill) padding-box, and a list of\n   layers ending in a colour there makes the whole background declaration invalid.\n\n   Cut-corner panels: clip-path cuts the corners and the edge is a gradient on the border box under a
+   dark padding box. clip-path would leave the four diagonals bare, so each is drawn as one more
+   background layer — a 1px line across the corner square. Backgrounds don't scroll with content, so
+   this holds on the scrolling window too. */
+#agent-dashboard-modal {
+    --d-purple: #b026ff;
+    --d-pink: #ff3da6;
+    --d-violet: #6d28d9;
+    --d-ink: #0a0614;
+    --d-ink-2: #110a22;
+    --d-text: #c9c3d9;
+    --d-dim: #8b84a0;
+    --d-gold: #ffc43d;
+}
+
+#agent-dashboard-modal .dossier-box,
+#agent-dashboard-modal .dossier-header,
+#agent-dashboard-modal .dossier-list,
+#agent-dashboard-modal .wishlist-grid,
+#agent-dashboard-modal .dossier-ladder,
+#agent-dashboard-modal .dossier-heading,
+#agent-dashboard-modal .ach-viewall-btn,
+#agent-dashboard-modal #dossier-logout-btn {
+    --c: 12px;                                        /* corner cut */
+    --edge: var(--d-purple);                          /* diagonal line colour */
+    --rim: linear-gradient(135deg, var(--d-purple), var(--d-pink) 50%, var(--d-violet));
+    --fill: linear-gradient(180deg, var(--d-ink-2), var(--d-ink));
+    border: 1.5px solid transparent !important;
+    border-radius: 0 !important;
+    background:
+        linear-gradient(to bottom right, transparent calc(50% - 1px), var(--edge) calc(50% - 1px), var(--edge) calc(50% + 0.5px), transparent calc(50% + 0.5px)) top left / var(--c) var(--c) no-repeat border-box,
+        linear-gradient(to bottom left, transparent calc(50% - 1px), var(--edge) calc(50% - 1px), var(--edge) calc(50% + 0.5px), transparent calc(50% + 0.5px)) top right / var(--c) var(--c) no-repeat border-box,
+        linear-gradient(to top right, transparent calc(50% - 1px), var(--edge) calc(50% - 1px), var(--edge) calc(50% + 0.5px), transparent calc(50% + 0.5px)) bottom left / var(--c) var(--c) no-repeat border-box,
+        linear-gradient(to top left, transparent calc(50% - 1px), var(--edge) calc(50% - 1px), var(--edge) calc(50% + 0.5px), transparent calc(50% + 0.5px)) bottom right / var(--c) var(--c) no-repeat border-box,
+        var(--fill) padding-box,
+        var(--rim) border-box !important;
+    clip-path: polygon(var(--c) 0, calc(100% - var(--c)) 0, 100% var(--c), 100% calc(100% - var(--c)), calc(100% - var(--c)) 100%, var(--c) 100%, 0 calc(100% - var(--c)), 0 var(--c));
+}
+
+/* --- the window --- */
+#agent-dashboard-modal .dossier-box {
+    --c: 22px;
+    --fill: linear-gradient(160deg, #150a2a 0%, #0a0616 35%, #07040f 70%, #10061a 100%);
+    border-width: 2px !important;
+    max-width: 720px; padding: 22px; gap: 16px;
+    box-shadow: inset 0 0 40px rgba(176, 38, 255, 0.18), inset 0 0 0 1px rgba(255, 61, 166, 0.15);
+    color: var(--d-text);
+    scrollbar-color: var(--d-purple) transparent;
+}
+#agent-dashboard-modal .dossier-box .modal-close { color: #c7b8e8; top: 14px; right: 18px; }
+#agent-dashboard-modal .dossier-box .modal-close:hover { color: var(--d-pink); }
+
+/* --- header: emblem | name, rank, bar | crest --- */
+#agent-dashboard-modal .dossier-header {
+    --c: 16px;
+    --fill: linear-gradient(200deg, #24104a 0%, #130a28 40%, #0b0617 100%);
+    padding: 16px 18px 14px; border-left-width: 1.5px !important;
+}
+#agent-dashboard-modal .dossier-head-row { display: flex; align-items: center; gap: 16px; position: relative; }
+#agent-dashboard-modal .dossier-emblem {
+    flex: none; width: 78px; height: 78px; border-radius: 50%; display: grid; place-items: center;
+    font-size: 2.3rem; color: var(--d-gold);
+    background: radial-gradient(circle at 50% 40%, #2a1a05, #0b0617 70%);
+    border: 3px solid var(--d-gold);
+    box-shadow: 0 0 0 4px #120a26, 0 0 0 5px rgba(255, 196, 61, 0.35), 0 0 22px rgba(255, 196, 61, 0.45), inset 0 0 14px rgba(255, 196, 61, 0.35);
+}
+/* The top rank's emblem burns brighter and its ring turns slowly */
+#agent-dashboard-modal .dossier-emblem[data-rank="phantom"] {
+    color: #fff3c4;
+    box-shadow: 0 0 0 4px #120a26, 0 0 0 5px rgba(255, 196, 61, 0.6), 0 0 34px rgba(255, 196, 61, 0.75), inset 0 0 18px rgba(255, 196, 61, 0.55);
+    animation: dossierCrown 3s ease-in-out infinite;
+}
+@keyframes dossierCrown { 50% { box-shadow: 0 0 0 4px #120a26, 0 0 0 5px rgba(255, 196, 61, 0.9), 0 0 48px rgba(255, 196, 61, 0.95), inset 0 0 22px rgba(255, 196, 61, 0.7); } }
+@media (prefers-reduced-motion: reduce) { #agent-dashboard-modal .dossier-emblem[data-rank="phantom"] { animation: none; } }
+#agent-dashboard-modal .dossier-head-text { flex: 1; min-width: 0; position: relative; z-index: 1; }
+#agent-dashboard-modal .dossier-crest {
+    position: absolute; right: -6px; top: 50%; width: 130px; transform: translateY(-50%);
+    opacity: 0.32; pointer-events: none; filter: drop-shadow(0 0 12px rgba(176, 38, 255, 0.6));
+}
+#agent-dashboard-modal .dossier-title { display: flex; align-items: center; gap: 6px; color: var(--d-dim); font-family: var(--font-ui); font-size: 0.8rem; letter-spacing: 1px; margin-bottom: 2px; }
+#agent-dashboard-modal .dossier-title i { color: var(--d-purple); font-size: 1rem; }
+#agent-dashboard-modal .agent-handle-box { margin-bottom: 4px; font-size: 1.6rem; }
+#agent-dashboard-modal .terminal-name {
+    font-family: var(--font-ui); font-weight: 900; letter-spacing: 1px; color: #fff;
+    text-shadow: 0 0 10px rgba(176, 38, 255, 0.65); border-right-color: var(--d-pink);
+}
+#agent-dashboard-modal .agent-rank { font-family: var(--font-ui); font-size: 0.82rem; letter-spacing: 1px; color: var(--d-dim); }
+#agent-dashboard-modal .neon-purple-text { color: #c084fc; text-shadow: 0 0 8px rgba(176, 38, 255, 0.6); }
+#agent-dashboard-modal .dossier-rank-bar { height: 8px; margin: 8px 0 6px; border-radius: 6px; background: rgba(255, 255, 255, 0.06); box-shadow: inset 0 0 0 1px rgba(176, 38, 255, 0.35); }
+#agent-dashboard-modal .dossier-rank-fill {
+    border-radius: 6px; background: linear-gradient(90deg, var(--d-violet), var(--d-purple) 45%, var(--d-pink));
+    box-shadow: 0 0 10px rgba(255, 61, 166, 0.6), 0 0 18px rgba(176, 38, 255, 0.5);
+}
+#agent-dashboard-modal .dossier-xp { color: var(--d-dim); font-size: 0.75rem; margin-bottom: 4px; }
+#agent-dashboard-modal .network-status { font-family: var(--font-ui); font-size: 0.78rem; color: var(--d-dim); letter-spacing: 1px; }
+#agent-dashboard-modal .network-status .live-dot { background: #2ee87a; box-shadow: 0 0 6px #2ee87a; }
+#agent-dashboard-modal .neon-green-text { color: #2ee87a; text-shadow: 0 0 6px rgba(46, 232, 122, 0.5); }
+
+#agent-dashboard-modal .dossier-stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; margin-top: 14px; }
+#agent-dashboard-modal .dossier-stat-chip {
+    display: flex; align-items: center; justify-content: center; gap: 7px; min-height: 38px; padding: 6px 8px;
+    border-radius: 10px; border: 1px solid rgba(176, 38, 255, 0.55); background: rgba(176, 38, 255, 0.08);
+    box-shadow: 0 0 10px rgba(176, 38, 255, 0.2), inset 0 0 8px rgba(176, 38, 255, 0.12);
+    color: #f1e9ff; font-size: 0.72rem; text-align: center; line-height: 1.15;
+}
+#agent-dashboard-modal .dossier-stat-chip i { flex: none; font-size: 1.05rem; color: #c084fc; }
+#agent-dashboard-modal .dossier-stat-chip:first-child i { color: var(--d-pink); }
+#agent-dashboard-modal .dossier-stat-chip:last-child { border-color: rgba(255, 61, 166, 0.55); background: rgba(255, 61, 166, 0.07); }
+#agent-dashboard-modal .dossier-stat-chip:last-child i { color: var(--d-gold); }
+
+/* --- section headings: slim bars with an icon --- */
+#agent-dashboard-modal .dossier-col { gap: 16px; }
+#agent-dashboard-modal .dossier-heading {
+    --c: 9px;
+    --fill: linear-gradient(90deg, #2c1152, #170b2e 55%, #0d0719);
+    display: flex; align-items: center; gap: 8px; width: 100%; box-sizing: border-box; margin: 0 0 8px; padding: 8px 12px;
+    font-family: var(--font-ui); font-weight: 800; font-size: 0.95rem; letter-spacing: 0.5px; color: #f1e9ff;
+}
+#agent-dashboard-modal .dossier-heading i { flex: none; font-size: 1.15rem; color: var(--d-purple); filter: drop-shadow(0 0 4px rgba(176, 38, 255, 0.7)); }
+#agent-dashboard-modal .dossier-heading-sub { font-size: 0.68rem; font-weight: 600; color: var(--d-dim); letter-spacing: 0; }
+#agent-dashboard-modal .coupon-heading {
+    --edge: var(--d-gold);
+    --rim: linear-gradient(135deg, #ffd66b, #b8860b);
+    --fill: linear-gradient(90deg, #3d2c08, #1d1505 55%, #120d04);
+    color: #ffe3a3;
+}
+#agent-dashboard-modal .coupon-heading i { color: var(--d-gold); filter: drop-shadow(0 0 4px rgba(255, 196, 61, 0.7)); }
+
+/* --- section bodies --- */
+#agent-dashboard-modal .dossier-list,
+#agent-dashboard-modal .wishlist-grid {
+    --c: 12px;
+    --edge: rgba(176, 38, 255, 0.6);
+    --rim: linear-gradient(135deg, rgba(176, 38, 255, 0.7), rgba(255, 61, 166, 0.45) 50%, rgba(109, 40, 217, 0.6));
+    --fill: linear-gradient(180deg, rgba(17, 10, 34, 0.95), rgba(9, 5, 18, 0.95));
+    padding: 12px; gap: 10px; box-shadow: none;
+    scrollbar-color: var(--d-purple) transparent;
+}
+#agent-dashboard-modal .dossier-list:hover,
+#agent-dashboard-modal .wishlist-grid:hover { box-shadow: none; }
+#agent-dashboard-modal #dossier-coupons {
+    --edge: rgba(255, 196, 61, 0.65);
+    --rim: linear-gradient(135deg, rgba(255, 214, 107, 0.75), rgba(184, 134, 11, 0.6));
+    --fill: linear-gradient(180deg, rgba(24, 17, 4, 0.95), rgba(12, 8, 2, 0.95));
+}
+#agent-dashboard-modal .dossier-empty { font-family: var(--font-ui); color: var(--d-dim); }
+#agent-dashboard-modal .dossier-empty-rich { display: flex; align-items: center; gap: 14px; text-align: left; padding: 6px 4px; }
+#agent-dashboard-modal .dossier-empty-rich > i { flex: none; font-size: 2.6rem; color: #8b5cf6; filter: drop-shadow(0 0 6px rgba(176, 38, 255, 0.5)); }
+#agent-dashboard-modal .dossier-empty-rich strong { display: block; color: #f1e9ff; font-size: 0.95rem; font-weight: 700; }
+#agent-dashboard-modal .dossier-empty-rich small { display: block; margin-top: 3px; color: var(--d-dim); font-size: 0.75rem; line-height: 1.4; }
+
+/* Wishlist rows: small cards with a pink price and a framed trash button */
+#agent-dashboard-modal .dossier-wish-row { border: 1px solid rgba(176, 38, 255, 0.35); border-radius: 10px; background: rgba(176, 38, 255, 0.05); }
+#agent-dashboard-modal .dossier-wish-row:hover { border-color: var(--d-pink); }
+#agent-dashboard-modal .dossier-wish-row img { border-color: rgba(176, 38, 255, 0.6); border-radius: 6px; }
+#agent-dashboard-modal .dossier-wish-row .dw-price { color: var(--d-pink); }
+#agent-dashboard-modal .dossier-wish-row .dw-remove {
+    width: 38px; height: 38px; display: grid; place-items: center; padding: 0; border-radius: 8px;
+    border: 1px solid rgba(255, 61, 120, 0.6); color: #ff4d7d; background: rgba(255, 61, 120, 0.06); font-size: 1.1rem;
+}
+
+/* Achievements: purple cards, unlocked ones lit in pink */
+#agent-dashboard-modal .ach-card { border-color: rgba(176, 38, 255, 0.25); background: rgba(176, 38, 255, 0.04); border-radius: 10px; }
+#agent-dashboard-modal .ach-card .ach-icon { color: #4c3a6b; }
+#agent-dashboard-modal .ach-card.unlocked { border-color: rgba(255, 61, 166, 0.7); box-shadow: 0 0 10px rgba(255, 61, 166, 0.15), inset 0 0 10px rgba(176, 38, 255, 0.1); }
+#agent-dashboard-modal .ach-card.unlocked .ach-icon { color: var(--d-pink); filter: drop-shadow(0 0 5px rgba(255, 61, 166, 0.6)); }
+#agent-dashboard-modal .ach-card.unlocked .ach-info h4 { color: var(--d-pink); }
+#agent-dashboard-modal .ach-card.unlocked .ach-status { color: #c084fc; }
+#agent-dashboard-modal #dossier-achievements { max-height: 260px; }
+
+#agent-dashboard-modal .ach-viewall-btn {
+    --c: 10px;
+    --fill: linear-gradient(90deg, #2a1048, #2c0f30);
+    display: flex; align-items: center; justify-content: center; gap: 10px; min-height: 48px; margin-top: 4px;
+    font-size: 0.85rem; letter-spacing: 2px; color: #f1e9ff; text-shadow: 0 0 8px rgba(255, 61, 166, 0.6);
+}
+#agent-dashboard-modal .ach-viewall-btn i { color: var(--d-pink); }
+#agent-dashboard-modal .ach-viewall-btn:hover { --fill: linear-gradient(90deg, #3b1666, #45163f); box-shadow: none; }
+
+/* The lower right: the crest and a line, until the rank ladder (D3) moves in */
+#agent-dashboard-modal .dossier-ladder {
+    --c: 14px;
+    --edge: rgba(176, 38, 255, 0.45);
+    --rim: linear-gradient(135deg, rgba(176, 38, 255, 0.45), rgba(109, 40, 217, 0.35));
+    --fill: repeating-linear-gradient(135deg, #0f0820 0 10px, #0a0616 10px 20px);
+    flex: 1; min-height: 200px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; padding: 20px;
+}
+#agent-dashboard-modal .dossier-ladder-crest { width: 120px; opacity: 0.4; filter: drop-shadow(0 0 14px rgba(176, 38, 255, 0.7)); }
+#agent-dashboard-modal .dossier-ladder-line { font-family: var(--font-ui); font-size: 0.75rem; letter-spacing: 6px; text-transform: uppercase; color: #8f80b8; text-align: center; }
+#agent-dashboard-modal .dossier-right { display: flex; flex-direction: column; }
+
+/* --- sign out: a wide cut-corner bar --- */
+#agent-dashboard-modal .dossier-auth-actions { margin-top: 2px; }
+#agent-dashboard-modal #dossier-logout-btn {
+    --c: 14px;
+    --fill: linear-gradient(90deg, #2c1150, #3a1238 50%, #2c1150);
+    min-height: 50px; color: #f1e9ff; font-size: 0.95rem; letter-spacing: 2px; text-shadow: 0 0 8px rgba(255, 61, 166, 0.6); animation: none;
+}
+#agent-dashboard-modal #dossier-logout-btn::before { content: '›'; margin-right: 10px; color: var(--d-pink); font-size: 1.3rem; line-height: 0; }
+#agent-dashboard-modal #dossier-logout-btn:hover { --fill: linear-gradient(90deg, #3d1870, #52184d 50%, #3d1870); }
+
+#agent-dashboard-modal .dossier-box :focus-visible { outline: 2px solid var(--d-pink); outline-offset: 2px; }
+
+/* --- phone: one column, a smaller emblem, chips 2 × 2 --- */
+@media (max-width: 768px) {
+    #agent-dashboard-modal .dossier-box { --c: 16px; padding: 16px !important; }
+    #agent-dashboard-modal .dossier-header { padding: 14px; }
+    #agent-dashboard-modal .dossier-head-row { gap: 12px; }
+    #agent-dashboard-modal .dossier-emblem { width: 56px; height: 56px; font-size: 1.6rem; border-width: 2px; }
+    #agent-dashboard-modal .agent-handle-box { font-size: 1.2rem; }
+    #agent-dashboard-modal .dossier-crest { width: 90px; opacity: 0.22; }
+    #agent-dashboard-modal .dossier-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    #agent-dashboard-modal .dossier-ladder { min-height: 150px; }
+}

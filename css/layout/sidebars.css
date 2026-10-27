@@ -66,6 +66,9 @@ body.pointer-input .side-btn:focus-visible { outline: none; }
 .review-card { background: rgba(20, 10, 30, 0.6); border: 1px solid rgba(176, 38, 255, 0.3); padding: 12px; border-radius: 8px; position: relative; }
 .r-user { font-family: var(--font-ui); font-weight: bold; color: #fff; font-size: 0.9rem; }
 .r-stars { color: var(--neon-green); font-size: 0.7rem; margin-left: 5px; }
+/* The reviewer's rank badge (reviews.js rankBadge) — purple like the profile; the top rank in gold */
+.r-rank { margin-left: 4px; font-size: 0.85rem; vertical-align: -1px; color: #c084fc; filter: drop-shadow(0 0 4px rgba(176, 38, 255, 0.6)); }
+.r-rank.r-rank-top { color: #ffc43d; filter: drop-shadow(0 0 4px rgba(255, 196, 61, 0.7)); }
 .r-text { font-size: 0.8rem; color: #aaa; margin-top: 5px; line-height: 1.4; font-style: italic; }
 .r-date { font-size: 0.65rem; color: #666; position: absolute; top: 12px; right: 12px; font-family: monospace; }
 .add-review-btn { background: transparent; border: 1px solid var(--neon-purple); color: var(--neon-purple); padding: 8px 20px; border-radius: 6px; font-family:var(--font-ui); font-weight:bold; cursor: pointer; transition: 0.3s; margin-top:10px; width:100%; }
