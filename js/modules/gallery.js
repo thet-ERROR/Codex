@@ -156,10 +156,14 @@ export function renderExtras() {
             ${hasExtras ? `<div class="yg-tab-panel yg-extras${ygTab === 'extras' ? ' active' : ''}" id="yg-panel-extras" role="tabpanel" aria-labelledby="yg-tab-extras">${extrasHtml}</div>` : ''}
         </div>`;
 
-    // "More" only when the 3-line clamp actually cut something (as on the stage card)
+    // "More" only when the 3-line clamp actually cut something (as on the stage card). Measured a frame
+    // later: measuring now would force a second full layout inside the tap that opens INSPECT (the
+    // open animation already measures once), and that was most of the delay before the card moved.
     const text = host.querySelector('.yg-lore-text');
     const more = host.querySelector('.yg-lore-more');
-    if (text && more) more.hidden = text.scrollHeight <= text.clientHeight + 1;
+    if (text && more) requestAnimationFrame(() => {
+        if (text.isConnected && !text.closest('.yg-lore.expanded')) more.hidden = text.scrollHeight <= text.clientHeight + 1;
+    });
     updatePrice();
 }
 
