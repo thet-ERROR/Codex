@@ -67,7 +67,9 @@ function buildSteps(lang) {
     // The card sits mid-screen; "top" keeps the popover off the card it's describing
     // The arrows only exist with a mouse (card-hud.css); on a touch screen the card is swiped
     const touch = phone || !window.matchMedia('(hover: hover) and (pointer: fine)').matches;
-    const browse = step('#carousel-wrapper', touch ? 'browsePhone' : 'browseDesktop', 'top');
+    // Desktop: beside the card (the row is only card-wide there, card-hud.css); above it, it had no room
+    // and ended up over the card's lower half
+    const browse = step('#carousel-wrapper', touch ? 'browsePhone' : 'browseDesktop', bar ? 'top' : 'right');
 
     const header = phone
         ? [...tabs,

@@ -187,6 +187,9 @@ body.pointer-input .tc-tab:focus-visible { outline: none; }
 @supports (color: color-mix(in srgb, red, blue)) {
     .nav-arrow { --hc-line: color-mix(in srgb, var(--neon-green) 55%, transparent); --hc-soft: color-mix(in srgb, var(--neon-green) 14%, transparent); --hc-glow: color-mix(in srgb, var(--neon-green) 32%, transparent); }
 }
+/* Desktop: the row is only as wide as arrows + card, so the tour's "browse" spotlight is that and its
+   popover has room beside it instead of covering the card (tutorial.js) */
+@media (min-width: 1025px) { .carousel-wrapper { width: fit-content; max-width: 100%; margin: 0 auto; } }
 @media (hover: none), (pointer: coarse), (max-width: 768px) {
     .nav-arrow { display: none !important; }
     .carousel-wrapper { gap: 0; }
