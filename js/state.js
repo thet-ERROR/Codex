@@ -59,6 +59,8 @@ export const state = {
     nextRank: null,
     nextRankXp: null,
     rankProgress: 0,
+    // The server's rank ladder: [{ id, minXp, rewards: { color?, spins? } }] — never kept client-side
+    ranks: [],
     wishlist: JSON.parse(localStorage.getItem('codex_wishlist')) || [],
     audioEnabled: localStorage.getItem('codex_audio') !== 'false',
     currentTheme: localStorage.getItem('codex_theme') || CONFIG.DEFAULT_THEME,

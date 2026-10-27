@@ -36,8 +36,25 @@ export function applyProfile(profile) {
     state.nextRank = profile.nextRank || null;
     state.nextRankXp = profile.nextRankXp ?? null;
     state.rankProgress = profile.progress ?? 0;
+    if (Array.isArray(profile.ranks)) state.ranks = profile.ranks;
+    if (typeof profile.bonusSpins === 'number' && window.applyWheelData) window.applyWheelData({ bonusSpins: profile.bonusSpins });
     localStorage.setItem('codex_achievements', JSON.stringify(state.achievements));
+    // Rewards the server paid out on this very request — shown once, and a colour is usable at once
+    if (Array.isArray(profile.rankRewards) && profile.rankRewards.length) announceRankRewards(profile.rankRewards);
     refreshProgressionUI();
+}
+
+// One notice for whatever the rank-up brought: the new (highest) rank, the spins, the colours. An
+// account paid for several ranks at once (it was past them before rewards existed) gets one, not five.
+function announceRankRewards(granted) {
+    const colors = granted.map(g => g.color).filter(Boolean);
+    const spins = granted.reduce((n, g) => n + (g.spins || 0), 0);
+    if (colors.length && window.applyWheelData) window.applyWheelData({ unlockedColors: colors });
+    const parts = [];
+    if (spins) parts.push(t('rankUpSpins', { n: spins }));
+    colors.forEach(id => parts.push(t('rankUpColor', { name: (CONFIG.RANK_COLORS[id] || {}).name || id })));
+    const top = granted[granted.length - 1].rank;
+    if (window.showToast) window.showToast(t('rankUpToast', { rank: rankName(top) }) + (parts.length ? ' — ' + parts.join(' · ') : ''), 'achievement');
 }
 
 // Guests earn client-side badges too, and they sit in localStorage until there's an account to
@@ -96,6 +113,13 @@ function badgeCards() {
 export function refreshProgressionUI() {
     const rankEl = document.getElementById('dossier-rank');
     if (rankEl) rankEl.innerText = rankName(state.rank);
+    // The emblem is the rank's badge (dossier-hud.css lights the top rank differently)
+    const emblem = document.querySelector('#agent-dashboard-modal .dossier-emblem');
+    if (emblem) {
+        emblem.dataset.rank = state.rank;
+        const icon = emblem.querySelector('i');
+        if (icon) icon.className = 'ph-duotone ' + (CONFIG.RANK_ICONS[state.rank] || CONFIG.RANK_ICONS.recruit);
+    }
 
     const xpEl = document.getElementById('dossier-xp');
     if (xpEl) {
@@ -228,6 +252,7 @@ document.addEventListener('click', async (e) => {
 });
 
 // Εξαγωγή στο global scope για να λειτουργούν τα onclick στο HTML
+window.rankName = rankName;
 window.checkAchievement = checkAchievement;
 window.openAchievements = openAchievements;
 window.openAgentDashboard = openAgentDashboard;

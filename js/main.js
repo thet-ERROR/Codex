@@ -1,6 +1,7 @@
 // js/main.js
 import { state } from './state.js';
 import { api } from './api.js';
+import { CONFIG } from './config.js';
 
 import { checkSavedSession, hydrateProfile } from './modules/auth.js';
 import { updateCartUI } from './modules/cart.js';
@@ -95,9 +96,17 @@ function syncSettingsUI() {
 }
 window.syncSettingsUI = syncSettingsUI;
 
+// Why a colour is locked: wheel colours are won on the wheel, rank colours come with a rank (the
+// server's ladder says which — shown by name once the profile has loaded it)
+window.colorLockMessage = (id) => {
+    if (!CONFIG.RANK_COLORS[id]) return t('toastColorLocked');
+    const rank = (state.ranks || []).find(r => r.rewards && r.rewards.color === id);
+    return rank ? t('toastColorRankLocked', { rank: window.rankName ? window.rankName(rank.id) : rank.id }) : t('toastColorRankLockedAny');
+};
+
 window.setTheme = (color, id) => {
     if (id && !state.unlockedColors.includes(id)) {
-        if (window.showToast) window.showToast(t('toastColorLocked'), 'error');
+        if (window.showToast) window.showToast(window.colorLockMessage(id), 'error');
         return;
     }
     state.currentTheme = color;

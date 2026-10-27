@@ -58,8 +58,10 @@ const translations = {
 
         settingsTitle: "Ρυθμίσεις συστήματος", accentColorLabel: "Χρώμα τονισμού",
         settingsSound: "Ήχος & μουσική", settingsLanguage: "Γλώσσα", settingsReplayTour: "Δες ξανά την ξενάγηση",
-        colorsLockedNote: "Τα 4 κάτω ξεκλειδώνουν στον Ημερήσιο Τροχό (απαιτείται σύνδεση).", colorsSpinBtn: "Γύρνα τον τροχό",
-        toastColorLocked: "Κλειδωμένο χρώμα — γύρνα τον Ημερήσιο Τροχό για να το ξεκλειδώσεις.",
+        colorsLockedNote: "Η 2η σειρά ξεκλειδώνει στον Ημερήσιο Τροχό, η 3η ανεβαίνοντας επίπεδο στο προφίλ σου (απαιτείται σύνδεση).", colorsSpinBtn: "Γύρνα τον τροχό",
+        toastColorLocked: "Κλειδωμένο χρώμα — γύρνα τον Ημερήσιο Τροχό για να το ξεκλειδώσεις.", toastColorRankLocked: "Κλειδωμένο χρώμα — ξεκλειδώνει στο επίπεδο {rank}.", toastColorRankLockedAny: "Κλειδωμένο χρώμα — ξεκλειδώνει ανεβαίνοντας επίπεδο στο προφίλ σου.",
+        rankUpToast: "ΝΕΟ ΕΠΙΠΕΔΟ: {rank}", rankUpSpins: "+{n} περιστροφές στον τροχό", rankUpColor: "χρώμα {name}",
+        rewardUltraviolet: "Skin Ultraviolet", rewardArctic: "Skin Arctic", rewardPhantom: "Skin Phantom",
         colorLime: "Lime", colorCyan: "Cyan", colorRed: "Κόκκινο", colorPurple: "Μωβ",
         closeLabel: "Κλείσιμο",
 
@@ -137,7 +139,7 @@ const translations = {
         voteInfoDefault: "Κοινοτικά drops: η κοινότητα ψηφίζει για να ξεκλειδώσει ένα μυστηριώδες PC.\n\n1. Η ψηφοφορία ανοίγει την ημερομηνία που φαίνεται.\n2. Κάθε συνδεδεμένος πράκτορας με επιβεβαιωμένο email έχει μία ψήφο.\n3. Αν μαζευτούν οι ψήφοι πριν λήξει ο χρόνος, το PC ξεκλειδώνει και μπαίνει αμέσως στα Live Drops, έτοιμο για παραγγελία.\n4. Αν λήξει πρώτα ο χρόνος, το PC έρχεται κι αυτό στα Live Drops με το κλείσιμο της ψηφοφορίας.",
         communityDropBadge: "ΚΟΙΝΟΤΙΚΟ DROP",
         // Τροχός + κουπόνια (wheel.js, dashboard, καλάθι)
-        wheelSpinsLeft: "ΠΡΟΣΠΑΘΕΙΕΣ: {n}/{max}", wheelLoginRequired: "Συνδέσου για να γυρίσεις τον τροχό.",
+        wheelSpinsLeft: "ΠΡΟΣΠΑΘΕΙΕΣ: {n}/{max}", wheelBonusSpins: " · +{n} ΜΠΟΝΟΥΣ", wheelLoginRequired: "Συνδέσου για να γυρίσεις τον τροχό.",
         wheelError: "Ο τροχός δεν απάντησε — δοκίμασε ξανά σε λίγο.", wheelNoSpins: "Τελείωσαν οι προσπάθειες — ξανά σε {time}.",
         wheelSkinNew: "> ΞΕΚΛΕΙΔΩΣΕΣ ΤΟ SKIN {name} — ΕΦΑΡΜΟΣΤΗΚΕ ΣΤΟ SITE.", wheelSkinAgain: "> ΤΟ SKIN {name} ΤΟ ΕΙΧΕΣ ΗΔΗ — ΕΦΑΡΜΟΣΤΗΚΕ ΞΑΝΑ.",
         wheelCouponWon: "> ΚΕΡΔΙΣΕΣ ΚΟΥΠΟΝΙ -{p}%: {code} — ισχύει έως {until}. Το βρίσκεις στο προφίλ σου και στο καλάθι.",
@@ -269,8 +271,10 @@ const translations = {
 
         settingsTitle: "SYSTEM PREFERENCES", accentColorLabel: "ACCENT COLOR",
         settingsSound: "Sound & music", settingsLanguage: "Language", settingsReplayTour: "Replay the tour",
-        colorsLockedNote: "The bottom 4 unlock on the Daily Spin (sign-in required).", colorsSpinBtn: "Spin the wheel",
-        toastColorLocked: "Locked colour — spin the Daily Wheel to unlock it.",
+        colorsLockedNote: "Row 2 unlocks on the Daily Spin, row 3 by ranking up on your profile (sign-in required).", colorsSpinBtn: "Spin the wheel",
+        toastColorLocked: "Locked colour — spin the Daily Wheel to unlock it.", toastColorRankLocked: "Locked colour — it unlocks at rank {rank}.", toastColorRankLockedAny: "Locked colour — it unlocks as you rank up on your profile.",
+        rankUpToast: "NEW RANK: {rank}", rankUpSpins: "+{n} wheel spins", rankUpColor: "{name} colour",
+        rewardUltraviolet: "ULTRAVIOLET SKIN", rewardArctic: "ARCTIC SKIN", rewardPhantom: "PHANTOM SKIN",
         colorLime: "Lime", colorCyan: "Cyan", colorRed: "Red", colorPurple: "Purple",
         closeLabel: "Close",
 
@@ -348,7 +352,7 @@ const translations = {
         voteInfoDefault: "Community drops: the network votes to unlock a mystery PC.\n\n1. Voting opens on the date shown.\n2. Every signed-in agent with a verified email gets one vote.\n3. Reach the target before time runs out and the PC unlocks — it goes straight to Live Drops, ready to order.\n4. If time runs out first, the PC still comes to Live Drops when voting closes.",
         communityDropBadge: "COMMUNITY DROP",
         // Wheel + coupons (wheel.js, dashboard, cart)
-        wheelSpinsLeft: "SPINS LEFT: {n}/{max}", wheelLoginRequired: "Sign in to spin the wheel.",
+        wheelSpinsLeft: "SPINS LEFT: {n}/{max}", wheelBonusSpins: " · +{n} BONUS", wheelLoginRequired: "Sign in to spin the wheel.",
         wheelError: "The wheel didn't respond — try again in a moment.", wheelNoSpins: "No spins left — next in {time}.",
         wheelSkinNew: "> SKIN {name} UNLOCKED — APPLIED TO THE SITE.", wheelSkinAgain: "> YOU ALREADY HAD SKIN {name} — RE-APPLIED.",
         wheelCouponWon: "> YOU WON A -{p}% COUPON: {code} — valid until {until}. It's in your profile and your cart.",

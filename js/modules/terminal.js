@@ -77,7 +77,11 @@ const COLORS = {
     gold:   { hex: '#ffd700', id: 'cyberGold' },
     orange: { hex: '#ff5e00', id: 'toxicOrange' },
     pink:   { hex: '#ff2bd6', id: 'neonPink' },
-    matrix: { hex: '#00ff41', id: 'matrixGreen' }
+    matrix: { hex: '#00ff41', id: 'matrixGreen' },
+    // Rank colours (config.js RANK_COLORS) — unlocked by levelling up, not on the wheel
+    ultraviolet: { hex: '#7c4dff', id: 'ultraviolet' },
+    arctic:      { hex: '#8fe8ff', id: 'arctic' },
+    phantom:     { hex: '#e9e4ff', id: 'phantom' }
 };
 const colorUnlocked = (c) => !c.id || (state.unlockedColors || []).includes(c.id);
 
@@ -148,7 +152,7 @@ const COMMANDS = {
         }
         const c = COLORS[arg];
         if (!c) { print(T('termColorUnknown', { list: names.join(', ') }) + '\n'); return; }
-        if (!colorUnlocked(c)) { print('>> ' + T('toastColorLocked') + '\n'); return; }
+        if (!colorUnlocked(c)) { print('>> ' + (window.colorLockMessage ? window.colorLockMessage(c.id) : T('toastColorLocked')) + '\n'); return; }
         if (window.setTheme) window.setTheme(c.hex, c.id);
         print('>> ' + T('termColorSet', { name: arg }) + '\n');
     },
