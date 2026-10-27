@@ -108,6 +108,43 @@ function badgeCards() {
     }).join('');
 }
 
+// The rank ladder in the profile: every rank with its XP threshold and what it gives, the ones you
+// have reached marked, the current one lit, the next one saying how much XP is left. All numbers come
+// from the server's ladder (state.ranks) — nothing here decides a threshold or a reward.
+function renderRankLadder() {
+    const box = document.getElementById('dossier-ladder');
+    const list = document.getElementById('dossier-ladder-list');
+    if (!box || !list) return;
+    const ranks = state.ranks || [];
+    box.classList.toggle('has-ranks', ranks.length > 0);
+    if (!ranks.length) { list.innerHTML = ''; return; }
+
+    list.innerHTML = ranks.map(r => {
+        const reached = state.xp >= r.minXp;
+        const current = r.id === state.rank;
+        const next = r.id === state.nextRank;
+        const cls = current ? 'current' : reached ? 'done' : next ? 'next' : 'locked';
+        const rw = r.rewards || {};
+        const chips = [];
+        if (rw.spins) chips.push(`<span class="rk-chip"><i class="ph-fill ph-arrows-clockwise" aria-hidden="true"></i>${esc(t('rankStepSpins', { n: rw.spins }))}</span>`);
+        if (rw.color) {
+            const c = CONFIG.RANK_COLORS[rw.color];
+            chips.push(`<span class="rk-chip"><i class="rk-dot" style="background:${esc(c ? c.hex : '#888')}" aria-hidden="true"></i>${esc(c ? c.name : rw.color)}</span>`);
+        }
+        const sub = next ? t('rankStepLeft', { n: Math.max(0, r.minXp - state.xp) }) : `${r.minXp} XP`;
+        const mark = current ? esc(t('rankStepNow')) : reached ? '<i class="ph-bold ph-check" aria-hidden="true"></i>' : '<i class="ph-bold ph-lock-simple" aria-hidden="true"></i>';
+        return `<div class="rank-step ${cls}"${current ? ' aria-current="step"' : ''}>
+            <div class="rank-step-ico"><i class="ph-duotone ${esc(CONFIG.RANK_ICONS[r.id] || CONFIG.RANK_ICONS.recruit)}" aria-hidden="true"></i></div>
+            <div class="rank-step-body">
+                <strong>${esc(rankName(r.id))}</strong>
+                <small>${esc(sub)}</small>
+                ${chips.length ? `<span class="rk-chips">${chips.join('')}</span>` : ''}
+            </div>
+            <div class="rank-step-mark">${mark}</div>
+        </div>`;
+    }).join('');
+}
+
 // Rank line, XP readout and bar. Called by applyProfile and by every renderer below, so the two
 // places these appear (the standalone modal and the dossier) can never disagree.
 export function refreshProgressionUI() {
@@ -130,6 +167,8 @@ export function refreshProgressionUI() {
 
     const fillEl = document.getElementById('dossier-rank-fill');
     if (fillEl) fillEl.style.width = Math.max(0, Math.min(state.rankProgress, 100)) + '%';
+
+    renderRankLadder();
 
     const unlockedCount = state.achievements.length;
     const total = CONFIG.ACHIEVEMENTS_LIST.length;
