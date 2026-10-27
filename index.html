@@ -603,6 +603,21 @@ Type 'help' for a list of commands.
         </div>
     </div>
 
+    <!-- Asks for the code on the box before a review (checkMissionCode / submitMissionCode in
+         modules/reviews.js). Was the browser's prompt() box; a wrong code is said here, under the field. -->
+    <div class="modal-overlay" id="mission-code-modal">
+        <div class="modal-content" style="width:400px;">
+            <span class="close-modal" onclick="closeModal('mission-code-modal')">X</span>
+            <h2 class="modal-title" data-i18n="missionCodeTitle">WRITE A REVIEW</h2>
+            <form class="auth-form" onsubmit="event.preventDefault(); submitMissionCode()">
+                <label for="mc-code" class="mc-label" data-i18n="missionPromptCode">Enter the code you'll find inside your PC's box.</label>
+                <input type="text" id="mc-code" class="auth-input" placeholder="CDX-XXXXXX" autocomplete="off" autocapitalize="characters" spellcheck="false">
+                <p class="mc-error" id="mc-error" role="alert" hidden></p>
+                <button type="submit" class="btn-inspect" id="mc-submit" data-i18n="missionCodeBtn">CHECK CODE</button>
+            </form>
+        </div>
+    </div>
+
     <!-- Opened after a customer enters their mission code (checkMissionCode in modules/reviews.js).
          Two clear outcomes instead of one bare bar and one alarm box: the happy path is the big,
          obvious card; the return path is there and honest but visually secondary. Styles live in
