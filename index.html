@@ -518,6 +518,7 @@ Type 'help' for a list of commands.
     <div class="modal-overlay" id="settings-modal">
         <div class="modal-content info-box" role="dialog" aria-modal="true" aria-labelledby="settings-title">
             <div class="info-head">
+                <span class="set-head-ico" aria-hidden="true"><i class="ph-fill ph-gear"></i></span>
                 <div class="info-head-text"><span class="info-kicker">&gt;// SYS_CONFIG</span><h2 class="info-title" id="settings-title" data-i18n="settingsTitle">SYSTEM PREFERENCES</h2></div>
                 <button type="button" class="modal-x" onclick="closeModal('settings-modal')" data-i18n-aria="closeLabel" aria-label="Close"><i class="ph-bold ph-x"></i></button>
             </div>
@@ -538,7 +539,7 @@ Type 'help' for a list of commands.
                 </div>
 
                 <div class="set-section">
-                    <div class="set-heading" data-i18n="accentColorLabel">ACCENT COLOR</div>
+                    <div class="set-heading"><i class="ph-fill ph-palette" aria-hidden="true"></i><span data-i18n="accentColorLabel">ACCENT COLOR</span></div>
                     <div class="color-opts" role="group" data-i18n-aria="accentColorLabel" aria-label="Accent colour">
                         <button type="button" class="color-btn" style="background:#ccff00;" data-color="#ccff00" onclick="setTheme('#ccff00')" data-i18n-aria="colorLime" aria-label="Lime"></button>
                         <button type="button" class="color-btn" style="background:#00f0ff;" data-color="#00f0ff" onclick="setTheme('#00f0ff')" data-i18n-aria="colorCyan" aria-label="Cyan"></button>
@@ -554,10 +555,10 @@ Type 'help' for a list of commands.
                         <button type="button" class="color-btn locked rank-color" data-id="phantom" style="background:#e9e4ff;" data-color="#e9e4ff" onclick="setTheme('#e9e4ff','phantom')" data-i18n-aria="rewardPhantom" aria-label="Phantom"><i class="ph-fill ph-crown color-lock-icon"></i></button>
                     </div>
                     <p class="set-note"><i class="ph-bold ph-lock-simple"></i> <span data-i18n="colorsLockedNote">The bottom 4 unlock on the Daily Spin.</span></p>
-                    <button type="button" class="info-btn" onclick="playClick(); closeModal('settings-modal'); openWheelFromSettings()"><i class="ph-bold ph-gift"></i> <span data-i18n="colorsSpinBtn">Spin the wheel</span></button>
+                    <button type="button" class="info-btn set-spin" onclick="playClick(); closeModal('settings-modal'); openWheelFromSettings()"><i class="ph-fill ph-gift"></i> <span data-i18n="colorsSpinBtn">Spin the wheel</span><i class="ph-bold ph-caret-right set-caret" aria-hidden="true"></i></button>
                 </div>
 
-                <button type="button" class="set-link" onclick="playClick(); closeModal('settings-modal'); replayTour()"><i class="ph-bold ph-arrow-counter-clockwise"></i> <span data-i18n="settingsReplayTour">Replay the tour</span></button>
+                <button type="button" class="set-link" onclick="playClick(); closeModal('settings-modal'); replayTour()"><i class="ph-bold ph-arrow-counter-clockwise"></i> <span data-i18n="settingsReplayTour">Replay the tour</span><i class="ph-bold ph-caret-right set-caret" aria-hidden="true"></i></button>
             </div>
         </div>
     </div>

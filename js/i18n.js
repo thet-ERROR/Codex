@@ -58,7 +58,7 @@ const translations = {
 
         settingsTitle: "Ρυθμίσεις συστήματος", accentColorLabel: "Χρώμα τονισμού",
         settingsSound: "Ήχος & μουσική", settingsLanguage: "Γλώσσα", settingsReplayTour: "Δες ξανά την ξενάγηση",
-        colorsLockedNote: "Η 2η σειρά ξεκλειδώνει στον Ημερήσιο Τροχό, η 3η ανεβαίνοντας επίπεδο στο προφίλ σου (απαιτείται σύνδεση).", colorsSpinBtn: "Γύρνα τον τροχό",
+        colorsLockedNote: "Όσα έχουν λουκέτο ξεκλειδώνουν στον Ημερήσιο Τροχό, όσα έχουν μετάλλιο ή στέμμα ανεβαίνοντας επίπεδο στο προφίλ σου (απαιτείται σύνδεση).", colorsSpinBtn: "Γύρνα τον τροχό",
         toastColorLocked: "Κλειδωμένο χρώμα — γύρνα τον Ημερήσιο Τροχό για να το ξεκλειδώσεις.", toastColorRankLocked: "Κλειδωμένο χρώμα — ξεκλειδώνει στο επίπεδο {rank}.", toastColorRankLockedAny: "Κλειδωμένο χρώμα — ξεκλειδώνει ανεβαίνοντας επίπεδο στο προφίλ σου.",
         rankUpToast: "ΝΕΟ ΕΠΙΠΕΔΟ: {rank}",
         cardExtraFrom: "από +{price}", rankLadderTitle: "Επίπεδα", rankInfoTitle: "Πώς δουλεύουν τα επίπεδα", rankStepNow: "ΤΩΡΑ", rankStepLeft: "{n} XP ακόμα", rankStepSpins: "+{n} περιστρ.",
@@ -298,7 +298,7 @@ const translations = {
 
         settingsTitle: "SYSTEM PREFERENCES", accentColorLabel: "ACCENT COLOR",
         settingsSound: "Sound & music", settingsLanguage: "Language", settingsReplayTour: "Replay the tour",
-        colorsLockedNote: "Row 2 unlocks on the Daily Spin, row 3 by ranking up on your profile (sign-in required).", colorsSpinBtn: "Spin the wheel",
+        colorsLockedNote: "Colours with a lock unlock on the Daily Spin, those with a medal or crown by ranking up on your profile (sign-in required).", colorsSpinBtn: "Spin the wheel",
         toastColorLocked: "Locked colour — spin the Daily Wheel to unlock it.", toastColorRankLocked: "Locked colour — it unlocks at rank {rank}.", toastColorRankLockedAny: "Locked colour — it unlocks as you rank up on your profile.",
         rankUpToast: "NEW RANK: {rank}",
         cardExtraFrom: "from +{price}", rankLadderTitle: "Ranks", rankInfoTitle: "How ranks work", rankStepNow: "NOW", rankStepLeft: "{n} XP to go", rankStepSpins: "+{n} spins",
