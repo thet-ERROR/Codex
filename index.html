@@ -310,8 +310,8 @@ Type 'help' for a list of commands.
         <div class="yg-image-row" id="yg-image-row">
             <button class="yg-gallery-btn left" id="yg-arrow-left" onclick="playClick(); changeGalleryImage(-1)"><i class="ph-bold ph-caret-left"></i></button>
             <div class="yg-image-frame">
-                <img src="" id="yg-main-img" alt="PC Build" decoding="async" class="yg-pc-image" onclick="playClick(); changeGalleryImage(1)" title="Next Image">
-                <button type="button" class="yg-target-lock" title="Save to Wishlist" onclick="this.classList.remove('still'); toggleWishlist(this)"><i class="ph-bold ph-crosshair"></i></button>
+                <img src="" id="yg-main-img" alt="PC Build" decoding="async" class="yg-pc-image" onclick="playClick(); changeGalleryImage(1)" title="Next image" data-i18n-title="nextImage">
+                <button type="button" class="yg-target-lock" title="Save to wishlist" data-i18n-title="saveToWishlist" onclick="this.classList.remove('still'); toggleWishlist(this)"><i class="ph-bold ph-crosshair"></i></button>
             </div>
             <button class="yg-gallery-btn right" id="yg-arrow-right" onclick="playClick(); changeGalleryImage(1)"><i class="ph-bold ph-caret-right"></i></button>
         </div>
@@ -355,16 +355,16 @@ Type 'help' for a list of commands.
                 <span>⇄</span> <span data-i18n="flipToFront">Flip to Front</span>
             </button>
             <button id="bench-toggle-btn" class="yg-btn yg-btn-fps yg-btn-breathe" onclick="playClick(); toggleBenchmarksView()">
-                <i class="ph-bold ph-crosshair"></i> Show FPS
+                <i class="ph-bold ph-crosshair"></i> <span data-i18n="fpsShow">SHOW FPS</span>
             </button>
         </div>
     </div>
 
     <div class="yg-fps-panel" id="fps-panel">
         <div class="yg-fps-panel-header">
-            <span><i class="ph-bold ph-chart-bar"></i> GAME BENCHMARKS (1080p)</span>
+            <span><i class="ph-bold ph-chart-bar"></i> <span data-i18n="fpsPanelTitle">GAME BENCHMARKS (1080p)</span></span>
             <div class="yg-fps-close" onclick="playClick(); toggleBenchmarksView()">
-                <i class="ph-bold ph-caret-down"></i> CLOSE
+                <i class="ph-bold ph-caret-down"></i> <span data-i18n="fpsClose">CLOSE</span>
             </div>
         </div>
         <div class="yg-fps-list" id="yg-fps-list"></div>

@@ -153,7 +153,7 @@ export async function handleLogin() {
         state.emailVerified = !!d.emailVerified;
         updateAuthUI(d.username);
         if(window.showToast) {
-            window.showToast('WELCOME BACK, AGENT ' + d.username.toUpperCase(), 'normal');
+            window.showToast(window.t('toastWelcomeBack', { name: d.username.toUpperCase() }), 'normal');
             if (!state.emailVerified) {
                 window.showToast(window.t ? window.t('toastVerifyReminder') : '⚠ VERIFY YOUR EMAIL TO UNLOCK WISHLIST, ACHIEVEMENTS & VOTING', 'error');
             }
@@ -199,7 +199,7 @@ export async function handleSignup() {
         state.emailVerified = !!d.emailVerified;
         updateAuthUI(d.username);
         if(window.showToast) {
-            window.showToast("WELCOME AGENT: " + d.username.toUpperCase(), "achievement");
+            window.showToast(window.t('toastWelcomeNew', { name: d.username.toUpperCase() }), "achievement");
             // New accounts always start unverified — this is the very first thing they need to know
             window.showToast(window.t ? window.t('toastCheckEmailToVerify') : '📧 CHECK YOUR EMAIL TO VERIFY YOUR ACCOUNT', 'normal');
         }
@@ -279,10 +279,10 @@ export async function resendVerification() {
             // A 429 here means another tab/device already started a cooldown this one didn't know
             // about — sync to the server's authoritative remaining time instead of guessing.
             if (d.retryAfterMs) startResendCooldown(d.retryAfterMs);
-            if (window.showToast) window.showToast(d.error || 'FAILED TO SEND VERIFICATION EMAIL', 'error');
+            if (window.showToast) window.showToast(d.error || window.t('toastVerifySendFail'), 'error');
         }
     } catch (e) {
-        if (window.showToast) window.showToast('CONNECTION ERROR', 'error');
+        if (window.showToast) window.showToast(window.t('toastConnError'), 'error');
     }
 }
 
@@ -304,7 +304,7 @@ export function logout() {
     localStorage.removeItem('codex_token');
     updateAuthUI(null);
     if (window.refreshProgressionUI) window.refreshProgressionUI();
-    if(window.showToast) window.showToast("AGENT DISCONNECTED", "error");
+    if(window.showToast) window.showToast(window.t('toastLoggedOut'), "error");
 }
 
 // --- PASSWORD RECOVERY ---

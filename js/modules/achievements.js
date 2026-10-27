@@ -191,7 +191,7 @@ export function refreshProgressionUI() {
 
 export function openAchievements() {
     if (!state.isLoggedIn) {
-        if (window.showToast) window.showToast("ACCESS DENIED. LOGIN REQUIRED.", "normal");
+        if (window.showToast) window.showToast(window.t('toastLoginRequired'), "normal");
         if (window.openModal) window.openModal('login-modal');
         return;
     }
@@ -201,7 +201,7 @@ export function openAchievements() {
 
 export function openAgentDashboard() {
     if (!state.isLoggedIn) {
-        if (window.showToast) window.showToast("ACCESS DENIED. LOGIN REQUIRED.", "error");
+        if (window.showToast) window.showToast(window.t('toastLoginRequired'), "error");
         if (window.openModal) window.openModal('login-modal');
         return;
     }

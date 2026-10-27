@@ -90,7 +90,7 @@ export function startMissionTimer(ms) {
         timeLeft -= 1000; 
         if (timeLeft <= 0) { 
             clearInterval(interval); 
-            if(timerEl) timerEl.innerText = "EXPIRED"; 
+            if(timerEl) timerEl.innerText = window.t('missionExpired'); 
         } else { 
             const h = Math.floor(timeLeft / (1000 * 60 * 60)); 
             const m = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60)); 
@@ -132,7 +132,7 @@ export async function submitReviewCode() {
         const data = await res.json();
         
         if (data.success) {
-            if(window.showToast) window.showToast("TRANSMISSION SUCCESSFUL", "achievement");
+            if(window.showToast) window.showToast(window.t('toastReviewSent'), "achievement");
             if(window.closeModal) window.closeModal('review-code-modal');
         } else {
             notify(data.error || (window.t ? window.t('alertTransmissionFailed') : "TRANSMISSION FAILED"));
@@ -207,7 +207,7 @@ export async function submitNewsletter() {
     const email = emailEl.value.trim();
     
     if(!email || !email.includes('@')) { 
-        if(window.showToast) window.showToast("SYNTAX ERROR: MISSING '@' SYMBOL", "error"); 
+        if(window.showToast) window.showToast(window.t('toastEmailNoAt'), "error"); 
         return; 
     }
     
@@ -220,13 +220,13 @@ export async function submitNewsletter() {
         const d = await res.json();
         
         if(d.success) {
-            if(window.showToast) window.showToast("DROP ALERTS ACTIVATED", "achievement");
+            if(window.showToast) window.showToast(window.t('toastAlertsOn'), "achievement");
             if(window.closeModal) window.closeModal('newsletter-modal');
         } else { 
-            if(window.showToast) window.showToast("CONNECTION FAILED", "error"); 
+            if(window.showToast) window.showToast(window.t('toastConnFailed'), "error"); 
         }
     } catch(e) { 
-        if(window.showToast) window.showToast("SERVER ERROR", "error"); 
+        if(window.showToast) window.showToast(window.t('toastServerError'), "error"); 
     }
 }
 
