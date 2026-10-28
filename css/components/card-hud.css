@@ -223,3 +223,10 @@ body.pointer-input .tc-tab:focus-visible { outline: none; }
     .tc-actions .btn-card-compare { box-shadow: none !important; }
     .tc-holo { display: none; }
 }
+
+/* The px floors above are for phones; on a wider card the plain cqw sizes are already readable and
+   the floors only pushed the long Greek labels (ΕΠΙΠΛΕΟΝ ΕΠΙΛΟΓΕΣ, ΕΠΙΘΕΩΡΗΣΗ ΣΥΣΤΗΜΑΤΟΣ) onto two lines */
+@media (min-width: 769px) {
+    .tc-tab { font-size: 3.1cqw; }
+    .tc-actions .btn-card-inspect, .tc-actions .btn-card-compare { font-size: 3cqw !important; }
+}
