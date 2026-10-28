@@ -36,6 +36,8 @@ import './ui/ui-lock.js';
 // ... (το υπόλοιπο αρχείο παραμένει ίδιο)
 // --- SYSTEM AUDIO SETUP ---
 const audioStart = new Audio('assets/audio/startup.mp3');
+// Fetched only if it's actually played (sound on): most visits have the sound off
+audioStart.preload = 'none';
 const bgMusic = new Audio('assets/audio/bg.mp3');
 // Nothing is fetched until the music is switched on: most visits never play it, and it's the biggest file
 bgMusic.preload = 'none';

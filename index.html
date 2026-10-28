@@ -24,9 +24,10 @@
     <link rel="icon" type="image/png" sizes="32x32" href="assets/images/favicon-32.png">
     <link rel="icon" type="image/png" sizes="192x192" href="assets/images/icon-192.png">
     <link rel="apple-touch-icon" href="assets/images/apple-touch-icon.png">
-    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700;800&family=Space+Grotesk:wght@300;700&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;600;700&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- One request for all five families (was three), and the font host's connection opened early -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700;800&family=Space+Grotesk:wght@300;700&family=Chakra+Petch:wght@400;600;700&family=Orbitron:wght@400;700;900&family=Exo+2:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     
     <!-- Version-pinned on purpose: an unpinned CDN URL always serves "latest", so a compromised
          or simply broken release would execute on this page with full access to the DOM and to
@@ -116,7 +117,7 @@ Type 'help' for a list of commands.
     </div>
     
     <header>
-        <img src="assets/images/logo.png" alt="PHOENIX CODEX" class="logo" onclick="playClick(); openWhoAmI();">
+        <img src="assets/images/logo.webp" alt="PHOENIX CODEX" class="logo" onclick="playClick(); openWhoAmI();">
         
         <div class="nav-bar">
             <button class="nav-btn active-live" id="tab-live" onclick="playClick(); switchTab('live')">LIVE DROPS</button>
@@ -310,7 +311,7 @@ Type 'help' for a list of commands.
         <div class="yg-image-row" id="yg-image-row">
             <button class="yg-gallery-btn left" id="yg-arrow-left" onclick="playClick(); changeGalleryImage(-1)"><i class="ph-bold ph-caret-left"></i></button>
             <div class="yg-image-frame">
-                <img src="" id="yg-main-img" alt="PC Build" decoding="async" class="yg-pc-image" onclick="playClick(); changeGalleryImage(1)" title="Next image" data-i18n-title="nextImage">
+                <img id="yg-main-img" alt="PC Build" decoding="async" class="yg-pc-image" onclick="playClick(); changeGalleryImage(1)" title="Next image" data-i18n-title="nextImage">
                 <button type="button" class="yg-target-lock" title="Save to wishlist" data-i18n-title="saveToWishlist" onclick="this.classList.remove('still'); toggleWishlist(this)"><i class="ph-bold ph-crosshair"></i></button>
             </div>
             <button class="yg-gallery-btn right" id="yg-arrow-right" onclick="playClick(); changeGalleryImage(1)"><i class="ph-bold ph-caret-right"></i></button>
@@ -706,7 +707,7 @@ Type 'help' for a list of commands.
                         <div class="dossier-xp" id="dossier-xp">0 XP</div>
                         <div class="network-status"><div class="live-dot"></div> STATUS: <span class="neon-green-text">ONLINE</span></div>
                     </div>
-                    <img class="dossier-crest" src="assets/images/logo.png" alt="" aria-hidden="true">
+                    <img class="dossier-crest" src="assets/images/logo.webp" alt="" aria-hidden="true">
                 </div>
                 <!-- Filled/shown only when state.emailVerified is false — see openAgentDashboard() -->
                 <div class="dossier-verify-banner hidden" id="dossier-verify-banner">
@@ -763,7 +764,7 @@ Type 'help' for a list of commands.
                         </div>
                         <div class="dossier-ladder-list" id="dossier-ladder-list"></div>
                         <div class="dossier-ladder-empty">
-                            <img class="dossier-ladder-crest" src="assets/images/logo.png" alt="" aria-hidden="true">
+                            <img class="dossier-ladder-crest" src="assets/images/logo.webp" alt="" aria-hidden="true">
                             <div class="dossier-ladder-line" data-i18n="dossierJourney">Your journey begins here</div>
                         </div>
                     </div>
