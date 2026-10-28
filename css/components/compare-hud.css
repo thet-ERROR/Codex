@@ -235,3 +235,8 @@
     .vs-picker { left: 8px; right: 8px; top: 60px; bottom: 8px; }
 }
 @media (prefers-reduced-motion: reduce) { .vs-picker { animation: none; } }
+
+/* "★ +X%" next to the stronger CPU / GPU — only when both PCs have a benchmark score (benchScores) */
+.vs-gain { display: inline-block; margin: 0 6px; padding: 1px 5px; border-radius: 5px; font-size: 0.68rem; font-weight: 700; white-space: nowrap; vertical-align: 1px; }
+.vs-val.left .vs-gain { background: rgba(74, 4, 78, 0.8); border: 1px solid var(--va-line); color: #f0abfc; }
+.vs-val.right .vs-gain { background: rgba(8, 51, 68, 0.8); border: 1px solid var(--vb-line); color: #a5f3fc; }

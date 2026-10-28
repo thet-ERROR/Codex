@@ -157,10 +157,19 @@ function renderComparison(a, b, t) {
         .map(k => {
             const va = a.specs?.[k] || '—', vb = b.specs?.[k] || '—';
             const same = norm(va) === norm(vb);
+            // CPU / GPU: a real "+X%" when the admin gave BOTH PCs a benchmark score for that part
+            // (benchScores, same scale for every PC). Without both, no percentage — it isn't guessed.
+            let badgeA = '', badgeB = '';
+            const sa = Number(a.benchScores?.[k]) || 0, sb = Number(b.benchScores?.[k]) || 0;
+            if ((k === 'cpu' || k === 'gpu') && sa > 0 && sb > 0 && !same) {
+                const pct = Math.round((Math.max(sa, sb) / Math.min(sa, sb) - 1) * 100);
+                const badge = pct >= 1 ? `<span class="vs-gain">★ +${pct}%</span>` : '';
+                if (sa > sb) badgeA = badge; else if (sb > sa) badgeB = badge;
+            }
             return `<div class="vs-row${same ? ' same' : ' diff'}">
-                <div class="vs-val left">${esc(va)}</div>
+                <div class="vs-val left">${badgeA}${esc(va)}</div>
                 <div class="vs-label">${esc(k.toUpperCase())}</div>
-                <div class="vs-val right">${esc(vb)}</div>
+                <div class="vs-val right">${esc(vb)}${badgeB}</div>
             </div>`;
         }).join('');
 

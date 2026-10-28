@@ -306,6 +306,8 @@
 });
         $('price').value = centsToInput(pc.priceCents, pc.price);
         ['cpu','gpu','ram','ssd','mobo','psu','case'].forEach(k => document.getElementById(k).value = pc.specs[k]||'');
+        $('benchCpu').value = pc.benchScores?.cpu ?? '';
+        $('benchGpu').value = pc.benchScores?.gpu ?? '';
         ['cpu','gpu','ram','ssd','mobo','psu','case'].forEach(k => {
             const el = document.getElementById('specInfo-' + k);
             if (el) el.value = (pc.specDetails && pc.specDetails[k]) || '';
@@ -372,6 +374,11 @@ const data = {
                 case: document.getElementById('specInfo-case').value
             },
             fps: currentFPS,
+            // Empty = no score (null, so an update also clears one that was set before)
+            benchScores: {
+                cpu: $('benchCpu').value === '' ? null : Math.max(0, Math.round(Number($('benchCpu').value))),
+                gpu: $('benchGpu').value === '' ? null : Math.max(0, Math.round(Number($('benchGpu').value)))
+            },
             options: collectOptions()
         };
         // Only on create. On update the API ignores `reviews` anyway (see PUT /api/drops/:id) —
