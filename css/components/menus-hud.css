@@ -73,3 +73,20 @@
 }
 #chat-widget .chat-action:hover { box-shadow: 0 0 22px rgba(176, 38, 255, 0.5); }
 #chat-widget .chat-admin-btn { border-radius: 13px; }
+
+/* --- the terminal button in the header: a glowing purple glass disc (the user's mockup) ---
+   Dark domed face with a light catching its top, a purple ring with a soft halo, the icon lit in
+   purple. The terminal window itself keeps its green command-line look. */
+.cli-btn {
+    position: relative; width: 48px; height: 48px; border: 1.5px solid #b026ff; color: #d9a6ff; font-size: 1.35rem;
+    background: radial-gradient(circle at 50% 30%, #3a2a52 0%, #1c1428 55%, #0e0a16 100%);
+    box-shadow: 0 0 14px rgba(176, 38, 255, 0.55), 0 0 30px rgba(176, 38, 255, 0.25), inset 0 0 0 3px rgba(10, 6, 18, 0.7), inset 0 0 0 4px rgba(176, 38, 255, 0.35);
+}
+.cli-btn i { filter: drop-shadow(0 0 4px rgba(217, 166, 255, 0.9)); }
+.cli-btn::after {
+    content: ''; position: absolute; top: 5px; left: 50%; width: 60%; height: 38%; transform: translateX(-50%); border-radius: 50%; pointer-events: none;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0));
+}
+.cli-btn:hover { background: radial-gradient(circle at 50% 30%, #4a3466 0%, #241a34 55%, #120c1c 100%); color: #fff; border-color: #c65cff;
+    box-shadow: 0 0 20px rgba(176, 38, 255, 0.75), 0 0 40px rgba(176, 38, 255, 0.35), inset 0 0 0 3px rgba(10, 6, 18, 0.7), inset 0 0 0 4px rgba(176, 38, 255, 0.45); }
+.cli-btn:active { transform: scale(0.94); }
