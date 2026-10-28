@@ -191,3 +191,47 @@
     .vs-foot { gap: 8px; padding-top: 10px; }
     #compare-modal .vs-view-btn { min-height: 44px; font-size: 0.68rem; flex-direction: column; gap: 0; }
 }
+
+/* --- "Change opponent": a small button on each fighter, and the list that slides over the arena --- */
+.vs-change {
+    position: absolute; top: 6px; z-index: 2; display: inline-flex; align-items: center; gap: 5px; min-height: 26px; padding: 2px 9px; border-radius: 7px; cursor: pointer;
+    font-family: var(--font-ui); font-weight: 800; font-size: 0.7rem; letter-spacing: 0.5px; color: #fff; background: rgba(10, 4, 20, 0.85);
+    transition: background-color 0.2s, border-color 0.2s;
+}
+.vs-fighter.left .vs-change { right: 8px; border: 1px solid var(--va-line); }
+.vs-fighter.right .vs-change { left: 8px; border: 1px solid var(--vb-line); }
+.vs-fighter.left .vs-change:hover { background: var(--va-soft); border-color: var(--va); }
+.vs-fighter.right .vs-change:hover { background: var(--vb-soft); border-color: var(--vb); }
+
+.vs-picker {
+    position: absolute; z-index: 5; left: 14px; right: 14px; top: 72px; bottom: 14px; display: flex; flex-direction: column; overflow: hidden;
+    border-radius: 16px; background: rgba(9, 4, 18, 0.97); box-shadow: 0 20px 50px rgba(0, 0, 0, 0.85);
+    animation: vsPickIn 0.22s cubic-bezier(0.2, 0.8, 0.3, 1);
+}
+.vs-picker.left { border: 1.5px solid var(--va); box-shadow: 0 0 24px rgba(217, 70, 239, 0.35), 0 20px 50px rgba(0, 0, 0, 0.85); }
+.vs-picker.right { border: 1.5px solid var(--vb); box-shadow: 0 0 24px rgba(34, 211, 238, 0.3), 0 20px 50px rgba(0, 0, 0, 0.85); }
+@keyframes vsPickIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+.vs-picker-head { flex: none; display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 12px 12px 10px 16px; border-bottom: 1px solid rgba(168, 85, 247, 0.25); font-family: var(--card-font-secondary); font-weight: 800; font-size: 0.78rem; letter-spacing: 1px; color: #fff; text-transform: uppercase; }
+.vs-picker-x { flex: none; display: grid; place-items: center; width: 34px; height: 34px; padding: 0; border-radius: 9px; border: 1px solid #404040; background: transparent; color: #ccc; cursor: pointer; }
+.vs-picker-x:hover { color: #fff; border-color: #a855f7; }
+.vs-picker-list { flex: 1; min-height: 0; overflow-y: auto; padding: 10px; display: flex; flex-direction: column; gap: 6px; }
+.vs-pick {
+    display: flex; align-items: center; gap: 12px; width: 100%; min-height: 58px; padding: 6px 12px 6px 6px; border-radius: 12px; cursor: pointer; text-align: left;
+    border: 1px solid rgba(168, 85, 247, 0.22); background: rgba(20, 8, 36, 0.8); color: #fff; font: inherit; transition: border-color 0.2s, background-color 0.2s;
+}
+.vs-pick:hover { border-color: #a855f7; background: rgba(46, 16, 101, 0.6); }
+.vs-pick img { flex: none; width: 46px; height: 46px; border-radius: 9px; object-fit: cover; background: #000; }
+.vs-pick-text { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.vs-pick-text strong { font-family: var(--card-font-secondary); font-size: 0.85rem; letter-spacing: 0.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.vs-pick-text small { font-family: 'Courier New', monospace; font-size: 0.72rem; color: #a3a3a3; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.vs-pick b { flex: none; font-family: var(--card-font-secondary); font-size: 0.85rem; color: #e879f9; }
+.vs-picker.right .vs-pick b { color: #67e8f9; }
+.vs-pick-empty { margin: 20px 0; text-align: center; color: #a3a3a3; }
+@media (max-width: 768px) {
+    .vs-change span { display: none; }
+    .vs-change { padding: 2px 6px; min-height: 24px; }
+    .vs-fighter.left .vs-change { right: 6px; top: 4px; }
+    .vs-fighter.right .vs-change { left: 6px; top: 4px; }
+    .vs-picker { left: 8px; right: 8px; top: 60px; bottom: 8px; }
+}
+@media (prefers-reduced-motion: reduce) { .vs-picker { animation: none; } }

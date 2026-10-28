@@ -54,6 +54,13 @@ export function openCompareModal() {
     if (window.checkAchievement) window.checkAchievement('comparator');
 
 
+    renderDuel();
+    if(window.openModal) window.openModal('compare-modal');
+}
+
+// (Re)builds the open duel from state.compareList — on open, and after a side is swapped for another PC
+function renderDuel(tab) {
+    closePicker(); // a list left open when the window was closed
     const [a, b] = state.compareList;
     const t = window.t || (k => k);
     const grid = document.getElementById('compare-grid');
@@ -61,7 +68,50 @@ export function openCompareModal() {
     const view = renderComparison(a, b, t);
     if (grid) { grid.innerHTML = view.body; grid.scrollTop = 0; }
     if (foot) foot.innerHTML = view.foot;
-    if(window.openModal) window.openModal('compare-modal');
+    if (tab && document.querySelector(`#compare-modal .vs-tab[data-vs-tab="${tab}"]`)) setVsTab(tab);
+}
+
+// --- "Change opponent": pick another PC for one side without leaving the duel ---
+// The list is every PC on sale (not the vote drop), minus the two already in the ring.
+const pcId = p => String(p._id || p.id);
+function openPicker(side) {
+    const box = document.querySelector('#compare-modal .compare-box');
+    if (!box) return;
+    const t = window.t || (k => k);
+    const inRing = new Set(state.compareList.map(pcId));
+    const options = (state.inventory || []).filter(p => !p.isVoteEvent && !inRing.has(pcId(p)));
+    closePicker();
+    const sheet = document.createElement('div');
+    sheet.className = `vs-picker ${side ? 'right' : 'left'}`;
+    sheet.setAttribute('role', 'dialog');
+    sheet.setAttribute('aria-label', t('compareChange'));
+    sheet.innerHTML = `
+        <div class="vs-picker-head">
+            <span>${esc(t('compareChangeTitle', { no: side ? '02' : '01' }))}</span>
+            <button type="button" class="vs-picker-x" data-vs-picker-close aria-label="${esc(t('closeLabel'))}"><i class="ph-bold ph-x"></i></button>
+        </div>
+        <div class="vs-picker-list">
+            ${options.length ? options.map(p => `
+                <button type="button" class="vs-pick" data-vs-side="${side}" data-vs-choose="${esc(pcId(p))}">
+                    <img src="${escUrl((p.images || [])[0])}" alt="" loading="lazy">
+                    <span class="vs-pick-text"><strong>${esc(p.name)}</strong><small>${esc(p.specs?.gpu || p.specs?.cpu || '')}</small></span>
+                    <b>${formatPrice(priceCentsOf(p))}</b>
+                </button>`).join('') : `<p class="vs-pick-empty">${esc(t('compareNoOthers'))}</p>`}
+        </div>`;
+    box.appendChild(sheet);
+}
+function closePicker() {
+    document.querySelectorAll('#compare-modal .vs-picker').forEach(n => n.remove());
+}
+function choose(side, id) {
+    const pc = (state.inventory || []).find(p => pcId(p) === id);
+    if (!pc) return;
+    const openTab = document.querySelector('#compare-modal .vs-tab.active')?.dataset.vsTab;
+    state.compareList[side] = pc;
+    closePicker();
+    renderDuel(openTab);
+    // The stage card's COMPARE button / VS strip show what's in the ring — keep them in step
+    if (window.renderCard) window.renderCard();
 }
 
 // Specs / FPS tabs inside the duel
@@ -93,6 +143,7 @@ function renderComparison(a, b, t) {
     const head = (p, price, other, side, no) => `
         <div class="vs-fighter ${side}">
             <span class="vs-tag">PROJECT ${no}</span>
+            <button type="button" class="vs-change" data-vs-pick="${side === 'left' ? 0 : 1}" aria-label="${esc(t('compareChange'))}" title="${esc(t('compareChange'))}"><i class="ph-bold ph-arrows-clockwise"></i><span>${esc(t('compareChangeShort'))}</span></button>
             <div class="vs-img-wrap"><img src="${escUrl((p.images || [])[0])}" class="vs-img" alt="" decoding="async"></div>
             <div class="vs-name">${esc(p.name)}</div>
             <div class="vs-price-line">
@@ -187,6 +238,11 @@ document.addEventListener('DOMContentLoaded', () => {
     box.addEventListener('click', (e) => {
         const tab = e.target.closest('.vs-tab');
         if (tab) { if (window.playClick) window.playClick(); setVsTab(tab.dataset.vsTab); return; }
+        const pick = e.target.closest('[data-vs-pick]');
+        if (pick) { if (window.playClick) window.playClick(); openPicker(Number(pick.dataset.vsPick)); return; }
+        const chosen = e.target.closest('[data-vs-choose]');
+        if (chosen) { if (window.playClick) window.playClick(); choose(Number(chosen.dataset.vsSide), chosen.dataset.vsChoose); return; }
+        if (e.target.closest('[data-vs-picker-close]')) { closePicker(); return; }
         const btn = e.target.closest('.vs-view-btn');
         if (!btn) return;
         const pc = state.compareList.find(p => String(p._id || p.id) === btn.dataset.vsId);

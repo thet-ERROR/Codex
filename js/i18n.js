@@ -178,6 +178,7 @@ const translations = {
         compareAvgFps: "μέσα FPS", compareVerdict: "Συνολική διαφορά", compareViewName: "Δες το {name}",
         compareLead: "Το {name} δίνει κατά μέσο όρο +{pct}% FPS {cost}", compareCostMore: "με +{d}", compareCostLess: "και κοστίζει {d} λιγότερο", compareCostSame: "στην ίδια τιμή",
         compareTie: "Ουσιαστικά ίδια απόδοση — κρίνει η τιμή και τα κομμάτια",
+        compareChange: "Άλλαξε αντίπαλο", compareChangeShort: "Αλλαγή", compareChangeTitle: "Διάλεξε PC για το PROJECT {no}", compareNoOthers: "Δεν υπάρχει άλλο PC για σύγκριση.",
         briefMore: "Περισσότερα ▾", briefLess: "Λιγότερα ▴",
         cartHintTitle: "Προστέθηκε στο καλάθι", cartHintText: "Το καλάθι σου είναι εδώ — πάτα όποτε είσαι έτοιμος.",
 
@@ -421,6 +422,7 @@ const translations = {
         compareAvgFps: "avg FPS", compareVerdict: "Overall difference", compareViewName: "View {name}",
         compareLead: "{name} gives +{pct}% FPS on average {cost}", compareCostMore: "for +{d}", compareCostLess: "and costs {d} less", compareCostSame: "at the same price",
         compareTie: "Practically the same performance — price and parts decide",
+        compareChange: "Change opponent", compareChangeShort: "Change", compareChangeTitle: "Pick a PC for PROJECT {no}", compareNoOthers: "There's no other PC to compare.",
         briefMore: "MORE ▾", briefLess: "LESS ▴",
         cartHintTitle: "ADDED TO CART", cartHintText: "Your cart is right here — tap it whenever you're ready.",
 
