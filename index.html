@@ -860,10 +860,20 @@ Type 'help' for a list of commands.
     <div class="modal-overlay" id="compare-modal">
         <!-- Was an inline width:1200px — wider than any phone, which is why the comparison came out
              cropped. Sized in css/components/compare.css; content built by renderComparison(). -->
-        <div class="modal-content compare-box">
-            <span class="close-modal" onclick="playClick(); closeModal('compare-modal')">X</span>
-            <h2 class="vs-title" data-i18n="compareTitle">VS MODE</h2>
+        <!-- The duel window (css/components/compare-hud.css): header, the two fighters, Specs / FPS tabs,
+             and a footer that stays put with one "view" button per PC. Filled by renderComparison(). -->
+        <div class="modal-content compare-box" role="dialog" aria-modal="true" aria-labelledby="compare-title">
+            <i class="vs-gem vs-gem-tl"></i><i class="vs-gem vs-gem-tr"></i><i class="vs-gem vs-gem-bl"></i><i class="vs-gem vs-gem-br"></i>
+            <div class="vs-top">
+                <span class="vs-top-ico" aria-hidden="true"><i class="ph-fill ph-sword"></i></span>
+                <div class="vs-top-text">
+                    <h2 class="vs-title" id="compare-title"><span data-i18n="compareTitle">VS MODE</span><span class="vs-chip">SYSTEM ANALYSIS</span></h2>
+                    <p class="vs-sub" data-i18n="compareSub">Specs and FPS, side by side</p>
+                </div>
+                <button type="button" class="vs-close" onclick="playClick(); closeModal('compare-modal')" data-i18n-aria="closeLabel" aria-label="Close"><i class="ph-bold ph-x"></i></button>
+            </div>
             <div class="compare-grid" id="compare-grid"></div>
+            <div class="vs-foot" id="compare-foot"></div>
         </div>
     </div>
 

@@ -174,6 +174,10 @@ const translations = {
 
         cartYourLoot: "Η λεία σου", cartTotalLabel: "Σύνολο", cartCheckoutBtn: "Στείλε την παραγγελία στο WhatsApp",
         compareSpecs: "Προδιαγραφές", compareFps: "Απόδοση (FPS)", compareView: "Δες το",
+        compareSub: "Προδιαγραφές και FPS, δίπλα-δίπλα", compareDiffHint: "Φωτίζονται όσα διαφέρουν", compareFpsTitle: "Απόδοση σε παιχνίδια (1080p)",
+        compareAvgFps: "μέσα FPS", compareVerdict: "Συνολική διαφορά", compareViewName: "Δες το {name}",
+        compareLead: "Το {name} δίνει κατά μέσο όρο +{pct}% FPS {cost}", compareCostMore: "με +{d}", compareCostLess: "και κοστίζει {d} λιγότερο", compareCostSame: "στην ίδια τιμή",
+        compareTie: "Ουσιαστικά ίδια απόδοση — κρίνει η τιμή και τα κομμάτια",
         briefMore: "Περισσότερα ▾", briefLess: "Λιγότερα ▴",
         cartHintTitle: "Προστέθηκε στο καλάθι", cartHintText: "Το καλάθι σου είναι εδώ — πάτα όποτε είσαι έτοιμος.",
 
@@ -413,6 +417,10 @@ const translations = {
 
         cartYourLoot: "YOUR LOOT", cartTotalLabel: "TOTAL", cartCheckoutBtn: "SEND YOUR ORDER ON WHATSAPP",
         compareSpecs: "SPECS", compareFps: "PERFORMANCE (FPS)", compareView: "VIEW",
+        compareSub: "Specs and FPS, side by side", compareDiffHint: "Differences are lit", compareFpsTitle: "In-game performance (1080p)",
+        compareAvgFps: "avg FPS", compareVerdict: "Overall difference", compareViewName: "View {name}",
+        compareLead: "{name} gives +{pct}% FPS on average {cost}", compareCostMore: "for +{d}", compareCostLess: "and costs {d} less", compareCostSame: "at the same price",
+        compareTie: "Practically the same performance — price and parts decide",
         briefMore: "MORE ▾", briefLess: "LESS ▴",
         cartHintTitle: "ADDED TO CART", cartHintText: "Your cart is right here — tap it whenever you're ready.",
 

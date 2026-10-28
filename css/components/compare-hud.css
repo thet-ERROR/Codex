@@ -1,0 +1,193 @@
+/* ===== VS MODE as a duel arena (the user's mockup) — #compare-modal, built by renderComparison() =====
+   A deep purple glass window with a magenta rim and four diamond corners; the two PCs as fighters —
+   PROJECT 01 in magenta on the left, PROJECT 02 in cyan on the right — a pulsing VS core between
+   them; Specs / FPS tabs; the FPS as twin bars meeting in the middle and an honest average verdict;
+   and a footer that stays put with one button per PC. Loaded after compare.css, which it restyles. */
+#compare-modal {
+    --va: #d946ef; --va-soft: rgba(217, 70, 239, 0.16); --va-line: rgba(217, 70, 239, 0.5);
+    --vb: #22d3ee; --vb-soft: rgba(34, 211, 238, 0.14); --vb-line: rgba(34, 211, 238, 0.5);
+}
+
+/* --- the window --- */
+#compare-modal .compare-box {
+    position: relative; display: flex; flex-direction: column; overflow: visible;
+    width: min(860px, 94vw); max-height: min(92vh, 92dvh); padding: 18px 22px 16px; border-radius: 20px;
+    border: 2px solid rgba(217, 70, 239, 0.55) !important;
+    background:
+        linear-gradient(rgba(168, 85, 247, 0.045) 1px, transparent 1px) 0 0 / 26px 26px,
+        linear-gradient(90deg, rgba(168, 85, 247, 0.045) 1px, transparent 1px) 0 0 / 26px 26px,
+        radial-gradient(circle at 50% 0%, #1f083d 0%, #0f051e 50%, #07020e 100%);
+    box-shadow: 0 0 35px rgba(217, 70, 239, 0.25), inset 0 0 20px rgba(168, 85, 247, 0.15), 0 30px 80px rgba(0, 0, 0, 0.85);
+}
+.vs-gem {
+    position: absolute; z-index: 3; width: 12px; height: 12px; transform: rotate(45deg); pointer-events: none;
+    background: linear-gradient(135deg, #fff, #f472b6 40%, #c026d3); border: 1px solid #fff; box-shadow: 0 0 10px rgba(244, 114, 182, 0.9);
+}
+.vs-gem-tl { top: -7px; left: -7px; } .vs-gem-tr { top: -7px; right: -7px; }
+.vs-gem-bl { bottom: -7px; left: -7px; } .vs-gem-br { bottom: -7px; right: -7px; }
+
+/* --- header --- */
+.vs-top { flex: none; display: flex; align-items: center; gap: 12px; padding-bottom: 14px; border-bottom: 1px solid rgba(168, 85, 247, 0.3); }
+.vs-top-ico {
+    flex: none; display: grid; place-items: center; width: 40px; height: 40px; border-radius: 11px; font-size: 1.25rem; color: #f0abfc;
+    background: #2a0f4a; border: 1px solid rgba(217, 70, 239, 0.6); box-shadow: 0 0 10px rgba(217, 70, 239, 0.5);
+}
+.vs-top-text { flex: 1; min-width: 0; }
+#compare-modal .vs-title { display: flex; align-items: center; gap: 10px; margin: 0; text-align: left; font-family: var(--card-font-secondary); font-weight: 900; font-size: 1.25rem; letter-spacing: 2px; text-transform: uppercase; color: #fff; }
+.vs-chip { padding: 2px 8px; border-radius: 5px; border: 1px solid rgba(168, 85, 247, 0.4); background: rgba(46, 16, 101, 0.8); color: #e879f9; font-family: 'Courier New', monospace; font-size: 0.66rem; font-weight: 700; letter-spacing: 1px; }
+.vs-sub { margin: 3px 0 0; font-family: 'Courier New', monospace; font-size: 0.74rem; color: #a3a3a3; }
+.vs-close {
+    flex: none; display: grid; place-items: center; width: 40px; height: 40px; padding: 0; border-radius: 11px; cursor: pointer; font-size: 1.1rem;
+    border: 1px solid #404040; background: rgba(23, 23, 23, 0.8); color: #a3a3a3; transition: color 0.2s, border-color 0.2s, background-color 0.2s;
+}
+.vs-close:hover { color: #fca5a5; border-color: rgba(239, 68, 68, 0.6); background: rgba(69, 10, 10, 0.8); }
+
+/* --- the scrolling arena --- */
+#compare-modal .compare-grid { flex: 1 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding: 16px 4px 8px; }
+#compare-modal .compare-grid::-webkit-scrollbar { width: 6px; }
+#compare-modal .compare-grid::-webkit-scrollbar-thumb { background: #a855f7; border-radius: 4px; }
+
+/* --- the fighters --- */
+/* stretch: both fighters as tall as the taller one (a two-line name used to leave them uneven) */
+#compare-modal .vs-heads { display: grid; grid-template-columns: 1fr auto 1fr; align-items: stretch; gap: 14px; margin-bottom: 14px; }
+#compare-modal .vs-core { align-self: center; }
+.vs-fighter { position: relative; min-width: 0; padding: 12px; border-radius: 14px; text-align: center; transition: border-color 0.3s; }
+.vs-fighter.left { background: linear-gradient(180deg, #19092c, #0c0417); border: 1px solid var(--va-line); box-shadow: 0 0 15px rgba(217, 70, 239, 0.15); }
+.vs-fighter.right { background: linear-gradient(180deg, #0a1829, #050e18); border: 1px solid var(--vb-line); box-shadow: 0 0 15px rgba(34, 211, 238, 0.15); }
+.vs-tag { position: absolute; top: 8px; padding: 2px 7px; border-radius: 5px; font-family: 'Courier New', monospace; font-size: 0.64rem; font-weight: 700; letter-spacing: 1px; }
+.vs-fighter.left .vs-tag { left: 8px; background: rgba(74, 4, 78, 0.9); border: 1px solid var(--va-line); color: #f0abfc; }
+.vs-fighter.right .vs-tag { right: 8px; background: rgba(8, 51, 68, 0.9); border: 1px solid var(--vb-line); color: #a5f3fc; }
+#compare-modal .vs-img-wrap { aspect-ratio: 4 / 3; max-width: none; margin: 24px 0 10px; border-radius: 10px; background: #000; }
+.vs-fighter.left .vs-img-wrap { border: 1px solid rgba(168, 85, 247, 0.3); }
+.vs-fighter.right .vs-img-wrap { border: 1px solid rgba(34, 211, 238, 0.3); }
+#compare-modal .vs-img { object-fit: contain; transition: transform 0.5s; }
+@media (hover: hover) { .vs-fighter:hover .vs-img { transform: scale(1.05); } .vs-fighter.left:hover { border-color: var(--va); } .vs-fighter.right:hover { border-color: var(--vb); } }
+#compare-modal .vs-name { font-family: var(--card-font-secondary); font-weight: 900; font-size: 1.05rem; letter-spacing: 1px; }
+.vs-price-line { display: flex; align-items: baseline; justify-content: center; gap: 6px; flex-wrap: wrap; margin-top: 4px; }
+#compare-modal .vs-price { margin: 0; font-family: var(--card-font-secondary); font-weight: 900; font-size: 1.35rem; }
+.vs-fighter.left .vs-price { color: #ff2e93; text-shadow: 0 0 10px rgba(255, 46, 147, 0.7); }
+.vs-fighter.right .vs-price { color: var(--vb); text-shadow: 0 0 10px rgba(34, 211, 238, 0.7); }
+#compare-modal .vs-price-diff { min-height: 0; margin: 0; padding: 0 5px; border-radius: 4px; border: 1px solid var(--va-line); background: rgba(74, 4, 78, 0.6); color: #e879f9; font-family: 'Courier New', monospace; font-size: 0.72rem; font-weight: 700; }
+
+/* The VS core: a gradient ring, a dark heart, pulsing between magenta and cyan */
+.vs-core {
+    display: grid; place-items: center; width: 56px; height: 56px; padding: 2px; border-radius: 50%;
+    background: linear-gradient(45deg, #c026d3, #9333ea, #06b6d4); animation: vsCore 2.8s ease-in-out infinite;
+}
+.vs-core span {
+    display: grid; place-items: center; width: 100%; height: 100%; border-radius: 50%; background: #0a0314; border: 1px solid rgba(255, 255, 255, 0.3);
+    font-family: var(--card-font-secondary); font-weight: 900; font-size: 1rem; letter-spacing: -1px;
+    background-image: linear-gradient(#0a0314, #0a0314); color: #f0abfc; text-shadow: 0 0 8px rgba(103, 232, 249, 0.8);
+}
+@keyframes vsCore {
+    0%, 100% { transform: scale(1); box-shadow: 0 0 15px rgba(217, 70, 239, 0.7); }
+    50% { transform: scale(1.08); box-shadow: 0 0 26px rgba(6, 182, 212, 0.9); }
+}
+@media (prefers-reduced-motion: reduce) { .vs-core { animation: none; } }
+
+/* --- tabs --- */
+.vs-tabs { display: flex; justify-content: center; gap: 8px; margin: 4px 0 14px; }
+.vs-tab {
+    display: inline-flex; align-items: center; gap: 7px; min-height: 38px; padding: 6px 16px; border-radius: 10px; cursor: pointer;
+    border: 1px solid #404040; background: rgba(23, 23, 23, 0.6); color: #a3a3a3;
+    font-family: var(--card-font-secondary); font-weight: 700; font-size: 0.75rem; letter-spacing: 1px; text-transform: uppercase;
+    transition: color 0.2s, border-color 0.2s, background-color 0.2s;
+}
+.vs-tab:hover { color: #fff; border-color: rgba(168, 85, 247, 0.6); }
+.vs-tab.active { color: #f5d0fe; border-color: #e879f9; background: rgba(88, 28, 135, 0.7); box-shadow: 0 0 12px rgba(217, 70, 239, 0.3); }
+.vs-panel { display: none; }
+.vs-panel.active { display: block; animation: fadeIn 0.2s ease; }
+
+/* --- section titles --- */
+#compare-modal .vs-section-title { justify-content: space-between; margin: 0 0 8px; padding: 0 4px; font-family: var(--card-font-secondary); font-weight: 900; font-size: 0.7rem; letter-spacing: 2px; color: #e879f9; }
+#compare-modal .vs-section-title::before, #compare-modal .vs-section-title::after { display: none; }
+#compare-modal .vs-section-title.fps { color: #22d3ee; }
+#compare-modal .vs-section-title small { font-family: 'Courier New', monospace; font-size: 0.66rem; font-weight: 400; letter-spacing: 0; color: #8b8b95; text-transform: none; }
+
+/* --- spec rows: value · label chip · value; differences lit, identical parts dimmed --- */
+#compare-modal .vs-row {
+    grid-template-columns: 1fr 64px 1fr; gap: 10px; margin-bottom: 6px; padding: 9px 10px; border: 1px solid rgba(88, 28, 135, 0.5); border-radius: 10px;
+    background: rgba(14, 5, 26, 0.8); transition: background-color 0.2s;
+}
+#compare-modal .vs-row:hover { background: rgba(22, 9, 42, 0.8); }
+#compare-modal .vs-label { min-width: 0; padding: 4px 0; border-radius: 6px; border: 1px solid rgba(168, 85, 247, 0.4); background: rgba(46, 16, 101, 0.8); color: #e879f9; font-family: var(--card-font-secondary); font-size: 0.62rem; font-weight: 900; }
+#compare-modal .vs-val { font-family: 'Courier New', monospace; font-size: 0.86rem; color: #d4d4d4; }
+#compare-modal .vs-row.diff .vs-val.left { color: #f0abfc; font-weight: 700; }
+#compare-modal .vs-row.diff .vs-val.right { color: #67e8f9; font-weight: 700; }
+#compare-modal .vs-row.same { opacity: 0.55; }
+
+/* --- FPS: game name in the middle, a bar per side growing out from the centre --- */
+.vs-game { margin-bottom: 8px; padding: 10px 12px; border-radius: 10px; border: 1px solid rgba(88, 28, 135, 0.5); background: rgba(12, 5, 23, 0.9); }
+.vs-game-line { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 10px; margin-bottom: 6px; }
+.vs-game-name { font-family: var(--card-font-secondary); font-weight: 700; font-size: 0.72rem; letter-spacing: 1px; color: #fff; text-transform: uppercase; text-align: center; }
+.vs-fps { font-family: 'Courier New', monospace; font-weight: 700; font-size: 0.82rem; }
+.vs-fps.left { text-align: left; color: #f0abfc; }
+.vs-fps.right { text-align: right; color: #67e8f9; }
+.vs-fps:not(.win) { opacity: 0.75; }
+.vs-bars { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; height: 10px; padding: 2px; border-radius: 999px; background: rgba(0, 0, 0, 0.7); border: 1px solid #2e1065; }
+.vs-bar { display: flex; }
+.vs-bar.left { justify-content: flex-end; }
+.vs-bar i { display: block; height: 100%; transition: width 0.6s cubic-bezier(0.2, 0.8, 0.3, 1); }
+.vs-bar.left i { border-radius: 999px 0 0 999px; background: linear-gradient(270deg, #d946ef, #6b21a8); }
+.vs-bar.right i { border-radius: 0 999px 999px 0; background: linear-gradient(90deg, #22d3ee, #2563eb); }
+
+.vs-verdict {
+    display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 12px; padding: 12px 14px; border-radius: 12px;
+    border: 1px solid rgba(168, 85, 247, 0.4); background: linear-gradient(90deg, rgba(59, 7, 100, 0.6), #130722, rgba(8, 51, 68, 0.6));
+}
+.vs-score { display: flex; align-items: center; gap: 7px; }
+.vs-score b { font-family: var(--card-font-secondary); font-weight: 900; font-size: 1.3rem; }
+.vs-score.left b { color: #e879f9; } .vs-score.right b { color: #22d3ee; }
+.vs-score small { font-family: 'Courier New', monospace; font-size: 0.62rem; line-height: 1.1; color: #a3a3a3; text-transform: uppercase; max-width: 44px; }
+.vs-score.right small { text-align: right; }
+.vs-verdict-text { flex: 1; min-width: 0; text-align: center; }
+.vs-verdict-text strong { display: block; font-family: var(--card-font-secondary); font-size: 0.64rem; letter-spacing: 1px; color: #fff; text-transform: uppercase; }
+.vs-verdict-text span { display: block; margin-top: 3px; font-family: 'Courier New', monospace; font-size: 0.8rem; font-weight: 700; color: #67e8f9; line-height: 1.3; }
+
+/* --- footer: one button per PC, always in view --- */
+.vs-foot { flex: none; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding-top: 14px; border-top: 1px solid rgba(168, 85, 247, 0.3); }
+#compare-modal .vs-view-btn {
+    display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 48px; padding: 10px; border-radius: 12px; color: #fff;
+    font-family: var(--card-font-secondary); font-weight: 900; font-size: 0.8rem; letter-spacing: 1px; text-transform: uppercase;
+}
+#compare-modal .vs-view-btn small { font-family: inherit; font-size: 0.72rem; opacity: 0.8; }
+#compare-modal .vs-view-btn.left { background: linear-gradient(90deg, #3b0764, #220a3e); border: 1px solid rgba(217, 70, 239, 0.7); box-shadow: 0 0 15px rgba(217, 70, 239, 0.3); }
+#compare-modal .vs-view-btn.left small { color: #f0abfc; }
+#compare-modal .vs-view-btn.right { background: linear-gradient(90deg, #083344, #072437); border: 1px solid rgba(34, 211, 238, 0.8); box-shadow: 0 0 15px rgba(6, 182, 212, 0.3); }
+#compare-modal .vs-view-btn.right small { color: #a5f3fc; }
+#compare-modal .vs-view-btn.left:hover { box-shadow: 0 0 22px rgba(217, 70, 239, 0.7); }
+#compare-modal .vs-view-btn.right:hover { box-shadow: 0 0 22px rgba(6, 182, 212, 0.7); }
+#compare-modal .vs-view-btn:active { transform: scale(0.97); }
+
+/* --- phone --- */
+@media (max-width: 768px) {
+    #compare-modal .compare-box { width: calc(100vw - 20px); padding: 14px 12px 12px; border-radius: 18px; }
+    .vs-top { gap: 10px; padding-bottom: 10px; }
+    .vs-top-ico { width: 34px; height: 34px; font-size: 1.05rem; }
+    #compare-modal .vs-title { font-size: 1rem; letter-spacing: 1px; }
+    .vs-chip { display: none; }
+    .vs-sub { font-size: 0.68rem; }
+    .vs-close { width: 36px; height: 36px; }
+    #compare-modal .compare-grid { padding: 12px 0 6px; }
+    #compare-modal .vs-heads { gap: 6px; }
+    .vs-fighter { padding: 8px; }
+    .vs-tag { top: 6px; font-size: 0.56rem; padding: 1px 5px; }
+    #compare-modal .vs-img-wrap { margin-top: 20px; }
+    #compare-modal .vs-name { font-size: 0.78rem; }
+    #compare-modal .vs-price { font-size: 1rem; }
+    .vs-core { width: 38px; height: 38px; }
+    .vs-core span { font-size: 0.72rem; }
+    .vs-tab { padding: 6px 12px; font-size: 0.66rem; }
+    #compare-modal .vs-section-title small { display: none; }
+    #compare-modal .vs-row { grid-template-columns: 1fr 50px 1fr; gap: 6px; padding: 8px; }
+    #compare-modal .vs-val { font-size: 0.76rem; }
+    .vs-game { padding: 8px 10px; }
+    .vs-fps { font-size: 0.74rem; }
+    .vs-game-name { font-size: 0.64rem; }
+    .vs-verdict { padding: 10px; gap: 6px; }
+    .vs-score b { font-size: 1.05rem; }
+    .vs-score small { display: none; }
+    .vs-verdict-text span { font-size: 0.72rem; }
+    .vs-foot { gap: 8px; padding-top: 10px; }
+    #compare-modal .vs-view-btn { min-height: 44px; font-size: 0.68rem; flex-direction: column; gap: 0; }
+}
