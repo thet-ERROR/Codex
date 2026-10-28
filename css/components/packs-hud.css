@@ -22,7 +22,7 @@
 .pack-art {
     position: absolute; inset: 0 0 auto 0; z-index: -1; width: 100%; height: 72%; object-fit: cover; object-position: center top;
     -webkit-mask-image: linear-gradient(180deg, #000 62%, transparent 100%); mask-image: linear-gradient(180deg, #000 62%, transparent 100%);
-    transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.3, 1);
+    transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.3, 1), opacity 0.35s ease, filter 0.35s ease;
 }
 .pack-text { position: relative; gap: 8px; }
 /* Scoped to the menu's id: the Greek text rule (variables.css, body.lang-el [data-i18n] { 0.85em }) would
@@ -36,7 +36,12 @@
 .pack-card[data-pack="coding"] .pack-count { color: #04212a; }
 .pack-card .pack-count.empty { background: rgba(255, 255, 255, 0.08); color: #b4b1c0; box-shadow: none; }
 
+/* At rest the art sits back in the dark page (dimmer, a little less colour) so the white titles read
+   at once; the card under the mouse — or reached with the keyboard — comes alive in full colour.
+   Mouse screens only: a touch screen has no hover to bring it back, so there it stays full colour. */
 @media (hover: hover) {
+    .pack-art { opacity: 0.65; filter: saturate(0.8) contrast(1.05); }
+    .pack-card:hover .pack-art, .pack-card:focus-visible .pack-art { opacity: 1; filter: saturate(1.1); }
     .pack-card:hover { transform: translateY(-6px); border-color: var(--pack); box-shadow: 0 0 34px color-mix(in srgb, var(--pack) 35%, transparent), 0 30px 70px rgba(0, 0, 0, 0.65); }
     .pack-card:hover .pack-art { transform: scale(1.04); }
 }
