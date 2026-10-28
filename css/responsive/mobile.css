@@ -55,7 +55,8 @@
     .wheel-legend-row { justify-content: center !important; }
     #cart-dropdown { top: 50% !important; left: 50% !important; right: auto !important; transform: translate(-50%, -50%) !important; width: 90vw !important; max-width: 380px !important; max-height: 80vh !important; overflow-y: auto !important; box-shadow: 0 10px 50px rgba(0, 0, 0, 0.9) !important; }
 
-    #carousel-wrapper { transform: scale(0.85) !important; transform-origin: top center !important; margin-bottom: -60px !important; margin-top: 20px !important; }
+    /* Drawn at full size: it used to be scaled to 85%, which took the card's text down to 7–8 px */
+    #carousel-wrapper { margin-top: 12px !important; }
 
     .gallery-overlay.active { display: block !important; }
     .gallery-overlay { padding-bottom: 100px !important; overflow-y: auto !important; -webkit-overflow-scrolling: touch !important; align-items: flex-start !important; padding: 20px 0 !important; }

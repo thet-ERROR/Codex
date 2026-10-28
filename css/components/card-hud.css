@@ -7,7 +7,8 @@
    The colour is the visitor's accent (--neon-green), like everything else on the site — the design's
    purple is just what that looked like in the mockup. Loaded after tcg-card.css, which it overrides:
    its card rules are !important, so the ones here that have to beat them are too.
-   Text sizes are cqw (1% of the card's width), so the card looks the same at any width. */
+   Text sizes are cqw (1% of the card's width), so the card looks the same at any width — each with a floor
+   in px (max()), so on a narrow phone nothing drops below what reads comfortably. */
 
 .card-col {
     --hc: var(--neon-green);
@@ -57,7 +58,7 @@
 .tc-title { position: relative; gap: 10px; padding: 7px 8px 7px 12px; }
 .tc-title::after { content: ''; position: absolute; left: 14px; bottom: -1px; width: 26%; height: 2px; border-radius: 2px; background: var(--hc); box-shadow: 0 0 8px var(--hc); }
 .tc-cube { flex: none; font-size: 7.4cqw; color: var(--hc); filter: drop-shadow(0 0 5px var(--hc-glow)); }
-.tc-name { font-size: 5.8cqw; text-shadow: 0 0 14px var(--hc-glow); }
+.tc-name { font-size: max(16px, 5.8cqw); text-shadow: 0 0 14px var(--hc-glow); }
 .tc-attr {
     width: 10cqw; height: 10cqw; font-size: 5.4cqw; color: #08060f;
     box-shadow: 0 0 0 2px var(--hc-line), 0 0 14px var(--hc-glow);
@@ -81,12 +82,12 @@
 .tc-type { gap: 6px; }
 .tc-row { align-items: stretch; gap: 8px; min-height: 0; }
 .tc-price {
-    flex: none; display: flex; align-items: center; padding: 6px 14px 6px 12px; font-size: 7.2cqw; letter-spacing: 0.5px;
+    flex: none; display: flex; align-items: center; padding: 6px 14px 6px 12px; font-size: max(20px, 7.2cqw); letter-spacing: 0.5px;
     color: #fff; text-shadow: 0 0 16px var(--hc), 0 0 4px var(--hc-glow);
 }
 .tc-type .stock-badge {
     flex: 1; min-width: 0; display: flex; align-items: center; justify-content: center; gap: 6px; margin: 0 !important; padding: 6px 8px !important;
-    font-size: 3.1cqw; letter-spacing: 0.5px; text-align: center; line-height: 1.15;
+    font-size: max(11px, 3.1cqw); letter-spacing: 0.5px; text-align: center; line-height: 1.15;
     border: 1px solid currentColor;
 }
 /* One line whatever the label ("LOW STOCK: 3 UNITS", "COMING SOON"), so the row never grows */
@@ -97,10 +98,10 @@
 .tc-tab {
     display: flex; align-items: center; justify-content: center; gap: 7px; min-height: 42px; padding: 6px 8px; margin: 0;
     border: 0; background: transparent; color: #9692b4; cursor: pointer;
-    font-family: var(--font-ui); font-weight: 800; font-size: 3.1cqw; letter-spacing: 0.4px; text-transform: uppercase; line-height: 1.1;
+    font-family: var(--font-ui); font-weight: 800; font-size: max(11.5px, 3.1cqw); letter-spacing: 0.4px; text-transform: uppercase; line-height: 1.1;
     transition: color 0.2s, background-color 0.2s;
 }
-.tc-tab i { flex: none; font-size: 4.6cqw; }
+.tc-tab i { flex: none; font-size: max(16px, 4.6cqw); }
 .tc-tab:hover { color: #fff; }
 .tc-tab.active { color: #fff; background: linear-gradient(135deg, var(--hc-line), var(--hc-soft)); }
 @supports (color: color-mix(in srgb, red, blue)) {
@@ -116,8 +117,8 @@ body.pointer-input .tc-tab:focus-visible { outline: none; }
    and a PC without extras gives the space of the missing tabs to them. A card that changed height
    from one PC to the next made the whole page jump on a phone, where the page scrolls.
    Only "more" opened by hand lets the card grow. */
-.tc-panels { display: grid; height: 34cqw; }
-.tc-face.no-tabs .tc-panels { height: calc(34cqw + 50px); }
+.tc-panels { display: grid; height: max(112px, 34cqw); }
+.tc-face.no-tabs .tc-panels { height: calc(max(112px, 34cqw) + 50px); }
 .tc-panels:has(.tc-brief.expanded) { height: auto; min-height: 34cqw; }
 .tc-panel { overflow: hidden; }
 .tc-brief-more.hidden { display: block !important; visibility: hidden; }
@@ -125,20 +126,20 @@ body.pointer-input .tc-tab:focus-visible { outline: none; }
 .tc-panel.active { visibility: visible; }
 .tc-brief { padding: 10px 12px 8px; border-left: 1px solid var(--hc-line); }
 .tc-brief-row { display: flex; align-items: flex-start; gap: 9px; }
-.tc-chev { flex: none; margin-top: 0.5cqw; font-size: 5cqw; color: var(--hc); filter: drop-shadow(0 0 5px var(--hc-glow)); }
-.tc-brief-text { flex: 1; min-width: 0; font-size: 3.4cqw; line-height: 1.5; color: #c3bfdc; }
-.tc-brief-more { margin: 4px 0 0 7cqw; padding: 4px 0 0; font-size: 3cqw; color: var(--hc); }
+.tc-chev { flex: none; margin-top: 0.5cqw; font-size: max(17px, 5cqw); color: var(--hc); filter: drop-shadow(0 0 5px var(--hc-glow)); }
+.tc-brief-text { flex: 1; min-width: 0; font-size: max(13px, 3.4cqw); line-height: 1.5; color: #c3bfdc; }
+.tc-brief-more { margin: 4px 0 0 7cqw; padding: 4px 0 0; font-size: max(11.5px, 3cqw); color: var(--hc); }
 
 .tc-extras { display: flex; flex-direction: column; justify-content: center; gap: 5px; padding: 8px; }
 .tc-ex-row {
     display: flex; align-items: center; gap: 10px; min-height: 8.6cqw; padding: 5px 10px; margin: 0; border-radius: 9px; cursor: pointer; text-align: left;
-    border: 1px solid transparent; background: rgba(255, 255, 255, 0.035); color: #fff; font-family: var(--font-ui); font-size: 3.2cqw;
+    border: 1px solid transparent; background: rgba(255, 255, 255, 0.035); color: #fff; font-family: var(--font-ui); font-size: max(12.5px, 3.2cqw);
     transition: border-color 0.2s, background-color 0.2s;
 }
-.tc-ex-row > i:first-child { flex: none; font-size: 5cqw; color: var(--hc); }
+.tc-ex-row > i:first-child { flex: none; font-size: max(17px, 5cqw); color: var(--hc); }
 .tc-ex-row span { flex: 1; min-width: 0; font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .tc-ex-row b { flex: none; font-weight: 800; color: var(--hc); white-space: nowrap; }
-.tc-ex-go { flex: none; font-size: 3.4cqw; color: #77739a; }
+.tc-ex-go { flex: none; font-size: max(12px, 3.4cqw); color: #77739a; }
 .tc-ex-swatch { flex: none; width: 4.4cqw; height: 4.4cqw; border-radius: 4px; border: 1px solid rgba(255, 255, 255, 0.4); }
 @media (hover: hover) { .tc-ex-row:hover { border-color: var(--hc-line); background: var(--hc-soft); } }
 
@@ -148,7 +149,7 @@ body.pointer-input .tc-tab:focus-visible { outline: none; }
     flex: 2 1 0; display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 50px; padding: 8px 10px !important;
     border-radius: 14px !important; border: 1px solid var(--hc-line) !important; color: #fff !important; text-shadow: 0 0 8px rgba(0, 0, 0, 0.5);
     background: linear-gradient(135deg, var(--hc-line), var(--hc-soft)) !important; box-shadow: 0 0 16px var(--hc-soft), inset 0 1px 0 rgba(255, 255, 255, 0.12) !important;
-    font-size: 3cqw !important; letter-spacing: 0.2px; white-space: normal; text-align: center; line-height: 1.15; overflow: hidden;
+    font-size: max(12px, 3cqw) !important; letter-spacing: 0.2px; white-space: normal; text-align: center; line-height: 1.15; overflow: hidden;
 }
 @supports (color: color-mix(in srgb, red, blue)) {
     .tc-actions .btn-card-inspect { background: linear-gradient(135deg, color-mix(in srgb, var(--neon-green) 55%, #130f24), color-mix(in srgb, var(--neon-green) 22%, #130f24)) !important; }
@@ -163,7 +164,7 @@ body.pointer-input .tc-tab:focus-visible { outline: none; }
 .tc-actions .btn-card-compare {
     flex: 1 1 0; display: flex; align-items: center; justify-content: center; min-height: 50px; padding: 6px 6px !important;
     border-radius: 14px !important; border: 1px solid var(--hc-line) !important; background: var(--hc-panel) !important; color: #fff !important; box-shadow: inset 0 0 14px var(--hc-soft) !important;
-    font-size: 3cqw !important; letter-spacing: 0.4px; text-align: center; line-height: 1.15;
+    font-size: max(12px, 3cqw) !important; letter-spacing: 0.4px; text-align: center; line-height: 1.15;
 }
 @media (hover: hover) { .tc-actions .btn-card-compare:hover { background: var(--hc-soft) !important; } }
 .tc-actions .btn-card-compare.selected { background: var(--hc) !important; color: #000 !important; box-shadow: 0 0 16px var(--hc-glow) !important; }
