@@ -1,0 +1,78 @@
+/* ===== The cart as a purple HUD (index.html #cart-dropdown, filled by updateCartUI in js/modules/cart.js) =====
+   The same language as the settings window (settings-hud.css): a purple glass slab with a glowing rim,
+   an icon chip + kicker + title in the header with a square close, each PC in its own panel, a total
+   panel and one lit button that sends the order. Fixed purple, the user's pick for the windows.
+   Scoped to the dropdown's id so it beats cart.css without !important; position and size on phones
+   stay with cart.js / mobile.css. */
+#cart-dropdown {
+    --s-purple: #b026ff;
+    --s-line: rgba(176, 38, 255, 0.45);
+    --s-soft: rgba(176, 38, 255, 0.14);
+    --s-glow: rgba(176, 38, 255, 0.35);
+    --s-panel: #0d0a18;
+    width: 380px; padding: 14px; gap: 12px;
+    border: 1.5px solid transparent; border-radius: 22px;
+    background:
+        radial-gradient(120% 35% at 50% 0%, var(--s-soft), transparent 70%) padding-box,
+        linear-gradient(180deg, #0f0a1c, #08060f) padding-box,
+        linear-gradient(145deg, var(--s-purple), var(--s-line) 40%, rgba(176, 38, 255, 0.2) 62%, var(--s-purple)) border-box;
+    box-shadow: 0 0 30px var(--s-glow), 0 24px 60px rgba(0, 0, 0, 0.85);
+    backdrop-filter: none;
+}
+
+/* --- header --- */
+#cart-dropdown .mini-cart-header { align-items: center; gap: 12px; padding: 2px 2px 12px; border-bottom: 1px solid rgba(176, 38, 255, 0.2); }
+.mc-head-ico {
+    flex: none; display: grid; place-items: center; width: 46px; height: 46px; border-radius: 13px;
+    border: 1px solid var(--s-line); background: var(--s-soft); color: var(--s-purple); font-size: 1.5rem;
+    box-shadow: inset 0 0 12px var(--s-soft);
+}
+.mc-head-text { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.mc-kicker { font-family: var(--font-ui); font-size: 0.72rem; font-weight: 700; letter-spacing: 1px; color: var(--s-purple); }
+.mc-title { font-family: var(--font-ui); font-weight: 800; font-size: 1.15rem; letter-spacing: 1px; text-transform: uppercase; color: #fff; }
+.mc-close {
+    flex: none; display: grid; place-items: center; width: 40px; height: 40px; padding: 0; border-radius: 11px; cursor: pointer;
+    border: 1px solid var(--s-line); background: transparent; color: #fff; font-size: 1.1rem; transition: background-color 0.2s, border-color 0.2s;
+}
+.mc-close:hover { background: var(--s-soft); border-color: var(--s-purple); }
+
+/* --- items --- */
+#cart-dropdown .mini-cart-list { gap: 8px; max-height: min(320px, 45vh); }
+#cart-dropdown .mini-cart-item {
+    gap: 12px; padding: 10px; border-radius: 14px; border: 1px solid rgba(176, 38, 255, 0.28);
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.01)), var(--s-panel);
+}
+#cart-dropdown .mc-img { width: 58px; height: 58px; border-radius: 10px; border: 1px solid rgba(176, 38, 255, 0.25); background: #07060c; }
+#cart-dropdown .mc-name { font-family: var(--font-ui); font-size: 1rem; letter-spacing: 0.5px; }
+#cart-dropdown .mc-opt { color: #9b93b5; }
+#cart-dropdown .mc-opt-price { color: #c9a6ff; opacity: 1; }
+#cart-dropdown .mc-price { margin-top: 2px; color: #fff; font-size: 1.05rem; }
+#cart-dropdown .mc-remove { border-radius: 11px; color: #ff6b8a; }
+#cart-dropdown .mc-remove:hover { background: rgba(255, 61, 120, 0.12); color: #fff; }
+
+/* Empty: an icon over the line, in the panel's place */
+.mc-empty {
+    display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 22px 12px; border-radius: 14px;
+    border: 1px dashed rgba(176, 38, 255, 0.3); color: #9b93b5; font-family: var(--font-ui); font-weight: 700; font-size: 0.9rem; letter-spacing: 1px; text-align: center;
+}
+.mc-empty i { font-size: 2.2rem; color: var(--s-purple); opacity: 0.8; }
+
+/* --- footer: coupon, total panel, the send button --- */
+#cart-dropdown .mini-cart-footer { padding-top: 0; border-top: 0; display: flex; flex-direction: column; gap: 10px; }
+#cart-dropdown .mc-coupon, #cart-dropdown .mc-discount-row { margin: 0; }
+#cart-dropdown .mc-total-row {
+    margin: 0; padding: 12px 16px; border-radius: 14px; border: 1px solid rgba(176, 38, 255, 0.28); background: var(--s-panel);
+    align-items: center; font-size: 1.15rem;
+}
+#cart-dropdown #mc-total { font-size: 1.3rem; text-shadow: 0 0 12px var(--s-glow); }
+#cart-dropdown .mc-checkout-btn {
+    display: flex; align-items: center; gap: 12px; min-height: 54px; padding: 10px 16px; border-radius: 14px; text-align: left;
+    border: 1px solid var(--s-purple); color: #fff; font-size: 0.9rem; letter-spacing: 0.5px;
+    background: linear-gradient(135deg, rgba(176, 38, 255, 0.6), rgba(109, 40, 217, 0.35));
+    box-shadow: 0 0 18px rgba(176, 38, 255, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+}
+#cart-dropdown .mc-checkout-btn > i:first-child { flex: none; font-size: 1.45rem; color: #4ade80; }
+#cart-dropdown .mc-checkout-btn span { flex: 1; min-width: 0; }
+.mc-caret { flex: none; margin-left: auto; font-size: 1.1rem; }
+#cart-dropdown .mc-checkout-btn:hover { transform: none; box-shadow: 0 0 26px rgba(176, 38, 255, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.15); }
+#cart-dropdown .mc-checkout-btn:active { transform: scale(0.98); }

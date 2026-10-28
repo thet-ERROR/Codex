@@ -908,8 +908,12 @@ Type 'help' for a list of commands.
 
     
     <div class="cart-dropdown" id="cart-dropdown">
-        <div class="mini-cart-header"><span data-i18n="cartYourLoot">YOUR LOOT</span><span onclick="toggleCartDropdown()" style="cursor:pointer;">X</span></div>
-        <div class="mini-cart-list" id="mini-cart-items"><div style="color:#666; text-align:center; padding:20px;">CART IS EMPTY</div></div>
+        <div class="mini-cart-header">
+            <span class="mc-head-ico" aria-hidden="true"><i class="ph-fill ph-shopping-cart"></i></span>
+            <span class="mc-head-text"><span class="mc-kicker">&gt;// LOOT</span><span class="mc-title" data-i18n="cartYourLoot">YOUR LOOT</span></span>
+            <button type="button" class="mc-close" onclick="toggleCartDropdown()" data-i18n-aria="closeLabel" aria-label="Close"><i class="ph-bold ph-x"></i></button>
+        </div>
+        <div class="mini-cart-list" id="mini-cart-items"><div class="mc-empty"><i class="ph-duotone ph-shopping-cart-simple"></i><span>CART IS EMPTY</span></div></div>
         <div class="mini-cart-footer">
             <!-- Only when the signed-in account has an unused wheel coupon (updateCartUI in cart.js) -->
             <div class="mc-coupon hidden" id="mc-coupon">
@@ -918,7 +922,7 @@ Type 'help' for a list of commands.
             </div>
             <div class="mc-discount-row hidden" id="mc-discount-row"><span id="mc-discount-label"></span><span id="mc-discount"></span></div>
             <div class="mc-total-row"><span data-i18n="cartTotalLabel">TOTAL</span><span id="mc-total">€0</span></div>
-            <button class="mc-checkout-btn" onclick="handleCheckout()" data-i18n="cartCheckoutBtn">SEND YOUR ORDER ON WHATSAPP</button>
+            <button class="mc-checkout-btn" onclick="handleCheckout()"><i class="ph-bold ph-whatsapp-logo" aria-hidden="true"></i><span data-i18n="cartCheckoutBtn">SEND YOUR ORDER ON WHATSAPP</span><i class="ph-bold ph-caret-right mc-caret" aria-hidden="true"></i></button>
         </div>
     </div>
 
