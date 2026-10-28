@@ -68,6 +68,12 @@
             </div>
             <input type="text" id="case" placeholder="CASE Model" style="margin-top:10px;">
 
+            <label style="color:#00f0ff; margin-top:20px;">BENCHMARK SCORES (VS mode "+X%" — same source for every PC, e.g. PassMark CPU Mark / G3D Mark; empty = no %)</label>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                <input type="number" id="benchCpu" min="0" step="1" placeholder="CPU score (e.g. 21500)">
+                <input type="number" id="benchGpu" min="0" step="1" placeholder="GPU score (e.g. 12900)">
+            </div>
+
             <label style="color:#00f0ff; margin-top:20px;">SPEC INFO TEXT (shown when a visitor clicks the ⓘ next to each spec)</label>
             <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
                 <textarea id="specInfo-cpu" placeholder="CPU info..." style="height:45px;"></textarea>
