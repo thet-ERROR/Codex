@@ -1,0 +1,62 @@
+/* ===== Starter Packs as illustrated cards (index.html #starter-menu, the user's mockup) =====
+   Each pack is a tall card: its illustration fills the top and fades into the dark face, then the
+   title, the one-line description and the count as a filled pill in the pack's own colour (gaming
+   red, streaming purple, coding cyan — --pack in stage.css). On a phone the three become wide banners
+   with the picture behind the text, so all three still fit on one screen.
+   Loaded after stage.css, whose slab tiles it restyles; the icon block stays in the markup as the
+   fallback but isn't shown. Art: assets/packs/*.webp (cut from the mockup — see the note to the user
+   about replacing it with original artwork before launch). */
+
+.starter-menu { gap: 28px; align-items: stretch; }
+
+.pack-card {
+    width: 270px; height: 440px; padding: 0 18px 24px; justify-content: flex-end; gap: 0;
+    border: 1.5px solid color-mix(in srgb, var(--pack) 55%, transparent); border-radius: 22px;
+    background: linear-gradient(180deg, #16141d, #0c0b11);
+    box-shadow: 0 0 26px color-mix(in srgb, var(--pack) 22%, transparent), 0 24px 60px rgba(0, 0, 0, 0.6);
+}
+.pack-card::before, .pack-card::after { display: none; }
+.pack-icon-block, .pack-chevron { display: none !important; }
+
+/* The picture: the top two-thirds, melting into the face under the title */
+.pack-art {
+    position: absolute; inset: 0 0 auto 0; z-index: -1; width: 100%; height: 72%; object-fit: cover; object-position: center top;
+    -webkit-mask-image: linear-gradient(180deg, #000 62%, transparent 100%); mask-image: linear-gradient(180deg, #000 62%, transparent 100%);
+    transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.3, 1);
+}
+.pack-text { position: relative; gap: 8px; }
+/* Scoped to the menu's id: the Greek text rule (variables.css, body.lang-el [data-i18n] { 0.85em }) would
+   otherwise beat these and shrink the title to a caption */
+#starter-menu .pack-title { font-size: 1.9rem; letter-spacing: 1px; text-shadow: 0 2px 10px rgba(0, 0, 0, 0.85); }
+#starter-menu .pack-desc { min-height: 2.7em; font-size: 1rem; line-height: 1.35; color: #c9c6d4; }
+.pack-count {
+    margin-top: 10px; padding: 6px 18px; border: 0; border-radius: 999px; font-size: 0.95rem; font-weight: 800;
+    background: var(--pack); color: #fff; box-shadow: 0 0 16px color-mix(in srgb, var(--pack) 45%, transparent);
+}
+.pack-card[data-pack="coding"] .pack-count { color: #04212a; }
+.pack-card .pack-count.empty { background: rgba(255, 255, 255, 0.08); color: #b4b1c0; box-shadow: none; }
+
+@media (hover: hover) {
+    .pack-card:hover { transform: translateY(-6px); border-color: var(--pack); box-shadow: 0 0 34px color-mix(in srgb, var(--pack) 35%, transparent), 0 30px 70px rgba(0, 0, 0, 0.65); }
+    .pack-card:hover .pack-art { transform: scale(1.04); }
+}
+.pack-card:active { transform: scale(0.98); box-shadow: 0 0 18px color-mix(in srgb, var(--pack) 25%, transparent); }
+
+/* Tablet and phone: wide banners — the picture on the right two-thirds, fading out to the left where
+   the text sits on the dark face */
+@media (max-width: 1024px) {
+    .starter-menu { gap: 14px; }
+    .pack-card {
+        width: 100%; max-width: 520px; height: 170px; min-height: 0; padding: 16px 18px; flex-direction: row; align-items: flex-end; justify-content: flex-start;
+        text-align: left; border-radius: 18px;
+    }
+    .pack-art {
+        inset: 0 0 0 auto; width: 66%; height: 100%; object-position: center 40%;
+        -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 45%); mask-image: linear-gradient(90deg, transparent 0%, #000 45%);
+    }
+    .pack-text { align-items: flex-start; gap: 4px; max-width: 62%; }
+    #starter-menu .pack-title { font-size: 1.45rem; }
+    #starter-menu .pack-desc { min-height: 0; font-size: 0.9rem; text-shadow: 0 1px 6px rgba(0, 0, 0, 0.9); }
+    .pack-count { margin-top: 6px; padding: 4px 14px; font-size: 0.85rem; }
+}
+@media (prefers-reduced-motion: reduce) { .pack-art { transition: none; } }

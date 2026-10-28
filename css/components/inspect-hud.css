@@ -64,7 +64,7 @@
     -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Cpath d='M223.7 66.15 135.7 17.5a15.9 15.9 0 0 0-15.4 0L32.3 66.15A16 16 0 0 0 24 80.1v95.8a16 16 0 0 0 8.3 14l88 48.65a15.9 15.9 0 0 0 15.4 0l88-48.65a16 16 0 0 0 8.3-14V80.1a16 16 0 0 0-8.3-13.95ZM128 32l80.3 44.4L128 120.8 47.7 76.4Zm-8 191.1-80-44.2V92.7l80 44.1Zm16 0v-86.4l80-44.1v86.2Z' fill='black'/%3E%3C/svg%3E") center / contain no-repeat;
     mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Cpath d='M223.7 66.15 135.7 17.5a15.9 15.9 0 0 0-15.4 0L32.3 66.15A16 16 0 0 0 24 80.1v95.8a16 16 0 0 0 8.3 14l88 48.65a15.9 15.9 0 0 0 15.4 0l88-48.65a16 16 0 0 0 8.3-14V80.1a16 16 0 0 0-8.3-13.95ZM128 32l80.3 44.4L128 120.8 47.7 76.4Zm-8 191.1-80-44.2V92.7l80 44.1Zm16 0v-86.4l80-44.1v86.2Z' fill='black'/%3E%3C/svg%3E") center / contain no-repeat;
 }
-.yg-titlebar .yg-project-name { font-size: 5.8cqw !important; text-shadow: 0 0 14px var(--hc-glow); }
+.yg-titlebar .yg-project-name { font-size: max(16px, 5.8cqw) !important; text-shadow: 0 0 14px var(--hc-glow); }
 .yg-card.vote-mode .yg-titlebar .yg-project-name { text-shadow: none; }
 .yg-titlebar .tc-attr { width: 10cqw; height: 10cqw; font-size: 5.4cqw; color: #08060f; box-shadow: 0 0 0 2px var(--hc-line), 0 0 14px var(--hc-glow); }
 .yg-titlebar .yg-close-btn { width: 8cqw; height: 8cqw; min-width: 28px; min-height: 28px; border: 1px solid var(--hc-line); background: rgba(8, 6, 16, 0.74); color: #fff; }
@@ -90,12 +90,12 @@
 
 /* --- price --- */
 .yg-price-section { justify-content: center; padding: 6px 14px; }
-.yg-current-price { color: #fff; font-size: 7.2cqw; text-shadow: 0 0 16px var(--hc), 0 0 4px var(--hc-glow); }
+.yg-current-price { color: #fff; font-size: max(20px, 7.2cqw); text-shadow: 0 0 16px var(--hc), 0 0 4px var(--hc-glow); }
 
 /* --- tabs --- */
 .yg-tabs { gap: 0; padding: 0; overflow: hidden; }
-.yg-tab { min-height: 42px; border: 0; border-radius: 0; font-size: 3.1cqw; color: #9692b4; }
-.yg-tab i { font-size: 4.6cqw; }
+.yg-tab { min-height: 42px; border: 0; border-radius: 0; font-size: max(11.5px, 3.1cqw); color: #9692b4; }
+.yg-tab i { font-size: max(16px, 4.6cqw); }
 .yg-tab.active { color: #fff; border: 0; box-shadow: none; background: linear-gradient(135deg, var(--hc-line), var(--hc-soft)); }
 @supports (color: color-mix(in srgb, red, blue)) {
     .yg-tab.active { background: linear-gradient(135deg, color-mix(in srgb, var(--hc) 52%, #120e22), color-mix(in srgb, var(--hc) 20%, #120e22)); text-shadow: 0 0 8px rgba(0, 0, 0, 0.5); }

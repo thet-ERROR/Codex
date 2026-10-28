@@ -40,7 +40,7 @@
 }
 
 .card-col { --tc-w: min(380px, 95vw); }
-@media (max-width: 768px) { .card-col { --tc-w: min(80vw, 340px); } }
+@media (max-width: 768px) { .card-col { --tc-w: min(92vw, 380px); } }
 
 /* --- the card: a foil slab ---------------------------------------------------------------------- */
 #main-card, .card-ghost > .holo-card, body.night-mode #main-card, body.night-mode .card-ghost > .holo-card {
@@ -272,12 +272,11 @@ body.night-mode #main-card { box-shadow: inset 1px 1px 0 rgba(255, 255, 255, 0.5
 @media (max-width: 1024px) {
     .vote-container { width: 380px; max-width: 95vw; padding: 12px 14px 14px; }
 }
-/* Phone: the stage card is laid out at min(80vw, 340px) and drawn at 85% (mobile.css scales the
-   carousel). The vote card does exactly the same, so both tabs show the same size of card and text.
+/* Phone: the stage card is min(92vw, 380px) at full size (it used to be 80vw drawn at 85%, which made
+   its text 7–8 px). The vote card is exactly as wide, so both tabs show the same size of card and text.
    "How it works" keeps only its icon there (its name is the aria-label), so both pills fit on a line. */
 @media (max-width: 768px) {
-    .vote-container { width: min(80vw, 340px); max-width: none; }
-    #vote-view { transform: scale(0.85); transform-origin: top center; }
+    .vote-container { width: min(92vw, 380px); max-width: none; }
     .vote-info-btn { padding: 0; width: 34px; justify-content: center; }
     .vote-info-btn span { display: none; }
 }

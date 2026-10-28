@@ -146,6 +146,10 @@ const SHELL_KICKERS = {
     'spec-info-modal': 'COMPONENT', 'proconfig-info-modal': 'PRO_CONFIG', 'paint-consent-modal': 'CUSTOM_PAINT',
     'tutorial-lang-modal': 'TOUR', 'qr-modal': 'SCAN_LINK', 'rank-info-modal': 'RANK_INFO'
 };
+// The sign-in windows get the settings window's icon chip in the header (auth-hud.css)
+const SHELL_ICONS = {
+    'login-modal': 'ph-user-circle', 'signup-modal': 'ph-user-plus', 'forgot-modal': 'ph-key', 'reset-modal': 'ph-lock-key'
+};
 const SHELL_SMALL = ['login-modal', 'signup-modal', 'forgot-modal', 'reset-modal', 'newsletter-modal', 'review-code-modal', 'spec-info-modal', 'tutorial-lang-modal', 'qr-modal', 'rank-info-modal'];
 
 function upgradeModalShells() {
@@ -178,6 +182,13 @@ function upgradeModalShells() {
         // Same action as the old X (some decline or skip rather than just close)
         x.setAttribute('onclick', (close && close.getAttribute('onclick')) || `closeModal('${id}')`);
         if (close) close.remove();
+        if (SHELL_ICONS[id]) {
+            const chip = document.createElement('span');
+            chip.className = 'set-head-ico';
+            chip.setAttribute('aria-hidden', 'true');
+            chip.innerHTML = `<i class="ph-fill ${SHELL_ICONS[id]}"></i>`;
+            head.append(chip);
+        }
         head.append(headText, x);
 
         const body = document.createElement('div');

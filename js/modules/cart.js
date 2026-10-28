@@ -88,7 +88,7 @@ export function updateCartUI() {
     const items = document.getElementById('mini-cart-items'); 
     let total = 0; 
     if (state.cart.length === 0) { 
-        if(items) items.innerHTML = `<div style="color:#666; text-align:center; padding:20px; font-size:0.9rem;">${esc(t('cartEmpty'))}</div>`;
+        if(items) items.innerHTML = `<div class="mc-empty"><i class="ph-duotone ph-shopping-cart-simple"></i><span>${esc(t('cartEmpty'))}</span></div>`;
     } else { 
         if(items) items.innerHTML = state.cart.map((item, i) => {
             total += item.priceCents;
@@ -99,7 +99,7 @@ export function updateCartUI() {
                 : `<div class="mc-opt">${esc(item.option || t('cartOptStandard'))}</div>`;
 
             return `<div class="mini-cart-item">
-                        <img src="${escUrl(item.img)}" class="mc-img">
+                        <img src="${escUrl(item.img)}" class="mc-img" alt="">
                         <div class="mc-details">
                             <div class="mc-name">${esc(item.name)}</div>
                             ${optHTML}

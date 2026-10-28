@@ -2,6 +2,7 @@
 import { state } from '../state.js';
 import { api } from '../api.js';
 import { applyProfile, pushLocalAchievements } from './achievements.js';
+import { esc } from '../utils.js';
 
 // A red toast instead of the browser's alert box, which on a phone blocks the page and looks broken
 function notify(msg) {
@@ -34,12 +35,13 @@ export function updateAuthUI(username) {
             // Backend hard-gates dossier/wishlist/achievements/vote behind a verified email —
             // surface that here so it's not a silent dead end the first time something 403s.
             const verifyItem = !state.emailVerified
-                ? `<div class="p-item" onclick="playClick(); resendVerification(); toggleProfileMenu();" style="color: #ffaa00;">⚠ ${t('menuVerifyEmail')}</div>`
+                ? `<button type="button" class="p-item p-item--warn" onclick="playClick(); resendVerification(); toggleProfileMenu();"><i class="ph-bold ph-warning"></i><span>${t('menuVerifyEmail')}</span></button>`
                 : '';
             menu.innerHTML = `
+                <div class="p-head"><span class="p-kicker">&gt;// AGENT</span><span class="p-name">${esc(username.toUpperCase())}</span></div>
                 ${verifyItem}
-                <div class="p-item" onclick="playClick(); toggleProfileMenu(); openAgentDashboard();" style="color: var(--neon-green);">📊 ${t('menuDashboard')}</div>
-                <div class="p-item" onclick="playClick(); logout(); toggleProfileMenu();" style="color: #ff3333;">❌ ${t('menuSignOut')}</div>
+                <button type="button" class="p-item" onclick="playClick(); toggleProfileMenu(); openAgentDashboard();"><i class="ph-bold ph-squares-four"></i><span>${t('menuDashboard')}</span></button>
+                <button type="button" class="p-item p-item--out" onclick="playClick(); logout(); toggleProfileMenu();"><i class="ph-bold ph-sign-out"></i><span>${t('menuSignOut')}</span></button>
             `;
         }
     } else {
@@ -53,8 +55,9 @@ export function updateAuthUI(username) {
 
         if (menu) {
             menu.innerHTML = `
-                <div class="p-item" onclick="playClick(); toggleProfileMenu(); openModal('login-modal');">${t('menuSignIn')}</div>
-                <div class="p-item" onclick="playClick(); toggleProfileMenu(); openModal('signup-modal');">${t('menuRegister')}</div>
+                <div class="p-head"><span class="p-kicker">&gt;// AGENT</span><span class="p-name">${t('agentFallback')}</span></div>
+                <button type="button" class="p-item p-item--main" onclick="playClick(); toggleProfileMenu(); openModal('login-modal');"><i class="ph-bold ph-sign-in"></i><span>${t('menuSignIn')}</span></button>
+                <button type="button" class="p-item" onclick="playClick(); toggleProfileMenu(); openModal('signup-modal');"><i class="ph-bold ph-user-plus"></i><span>${t('menuRegister')}</span></button>
             `;
         }
     }
