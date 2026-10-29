@@ -1,6 +1,6 @@
 // js/modules/compare.js
 import { state } from '../state.js';
-import { esc, escUrl, formatPrice, priceCentsOf } from '../utils.js';
+import { esc, escUrl, formatPrice, priceCentsOf, stockState, stockLabel } from '../utils.js';
 
 export function toggleCompare(id, btnElement) { 
     // Παίρνουμε το τρέχον PC που βλέπει ο χρήστης
@@ -272,9 +272,20 @@ function renderComparison(a, b, t) {
             </div>
             ${verdict}
         </div>` : ''}`,
-        foot: `
-            <button class="vs-view-btn left" data-vs-id="${idA}"><span>${esc(t('compareViewName', { name: a.name }))}</span><small>${formatPrice(pa)}</small></button>
-            <button class="vs-view-btn right" data-vs-id="${idB}"><span>${esc(t('compareViewName', { name: b.name }))}</span><small>${formatPrice(pb)}</small></button>`
+        // Per side: the main button puts that PC (standard build) in the cart — or, sold out / coming
+        // soon, says so and can't be pressed; the small eye opens its INSPECT, where extras are chosen
+        foot: [[a, pa, idA, 'left'], [b, pb, idB, 'right']].map(([p, price, id, side]) => {
+            const st = stockState(p);
+            const blocked = st === 'out' || st === 'soon';
+            const view = t('compareViewName', { name: p.name });
+            return `<div class="vs-buy ${side}">
+                <button type="button" class="vs-cart-btn ${side}" data-vs-cart="${id}"${blocked ? ' disabled' : ''}>
+                    <i class="ph-bold ${blocked ? 'ph-prohibit' : 'ph-shopping-cart-simple'}" aria-hidden="true"></i>
+                    <span>${esc(blocked ? stockLabel(p) : t('addToCartBtn'))}</span>${blocked ? '' : `<small>${formatPrice(price)}</small>`}
+                </button>
+                <button type="button" class="vs-view-btn ${side}" data-vs-id="${id}" aria-label="${esc(view)}" title="${esc(view)}"><i class="ph-bold ph-eye"></i></button>
+            </div>`;
+        }).join('')
     };
 }
 
@@ -291,6 +302,20 @@ document.addEventListener('DOMContentLoaded', () => {
         const chosen = e.target.closest('[data-vs-choose]');
         if (chosen) { if (window.playClick) window.playClick(); choose(Number(chosen.dataset.vsSide), chosen.dataset.vsChoose); return; }
         if (e.target.closest('[data-vs-picker-close]')) { closePicker(); return; }
+        const cartBtn = e.target.closest('[data-vs-cart]');
+        if (cartBtn) {
+            const pc = state.compareList.find(p => String(p._id || p.id) === cartBtn.dataset.vsCart);
+            if (!pc || cartBtn.disabled) return;
+            if (window.playClick) window.playClick();
+            // addToCart() adds the PC open in INSPECT with the extras picked there; from the duel it's
+            // this PC with none (its standard build). The window closes first, so the "added" hint —
+            // or the login window, for a members-only drop — isn't hidden under it.
+            if (window.closeModal) window.closeModal('compare-modal');
+            state.currentGalleryPC = pc;
+            state.build = { storage: '', proConfig: false, paint: false };
+            if (window.addToCart) window.addToCart();
+            return;
+        }
         const btn = e.target.closest('.vs-view-btn');
         if (!btn) return;
         const pc = state.compareList.find(p => String(p._id || p.id) === btn.dataset.vsId);
