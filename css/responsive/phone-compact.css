@@ -37,7 +37,8 @@
     .tc-tab i { font-size: max(14px, 4.2cqw); }
     /* Three lines of brief at 12.5 px and its "more" — the extras rows fit the same box */
     .tc-panels { height: 98px; }
-    .tc-face.no-tabs .tc-panels { height: 132px; }
+    /* = the tabs (38) + the gap under them (6) + the panels (98): a PC without extras is exactly as tall */
+    .tc-face.no-tabs .tc-panels { height: 142px; }
     .tc-brief { padding: 8px 10px 6px; border-radius: 11px; }
     .tc-brief-row { gap: 7px; }
     .tc-chev { font-size: max(15px, 4.4cqw); }
