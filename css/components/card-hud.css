@@ -118,7 +118,7 @@ body.pointer-input .tc-tab:focus-visible { outline: none; }
    from one PC to the next made the whole page jump on a phone, where the page scrolls.
    Only "more" opened by hand lets the card grow. */
 .tc-panels { display: grid; height: max(112px, 34cqw); }
-.tc-face.no-tabs .tc-panels { height: calc(max(112px, 34cqw) + 50px); }
+.tc-face.no-tabs .tc-panels { height: calc(max(112px, 34cqw) + 52px); } /* + the tabs (44) and their gap (8) */
 .tc-panels:has(.tc-brief.expanded) { height: auto; min-height: 34cqw; }
 .tc-panel { overflow: hidden; }
 .tc-brief-more.hidden { display: block !important; visibility: hidden; }

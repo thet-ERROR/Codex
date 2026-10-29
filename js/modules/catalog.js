@@ -466,30 +466,10 @@ function showNewCard(animate) {
     ], { duration: RISE_MS, easing: EASE_OUT });
 }
 
-// Keeps the page where it was while a swipe swaps the card. On an iPhone scrolled to the bottom, Safari
-// moved the page up to the middle as the new card was built (not reproducible in desktop browsers, so
-// the cause can't be pinned down from here) — whatever moves it, for a moment after a swipe the page
-// is put back. The visitor's own scrolling (a new touch, the wheel) ends the hold at once.
-let scrollHold = 0;
-function holdScroll(y, ms = 700) {
-    cancelAnimationFrame(scrollHold);
-    const until = performance.now() + ms;
-    const stop = () => { cancelAnimationFrame(scrollHold); scrollHold = 0; off(); };
-    const off = () => { window.removeEventListener('touchstart', stop); window.removeEventListener('wheel', stop); };
-    window.addEventListener('touchstart', stop, { passive: true, once: true });
-    window.addEventListener('wheel', stop, { passive: true, once: true });
-    const tick = () => {
-        if (Math.abs(window.scrollY - y) > 1) window.scrollTo({ top: y, behavior: 'instant' });
-        if (performance.now() < until) scrollHold = requestAnimationFrame(tick); else stop();
-    };
-    scrollHold = requestAnimationFrame(tick);
-}
-
 export function swipeCard(dir, fromX = 0, velocity = 0) {
     const card = document.getElementById('main-card');
     const n = state.filtered.length;
     if (!card || n < 2) return;
-    holdScroll(window.scrollY);
     // A second swipe before the last one finished building: build it now, so the snapshot is of the
     // card actually on screen
     finishPendingRender();
