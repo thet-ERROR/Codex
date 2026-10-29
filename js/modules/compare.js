@@ -13,7 +13,7 @@ export function toggleCompare(id, btnElement) {
         if (btnElement) {
             btnElement.classList.remove('selected');
             // Same keys renderCard() uses — this used to hardcode English and undo the Greek label
-            btnElement.innerText = window.t ? window.t('compareBtn') : 'COMPARE';
+            btnElement.innerHTML = compareBtnHTML(false);
         }
     } else { 
         if (state.compareList.length < 2) {
@@ -21,7 +21,7 @@ export function toggleCompare(id, btnElement) {
             state.compareList.push(pc); 
             if (btnElement) {
                 btnElement.classList.add('selected');
-                btnElement.innerText = window.t ? window.t('addedToVs') : 'ADDED TO VS';
+                btnElement.innerHTML = compareBtnHTML(true);
             }
         } else { 
             const msg = window.t ? window.t('alertMaxCompare') : "MAX 2 ITEMS ALLOWED IN VS MODE";
@@ -32,14 +32,39 @@ export function toggleCompare(id, btnElement) {
     updateCompareFloat();
 }
 
-// The floating VS button: hidden with nothing picked, "half" with one (it invites a second pick),
-// lit and ready with two
+// The COMPARE button on the card: "⚔ Compare", or once this PC is in the duel "⚔ In VS ✓" —
+// which, with a mouse over it, says what a press will do: remove it
+export function compareBtnHTML(inVs) {
+    const t = window.t || (k => k);
+    return inVs
+        ? `<span class="cmp-on"><i class="ph-bold ph-sword"></i>${esc(t('inVs'))}<i class="ph-bold ph-check"></i></span><span class="cmp-off"><i class="ph-bold ph-x"></i>${esc(t('vsRemove'))}</span>`
+        : `<i class="ph-bold ph-sword"></i>${esc(t('compareBtn'))}`;
+}
+
+// The VS strip in the card: hidden with nothing picked. One picked: its photo, the crossed swords
+// and an empty "+" slot — "pick a second". Two: both photos facing off and "Compare them ›".
 function updateCompareFloat() {
     const b = document.getElementById('compare-float');
     if (!b) return;
+    const t = window.t || (k => k);
     const n = state.compareList.length;
     b.classList.toggle('active', n === 2);
     b.classList.toggle('half', n === 1);
+    if (!n) { b.innerHTML = ''; return; }
+    const thumb = (p, side) => `<span class="cf-thumb ${side}"><img src="${escUrl((p.images || [])[0])}" alt=""></span>`;
+    const [a, c] = state.compareList;
+    b.setAttribute('aria-label', n === 2 ? t('vsGo') : t('vsPickSecond'));
+    b.innerHTML = `
+        <span class="cf-duo">
+            ${thumb(a, 'a')}
+            <i class="ph-fill ph-sword cf-swords" aria-hidden="true"></i>
+            ${c ? thumb(c, 'b') : '<span class="cf-thumb empty"><i class="ph-bold ph-plus"></i></span>'}
+        </span>
+        <span class="cf-text">
+            <strong>${esc(n === 2 ? t('vsGo') : t('vsPickSecond'))}</strong>
+            <small>${esc(n === 2 ? `${a.name} vs ${c.name}` : t('vsPickSecondHint'))}</small>
+        </span>
+        ${n === 2 ? '<i class="ph-bold ph-caret-right cf-go" aria-hidden="true"></i>' : ''}`;
 }
 
 export function openCompareModal() {
@@ -177,18 +202,24 @@ function renderComparison(a, b, t) {
     const fpsMap = (p) => new Map((p.fps || []).map(f => [String(f.game || ''), Number(f.score) || 0]));
     const fa = fpsMap(a), fb = fpsMap(b);
     const games = [...new Set([...fa.keys(), ...fb.keys()])].filter(Boolean);
+    // One track per game. Both PCs have a number: the track is split between them in proportion
+    // (magenta from the left, cyan from the right). Only one has it: its bar alone, scaled to the
+    // highest FPS on the page, from its own side.
+    const maxAll = Math.max(1, ...fa.values(), ...fb.values());
     const fpsRows = games.map(g => {
         const x = fa.has(g) ? fa.get(g) : null, y = fb.has(g) ? fb.get(g) : null;
-        const top = Math.max(x || 0, y || 0) || 1;
         const winA = x !== null && y !== null && x > y, winB = x !== null && y !== null && y > x;
-        const w = v => v === null ? 0 : Math.round((v / top) * 92);
+        let wl = 0, wr = 0;
+        if (x !== null && y !== null && x + y > 0) { wl = Math.round((x / (x + y)) * 1000) / 10; wr = 100 - wl; }
+        else if (x !== null) wl = Math.round((x / maxAll) * 100);
+        else if (y !== null) wr = Math.round((y / maxAll) * 100);
         return `<div class="vs-game">
             <div class="vs-game-line">
                 <span class="vs-fps left${winA ? ' win' : ''}">${x === null ? '—' : `${x} FPS`}${winA ? ' ★' : ''}</span>
                 <span class="vs-game-name">${esc(g)}</span>
                 <span class="vs-fps right${winB ? ' win' : ''}">${y === null ? '—' : `${y} FPS`}${winB ? ' ★' : ''}</span>
             </div>
-            <div class="vs-bars"><span class="vs-bar left"><i style="width:${w(x)}%"></i></span><span class="vs-bar right"><i style="width:${w(y)}%"></i></span></div>
+            <div class="vs-track"><i class="l" style="width:${wl}%"></i><i class="r" style="width:${wr}%"></i></div>
         </div>`;
     }).join('');
 
@@ -202,11 +233,16 @@ function renderComparison(a, b, t) {
         const pct = lead.o ? Math.round(((lead.avg - lead.o) / lead.o) * 100) : 0;
         const d = lead.pr - lead.opr;
         const cost = d > 0 ? t('compareCostMore', { d: formatPrice(d) }) : d < 0 ? t('compareCostLess', { d: formatPrice(-d) }) : t('compareCostSame');
-        const line = pct < 2 ? t('compareTie') : t('compareLead', { name: lead.p.name, pct, cost });
+        // The leader's name in its side's colour, the gain in green; the rest is the translated sentence
+        const side = lead.p === a ? 'left' : 'right';
+        const line = pct < 2 ? esc(t('compareTie'))
+            : esc(t('compareLead', { name: '\u0001', pct: '\u0002', cost }))
+                .replace('\u0001', `<b class="vs-vname ${side}">${esc(lead.p.name)}</b>`)
+                .replace('\u0002', `<b class="vs-vpct">+${pct}%</b>`);
         verdict = `<div class="vs-verdict">
-            <div class="vs-score left"><b>${avgA}</b><small>${esc(t('compareAvgFps'))}</small></div>
-            <div class="vs-verdict-text"><strong>${esc(t('compareVerdict'))}</strong><span>${esc(line)}</span></div>
-            <div class="vs-score right"><small>${esc(t('compareAvgFps'))}</small><b>${avgB}</b></div>
+            <div class="vs-score left"><small>${esc(t('compareAvgFps'))}</small><b>${avgA}<em>FPS</em></b></div>
+            <div class="vs-verdict-text"><strong>${esc(t('compareVerdict'))}</strong><span>${line}</span></div>
+            <div class="vs-score right"><small>${esc(t('compareAvgFps'))}</small><b>${avgB}<em>FPS</em></b></div>
         </div>`;
     }
 
@@ -230,8 +266,11 @@ function renderComparison(a, b, t) {
             ${specRows}
         </div>
         ${hasFps ? `<div class="vs-panel" data-vs-panel="fps">
-            <div class="vs-section-title fps"><span>// ${esc(t('compareFpsTitle'))}</span></div>
-            ${fpsRows}${verdict}
+            <div class="vs-fps-box">
+                <div class="vs-section-title fps"><span>// ${esc(t('compareFpsTitle'))}</span></div>
+                ${fpsRows}
+            </div>
+            ${verdict}
         </div>` : ''}`,
         foot: `
             <button class="vs-view-btn left" data-vs-id="${idA}"><span>${esc(t('compareViewName', { name: a.name }))}</span><small>${formatPrice(pa)}</small></button>
@@ -264,4 +303,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Εξαγωγή στο global scope για το index.html
 window.toggleCompare = toggleCompare;
+window.compareBtnHTML = compareBtnHTML;
+window.updateCompareFloat = updateCompareFloat;
 window.openCompareModal = openCompareModal;
