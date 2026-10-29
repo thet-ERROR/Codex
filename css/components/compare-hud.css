@@ -419,3 +419,24 @@
     .vs-cart-btn small { padding: 0; background: none; font-size: 0.74rem; }
     #compare-modal .vs-view-btn { width: 42px; min-height: 52px; font-size: 1.1rem; flex-direction: row; }
 }
+
+/* The strip sits in the stage card, outside #compare-modal where --vs-font is defined — name the font
+   here, in mixed case, so "2" and "Ο"-like shapes can't be confused (it read as "ΔΙΑΛΕΞΕ 20") */
+#main-card .cf-text strong { font-family: 'Exo 2', 'Rajdhani', sans-serif; font-weight: 800; font-size: 0.82rem; letter-spacing: 0.3px; text-transform: none; }
+#main-card .cf-text small { font-family: 'Exo 2', 'Rajdhani', sans-serif; }
+
+/* Phone: "Change" is a full-width button under each fighter's price — big enough for a thumb —
+   instead of a 24 px icon in the photo's corner */
+@media (max-width: 768px) {
+    .vs-fighter .vs-change {
+        position: static; order: 10; display: flex; justify-content: center; gap: 6px; width: auto; min-height: 38px; margin: 0 8px 8px; padding: 6px 8px;
+        border-radius: 10px; font-size: 0.78rem;
+    }
+    .vs-fighter .vs-change span { display: inline; }
+    .vs-fighter.left .vs-change { background: rgba(76, 5, 40, 0.6); }
+    .vs-fighter.right .vs-change { background: rgba(8, 51, 68, 0.6); }
+    #compare-modal .vs-img-wrap { margin-top: 32px; }
+    .vs-fighter .vs-price-line { padding-bottom: 8px; }
+    .vs-pick { min-height: 64px; }
+    .vs-pick img { width: 52px; height: 52px; }
+}

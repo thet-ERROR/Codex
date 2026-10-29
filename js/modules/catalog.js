@@ -358,6 +358,7 @@ function renderDots() {
 // release after a drag like this, so INSPECT/wishlist taps aren't triggered by accident.
 const SWIPE_LEARNED_KEY = 'codex_swipe_learned';
 const LOCK_PX = 8;              // movement needed before deciding "sideways drag" vs "page scroll"
+const LOCK_SIDEWAYS_PX = 4;     // a clearly sideways move is a swipe sooner, before iOS starts a scroll
 const COMMIT_RATIO = 0.22;      // dragged past this share of the card's width → go to the next PC
 const COMMIT_VELOCITY = 0.45;   // px/ms — a quick flick commits even when it's short
 // Kept quiet on purpose: the change of PC should feel like a soft slide, not a show — a small lean,
@@ -506,8 +507,18 @@ function initCardSwipe() {
         const card = document.getElementById('main-card');
         if (e.touches.length !== 1 || state.filtered.length < 2 || !card) { drag = null; return; }
         const t = e.touches[0];
-        drag = { card, x0: t.clientX, y0: t.clientY, dx: 0, locked: false, lastX: t.clientX, lastT: e.timeStamp, v: 0, scale: 1, width: 0, raf: 0 };
+        // scrollY: where the page stood when the finger landed, so a sideways drag can put it back
+        drag = { card, x0: t.clientX, y0: t.clientY, dx: 0, locked: false, lastX: t.clientX, lastT: e.timeStamp, v: 0, scale: 1, width: 0, raf: 0, scrollY: window.scrollY };
     }, { passive: true });
+
+    // iOS lets the first few px of a gesture scroll the page before this code has decided it's a swipe,
+    // and once Safari has started a scroll the touchmoves are no longer cancelable — the page then
+    // followed the thumb's vertical drift for the whole swipe, as if stuck to the card. So: decide
+    // sooner and lean sideways (LOCK_SIDEWAYS_PX, a 1.2× bias), and whenever the page has crept during
+    // a locked swipe, put it back where it was.
+    const pinScroll = (d) => {
+        if (Math.abs(window.scrollY - d.scrollY) > 0.5) window.scrollTo({ top: d.scrollY, behavior: 'instant' });
+    };
 
     wrapper.addEventListener('touchmove', (e) => {
         const d = drag;
@@ -515,9 +526,14 @@ function initCardSwipe() {
         const t = e.touches[0];
         const dx = t.clientX - d.x0, dy = t.clientY - d.y0;
         if (!d.locked) {
-            if (Math.abs(dx) < LOCK_PX && Math.abs(dy) < LOCK_PX) return;
-            if (Math.abs(dy) >= Math.abs(dx)) { drag = null; return; } // a page scroll — not ours
+            const ax = Math.abs(dx), ay = Math.abs(dy);
+            const sideways = ax >= LOCK_SIDEWAYS_PX && ax > ay * 1.2;
+            if (!sideways) {
+                if (ax < LOCK_PX && ay < LOCK_PX) return;
+                if (ay >= ax) { drag = null; return; } // a page scroll — not ours
+            }
             d.locked = true;
+            pinScroll(d);
             // Measured once per gesture. On phones mobile.css scales the carousel to 0.85, so a finger
             // move of N screen px is N / 0.85 card px — dividing keeps the card exactly under the finger.
             d.width = d.card.offsetWidth;
@@ -531,6 +547,7 @@ function initCardSwipe() {
         // event that decided it — otherwise vertical drift of the thumb also scrolled the page and the
         // card wobbled diagonally
         if (e.cancelable) e.preventDefault();
+        else pinScroll(d); // Safari already scrolling — undo the drift instead
         // Velocity, weighted towards the latest movement, for flick detection on release
         const dt = e.timeStamp - d.lastT;
         if (dt > 0) d.v = 0.8 * ((t.clientX - d.lastX) / dt) + 0.2 * d.v;
@@ -552,6 +569,7 @@ function initCardSwipe() {
         drag = null;
         if (!d || !d.locked) return;
         cancelAnimationFrame(d.raf);
+        pinScroll(d);
         // A finger that stopped before lifting has no flick left in it
         const v = (e.timeStamp - d.lastT > 80) ? 0 : d.v / d.scale;
         const far = Math.abs(d.dx) > d.width * COMMIT_RATIO;
