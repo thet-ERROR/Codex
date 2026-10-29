@@ -3,21 +3,21 @@ import { state } from '../state.js';
 import { esc, escUrl, formatPrice, priceCentsOf } from '../utils.js';
 
 export function toggleCompare(id, btnElement) { 
-    // Î Î±Î¯ÏÎ½Î¿Ï…Î¼Îµ Ï„Î¿ Ï„ÏÎ­Ï‡Î¿Î½ PC Ï€Î¿Ï… Î²Î»Î­Ï€ÎµÎ¹ Î¿ Ï‡ÏÎ®ÏƒÏ„Î·Ï‚
+    // Παίρνουμε το τρέχον PC που βλέπει ο χρήστης
     const pc = state.filtered[state.index]; 
     const alreadyInList = state.compareList.find(p => (p._id || p.id) === id);
 
     if (alreadyInList) {
-        // Î‘Î½ ÎµÎ¯Î½Î±Î¹ Î®Î´Î· Î¼Î­ÏƒÎ±, Ï„Î¿ Î±Ï†Î±Î¹ÏÎ¿ÏÎ¼Îµ
+        // Αν είναι ήδη μέσα, το αφαιρούμε
         state.compareList = state.compareList.filter(p => (p._id || p.id) !== id); 
         if (btnElement) {
             btnElement.classList.remove('selected');
-            // Same keys renderCard() uses â€” this used to hardcode English and undo the Greek label
+            // Same keys renderCard() uses — this used to hardcode English and undo the Greek label
             btnElement.innerHTML = compareBtnHTML(false);
         }
     } else { 
         if (state.compareList.length < 2) {
-            // Î¤Î¿ Ï€ÏÎ¿ÏƒÎ¸Î­Ï„Î¿Ï…Î¼Îµ
+            // Το προσθέτουμε
             state.compareList.push(pc); 
             if (btnElement) {
                 btnElement.classList.add('selected');
@@ -32,7 +32,7 @@ export function toggleCompare(id, btnElement) {
     updateCompareFloat();
 }
 
-// The COMPARE button on the card: "âš” Compare", or once this PC is in the duel "âš” In VS âœ“" â€”
+// The COMPARE button on the card: "⚔ Compare", or once this PC is in the duel "⚔ In VS ✓" —
 // which, with a mouse over it, says what a press will do: remove it
 export function compareBtnHTML(inVs) {
     const t = window.t || (k => k);
@@ -42,7 +42,7 @@ export function compareBtnHTML(inVs) {
 }
 
 // The VS strip in the card: hidden with nothing picked. One picked: its photo, the crossed swords
-// and an empty "+" slot â€” "pick a second". Two: both photos facing off and "Compare them â€º".
+// and an empty "+" slot — "pick a second". Two: both photos facing off and "Compare them ›".
 function updateCompareFloat() {
     const b = document.getElementById('compare-float');
     if (!b) return;
@@ -75,7 +75,7 @@ export function openCompareModal() {
     }
     if(state.compareList.length !== 2) return;
 
-    // Actually opening the side-by-side is the moment VS mode was used â€” adding to the list isn't
+    // Actually opening the side-by-side is the moment VS mode was used — adding to the list isn't
     if (window.checkAchievement) window.checkAchievement('comparator');
 
 
@@ -83,7 +83,7 @@ export function openCompareModal() {
     if(window.openModal) window.openModal('compare-modal');
 }
 
-// (Re)builds the open duel from state.compareList â€” on open, and after a side is swapped for another PC
+// (Re)builds the open duel from state.compareList — on open, and after a side is swapped for another PC
 function renderDuel(tab) {
     closePicker(); // a list left open when the window was closed
     const [a, b] = state.compareList;
@@ -135,7 +135,7 @@ function choose(side, id) {
     state.compareList[side] = pc;
     closePicker();
     renderDuel(openTab);
-    // The stage card's COMPARE button / VS strip show what's in the ring â€” keep them in step
+    // The stage card's COMPARE button / VS strip show what's in the ring — keep them in step
     if (window.renderCard) window.renderCard();
 }
 
@@ -152,14 +152,14 @@ function setVsTab(id) {
 }
 
 // Head-to-head layout: each spec label appears ONCE, in the middle, with the two values either side.
-// The old version repeated "CPU / GPU / RAMâ€¦" inside each column, which on a phone left each value
+// The old version repeated "CPU / GPU / RAM…" inside each column, which on a phone left each value
 // a sliver of width and broke "Ryzen 5 5600" across three lines. It also printed the description
-// box, which showed placeholders like "X" or the "System Details" fallback â€” dropped here.
+// box, which showed placeholders like "X" or the "System Details" fallback — dropped here.
 const SPEC_ORDER = ['cpu', 'gpu', 'ram', 'ssd', 'mobo', 'psu', 'case'];
 const norm = (v) => String(v ?? '').trim().toLowerCase().replace(/\s+/g, ' ');
 
 // The duel: PC A on the left in magenta, PC B on the right in cyan, a pulsing VS core between them,
-// then two tabs â€” Specs and FPS. Only real data is judged: specs are strings (which CPU is faster
+// then two tabs — Specs and FPS. Only real data is judged: specs are strings (which CPU is faster
 // isn't something this page can know), so there the DIFFERENCES are lit and identical parts dimmed;
 // FPS are numbers, so there each game has a winner, a bar per side and an honest average.
 function renderComparison(a, b, t) {
@@ -180,15 +180,15 @@ function renderComparison(a, b, t) {
     const specRows = SPEC_ORDER
         .filter(k => (a.specs && a.specs[k]) || (b.specs && b.specs[k]))
         .map(k => {
-            const va = a.specs?.[k] || 'â€”', vb = b.specs?.[k] || 'â€”';
+            const va = a.specs?.[k] || '—', vb = b.specs?.[k] || '—';
             const same = norm(va) === norm(vb);
             // CPU / GPU: a real "+X%" when the admin gave BOTH PCs a benchmark score for that part
-            // (benchScores, same scale for every PC). Without both, no percentage â€” it isn't guessed.
+            // (benchScores, same scale for every PC). Without both, no percentage — it isn't guessed.
             let badgeA = '', badgeB = '';
             const sa = Number(a.benchScores?.[k]) || 0, sb = Number(b.benchScores?.[k]) || 0;
             if ((k === 'cpu' || k === 'gpu') && sa > 0 && sb > 0 && !same) {
                 const pct = Math.round((Math.max(sa, sb) / Math.min(sa, sb) - 1) * 100);
-                const badge = pct >= 1 ? `<span class="vs-gain">â˜… +${pct}%</span>` : '';
+                const badge = pct >= 1 ? `<span class="vs-gain">★ +${pct}%</span>` : '';
                 if (sa > sb) badgeA = badge; else if (sb > sa) badgeB = badge;
             }
             return `<div class="vs-row${same ? ' same' : ' diff'}">
@@ -209,9 +209,9 @@ function renderComparison(a, b, t) {
         const w = v => v === null ? 0 : Math.round((v / top) * 92);
         return `<div class="vs-game">
             <div class="vs-game-line">
-                <span class="vs-fps left${winA ? ' win' : ''}">${x === null ? 'â€”' : `${x} FPS`}${winA ? ' â˜…' : ''}</span>
+                <span class="vs-fps left${winA ? ' win' : ''}">${x === null ? '—' : `${x} FPS`}${winA ? ' ★' : ''}</span>
                 <span class="vs-game-name">${esc(g)}</span>
-                <span class="vs-fps right${winB ? ' win' : ''}">${y === null ? 'â€”' : `${y} FPS`}${winB ? ' â˜…' : ''}</span>
+                <span class="vs-fps right${winB ? ' win' : ''}">${y === null ? '—' : `${y} FPS`}${winB ? ' ★' : ''}</span>
             </div>
             <div class="vs-bars"><span class="vs-bar left"><i style="width:${w(x)}%"></i></span><span class="vs-bar right"><i style="width:${w(y)}%"></i></span></div>
         </div>`;
@@ -264,7 +264,7 @@ function renderComparison(a, b, t) {
     };
 }
 
-// VIEW opens that PC's full inspect card straight from the comparison â€” delegated once, since the
+// VIEW opens that PC's full inspect card straight from the comparison — delegated once, since the
 // grid's contents are rebuilt on every open.
 document.addEventListener('DOMContentLoaded', () => {
     const box = document.querySelector('#compare-modal .compare-box');
@@ -287,7 +287,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
-// Î•Î¾Î±Î³Ï‰Î³Î® ÏƒÏ„Î¿ global scope Î³Î¹Î± Ï„Î¿ index.html
+// Εξαγωγή στο global scope για το index.html
 window.toggleCompare = toggleCompare;
 window.compareBtnHTML = compareBtnHTML;
 window.updateCompareFloat = updateCompareFloat;

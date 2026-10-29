@@ -1,7 +1,7 @@
-﻿/* Mission modal â€” shown after a customer enters the code from their box (checkMissionCode in
+/* Mission modal — shown after a customer enters the code from their box (checkMissionCode in
    js/modules/reviews.js). Two outcomes, weighted honestly: keeping the rig is the big green card,
    a return is available and clear but visually secondary. Replaces a stack of inline styles and a
-   `.btn-inspect` class that is only styled inside .auth-form â€” which is why "keep & review" used to
+   `.btn-inspect` class that is only styled inside .auth-form — which is why "keep & review" used to
    render as a flat unstyled strip. */
 
 .mission-box {
@@ -19,7 +19,7 @@
     text-transform: uppercase; line-height: 1.1; margin: 4px 0 14px;
 }
 
-/* A quiet pill rather than a giant countdown â€” the window matters, but it isn't the headline */
+/* A quiet pill rather than a giant countdown — the window matters, but it isn't the headline */
 .mission-timer-pill {
     display: inline-flex; align-items: center; gap: 8px; margin-bottom: 20px;
     padding: 7px 14px; border-radius: 30px;
