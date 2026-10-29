@@ -15,6 +15,9 @@
     .stage-heading { margin-bottom: 6px; gap: 2px; }
     #carousel-wrapper { margin-top: 4px !important; }
 
+    /* No scroll anchoring: a browser that keeps a visible element in place moved the page when the card was rebuilt */
+    body, .stage { overflow-anchor: none; }
+
     /* --- the stage card --- */
     .card-col { --tc-w: min(90vw, 360px); }
     #main-card, .card-ghost > .holo-card { padding: 8px !important; border-radius: 18px !important; }
