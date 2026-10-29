@@ -240,3 +240,46 @@
 .vs-gain { display: inline-block; margin: 0 6px; padding: 1px 5px; border-radius: 5px; font-size: 0.68rem; font-weight: 700; white-space: nowrap; vertical-align: 1px; }
 .vs-val.left .vs-gain { background: rgba(74, 4, 78, 0.8); border: 1px solid var(--va-line); color: #f0abfc; }
 .vs-val.right .vs-gain { background: rgba(8, 51, 68, 0.8); border: 1px solid var(--vb-line); color: #a5f3fc; }
+
+/* ===== Before the duel: the VS strip in the card and the COMPARE button =====
+   The strip shows WHAT will be compared — the two PCs' photos facing off across crossed swords, in
+   the duel's magenta (left) and cyan (right) — instead of the words "VS MODE READY". With one PC the
+   second slot is an empty "+" and the line says to pick a second. */
+#main-card .compare-float {
+    gap: 10px; min-height: 48px; padding: 5px 10px 5px 6px; border-radius: 12px; text-transform: none; letter-spacing: 0;
+    border: 1px solid rgba(217, 70, 239, 0.45) !important; color: #fff;
+    background: linear-gradient(90deg, rgba(74, 4, 78, 0.55), rgba(15, 5, 30, 0.9) 50%, rgba(8, 51, 68, 0.55)) !important;
+    box-shadow: 0 0 14px rgba(217, 70, 239, 0.18);
+}
+#main-card .compare-float.half { border-style: dashed !important; background: linear-gradient(90deg, rgba(74, 4, 78, 0.55), rgba(15, 5, 30, 0.9) 60%) !important; }
+#main-card .compare-float.active { border-color: rgba(34, 211, 238, 0.55) !important; box-shadow: 0 0 16px rgba(34, 211, 238, 0.2), 0 0 16px rgba(217, 70, 239, 0.18); }
+.cf-duo { flex: none; display: flex; align-items: center; gap: 4px; }
+.cf-thumb { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 50%; overflow: hidden; background: #000; }
+.cf-thumb img { width: 100%; height: 100%; object-fit: cover; }
+.cf-thumb.a { border: 2px solid #d946ef; box-shadow: 0 0 8px rgba(217, 70, 239, 0.6); }
+.cf-thumb.b { border: 2px solid #22d3ee; box-shadow: 0 0 8px rgba(34, 211, 238, 0.6); }
+.cf-thumb.empty { border: 2px dashed rgba(34, 211, 238, 0.6); background: rgba(8, 51, 68, 0.4); color: #67e8f9; font-size: 0.9rem; animation: cfInvite 1.6s ease-in-out infinite; }
+.cf-swords { font-size: 1rem; color: #f0abfc; filter: drop-shadow(0 0 5px rgba(217, 70, 239, 0.8)); }
+.cf-text { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px; text-align: left; }
+.cf-text strong { font-family: var(--card-font-secondary); font-weight: 800; font-size: 0.78rem; letter-spacing: 1px; text-transform: uppercase; }
+.cf-text small { font-size: 0.7rem; color: #b9b3cc; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cf-go { flex: none; font-size: 1.05rem; color: #67e8f9; }
+@media (hover: hover) { #main-card .compare-float:hover { box-shadow: 0 0 22px rgba(217, 70, 239, 0.35); } }
+@media (prefers-reduced-motion: reduce) { .cf-thumb.empty { animation: none; } }
+
+/* COMPARE: crossed swords and the word; in the duel, an outlined "⚔ In VS ✓" (not a flat fill),
+   which with a mouse over it reads "✕ Remove" — what pressing it again does */
+.tc-actions .btn-card-compare { gap: 6px; }
+.tc-actions .btn-card-compare i { font-size: 1.05em; }
+.cmp-on, .cmp-off { display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
+.cmp-off { display: none; }
+.tc-actions .btn-card-compare.selected {
+    background: rgba(74, 4, 78, 0.35) !important; color: #f5d0fe !important;
+    border-color: #d946ef !important; box-shadow: 0 0 14px rgba(217, 70, 239, 0.35), inset 0 0 12px rgba(217, 70, 239, 0.15) !important;
+}
+.tc-actions .btn-card-compare.selected .ph-check { color: #4ade80; }
+@media (hover: hover) {
+    .tc-actions .btn-card-compare.selected:hover .cmp-on { display: none; }
+    .tc-actions .btn-card-compare.selected:hover .cmp-off { display: inline-flex; color: #fda4af; }
+    .tc-actions .btn-card-compare.selected:hover { border-color: rgba(244, 63, 94, 0.7) !important; background: rgba(76, 5, 25, 0.35) !important; }
+}

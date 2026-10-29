@@ -248,21 +248,18 @@ export function renderCard() {
                 </div>
                 ${extrasRows ? `<div class="tc-panel tc-extras" data-tc-panel="extras">${extrasRows}</div>` : ''}
             </div>
-            <!-- The VS strip (compare.js updateCompareFloat): inside the card, between the brief and the buttons, so it can
-                 never cover them. One PC picked: "half" — a lit slot and an empty one with a + ("add one more"); two: ready. -->
-            <div class="compare-float ${state.compareList.length === 2 ? 'active' : state.compareList.length === 1 ? 'half' : ''}" id="compare-float" role="button" tabindex="0" onclick="playClick(); openCompareModal()">
-                <span class="cf-slot cf-a"><i class="ph-bold ph-scales"></i></span>
-                <span class="cf-label cf-ready">${esc(window.t ? window.t('vsModeReady') : 'VS MODE READY')}</span>
-                <span class="cf-label cf-wait">${esc(window.t ? window.t('vsHalf') : '1/2 · ADD ONE MORE')}</span>
-                <span class="cf-slot cf-b"><i class="ph-bold ph-plus"></i></span>
-            </div>
+            <!-- The VS strip: inside the card, between the brief and the buttons, so it can never cover them.
+                 Its contents (the two PCs' thumbnails, or one and an empty "+") are filled by compare.js
+                 updateCompareFloat() — right below, and whenever a PC joins or leaves the duel. -->
+            <div class="compare-float" id="compare-float" role="button" tabindex="0" onclick="playClick(); openCompareModal()"></div>
             <div class="tc-actions">
                 <button class="btn-card-inspect" onclick="openGallery()">${esc(window.t ? window.t('inspectSystemBtn') : 'INSPECT SYSTEM')}</button>
-                <button class="btn-card-compare ${inCompare ? 'selected' : ''}" onclick="toggleCompare('${pcId}', this)">${esc(inCompare ? (window.t ? window.t('addedToVs') : 'ADDED TO VS') : (window.t ? window.t('compareBtn') : 'COMPARE'))}</button>
+                <button class="btn-card-compare ${inCompare ? 'selected' : ''}" onclick="toggleCompare('${pcId}', this)">${window.compareBtnHTML ? window.compareBtnHTML(!!inCompare) : esc(window.t ? window.t('compareBtn') : 'COMPARE')}</button>
             </div>
         </div>
         <i class="tc-holo" aria-hidden="true"></i>
     `;
+    if (window.updateCompareFloat) window.updateCompareFloat();
 
     // The brief is clamped to 3 lines so the card keeps its proportions. The toggle only appears when
     // the clamp actually cut something; opening it lets the card grow.
