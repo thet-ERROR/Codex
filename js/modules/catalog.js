@@ -177,8 +177,23 @@ export function cardWish(id) {
     finally { wishJustToggled = null; }
 }
 
+// Rebuilding the card must never move the page. On an iPhone scrolled to the bottom, Safari moved it up
+// by exactly 110 px while the card was rebuilt after a swipe — inside this function, with no script
+// scrolling and no height changing (measured with ?debug=scroll), and only when the page had changes
+// waiting to be laid out: with a layout forced before the rebuild it never happened. So the layout is
+// brought up to date first, and should the page still have moved, its place is put back in the same
+// task — before anything is drawn, so there is no jump to see. (The earlier fix put it back a frame
+// later, after the jump had already been drawn.)
 export function renderCard() {
-    const c = document.getElementById('main-card'); 
+    const se = document.scrollingElement || document.documentElement;
+    void se.scrollHeight; // lay out the pending changes (the swipe's) before the card is replaced
+    const y = window.scrollY;
+    buildCard();
+    if (Math.abs(window.scrollY - y) > 0.5) window.scrollTo({ top: y, behavior: 'instant' });
+}
+
+function buildCard() {
+    const c = document.getElementById('main-card');
     if (!c) return;
     updateSwipeHint(); // before the early return, so an empty list hides it too
     renderDots();
