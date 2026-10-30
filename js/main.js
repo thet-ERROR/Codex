@@ -33,10 +33,6 @@ import './ui/toast.js';
 import './ui/ui-lock.js'; 
 // ----------------------------------------
 
-// Scroll diagnostics panel for the iPhone swipe bug — only with ?debug=scroll in the URL, so
-// visitors never download it
-if (new URLSearchParams(location.search).get('debug') === 'scroll') import('./modules/scroll-debug.js');
-
 // ... (το υπόλοιπο αρχείο παραμένει ίδιο)
 // --- SYSTEM AUDIO SETUP ---
 const audioStart = new Audio('assets/audio/startup.mp3');
