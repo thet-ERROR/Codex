@@ -27,6 +27,10 @@ const EVENTS_KEPT = 60;
 const SNAPS_KEPT = 12;
 const LOCK = new URLSearchParams(location.search).get('lock') === '1';
 const LOCK_MS = 900;
+// ?debug=scroll&anchor=0: scroll anchoring off on <html> too — phone-compact.css only turns it off
+// on body and .stage, and the root is what the page's own scroller reads
+const NO_ANCHOR = new URLSearchParams(location.search).get('anchor') === '0';
+if (NO_ANCHOR) document.documentElement.style.overflowAnchor = 'none';
 
 const frames = [];
 const events = [];
@@ -121,6 +125,29 @@ for (const prop of ['scrollHeight', 'clientHeight']) {
         }
     });
 }
+
+// Every content swap after a swipe (stage heading, pills, the card, the VS strip): the page's place
+// is read just before and just after it, each with a layout forced, so the one that moves the page
+// names itself
+const innerHTMLDesc = Object.getOwnPropertyDescriptor(Element.prototype, 'innerHTML');
+const scrollHeightGet = Object.getOwnPropertyDescriptor(Element.prototype, 'scrollHeight').get;
+const forceLayout = () => scrollHeightGet.call(document.scrollingElement || document.documentElement);
+if (innerHTMLDesc && innerHTMLDesc.set) Object.defineProperty(Element.prototype, 'innerHTML', {
+    configurable: true,
+    get() { return innerHTMLDesc.get.call(this); },
+    set(html) {
+        if (!gesture || !gesture.endT || this.id === 'scroll-debug' || !document.body.contains(this)) {
+            innerHTMLDesc.set.call(this, html);
+            return;
+        }
+        forceLayout();
+        const before = Math.round(window.scrollY);
+        innerHTMLDesc.set.call(this, html);
+        forceLayout();
+        const after = Math.round(window.scrollY);
+        logEvent(`innerHTML ${nameOf(this)}: y ${before}${after !== before ? ` → ${after}  <<< MOVED` : ' (same)'}`);
+    }
+});
 
 // The first scroll after the finger lifted is the jump itself — what the page looked like then
 window.addEventListener('scroll', () => {
@@ -239,10 +266,13 @@ panel.append(text, buttons);
 const row = (f) => `y ${f.y}  H ${f.H}  vh ${f.vh}  vv ${f.vvh}/${f.vvt}  card ${f.card}`;
 
 function report() {
-    const out = [`scroll-debug${LOCK ? ' LOCK' : ''}  ${navigator.userAgent}`, `now: ${row(sample())}`, ''];
+    const out = [`scroll-debug${LOCK ? ' LOCK' : ''}${NO_ANCHOR ? ' NO-ANCHOR' : ''}  ${navigator.userAgent}`, `now: ${row(sample())}`, ''];
     if (!jumps.length) out.push('no jump recorded');
-    // With no jump, the last gesture's snapshots still say whether anything shrank
-    if (!jumps.length && snaps.length) out.push('last gesture snapshots:', ...snaps.map(s => '  ' + s.text));
+    // With no jump, the last gesture still says what each swap did to the page
+    if (!jumps.length && gesture) {
+        out.push('last gesture events:', ...events.filter(e => e.t >= gesture.startT - 50).map(e => `  +${e.t - gesture.startT} ${e.msg}`));
+        if (snaps.length) out.push('last gesture snapshots:', ...snaps.map(s => '  ' + s.text));
+    }
     for (const j of jumps) {
         out.push(j.text, `changed: ${j.changed}`, 'events:', ...j.events.map(e => '  ' + e), 'snapshots:', ...j.snaps.map(s => '  ' + s), 'frames:',
             ...j.frames.map(f => `  +${f.t - j.at} ${row(f)}`), '');
@@ -255,8 +285,8 @@ function draw(f) {
     if (f.t - paintedAt < 100) return; // ten times a second is plenty to read
     paintedAt = f.t;
     const j = jumps[jumps.length - 1];
-    const lines = [row(f), `gesture: ${gesture ? gesture.kind : '-'}   jumps: ${jumps.length}${LOCK ? '   LOCK ON' : ''}`];
-    if (j) lines.push('', j.text, `changed: ${j.changed}`, ...j.snaps.slice(-4));
+    const lines = [row(f), `gesture: ${gesture ? gesture.kind : '-'}   jumps: ${jumps.length}${LOCK ? '   LOCK ON' : ''}${NO_ANCHOR ? '   NO-ANCHOR' : ''}`];
+    if (j) lines.push('', j.text, `changed: ${j.changed}`, ...j.events.filter(e => e.includes('innerHTML')).slice(-5));
     else lines.push('', 'scroll to the bottom and swipe the card…');
     text.textContent = lines.join('\n');
 }
