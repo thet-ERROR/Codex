@@ -2,6 +2,7 @@
 import { state } from '../state.js';
 import { esc, escUrl, formatPrice, priceCentsOf, stockState, stockLabel, membersOnlyActive, formatShortDateTime, PACK_ICONS } from '../utils.js';
 import { getOptions } from './gallery.js';
+import { getLang } from '../i18n.js';
 
 // --- STAGE HEADING ---
 // The title over the card: a >// kicker in the terminal's voice, a translated title, and how many PCs
@@ -211,7 +212,7 @@ function buildCard() {
     const stockHTML = `<div class="stock-badge ${stockState(pc)}">${esc(stockLabel(pc))}</div>`;
     // (FPS bars used to be built here too, but were never placed in the card — FPS lives in INSPECT.)
 
-    const isGreek = (localStorage.getItem('codex_lang') || 'en') === 'el';
+    const isGreek = getLang() === 'el';
     const loreFallback = window.t ? window.t('loreFallback') : "Σύστημα τακτικών επιχειρήσεων. Οι πλήρεις προδιαγραφές βρίσκονται στον φάκελο INSPECT. Απαιτείται εξουσιοδότηση.";
     const pcLore = (isGreek && pc.loreEl) ? pc.loreEl : (pc.lore || loreFallback);
     const rawId = pc._id || pc.id;
@@ -316,7 +317,7 @@ function cardExtrasRows(pc) {
     }
     if (o.proConfig.enabled) rows.push(row('ph-sliders-horizontal', t('proConfigTitle'), '+' + formatPrice(cents(state.proConfigPrice))));
     if (o.paint.enabled) {
-        const isGreek = (localStorage.getItem('codex_lang') || 'en') === 'el';
+        const isGreek = getLang() === 'el';
         const name = (isGreek && o.paint.colorNameEl) ? o.paint.colorNameEl : (o.paint.colorName || '');
         const swatch = `<i class="tc-ex-swatch" style="background:${esc(o.paint.colorHex || '#1a1a1a')}" aria-hidden="true"></i>`;
         rows.push(row('', name ? `${t('paintTitle')} — ${name}` : t('paintTitle'), '+' + formatPrice(cents(o.paint.price)), swatch));

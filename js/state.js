@@ -62,7 +62,9 @@ export const state = {
     // The server's rank ladder: [{ id, minXp, rewards: { color?, spins? } }] — never kept client-side
     ranks: [],
     wishlist: JSON.parse(localStorage.getItem('codex_wishlist')) || [],
-    audioEnabled: localStorage.getItem('codex_audio') !== 'false',
+    // Off until a visitor turns it on (Settings or the terminal) — music starting by itself is the
+    // quickest way to lose someone browsing on a bus. A saved choice is kept either way.
+    audioEnabled: localStorage.getItem('codex_audio') === 'true',
     currentTheme: localStorage.getItem('codex_theme') || CONFIG.DEFAULT_THEME,
     matrixEnabled: false,
     isHacked: false,

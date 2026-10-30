@@ -13,7 +13,7 @@ import { initInteractiveTutorial } from './modules/tutorial.js';
 import { initDayNightCycle } from './modules/time.js';
 import { initStageFit } from './modules/stagefit.js';
 import { initScrollFades } from './ui/scroll-fade.js';
-import { applyLanguage, t } from './i18n.js';
+import { applyLanguage, getLang, t } from './i18n.js';
 
 import './modules/gallery.js';
 import './modules/compare.js';
@@ -249,7 +249,7 @@ const initApp = async () => {
     // 2. Apply Saved Settings
     document.documentElement.style.setProperty('--neon-green', state.currentTheme);
     if (window.refreshColorLocks) window.refreshColorLocks();
-    applyLanguage(localStorage.getItem('codex_lang') || 'en');
+    applyLanguage(getLang());
 
     // 3. Setup Audio Triggers
     if (state.audioEnabled) audioStart.play().catch(e => console.log("Audio autoplay blocked"));
