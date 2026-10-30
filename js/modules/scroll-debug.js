@@ -10,16 +10,63 @@
 // rebuilt, snapshot thrown, a resize, or a script calling scrollTo / scrollIntoView / focus (with the
 // file and line that called it). COPY puts the full log on the clipboard to paste into the chat.
 
+//
+// Sampling once a frame misses a page that is shorter only inside one task (rebuilt, measured,
+// grown back before the frame is drawn) — which is enough for Safari to pull the scroll up. So
+// SNAPSHOTS are also taken at the moments that matter: right after the card is rebuilt, when code
+// measures something inside the card (that forces a layout), and at the first scroll event after
+// the finger lifts. Each one lists the elements around the card whose height differs from
+// touchstart — the one that shrank is the culprit.
+//
+// ?debug=scroll&lock=1 is the experiment: after a sideways swipe the page's height is held for a
+// moment (body min-height). If the jump is gone with it, the shrinking page is confirmed.
+
 const JUMP_PX = 40;        // page moved this far during a non-vertical gesture → a jump
 const FRAMES_KEPT = 240;   // ~4 s at 60 fps
 const EVENTS_KEPT = 60;
+const SNAPS_KEPT = 12;
+const LOCK = new URLSearchParams(location.search).get('lock') === '1';
+const LOCK_MS = 900;
 
 const frames = [];
 const events = [];
 const jumps = [];
-let gesture = null;        // { x0, y0, kind: 'tap' | 'side' | 'vert', base: scrollY at touchstart, startT, endT, flagged }
+let snaps = [];
+let baseline = new Map(); // element → height at touchstart
+let gesture = null;        // { x0, y0, kind: 'tap' | 'side' | 'vert', base: scrollY at touchstart, startT, endT, flagged, scrolled }
 
 const now = () => Math.round(performance.now());
+
+// --- which element changed height ---
+// The card's ancestors up to <body>, and every child of each: whatever can make the page shorter
+const offsetHeight = Object.getOwnPropertyDescriptor(HTMLElement.prototype, 'offsetHeight').get;
+function tracked() {
+    const list = [];
+    let el = document.getElementById('main-card');
+    while (el && el !== document.body) {
+        const parent = el.parentElement;
+        if (!parent) break;
+        for (const child of parent.children) if (child.id !== 'scroll-debug') list.push(child);
+        el = parent;
+    }
+    return list;
+}
+const nameOf = (el) => el.id ? '#' + el.id : el.tagName.toLowerCase() + (el.classList[0] ? '.' + el.classList[0] : '');
+function takeBaseline() {
+    baseline = new Map(tracked().map(el => [el, offsetHeight.call(el)]));
+}
+function snap(label) {
+    if (!gesture || snaps.length >= SNAPS_KEPT) return;
+    const se = document.scrollingElement || document.documentElement;
+    const diffs = [];
+    for (const el of tracked()) {
+        const h = offsetHeight.call(el);
+        const was = baseline.has(el) ? baseline.get(el) : null;
+        if (was === null) diffs.push(`${nameOf(el)} new ${h}`);
+        else if (was !== h) diffs.push(`${nameOf(el)} ${was}→${h}`);
+    }
+    snaps.push({ t: now(), text: `${label}: y ${Math.round(window.scrollY)} H ${se.scrollHeight}` + (diffs.length ? ` | ${diffs.join(', ')}` : ' | no height changed') });
+}
 
 function sample() {
     const se = document.scrollingElement || document.documentElement;
@@ -60,10 +107,35 @@ wrap(Element.prototype, 'scrollIntoView', 'scrollIntoView');
 // focus() scrolls the focused element into view unless told not to
 wrap(HTMLElement.prototype, 'focus', 'focus', (args) => args[0] && args[0].preventScroll);
 
+// Code measuring inside the card (renderCard's brief check reads scrollHeight) forces a layout of the
+// half-built page — the moment Safari may clamp the scroll. Snapshot it.
+for (const prop of ['scrollHeight', 'clientHeight']) {
+    const desc = Object.getOwnPropertyDescriptor(Element.prototype, prop);
+    if (!desc || !desc.get) continue;
+    Object.defineProperty(Element.prototype, prop, {
+        configurable: true,
+        get() {
+            const value = desc.get.call(this);
+            if (gesture && gesture.endT && this.closest && this.closest('#main-card')) snap(`measure ${prop}`);
+            return value;
+        }
+    });
+}
+
+// The first scroll after the finger lifted is the jump itself — what the page looked like then
+window.addEventListener('scroll', () => {
+    if (gesture && gesture.endT && !gesture.scrolled && gesture.kind !== 'vert') {
+        gesture.scrolled = true;
+        snap('scroll event');
+    }
+}, { passive: true });
+
 // --- the gesture ---
 window.addEventListener('touchstart', (e) => {
     const t = e.touches[0];
-    gesture = { x0: t.clientX, y0: t.clientY, kind: 'tap', base: Math.round(window.scrollY), startT: now(), endT: 0, flagged: false };
+    gesture = { x0: t.clientX, y0: t.clientY, kind: 'tap', base: Math.round(window.scrollY), startT: now(), endT: 0, flagged: false, scrolled: false };
+    snaps = [];
+    takeBaseline();
     logEvent(`touchstart y=${gesture.base}`);
 }, { passive: true, capture: true });
 
@@ -81,6 +153,12 @@ const touchEnd = (e) => {
     if (!gesture) return;
     gesture.endT = now();
     logEvent(`${e.type} (${gesture.kind}) y=${Math.round(window.scrollY)}`);
+    if (LOCK && gesture.kind === 'side') {
+        const se = document.scrollingElement || document.documentElement;
+        document.body.style.minHeight = se.scrollHeight + 'px';
+        logEvent(`lock height ${se.scrollHeight}`);
+        setTimeout(() => { document.body.style.minHeight = ''; logEvent('lock released'); }, LOCK_MS);
+    }
 };
 window.addEventListener('touchend', touchEnd, { passive: true, capture: true });
 window.addEventListener('touchcancel', touchEnd, { passive: true, capture: true });
@@ -97,7 +175,7 @@ function watchCard() {
     if (!wrapper) return;
     new MutationObserver((list) => {
         for (const m of list) {
-            if (m.target.id === 'main-card') { logEvent('card rebuilt'); break; }
+            if (m.target.id === 'main-card') { logEvent('card rebuilt'); snap('after rebuild'); break; }
             if ([...m.addedNodes].some(n => n.classList && n.classList.contains('card-ghost'))) logEvent('ghost thrown');
         }
     }).observe(wrapper, { childList: true, subtree: true });
@@ -123,6 +201,7 @@ function checkJump(f) {
             + (g.endT ? `, ${start.t - g.endT} ms after lift` : ', finger still down'),
         changed: changed.length ? changed.join(', ') : 'nothing else changed',
         events: events.filter(e => e.t >= g.startT - 50).map(e => `+${e.t - g.startT} ${e.msg}`),
+        snaps: snaps.map(s => `+${s.t - g.startT} ${s.text}`),
         frames: since.slice(Math.max(0, i - 5), i + 15)
     });
     if (jumps.length > 3) jumps.shift();
@@ -130,6 +209,7 @@ function checkJump(f) {
 
 // --- the panel ---
 const panel = document.createElement('div');
+panel.id = 'scroll-debug';
 panel.setAttribute('aria-hidden', 'true');
 Object.assign(panel.style, {
     position: 'fixed', top: 'calc(env(safe-area-inset-top) + 4px)', left: '4px', right: '4px', zIndex: 2147483647,
@@ -159,10 +239,12 @@ panel.append(text, buttons);
 const row = (f) => `y ${f.y}  H ${f.H}  vh ${f.vh}  vv ${f.vvh}/${f.vvt}  card ${f.card}`;
 
 function report() {
-    const out = [`scroll-debug  ${navigator.userAgent}`, `now: ${row(sample())}`, ''];
+    const out = [`scroll-debug${LOCK ? ' LOCK' : ''}  ${navigator.userAgent}`, `now: ${row(sample())}`, ''];
     if (!jumps.length) out.push('no jump recorded');
+    // With no jump, the last gesture's snapshots still say whether anything shrank
+    if (!jumps.length && snaps.length) out.push('last gesture snapshots:', ...snaps.map(s => '  ' + s.text));
     for (const j of jumps) {
-        out.push(j.text, `changed: ${j.changed}`, 'events:', ...j.events.map(e => '  ' + e), 'frames:',
+        out.push(j.text, `changed: ${j.changed}`, 'events:', ...j.events.map(e => '  ' + e), 'snapshots:', ...j.snaps.map(s => '  ' + s), 'frames:',
             ...j.frames.map(f => `  +${f.t - j.at} ${row(f)}`), '');
     }
     return out.join('\n');
@@ -173,8 +255,8 @@ function draw(f) {
     if (f.t - paintedAt < 100) return; // ten times a second is plenty to read
     paintedAt = f.t;
     const j = jumps[jumps.length - 1];
-    const lines = [row(f), `gesture: ${gesture ? gesture.kind : '-'}   jumps: ${jumps.length}`];
-    if (j) lines.push('', j.text, `changed: ${j.changed}`, ...j.events.slice(-8));
+    const lines = [row(f), `gesture: ${gesture ? gesture.kind : '-'}   jumps: ${jumps.length}${LOCK ? '   LOCK ON' : ''}`];
+    if (j) lines.push('', j.text, `changed: ${j.changed}`, ...j.snaps.slice(-4));
     else lines.push('', 'scroll to the bottom and swipe the card…');
     text.textContent = lines.join('\n');
 }
