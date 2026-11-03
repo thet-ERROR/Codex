@@ -105,3 +105,21 @@
         .ord-next { background: transparent; border: 1px solid var(--c); color: var(--c); padding: 8px 12px; }
         .ord-next:hover { background: var(--c); color: #000; }
         .ord-actions .del-btn { padding: 8px 12px; }
+
+        /* TWO-FACTOR SIGN-IN (admin-security.js, and the login's second step) */
+        .login-hint { color: #aaa; margin: 10px 0 0; font-size: 0.9rem; }
+        .login-link { background: none; border: 0; color: #888; margin-top: 14px; cursor: pointer; text-decoration: underline; font-family: inherit; font-size: 0.85rem; }
+        .login-link:hover { color: #fff; }
+        .sec-text { font-size: 0.85rem; color: #ccc; line-height: 1.5; margin: 0 0 8px; }
+        .sec-msg { font-size: 0.85rem; margin: 8px 0 0; }
+        .sec-state { border-radius: 4px; padding: 1px 8px; font-size: 0.72rem; font-weight: bold; margin-right: 6px; }
+        .sec-state.on { background: #ccff00; color: #000; }
+        .sec-state.off { background: #333; color: #ccc; }
+        .sec-steps { margin: 0 0 10px; padding-left: 18px; font-size: 0.85rem; color: #ccc; line-height: 1.5; }
+        .sec-qr { background: #fff; border-radius: 8px; padding: 8px; width: 200px; height: 200px; margin: 8px auto; display: grid; place-items: center; color: #000; font-size: 0.8rem; text-align: center; }
+        .sec-qr svg { width: 100%; height: 100%; }
+        .sec-key { font-family: monospace; font-size: 0.95rem; letter-spacing: 1px; color: #fff; text-align: center; word-break: break-all; background: #080808; border: 1px solid #333; border-radius: 6px; padding: 8px; }
+        .sec-codes { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin: 8px 0; }
+        .sec-codes code { font-family: monospace; font-size: 1rem; letter-spacing: 1px; background: #080808; border: 1px solid #333; border-radius: 6px; padding: 6px; text-align: center; color: #fff; }
+        .sec-off { margin-top: 12px; }
+        .sec-off summary { cursor: pointer; color: #ff3333; font-size: 0.85rem; }
