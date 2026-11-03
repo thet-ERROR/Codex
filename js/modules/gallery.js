@@ -1,6 +1,6 @@
 // js/modules/gallery.js
 import { state } from '../state.js';
-import { t } from '../i18n.js';
+import { t, getLang } from '../i18n.js';
 import { esc, formatPrice, priceCentsOf, stockState, stockLabel, membersOnlyActive, PACK_ICONS } from '../utils.js';
 
 // --- EXTRAS: normalisation, pricing, image sets ---
@@ -23,7 +23,7 @@ export function getOptions(pc) {
 }
 
 function paintName(opts) {
-    const isGreek = (localStorage.getItem('codex_lang') || 'en') === 'el';
+    const isGreek = getLang() === 'el';
     return (isGreek && opts.paint.colorNameEl) ? opts.paint.colorNameEl : (opts.paint.colorName || '');
 }
 
@@ -87,7 +87,7 @@ export function renderExtras() {
     host.classList.remove('hidden');
     host.classList.toggle('no-extras', !hasExtras);
 
-    const isGreek = (localStorage.getItem('codex_lang') || 'en') === 'el';
+    const isGreek = getLang() === 'el';
     const lore = (isGreek && pc.loreEl) ? pc.loreEl : (pc.lore || t('loreFallback'));
     const tab = (id, icon, label, extra = '') => `
         <button type="button" class="yg-tab${ygTab === id ? ' active' : ''}" role="tab" id="yg-tab-${id}" aria-controls="yg-panel-${id}"

@@ -489,7 +489,16 @@ const translations = {
     }
 };
 
-let currentLang = localStorage.getItem('codex_lang') || 'en';
+// A saved choice wins. A first-time visitor gets Greek when any of their browser's preferred languages
+// is Greek, and English otherwise — so a visitor from abroad isn't greeted in a language they can't read.
+function initialLang() {
+    let saved = null;
+    try { saved = localStorage.getItem('codex_lang'); } catch (e) {}
+    if (saved === 'el' || saved === 'en') return saved;
+    const prefs = (navigator.languages && navigator.languages.length) ? navigator.languages : [navigator.language];
+    return prefs.some(l => /^el(-|_|$)/i.test(l || '')) ? 'el' : 'en';
+}
+let currentLang = initialLang();
 
 // Flag icons, shown for the language you'd switch TO, not the currently active one — the neon bar
 // icons (assets/icons/bar, see .side-ico in sidebars.css).

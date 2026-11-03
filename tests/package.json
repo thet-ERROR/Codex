@@ -1,0 +1,13 @@
+{
+  "name": "phoenix-codex-tests",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Browser tests for the storefront. Kept apart from the site's own package.json so Vercel never installs them. Run: npm install, then npm test (uses the Microsoft Edge already on the machine).",
+  "type": "module",
+  "scripts": {
+    "test": "node --test --test-concurrency=1"
+  },
+  "devDependencies": {
+    "playwright-core": "^1.50.0"
+  }
+}
