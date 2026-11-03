@@ -126,6 +126,19 @@ export const api = {
         const data = await res.json().catch(() => ({}));
         if (!res.ok) throw { status: res.status, ...data };
         return data;
+    },
+    // Resolves with both the response and its body, never throws on a 4xx: the checkout reads the
+    // body's field / code to say what was wrong. A session is sent when there is one (coupons and
+    // members-first PCs need it); a guest orders without.
+    async placeOrder(order) {
+        const token = localStorage.getItem('codex_token');
+        const res = await fetch(`${CONFIG.API_URL}/orders`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', ...(token ? { 'Authorization': `Bearer ${token}` } : {}) },
+            body: JSON.stringify(order)
+        });
+        const data = await res.json().catch(() => ({}));
+        return { res, data };
     }
 };
 

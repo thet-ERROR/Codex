@@ -70,6 +70,9 @@ export const state = {
     isHacked: false,
     // Global price of the Pro Config extra, refreshed from /api/status at boot.
     proConfigPrice: CONFIG.DEFAULT_PRO_CONFIG_PRICE,
+    // Checkout settings from /api/status (live or demo, return window, hand-delivery areas and map).
+    // null until it answers — the checkout then offers no in-person delivery.
+    orders: null,
     // Admin-editable "how community drops work" copy behind the vote card's info button, also
     // refreshed from /api/status at boot. Empty until then — the button just doesn't render text
     // in the unlikely case a request fails before this is filled in. Split EN/EL like every other

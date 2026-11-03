@@ -55,15 +55,27 @@ const pc = (n, over = {}) => ({
 });
 export const PCS = [pc(1), pc(2, { stock: 1 }), pc(3, { stock: 0 })];
 
-const STATUS = { maintenance: false, message: null, proConfigPrice: 30, voteInfoText: 'Vote info', voteInfoTextEl: 'Πληροφορίες ψηφοφορίας' };
+const STATUS = {
+    maintenance: false, message: null, proConfigPrice: 30, voteInfoText: 'Vote info', voteInfoTextEl: 'Πληροφορίες ψηφοφορίας',
+    orders: { live: false, returnDays: 14, handDeliveryAreas: ['Θεσσαλονίκη', 'Καλαμαριά'], handDeliveryCenter: { lat: 40.64, lng: 22.94 }, handDeliveryRadiusKm: 10 }
+};
 
-async function answer(route) {
+// orders: every POST /orders body the page sent, for the tests to read
+async function answer(route, orders) {
     const url = new URL(route.request().url());
     const p = url.pathname.replace(/^\/api/, '');
     const json = (body, status = 200) => route.fulfill({ status, contentType: 'application/json', body: JSON.stringify(body) });
     if (p === '/status') return json(STATUS);
     if (p === '/drops') return json(PCS);
     if (p === '/vote-event') return json({});
+    if (p === '/orders' && route.request().method() === 'POST') {
+        const body = route.request().postDataJSON();
+        orders.push(body);
+        // Priced the way the real server does it: from its own data, base prices only here
+        const totalCents = body.items.reduce((sum, i) => sum + (PCS.find(pc => pc._id === i.pcId)?.priceCents || 0), 0);
+        const number = `DEMO-${String(orders.length).padStart(4, '0')}`;
+        return json({ success: true, number, demo: true, accessToken: 'a'.repeat(48), order: { number, totalCents, subtotalCents: totalCents, discountCents: 0, items: [] } });
+    }
     // Anything else (login, wishlist…) is not part of these tests: refuse loudly rather than guess
     return json({ error: `mock API has no ${route.request().method()} ${p}` }, 404);
 }
@@ -88,7 +100,8 @@ export async function newPage(browser, site, { width = 390, height = 844, locale
             for (const [k, v] of Object.entries(storage)) localStorage.setItem(k, v);
         } catch (e) {}
     }, { storage, tourDone });
-    await context.route(url => url.href.startsWith(API), answer);
+    const orders = [];
+    await context.route(url => url.href.startsWith(API), route => answer(route, orders));
     // Everything that is neither the site nor the API stays offline
     await context.route(url => !url.href.startsWith(site.url) && !url.href.startsWith(API) && /^https?:/.test(url.href), r => r.abort());
 
@@ -97,6 +110,7 @@ export async function newPage(browser, site, { width = 390, height = 844, locale
     page.on('pageerror', e => problems.push(`pageerror: ${e.message}`));
     page.on('console', m => { if (m.type() === 'error' && !/Failed to load resource|net::ERR/.test(m.text())) problems.push(`console: ${m.text()}`); });
     page.problems = problems;
+    page.orders = orders;
     await page.goto(site.url);
     // The splash leaves once the catalogue is drawn
     await page.waitForSelector('#startup-overlay.hidden', { state: 'attached', timeout: 15000 });

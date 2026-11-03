@@ -1,0 +1,109 @@
+/* ===== Checkout window (#checkout-modal, js/modules/checkout.js) =====
+   The slab, header, fields, checkboxes and the lit button come from the sign-in windows' purple HUD
+   (auth-hud.css, which lists #checkout-modal). This file adds what only the checkout has: the DEMO
+   notice, the delivery / receipt choices, the map of the in-person zone, the summary and the
+   confirmation. */
+
+/* --- the DEMO notice: amber, first thing in the window, impossible to miss --- */
+#checkout-modal .co-demo {
+    display: flex; gap: 10px; align-items: flex-start; margin: 0 0 14px; padding: 12px 14px;
+    border-radius: 14px; border: 1px solid rgba(255, 184, 0, 0.5); background: rgba(255, 184, 0, 0.09);
+    color: #ffd56b; font-family: var(--font-ui); font-weight: 700; font-size: 0.85rem; line-height: 1.4;
+}
+#checkout-modal .co-demo i { flex: none; margin-top: 1px; font-size: 1.2rem; }
+
+/* --- section labels and rows --- */
+#checkout-modal .co-label {
+    margin-top: 8px; font-family: var(--font-ui); font-size: 0.72rem; font-weight: 800; letter-spacing: 2px;
+    text-transform: uppercase; color: var(--s-purple);
+}
+#checkout-modal .co-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+#checkout-modal .co-row > * { min-width: 0; }
+#checkout-modal .co-fields { display: flex; flex-direction: column; gap: 10px; }
+#checkout-modal .co-note { margin: 0; font-size: 0.8rem; line-height: 1.4; color: #9b93b5; }
+#checkout-modal .co-notes { min-height: 64px; resize: vertical; font-family: inherit; }
+#checkout-modal select.auth-input { color: #fff; }
+#checkout-modal select.auth-input option { background: #0d0a18; color: #fff; }
+
+/* --- delivery / receipt: cards with a radio inside, the picked one lit --- */
+#checkout-modal .co-methods { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+#checkout-modal .co-methods-2 { grid-template-columns: repeat(2, 1fr); }
+#checkout-modal .co-method {
+    position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px;
+    min-height: 74px; padding: 10px 6px; border-radius: 14px; border: 1px solid rgba(176, 38, 255, 0.3);
+    background: var(--s-panel); color: #c9c3d9; text-align: center; cursor: pointer;
+    font-family: var(--font-ui); font-weight: 700; font-size: 0.82rem;
+    transition: border-color 0.2s, box-shadow 0.2s, color 0.2s;
+}
+#checkout-modal .co-method input { position: absolute; opacity: 0; pointer-events: none; }
+#checkout-modal .co-method i { font-size: 1.35rem; }
+#checkout-modal .co-method small { font-size: 0.68rem; font-weight: 600; color: #8f88a8; }
+#checkout-modal .co-method:has(input:checked) {
+    border-color: var(--s-purple); color: #fff;
+    background: linear-gradient(180deg, rgba(176, 38, 255, 0.2), rgba(176, 38, 255, 0.05)), var(--s-panel);
+    box-shadow: 0 0 0 3px rgba(176, 38, 255, 0.18), 0 0 16px rgba(176, 38, 255, 0.25);
+}
+#checkout-modal .co-method:has(input:checked) small { color: #d8c9f2; }
+#checkout-modal .co-method:has(input:focus-visible) { outline: 2px solid #fff; outline-offset: 2px; }
+
+/* --- the in-person zone: a dark OpenStreetMap with the accent circle, and the areas as chips --- */
+#checkout-modal .co-map {
+    height: 220px; border-radius: 14px; overflow: hidden;
+    border: 1px solid rgba(176, 38, 255, 0.35); background: #0d0a18;
+}
+/* The standard light map, turned to the site's night look */
+#checkout-modal .co-map .leaflet-tile-pane { filter: invert(1) hue-rotate(180deg) brightness(0.9) contrast(0.9); }
+#checkout-modal .co-map .leaflet-control-attribution { background: rgba(8, 6, 15, 0.78); color: #9b93b5; }
+#checkout-modal .co-map .leaflet-control-attribution a { color: #c9b6f5; }
+#checkout-modal .co-map.is-failed { height: auto; padding: 14px; font-size: 0.82rem; color: #9b93b5; }
+#checkout-modal .co-areas { display: flex; flex-wrap: wrap; gap: 6px; }
+#checkout-modal .co-area-chip {
+    padding: 4px 10px; border-radius: 999px; border: 1px solid rgba(176, 38, 255, 0.3);
+    background: var(--s-panel); color: #c9c3d9; font-size: 0.74rem;
+}
+
+/* --- summary --- */
+#checkout-modal .co-summary {
+    display: flex; flex-direction: column; gap: 8px; padding: 12px 14px;
+    border-radius: 14px; border: 1px solid rgba(176, 38, 255, 0.25); background: var(--s-panel);
+}
+#checkout-modal .co-line { display: flex; justify-content: space-between; gap: 12px; font-size: 0.88rem; color: #e7e3f1; }
+#checkout-modal .co-line-name { display: flex; flex-direction: column; min-width: 0; }
+#checkout-modal .co-line-name small { font-size: 0.74rem; color: #9b93b5; }
+#checkout-modal .co-line b { white-space: nowrap; font-family: var(--font-ui); }
+#checkout-modal .co-line-discount { color: var(--legendary-orange, #ffb800); }
+#checkout-modal .co-line-total { padding-top: 8px; border-top: 1px solid rgba(176, 38, 255, 0.25); font-size: 1rem; font-weight: 800; color: #fff; }
+
+/* --- terms link, errors, sending --- */
+#checkout-modal .co-link { padding: 0; border: 0; background: none; color: #c9b6f5; font: inherit; font-weight: 700; text-decoration: underline; cursor: pointer; }
+#checkout-modal .co-error {
+    padding: 10px 12px; border-radius: 12px; border: 1px solid rgba(255, 77, 77, 0.5);
+    background: rgba(255, 77, 77, 0.08); color: #ff9a9a; font-size: 0.85rem; font-weight: 600; line-height: 1.4;
+}
+#checkout-modal .auth-input.is-invalid { border-color: #ff4d4d; box-shadow: 0 0 0 3px rgba(255, 77, 77, 0.18); }
+#checkout-modal .auth-checkbox:has(input.is-invalid) { border-color: #ff4d4d; }
+#checkout-modal .co-submit { display: flex; align-items: center; justify-content: center; gap: 8px; }
+#checkout-modal .co-submit.is-loading { opacity: 0.7; pointer-events: none; }
+
+/* --- the confirmation --- */
+#checkout-modal .co-done { display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 6px 0 4px; text-align: center; }
+#checkout-modal .co-done-ico { font-size: 3rem; line-height: 1; color: var(--neon-green); filter: drop-shadow(0 0 12px var(--neon-green)); }
+#checkout-modal .co-done-demo {
+    padding: 3px 12px; border-radius: 999px; border: 1px solid rgba(255, 184, 0, 0.5);
+    color: #ffd56b; font-family: var(--font-ui); font-size: 0.72rem; font-weight: 800; letter-spacing: 2px;
+}
+#checkout-modal .co-done-title { margin: 0; font-family: var(--font-ui); font-size: 1.2rem; color: #fff; }
+#checkout-modal .co-done-label { font-size: 0.72rem; letter-spacing: 2px; text-transform: uppercase; color: #9b93b5; }
+#checkout-modal .co-done-number { font-family: var(--font-ui); font-size: 2rem; font-weight: 800; letter-spacing: 3px; color: #fff; text-shadow: 0 0 16px rgba(176, 38, 255, 0.6); }
+#checkout-modal .co-done-total { color: #e7e3f1; }
+#checkout-modal .co-done-text { max-width: 40ch; margin: 0; font-size: 0.88rem; line-height: 1.45; color: #c9c3d9; }
+#checkout-modal .co-done-demo-text { color: #ffd56b; }
+#checkout-modal .co-wa-btn, #checkout-modal .co-done-close { width: 100%; }
+
+/* --- narrow phones: one column, the choices as rows --- */
+@media (max-width: 380px) {
+    #checkout-modal .co-row { grid-template-columns: 1fr; }
+    #checkout-modal .co-methods { grid-template-columns: 1fr; }
+    #checkout-modal .co-method { flex-direction: row; justify-content: flex-start; gap: 10px; min-height: 52px; padding: 10px 14px; text-align: left; }
+    #checkout-modal .co-method small { margin-left: auto; }
+}

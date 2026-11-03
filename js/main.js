@@ -25,6 +25,7 @@ import './modules/wheel.js';
 import './modules/info.js';
 import './modules/qr.js';
 import './modules/mascot.js';
+import './modules/checkout.js';
 
 // --- ΠΡΟΣΘΕΣΕ ΑΥΤΕΣ ΤΙΣ 3 ΓΡΑΜΜΕΣ ΕΔΩ ---
 // 3. UI Helpers (Παράθυρα, Ήχοι, Ειδοποιήσεις)
@@ -143,6 +144,8 @@ function applyStatus(status) {
     if (typeof status.proConfigPrice === 'number') state.proConfigPrice = status.proConfigPrice;
     if (typeof status.voteInfoText === 'string') state.voteInfoText = status.voteInfoText;
     if (typeof status.voteInfoTextEl === 'string') state.voteInfoTextEl = status.voteInfoTextEl;
+    // Checkout settings: demo or live, return window, hand-delivery areas and map
+    if (status.orders && typeof status.orders === 'object') state.orders = status.orders;
 }
 
 function showMaintenance(status) {
