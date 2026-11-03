@@ -66,3 +66,42 @@
         .tick-label { display: flex; align-items: center; gap: 8px; color: #fff; font-size: 0.9rem; font-weight: bold; text-transform: none; letter-spacing: 0; margin-bottom: 8px; cursor: pointer; }
         .tick-label input[type="checkbox"] { width: 18px; height: 18px; accent-color: #ccff00; cursor: pointer; }
         .extras-hint { font-size: 0.72rem; color: #777; line-height: 1.5; margin: 0 0 10px 0; }
+
+        /* ORDERS (admin-orders.js) */
+        .hidden { display: none !important; }
+        .center-tabs { display: flex; gap: 6px; margin-bottom: 14px; border-bottom: 1px solid #222; padding-bottom: 10px; }
+        .center-tab { background: transparent; border: 1px solid #333; color: #aaa; padding: 8px 16px; border-radius: 8px; font-weight: bold; letter-spacing: 1px; cursor: pointer; font-family: inherit; display: inline-flex; align-items: center; gap: 8px; }
+        .center-tab.active { border-color: #ccff00; color: #000; background: #ccff00; }
+        .tab-badge { background: #00f0ff; color: #000; border-radius: 999px; padding: 1px 8px; font-size: 0.75rem; }
+        .center-tab.active .tab-badge { background: #000; color: #ccff00; }
+        .orders-toolbar { display: flex; gap: 8px; margin-bottom: 12px; }
+        .orders-toolbar select { flex: 1; }
+        .ord-empty { color: #777; padding: 20px; text-align: center; }
+        .ord-row { display: flex; flex-direction: column; gap: 4px; width: 100%; text-align: left; background: #181818; border: 1px solid #333; border-radius: 8px; padding: 10px 12px; margin-bottom: 8px; color: #fff; cursor: pointer; font-family: inherit; }
+        .ord-row:hover { border-color: #666; }
+        .ord-row-top { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+        .ord-row-sub { font-size: 0.8rem; color: #888; }
+        .ord-total { margin-left: auto; font-weight: bold; }
+        .ord-status { border: 1px solid var(--c); color: var(--c); border-radius: 999px; padding: 1px 8px; font-size: 0.7rem; font-weight: bold; letter-spacing: 0.5px; white-space: nowrap; }
+        .ord-flag { border: 1px solid #555; color: #ccc; border-radius: 4px; padding: 0 6px; font-size: 0.7rem; font-weight: bold; }
+        .ord-flag.demo { border-color: #ffc43d; color: #ffc43d; }
+        .ord-flag.warn { border-color: #ff3333; color: #ff3333; }
+        .ord-flag.refund { border-color: #ff8a00; color: #ff8a00; }
+        .ord-head { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+        .ord-head h3 { margin: 0; border: 0; padding: 0; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+        .ord-alert { background: #2a0808; border: 1px solid #ff3333; color: #ff8a8a; border-radius: 8px; padding: 10px 12px; margin-bottom: 10px; font-size: 0.85rem; }
+        .ord-alert.refund { background: #2a1808; border-color: #ff8a00; color: #ffbe73; }
+        .ord-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px; margin-bottom: 10px; }
+        .ord-card { background: #111; border: 1px solid #2a2a2a; border-radius: 8px; padding: 12px; margin-bottom: 10px; font-size: 0.88rem; line-height: 1.5; }
+        .ord-grid .ord-card { margin-bottom: 0; }
+        .ord-card a { color: #00f0ff; }
+        .ord-k { font-size: 0.7rem; color: #888; letter-spacing: 1px; font-weight: bold; margin-bottom: 6px; }
+        .ord-muted { color: #777; font-size: 0.8rem; }
+        .ord-line { display: flex; justify-content: space-between; gap: 12px; padding: 3px 0; }
+        .ord-line.sub { color: #999; font-size: 0.82rem; }
+        .ord-line.total { border-top: 1px solid #2a2a2a; margin-top: 6px; padding-top: 8px; font-size: 1rem; }
+        .ord-notes { white-space: pre-wrap; }
+        .ord-btns { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+        .ord-next { background: transparent; border: 1px solid var(--c); color: var(--c); padding: 8px 12px; }
+        .ord-next:hover { background: var(--c); color: #000; }
+        .ord-actions .del-btn { padding: 8px 12px; }

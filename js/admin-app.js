@@ -3,6 +3,7 @@
     // NOT global, which is why every control below is wired with addEventListener rather than an
     // inline onclick — that is also what lets /admin.html run under a CSP with no 'unsafe-inline'.
     import { esc, escUrl } from './utils.js';
+    import { initOrders } from './admin-orders.js';
 
     // ⚠️ ΒΑΛΕ ΤΗΝ IP ΣΟΥ ΕΔΩ (π.χ. 'http://192.168.1.15:5000/api') ΓΙΑ ΚΙΝΗΤΟ Ή ΑΦΗΣΕ LOCALHOST
     const API = 'https://codex-backend-9kij.onrender.com/api';
@@ -23,6 +24,7 @@
                 document.getElementById('login-ui').style.display='none';
                 document.getElementById('dashboard-ui').style.display='grid';
                 loadInv(); loadVote(); loadTickets(); loadEmails(); loadUserCount(); loadMaintenance(); loadUsers();
+                initOrders({ API, getToken: () => TOKEN, onAuthError: handleAuthError });
             } else {
                 alert(d.error || 'WRONG PASSWORD');
             }
