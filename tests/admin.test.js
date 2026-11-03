@@ -100,3 +100,62 @@ describe('admin: order settings', () => {
         assert.deepEqual(saved, { returnDays: 30, handDeliveryAreas: ['Καλαμαριά', 'Θέρμη', 'Πυλαία'], handDeliveryRadiusKm: 12, handDeliveryCenter: { lat: 40.64, lng: 22.94 } });
     }));
 });
+
+describe('admin: two-factor sign-in', () => {
+    const adminPage = (opts) => newPage(browser, site, { width: 1600, height: 1000, mobile: false, page: 'admin.html', ...opts });
+
+    it('with 2FA on, the password leads to the code step; a wrong code stays there, the right one signs in', async () => {
+        const page = await adminPage({ twoFactor: true, login: false });
+        try {
+            await page.fill('#admin-pass', 'test');
+            await page.click('#login-btn');
+            await page.locator('#login-step-2fa').waitFor({ state: 'visible' });
+            assert.equal(await page.locator('#login-step-pass').isVisible(), false);
+            page.once('dialog', d => d.dismiss());
+            await page.fill('#admin-code', '000000');
+            await page.click('#login-2fa-btn');
+            await page.waitForTimeout(300);
+            assert.equal(await page.locator('#dashboard-ui').isVisible(), false);
+            await page.fill('#admin-code', '123456');
+            await page.press('#admin-code', 'Enter');
+            await page.locator('#dashboard-ui').waitFor({ state: 'visible' });
+            assert.deepEqual(page.apiLog.filter(c => c.path === '/login/2fa').at(-1).body, { challenge: 'test-challenge', code: '123456' });
+            assert.deepEqual(page.problems, []);
+        } finally { await page.context().close(); }
+    });
+
+    it('without the phone, a recovery code signs in and the panel says how many are left', async () => {
+        const page = await adminPage({ twoFactor: true, login: false });
+        try {
+            await page.fill('#admin-pass', 'test');
+            await page.click('#login-btn');
+            await page.click('#login-recovery-toggle');
+            assert.equal(await page.locator('#admin-recovery').isVisible(), true);
+            let said = '';
+            page.once('dialog', d => { said = d.message(); d.accept(); });
+            await page.fill('#admin-recovery', 'ABCD-EFGH');
+            await page.click('#login-2fa-btn');
+            await page.locator('#dashboard-ui').waitFor({ state: 'visible' });
+            assert.match(said, /Σου μένουν 9/);
+            assert.equal(page.apiLog.filter(c => c.path === '/login/2fa').at(-1).body.recoveryCode, 'ABCD-EFGH');
+        } finally { await page.context().close(); }
+    });
+
+    it('turning it on: QR drawn under the strict CSP, code confirmed, recovery codes shown once, then the new token is used', () => withAdmin(async (page) => {
+        await page.locator('#security-box [data-sec="setup"]').waitFor();
+        await page.click('#security-box [data-sec="setup"]');
+        await page.locator('#sec-qr svg').waitFor({ timeout: 5000 });
+        assert.match(await page.locator('.sec-key').innerText(), /MZXW 6YTB OI/);
+        await page.fill('#sec-code', '123456');
+        await page.click('#security-box [data-sec="enable"]');
+        await page.locator('.sec-codes code').first().waitFor();
+        assert.equal(await page.locator('.sec-codes code').count(), 10);
+        await page.click('#security-box [data-sec="done"]');
+        await page.locator('.sec-state.on').waitFor();
+        // A later change goes out with the token the server handed back
+        await page.click('#save-order-settings-btn');
+        await page.waitForFunction(() => document.getElementById('os-result').textContent !== '');
+        assert.equal(page.apiLog.filter(c => c.path === '/site-config').at(-1).auth, 'Bearer admin-token-after-2fa');
+        assert.deepEqual(page.problems, []);
+    }));
+});

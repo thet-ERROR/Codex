@@ -101,14 +101,15 @@ const SITE_CONFIG = {
     returnDays: 14, handDeliveryAreas: ['Θεσσαλονίκη', 'Καλαμαριά'], handDeliveryRadiusKm: 10, handDeliveryCenter: { lat: 40.64, lng: 22.94 }
 };
 
-// log: every request that changes something ({ method, path, body }), for the tests to read
-async function answer(route, log, adminOrders) {
+// log: every request that changes something ({ method, path, body, auth }), for the tests to read.
+// sec: the admin's two-factor state for this page (on/off), changed by the setup calls.
+async function answer(route, log, adminOrders, sec) {
     const req = route.request();
     const url = new URL(req.url());
     const p = url.pathname.replace(/^\/api/, '');
     const method = req.method();
     const body = method === 'GET' ? null : (req.postDataJSON() ?? null);
-    if (method !== 'GET') log.push({ method, path: p, body });
+    if (method !== 'GET') log.push({ method, path: p, body, auth: req.headers()['authorization'] || null });
     const json = (data, status = 200) => route.fulfill({ status, contentType: 'application/json', body: JSON.stringify(data) });
 
     // --- the storefront ---
@@ -123,7 +124,21 @@ async function answer(route, log, adminOrders) {
     }
 
     // --- the admin panel ---
-    if (p === '/login' && method === 'POST') return json({ success: true, token: 'admin-test-token' });
+    if (p === '/login' && method === 'POST') {
+        return json(sec.enabled ? { success: true, twoFactorRequired: true, challenge: 'test-challenge' } : { success: true, token: 'admin-test-token' });
+    }
+    if (p === '/login/2fa' && method === 'POST') {
+        const ok = body.challenge === 'test-challenge' && (body.code === '123456' || body.recoveryCode === 'ABCD-EFGH');
+        return ok ? json({ success: true, token: 'admin-test-token', usedRecovery: !!body.recoveryCode, recoveryCodesLeft: 9 })
+            : json({ success: false, error: 'Wrong code' }, 401);
+    }
+    if (p === '/admin/2fa') return json({ enabled: sec.enabled, keyConfigured: true, recoveryCodesLeft: sec.enabled ? 10 : 0, enabledAt: sec.enabled ? '2026-11-04T12:00:00Z' : null });
+    if (p === '/admin/2fa/setup') return json({ otpauthUrl: 'otpauth://totp/PHOENIX%20CODEX%3Aadmin?secret=MZXW6YTBOI&issuer=PHOENIX%20CODEX', secret: 'MZXW6YTBOI' });
+    if (p === '/admin/2fa/enable') {
+        if (body.code !== '123456') return json({ error: 'Wrong code' }, 400);
+        sec.enabled = true;
+        return json({ success: true, token: 'admin-token-after-2fa', recoveryCodes: Array.from({ length: 10 }, (_, i) => `AAA${i}-BBB${i}`) });
+    }
     if (p === '/users/count') return json({ count: 2 });
     if (p === '/users' || p === '/tickets' || p === '/newsletter') return json([]);
     if (p === '/site-config') return json(method === 'GET' ? SITE_CONFIG : { success: true, config: { ...SITE_CONFIG, ...body } });
@@ -161,8 +176,9 @@ export async function launch() {
     return chromium.launch({ channel: 'msedge' });
 }
 
-// page: '' for the storefront, 'admin.html' for the panel (logged in, dashboard showing)
-export async function newPage(browser, site, { width = 390, height = 844, locale = 'en-US', storage = {}, mobile = width < 700, tourDone = true, page: which = '' } = {}) {
+// page: '' for the storefront, 'admin.html' for the panel (logged in, dashboard showing; with
+// twoFactor the sign-in takes the code step too, unless login: false leaves it at the login screen)
+export async function newPage(browser, site, { width = 390, height = 844, locale = 'en-US', storage = {}, mobile = width < 700, tourDone = true, page: which = '', twoFactor = false, login = true } = {}) {
     const context = await browser.newContext({
         viewport: { width, height }, locale, deviceScaleFactor: 2, isMobile: mobile, hasTouch: mobile,
         // Fixed, so the mascot / tour / "night mode" never depend on the time the suite is run at
@@ -178,7 +194,8 @@ export async function newPage(browser, site, { width = 390, height = 844, locale
     }, { storage, tourDone });
     const log = [];
     const adminOrders = ADMIN_ORDERS();
-    await context.route(url => url.href.startsWith(API), route => answer(route, log, adminOrders));
+    const sec = { enabled: twoFactor };
+    await context.route(url => url.href.startsWith(API), route => answer(route, log, adminOrders, sec));
     // Everything that is neither the site nor the API stays offline
     await context.route(url => !url.href.startsWith(site.url) && !url.href.startsWith(API) && /^https?:/.test(url.href), r => r.abort());
 
@@ -191,8 +208,14 @@ export async function newPage(browser, site, { width = 390, height = 844, locale
     Object.defineProperty(page, 'orders', { get: () => log.filter(l => l.path === '/orders').map(l => l.body) });
     await page.goto(site.url + which);
     if (which === 'admin.html') {
+        if (!login) return page;
         await page.fill('#admin-pass', 'test');
         await page.click('#login-btn');
+        if (twoFactor) {
+            await page.waitForSelector('#login-step-2fa', { state: 'visible' });
+            await page.fill('#admin-code', '123456');
+            await page.click('#login-2fa-btn');
+        }
         await page.waitForSelector('#dashboard-ui', { state: 'visible' });
         return page;
     }

@@ -4,12 +4,31 @@
     // inline onclick — that is also what lets /admin.html run under a CSP with no 'unsafe-inline'.
     import { esc, escUrl } from './utils.js';
     import { initOrders } from './admin-orders.js';
+    import { initSecurity } from './admin-security.js';
 
     // ⚠️ ΒΑΛΕ ΤΗΝ IP ΣΟΥ ΕΔΩ (π.χ. 'http://192.168.1.15:5000/api') ΓΙΑ ΚΙΝΗΤΟ Ή ΑΦΗΣΕ LOCALHOST
     const API = 'https://codex-backend-9kij.onrender.com/api';
 
     let TOKEN = null, inventory = [], editId = null;
     let currentFPS = [], currentReviews = [], currentVoteFPS = [];
+    // Two-factor sign-in: the password step's challenge, traded for a session with the code
+    let CHALLENGE = null, useRecovery = false;
+
+    function enterDashboard(token) {
+        // Holds a short-lived scoped token, never the password itself — it used to keep the admin
+        // password in memory and resend it on every single request.
+        TOKEN = token;
+        CHALLENGE = null;
+        document.getElementById('admin-pass').value = '';
+        document.getElementById('admin-code').value = '';
+        document.getElementById('admin-recovery').value = '';
+        document.getElementById('login-ui').style.display='none';
+        document.getElementById('dashboard-ui').style.display='grid';
+        loadInv(); loadVote(); loadTickets(); loadEmails(); loadUserCount(); loadMaintenance(); loadUsers();
+        initOrders({ API, getToken: () => TOKEN, onAuthError: handleAuthError });
+        // Turning two-factor sign-in on or off ends every session, this one gets a new token
+        initSecurity({ API, getToken: () => TOKEN, setToken: (t) => { TOKEN = t; }, onAuthError: handleAuthError });
+    }
 
     async function tryLogin() {
         const p = document.getElementById('admin-pass').value;
@@ -17,14 +36,12 @@
             const res = await fetch(`${API}/login`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({password:p}) });
             const d = await res.json();
             if (d.success && d.token) {
-                // Holds a short-lived scoped token, never the password itself — it used to keep
-                // the admin password in memory and resend it on every single request.
-                TOKEN = d.token;
-                document.getElementById('admin-pass').value = '';
-                document.getElementById('login-ui').style.display='none';
-                document.getElementById('dashboard-ui').style.display='grid';
-                loadInv(); loadVote(); loadTickets(); loadEmails(); loadUserCount(); loadMaintenance(); loadUsers();
-                initOrders({ API, getToken: () => TOKEN, onAuthError: handleAuthError });
+                enterDashboard(d.token);
+            } else if (d.success && d.twoFactorRequired) {
+                CHALLENGE = d.challenge;
+                document.getElementById('login-step-pass').classList.add('hidden');
+                document.getElementById('login-step-2fa').classList.remove('hidden');
+                document.getElementById('admin-code').focus();
             } else {
                 alert(d.error || 'WRONG PASSWORD');
             }
@@ -32,6 +49,41 @@
             console.error("Admin login failed:", e);
             alert('NETWORK ERROR');
         }
+    }
+
+    // The code from the app, or a recovery code when the phone isn't at hand
+    async function tryLogin2fa() {
+        const body = useRecovery
+            ? { challenge: CHALLENGE, recoveryCode: document.getElementById('admin-recovery').value }
+            : { challenge: CHALLENGE, code: document.getElementById('admin-code').value.replace(/\s/g, '') };
+        try {
+            const res = await fetch(`${API}/login/2fa`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body) });
+            const d = await res.json();
+            if (d.success && d.token) {
+                if (d.usedRecovery) alert(`Μπήκες με κωδικό ανάκτησης. Σου μένουν ${d.recoveryCodesLeft}.` + (d.recoveryCodesLeft <= 3 ? '\nΒγάλε νέους από το «Ασφάλεια σύνδεσης».' : ''));
+                enterDashboard(d.token);
+                return;
+            }
+            // The 5-minute challenge ran out (or was used up): back to the password
+            if (d.code === 'CHALLENGE_EXPIRED') {
+                CHALLENGE = null;
+                document.getElementById('login-step-2fa').classList.add('hidden');
+                document.getElementById('login-step-pass').classList.remove('hidden');
+            }
+            alert(d.error || 'WRONG CODE');
+        } catch(e) {
+            console.error("Admin 2FA login failed:", e);
+            alert('NETWORK ERROR');
+        }
+    }
+
+    function toggleRecovery() {
+        useRecovery = !useRecovery;
+        document.getElementById('admin-code').classList.toggle('hidden', useRecovery);
+        document.getElementById('admin-recovery').classList.toggle('hidden', !useRecovery);
+        document.getElementById('login-2fa-hint').textContent = useRecovery ? 'Ένας από τους κωδικούς ανάκτησης που φύλαξες' : 'Κωδικός από το Google Authenticator';
+        document.getElementById('login-recovery-toggle').textContent = useRecovery ? 'Πίσω στον κωδικό της εφαρμογής' : 'Δεν έχω το κινητό: κωδικός ανάκτησης';
+        document.getElementById(useRecovery ? 'admin-recovery' : 'admin-code').focus();
     }
 
     // The admin token expires after 8h — say so plainly instead of letting panels silently blank
@@ -614,6 +666,10 @@ const data = {
         on('login-btn', 'click', tryLogin);
         // Enter in the password box is how anyone actually logs in
         on('admin-pass', 'keydown', (ev) => { if (ev.key === 'Enter') tryLogin(); });
+        on('login-2fa-btn', 'click', tryLogin2fa);
+        on('admin-code', 'keydown', (ev) => { if (ev.key === 'Enter') tryLogin2fa(); });
+        on('admin-recovery', 'keydown', (ev) => { if (ev.key === 'Enter') tryLogin2fa(); });
+        on('login-recovery-toggle', 'click', toggleRecovery);
 
         on('opt-paint-preset', 'change', (ev) => applyPaintPreset(ev.target.value));
         on('add-fps-btn', 'click', addFPS);
