@@ -165,8 +165,42 @@
         </div>
 
         <div class="col-center">
-            <h3 style="color:#fff;">INVENTORY</h3>
-            <div id="inventory-list">LOADING...</div>
+            <div class="center-tabs" role="tablist">
+                <button type="button" class="center-tab active" role="tab" aria-selected="true" data-tab="inventory">INVENTORY</button>
+                <button type="button" class="center-tab" role="tab" aria-selected="false" data-tab="orders">ΠΑΡΑΓΓΕΛΙΕΣ <span class="tab-badge hidden" id="orders-new-badge">0</span></button>
+            </div>
+
+            <div class="center-panel" id="panel-inventory">
+                <div id="inventory-list">LOADING...</div>
+            </div>
+
+            <!-- Orders (admin-app.js loadOrders / openOrder). The list and one order's detail share the
+                 panel: opening an order hides the list, "Πίσω" brings it back. -->
+            <div class="center-panel hidden" id="panel-orders">
+                <div id="orders-list-view">
+                    <div class="orders-toolbar">
+                        <select id="orders-status-filter" aria-label="Κατάσταση">
+                            <option value="">Όλες οι καταστάσεις</option>
+                            <option value="new">Νέες</option>
+                            <option value="paid">Πληρώθηκαν</option>
+                            <option value="building">Σε κατασκευή</option>
+                            <option value="packed">Πακεταρίστηκαν</option>
+                            <option value="shipped">Απεστάλησαν</option>
+                            <option value="delivered">Παραδόθηκαν</option>
+                            <option value="completed">Ολοκληρώθηκαν</option>
+                            <option value="cancelled">Ακυρώθηκαν</option>
+                        </select>
+                        <select id="orders-demo-filter" aria-label="Demo">
+                            <option value="">Demo + πραγματικές</option>
+                            <option value="false">Μόνο πραγματικές</option>
+                            <option value="true">Μόνο demo</option>
+                        </select>
+                        <button type="button" class="btn-sm edit-btn" id="orders-refresh-btn" title="Ανανέωση">↻</button>
+                    </div>
+                    <div id="orders-list">LOADING...</div>
+                </div>
+                <div id="order-detail" class="hidden"></div>
+            </div>
         </div>
 
         <div class="col-right">
@@ -184,6 +218,22 @@
                 </p>
                 <input type="text" id="user-search" placeholder="Αναζήτηση username ή email...">
                 <div id="users-list" style="margin-top:10px; max-height:320px; overflow-y:auto;">LOADING...</div>
+            </div>
+
+            <div class="tool-box" style="border-color:#ffc43d;">
+                <h3 style="color:#ffc43d;">📦 ΡΥΘΜΙΣΕΙΣ ΠΑΡΑΓΓΕΛΙΩΝ</h3>
+                <label>Διάστημα επιστροφής (ημέρες, τουλάχιστον 14 — νόμιμο ελάχιστο)</label>
+                <input type="number" id="os-return-days" min="14" max="365" value="14">
+                <label>Περιοχές χέρι με χέρι (μία ανά γραμμή)</label>
+                <textarea id="os-areas" style="height:120px;"></textarea>
+                <label>Κύκλος στον χάρτη: ακτίνα (km)</label>
+                <input type="number" id="os-radius" min="1" max="100" step="0.5" value="10">
+                <div style="display:flex; gap:8px;">
+                    <div style="flex:1;"><label>Κέντρο: πλάτος (lat)</label><input type="number" id="os-lat" step="0.0001" value="40.6401"></div>
+                    <div style="flex:1;"><label>Κέντρο: μήκος (lng)</label><input type="number" id="os-lng" step="0.0001" value="22.9444"></div>
+                </div>
+                <button class="btn btn-green" id="save-order-settings-btn">SAVE</button>
+                <p id="os-result" style="font-size:0.8rem; margin:8px 0 0 0;"></p>
             </div>
 
             <div class="tool-box" style="border-color:#ff3333;">
@@ -256,7 +306,7 @@
                  theirs here, then mark it used so it can't be used twice -->
             <div class="tool-box">
                 <h3 style="color:#ffc43d;">ΚΟΥΠΟΝΙΑ ΤΡΟΧΟΥ</h3>
-                <p style="font-size:0.75rem; color:#888; margin:-5px 0 10px 0;">Ο πελάτης γράφει τον κωδικό στο μήνυμα WhatsApp. Έλεγξέ τον εδώ και πάτα «Εξαργύρωση» όταν κλείσει η παραγγελία.</p>
+                <p style="font-size:0.75rem; color:#888; margin:-5px 0 10px 0;">Κουπόνι που μπαίνει σε παραγγελία από το site εξαργυρώνεται μόνο του (και επιστρέφει αν ακυρωθεί). Εδώ: έλεγχος ενός κωδικού, ή εξαργύρωση με το χέρι για πώληση εκτός site.</p>
                 <label>Κωδικός</label><input type="text" id="coupon-code" placeholder="CDX-XXXXXX" style="text-transform:uppercase;">
                 <div style="display:flex; gap:8px; margin-top:8px;">
                     <button class="btn" id="coupon-check-btn" style="flex:1;">ΕΛΕΓΧΟΣ</button>
