@@ -582,6 +582,79 @@ Type 'help' for a list of commands.
         </div>
     </div>
 
+    <!-- Checkout (js/modules/checkout.js). The window shell (header, X) is built by modals.js. Listeners
+         are attached in checkout.js, not inline. -->
+    <div class="modal-overlay" id="checkout-modal">
+        <div class="modal-content" style="width:560px;">
+            <span class="close-modal" onclick="closeModal('checkout-modal')">X</span>
+            <h2 class="modal-title" data-i18n="coTitle">CHECKOUT</h2>
+            <div class="co-demo hidden" id="co-demo" role="note"><i class="ph-fill ph-flask" aria-hidden="true"></i><span data-i18n="coDemoNotice">Demo mode: orders are a demo.</span></div>
+
+            <form class="auth-form co-form" id="co-form" novalidate>
+                <div class="co-label" data-i18n="coContact">CONTACT</div>
+                <div class="co-row">
+                    <input id="co-first" class="auth-input" autocomplete="given-name" maxlength="60" placeholder="First name" data-i18n-placeholder="coFirst">
+                    <input id="co-last" class="auth-input" autocomplete="family-name" maxlength="60" placeholder="Last name" data-i18n-placeholder="coLast">
+                </div>
+                <input id="co-phone" class="auth-input" type="tel" inputmode="tel" autocomplete="tel" maxlength="20" placeholder="Mobile phone" data-i18n-placeholder="coPhone">
+                <input id="co-email" class="auth-input" type="email" inputmode="email" autocomplete="email" maxlength="254" placeholder="Email" data-i18n-placeholder="coEmail">
+
+                <div class="co-label" data-i18n="coDelivery">DELIVERY</div>
+                <div class="co-methods" role="radiogroup">
+                    <label class="co-method"><input type="radio" name="co-method" value="courier" checked><i class="ph-bold ph-truck" aria-hidden="true"></i><span data-i18n="coMethodCourier">Courier</span><small data-i18n="coMethodCourierSub">anywhere in Greece</small></label>
+                    <label class="co-method"><input type="radio" name="co-method" value="hand"><i class="ph-bold ph-handshake" aria-hidden="true"></i><span data-i18n="coMethodHand">In person</span><small data-i18n="coMethodHandSub">Thessaloniki</small></label>
+                    <label class="co-method"><input type="radio" name="co-method" value="boxnow"><i class="ph-bold ph-lockers" aria-hidden="true"></i><span data-i18n="coMethodBoxnow">BOX NOW</span><small data-i18n="coMethodBoxnowSub">to a locker</small></label>
+                </div>
+                <div class="co-fields" data-method="courier">
+                    <input id="co-address" class="auth-input" autocomplete="street-address" maxlength="120" placeholder="Address" data-i18n-placeholder="coAddress">
+                    <div class="co-row">
+                        <input id="co-postcode" class="auth-input" inputmode="numeric" autocomplete="postal-code" maxlength="6" placeholder="Postcode" data-i18n-placeholder="coPostcode">
+                        <input id="co-city" class="auth-input" autocomplete="address-level2" maxlength="60" placeholder="City" data-i18n-placeholder="coCity">
+                    </div>
+                </div>
+                <div class="co-fields hidden" data-method="hand">
+                    <p class="co-note" data-i18n="coHandNote">I deliver in person inside the shaded zone, in these areas:</p>
+                    <div class="co-map" id="co-map"></div>
+                    <div class="co-areas" id="co-areas"></div>
+                    <select id="co-area" class="auth-input" aria-label="Area" data-i18n-aria="coArea"></select>
+                    <input id="co-hand-address" class="auth-input" autocomplete="street-address" maxlength="120" placeholder="Address" data-i18n-placeholder="coAddress">
+                </div>
+                <div class="co-fields hidden" data-method="boxnow">
+                    <input id="co-locker" class="auth-input" maxlength="120" placeholder="BOX NOW locker" data-i18n-placeholder="coLocker">
+                    <p class="co-note" data-i18n="coLockerNote">We will confirm the PC's box fits the locker.</p>
+                </div>
+
+                <div class="co-label" data-i18n="coInvoiceLabel">RECEIPT OR INVOICE</div>
+                <div class="co-methods co-methods-2" role="radiogroup">
+                    <label class="co-method"><input type="radio" name="co-invoice" value="receipt" checked><i class="ph-bold ph-receipt" aria-hidden="true"></i><span data-i18n="coReceipt">Receipt</span></label>
+                    <label class="co-method"><input type="radio" name="co-invoice" value="invoice"><i class="ph-bold ph-buildings" aria-hidden="true"></i><span data-i18n="coInvoice">Invoice</span></label>
+                </div>
+                <div class="co-fields hidden" id="co-invoice-fields">
+                    <div class="co-row">
+                        <input id="co-vat" class="auth-input" inputmode="numeric" maxlength="12" placeholder="VAT number" data-i18n-placeholder="coVat">
+                        <input id="co-taxoffice" class="auth-input" maxlength="60" placeholder="Tax office" data-i18n-placeholder="coTaxOffice">
+                    </div>
+                    <input id="co-company" class="auth-input" autocomplete="organization" maxlength="120" placeholder="Company name" data-i18n-placeholder="coCompany">
+                </div>
+
+                <textarea id="co-notes" class="auth-input co-notes" rows="2" maxlength="500" placeholder="Notes (optional)" data-i18n-placeholder="coNotes"></textarea>
+
+                <div class="co-label" data-i18n="coSummary">SUMMARY</div>
+                <div class="co-summary">
+                    <div id="co-summary-lines"></div>
+                    <p class="co-note" data-i18n="coShipPayNote">Shipping and payment are agreed on WhatsApp after the order is placed.</p>
+                </div>
+
+                <label class="auth-checkbox"><input type="checkbox" id="co-terms"><span><span data-i18n="coTermsAccept">I accept the terms of sale</span> · <button type="button" class="co-link" id="co-terms-link" data-i18n="coTermsRead">Read the terms</button></span></label>
+                <label class="auth-checkbox"><input type="checkbox" id="co-adult"><span data-i18n="coAdult">I am 18 or older, or have a parent's or guardian's consent</span></label>
+
+                <div class="co-error hidden" id="co-error" role="alert"></div>
+                <button type="submit" class="btn-inspect co-submit" id="co-submit"><i class="ph-bold ph-package" aria-hidden="true"></i> <span id="co-submit-text">PLACE ORDER</span></button>
+            </form>
+            <div class="co-done hidden" id="co-done" role="status"></div>
+        </div>
+    </div>
+
     <div class="modal-overlay" id="newsletter-modal">
         <div class="modal-content" style="width:450px;">
             <span class="close-modal" onclick="closeModal('newsletter-modal')">X</span>
@@ -934,7 +1007,7 @@ Type 'help' for a list of commands.
             </div>
             <div class="mc-discount-row hidden" id="mc-discount-row"><span id="mc-discount-label"></span><span id="mc-discount"></span></div>
             <div class="mc-total-row"><span data-i18n="cartTotalLabel">TOTAL</span><span id="mc-total">€0</span></div>
-            <button class="mc-checkout-btn" onclick="handleCheckout()"><i class="ph-bold ph-whatsapp-logo" aria-hidden="true"></i><span data-i18n="cartCheckoutBtn">SEND YOUR ORDER ON WHATSAPP</span><i class="ph-bold ph-caret-right mc-caret" aria-hidden="true"></i></button>
+            <button class="mc-checkout-btn" onclick="handleCheckout()"><i class="ph-bold ph-package" aria-hidden="true"></i><span data-i18n="cartCheckoutBtn">CHECKOUT</span><i class="ph-bold ph-caret-right mc-caret" aria-hidden="true"></i></button>
         </div>
     </div>
 

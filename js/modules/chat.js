@@ -37,8 +37,8 @@ const MENU = [
         label: { el: 'Πώς αγοράζω;', en: 'How do I buy?' },
         hint: { el: 'Βήματα, μεταφορικά, πληρωμή', en: 'Steps, shipping, payment' },
         answer: {
-            el: '1. Διάλεξε σύστημα και βάλ’ το στο καλάθι.\n2. Στο καλάθι πάτα «Στείλε την παραγγελία στο WhatsApp».\n3. Εκεί συμφωνούμε πληρωμή και παράδοση — τα μεταφορικά καθορίζονται τότε, αποστολές σε όλη την Ελλάδα.',
-            en: '1. Pick a system and add it to the cart.\n2. In the cart press “Send your order on WhatsApp”.\n3. We agree payment and delivery there — shipping is set at that point, we ship across Greece.'
+            el: '1. Διάλεξε σύστημα και βάλ’ το στο καλάθι.\n2. Στο καλάθι πάτα «Ολοκλήρωση παραγγελίας» και συμπλήρωσε τα στοιχεία σου — παίρνεις αριθμό παραγγελίας.\n3. Με το κουμπί WhatsApp της επιβεβαίωσης συμφωνούμε πληρωμή και μεταφορικά — courier σε όλη την Ελλάδα, BOX NOW, ή χέρι με χέρι στη Θεσσαλονίκη.',
+            en: '1. Pick a system and add it to the cart.\n2. In the cart press “Checkout” and fill in your details — you get an order number.\n3. With the WhatsApp button on the confirmation we agree payment and shipping — courier across Greece, BOX NOW, or in person in Thessaloniki.'
         },
         actions: [{ label: { el: 'Δες τα συστήματα', en: 'See the systems' }, go: { live: true } }]
     },

@@ -1,6 +1,5 @@
 // js/modules/cart.js
 import { state } from '../state.js';
-import { CONFIG } from '../config.js';
 import { t } from '../i18n.js';
 import { getBreakdown, getActiveImages } from './gallery.js';
 import { esc, escUrl, formatPrice, stockState, membersOnlyActive, formatShortDateTime } from '../utils.js';
@@ -141,8 +140,9 @@ function activeCoupons() {
     return (state.coupons || []).filter(c => !c.usedAt && Date.parse(c.expiresAt) > now);
 }
 
-// The discount is shown and written into the order message; the shop confirms the code in the admin
-// panel (it's checked against the account there) before honouring it
+// The discount shown in the cart and the checkout. The server works out the real one when the order
+// is placed (it checks the code belongs to the account and is unused).
+export function cartCouponDiscount(total) { return couponDiscount(total); }
 function couponDiscount(total) {
     const coupon = state.selectedCoupon ? activeCoupons().find(c => c.code === state.selectedCoupon) : null;
     if (!coupon || !total) return { discount: 0, coupon: null };
@@ -183,6 +183,13 @@ export function addToCart() {
 
     state.cart.push({
         pcId,
+        // The chosen extras as the server reads them (POST /api/orders prices the order itself). Only
+        // what made it into the breakdown, i.e. what this PC actually offers.
+        build: {
+            storage: lines.some(l => l.key === 'storage') ? state.build.storage : '',
+            proConfig: lines.some(l => l.key === 'proConfig'),
+            paint: lines.some(l => l.key === 'paint')
+        },
         name: pc.name,
         // getBreakdown() works in cents throughout — see gallery.js
         basePriceCents: base,
@@ -284,31 +291,11 @@ export function removeFromCart(i) {
     if(window.playClick) window.playClick();
 }
 
-// Checkout hands the order to WhatsApp. The message is prefilled with every line and every
-// chosen extra — without this the configured build never reaches the shop.
+// Checkout is the order form (js/modules/checkout.js): the order is saved and its stock held on the
+// server, and WhatsApp comes after, from the confirmation, carrying the order number.
 export function handleCheckout() {
     if(state.cart.length === 0) return notify(t('alertCartEmpty'));
-
-    const msg = [t('orderMsgIntro'), ''];
-    let total = 0;
-    state.cart.forEach((item, i) => {
-        total += item.priceCents;
-        msg.push(`${i + 1}. ${item.name} — ${formatPrice(item.priceCents)}`);
-        if (Array.isArray(item.options)) {
-            item.options.forEach(o => msg.push(`   • ${o.label} (+${formatPrice(o.priceCents)})`));
-        } else if (item.option) {
-            msg.push(`   • ${item.option}`);
-        }
-    });
-    const { discount, coupon } = couponDiscount(total);
-    if (discount) {
-        msg.push('', `${t('orderMsgCoupon')}: ${coupon.code} (-${coupon.percent}% = -${formatPrice(discount)})`);
-        if (state.isLoggedIn) msg.push(`${t('orderMsgAccount')}: ${localStorage.getItem('codex_username') || ''}`);
-    }
-    msg.push('', `${t('orderMsgTotal')}: ${formatPrice(total - discount)}`);
-    if (state.cart.some(item => item.paintAck)) msg.push('', `✔ ${t('orderMsgPaintAck')}`);
-
-    window.open(`https://wa.me/${CONFIG.WHATSAPP_NUM}?text=${encodeURIComponent(msg.join('\n'))}`, "_blank");
+    if (window.openCheckout) window.openCheckout();
 }
 
 // Εξαγωγή στο global scope για να δουλεύουν τα onclick στο index.html

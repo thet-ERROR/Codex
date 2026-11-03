@@ -144,11 +144,11 @@ const SHELL_KICKERS = {
     'login-modal': 'AUTH', 'signup-modal': 'NEW_RECRUIT', 'forgot-modal': 'RECOVERY', 'reset-modal': 'RECOVERY',
     'achievements-modal': 'AGENT_RECORD', 'newsletter-modal': 'DROP_ALERTS', 'review-code-modal': 'FIELD_REPORT',
     'spec-info-modal': 'COMPONENT', 'proconfig-info-modal': 'PRO_CONFIG', 'paint-consent-modal': 'CUSTOM_PAINT',
-    'tutorial-lang-modal': 'TOUR', 'qr-modal': 'SCAN_LINK', 'rank-info-modal': 'RANK_INFO'
+    'tutorial-lang-modal': 'TOUR', 'qr-modal': 'SCAN_LINK', 'rank-info-modal': 'RANK_INFO', 'checkout-modal': 'CHECKOUT'
 };
 // The sign-in windows get the settings window's icon chip in the header (auth-hud.css)
 const SHELL_ICONS = {
-    'login-modal': 'ph-user-circle', 'signup-modal': 'ph-user-plus', 'forgot-modal': 'ph-key', 'reset-modal': 'ph-lock-key', 'achievements-modal': 'ph-trophy'
+    'login-modal': 'ph-user-circle', 'signup-modal': 'ph-user-plus', 'forgot-modal': 'ph-key', 'reset-modal': 'ph-lock-key', 'achievements-modal': 'ph-trophy', 'checkout-modal': 'ph-package'
 };
 const SHELL_SMALL = ['login-modal', 'signup-modal', 'forgot-modal', 'reset-modal', 'newsletter-modal', 'review-code-modal', 'spec-info-modal', 'tutorial-lang-modal', 'qr-modal', 'rank-info-modal'];
 

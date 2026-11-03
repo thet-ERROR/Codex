@@ -135,6 +135,12 @@ describe('cart', () => {
         assert.equal(await cartSize(page), 1);
     }));
 
+    it('remembers the chosen extras on the cart line, for the server to price', () => withPage({ width: 1440, height: 900 }, async (page) => {
+        await addFromInspect(page);
+        await page.waitForFunction(() => window.codexState.cart.length === 1);
+        assert.deepEqual(await page.evaluate(() => window.codexState.cart[0].build), { storage: '', proConfig: false, paint: false });
+    }));
+
     it('a sold-out PC cannot be added', () => withPage({ width: 1440, height: 900 }, async (page) => {
         await page.keyboard.press('ArrowRight');
         await waitForCard(page, 'TEST RIG 2');
@@ -144,5 +150,87 @@ describe('cart', () => {
         await page.locator('#yg-add-cart').waitFor({ state: 'visible' });
         assert.equal(await page.locator('#yg-add-cart').isDisabled(), true);
         assert.equal(await cartSize(page), 0);
+    }));
+});
+
+describe('checkout', () => {
+    // One PC in the cart, then the checkout window open
+    async function toCheckout(page) {
+        await page.locator('.btn-card-inspect').first().click();
+        await page.locator('#yg-add-cart').waitFor({ state: 'visible' });
+        await page.locator('#yg-add-cart').click();
+        await page.waitForFunction(() => window.codexState.cart.length === 1);
+        await page.locator('#yg-add-cart').waitFor({ state: 'hidden' });
+        await page.evaluate(() => window.handleCheckout());
+        await page.locator('#checkout-modal.active').waitFor();
+    }
+    async function fill(page) {
+        await page.fill('#co-first', 'Nikos');
+        await page.fill('#co-last', 'Papadopoulos');
+        await page.fill('#co-phone', '6912345678');
+        await page.fill('#co-email', 'nikos@gmail.com');
+        await page.fill('#co-address', 'Egnatias 1');
+        await page.fill('#co-postcode', '54630');
+        await page.fill('#co-city', 'Thessaloniki');
+    }
+
+    for (const [label, width, height] of [['phone 390', 390, 844], ['desktop 1440', 1440, 900]]) {
+        it(`places an order and shows the number — ${label}`, () => withPage({ width, height }, async (page) => {
+            await toCheckout(page);
+            assert.equal(await page.locator('#co-demo').isVisible(), true, 'the DEMO notice must be shown while orders are not live');
+            assert.match(await page.locator('#co-summary-lines').innerText(), /TEST RIG 1/);
+            await fill(page);
+            await page.check('#co-terms');
+            await page.check('#co-adult');
+            await page.locator('#co-submit').click();
+
+            await page.locator('#co-done').waitFor({ state: 'visible' });
+            assert.match(await page.locator('#co-done').innerText(), /DEMO-0001/);
+            assert.equal(await page.evaluate(() => window.codexState.cart.length), 0, 'the cart is emptied');
+            assert.match(await page.locator('.co-wa-btn').getAttribute('href'), /^https:\/\/wa\.me\/.+DEMO-0001/);
+
+            const [sent] = page.orders;
+            assert.deepEqual(sent.items, [{ pcId: 'pc1', storage: '', proConfig: false, paint: false, paintAck: false }]);
+            assert.equal('priceCents' in sent.items[0], false, 'the page must send choices, not prices');
+            assert.equal(sent.delivery.method, 'courier');
+            assert.equal(sent.termsVersion, '2026-11');
+            assert.equal(sent.lang, 'en', 'the emails follow the language the order was placed in');
+            assert.equal(sent.acceptTerms, true);
+            assert.equal(sent.adultOrGuardian, true);
+            assert.deepEqual(page.problems, []);
+        }));
+    }
+
+    it('nothing is sent until the terms and the 18+ box are ticked', () => withPage({ width: 1440, height: 900 }, async (page) => {
+        await toCheckout(page);
+        await fill(page);
+        await page.locator('#co-submit').click();
+        assert.equal(await page.locator('#co-error').isVisible(), true);
+        await page.check('#co-terms');
+        await page.locator('#co-submit').click();
+        assert.match(await page.locator('#co-error').innerText(), /age|ηλικία/i, 'the second box is the one asked about now');
+        assert.equal(page.orders.length, 0);
+    }));
+
+    it('in person lists the Thessaloniki areas, even when the map cannot load', () => withPage({ width: 390, height: 844 }, async (page) => {
+        await toCheckout(page);
+        await page.locator('.co-method:has(input[value="hand"])').click();
+        await page.locator('#co-area').waitFor({ state: 'visible' });
+        const areas = await page.locator('#co-area option').allInnerTexts();
+        assert.ok(areas.includes('Καλαμαριά'));
+        assert.match(await page.locator('#co-areas').innerText(), /Θεσσαλονίκη/);
+        // The map host is offline in tests: the window says so instead of showing an empty box
+        await page.waitForFunction(() => document.getElementById('co-map').classList.contains('is-failed'), null, { timeout: 5000 });
+        assert.equal(await page.locator('#co-address').isVisible(), false, 'the courier fields are hidden');
+    }));
+
+    it('fits a 360px phone without sideways scrolling', () => withPage({ width: 360, height: 760 }, async (page) => {
+        await toCheckout(page);
+        const overflow = await page.evaluate(() => {
+            const box = document.querySelector('#checkout-modal .info-box');
+            return { box: box.getBoundingClientRect().right, inner: box.scrollWidth - box.clientWidth, vw: innerWidth };
+        });
+        assert.ok(overflow.box <= overflow.vw + 1, `window wider than the screen: ${JSON.stringify(overflow)}`);
+        assert.ok(overflow.inner <= 1, `content wider than the window: ${JSON.stringify(overflow)}`);
     }));
 });
