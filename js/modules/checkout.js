@@ -8,7 +8,7 @@
 import { state } from '../state.js';
 import { CONFIG } from '../config.js';
 import { api } from '../api.js';
-import { t } from '../i18n.js';
+import { t, getLang } from '../i18n.js';
 import { esc, formatPrice } from '../utils.js';
 import { updateCartUI, cartCouponDiscount } from './cart.js';
 import { hydrateProfile } from './auth.js';
@@ -187,7 +187,9 @@ function collect() {
         notes: val('co-notes'),
         acceptTerms: !!$('co-terms')?.checked,
         adultOrGuardian: !!$('co-adult')?.checked,
-        termsVersion: CONFIG.TERMS_VERSION
+        termsVersion: CONFIG.TERMS_VERSION,
+        // The order's emails are written in the language the visitor is reading now
+        lang: getLang()
     };
 }
 

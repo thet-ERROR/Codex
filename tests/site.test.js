@@ -194,6 +194,7 @@ describe('checkout', () => {
             assert.equal('priceCents' in sent.items[0], false, 'the page must send choices, not prices');
             assert.equal(sent.delivery.method, 'courier');
             assert.equal(sent.termsVersion, '2026-11');
+            assert.equal(sent.lang, 'en', 'the emails follow the language the order was placed in');
             assert.equal(sent.acceptTerms, true);
             assert.equal(sent.adultOrGuardian, true);
             assert.deepEqual(page.problems, []);
