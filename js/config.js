@@ -11,7 +11,7 @@ export const CONFIG = {
     DEFAULT_PRO_CONFIG_PRICE: 30,
     // Stored with every order as the wording the customer accepted. Change it whenever the Terms in the
     // Information window change, so each order still says which version it was placed under.
-    TERMS_VERSION: '2026-11',
+    TERMS_VERSION: '2026-11-2',
 
     // --- 🏅 ACHIEVEMENTS ---
     // Presentation only. Which badges are unlocked, what each is worth and what rank that adds up

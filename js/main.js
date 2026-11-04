@@ -26,6 +26,7 @@ import './modules/info.js';
 import './modules/qr.js';
 import './modules/mascot.js';
 import './modules/checkout.js';
+import './modules/order-page.js';
 
 // --- ΠΡΟΣΘΕΣΕ ΑΥΤΕΣ ΤΙΣ 3 ΓΡΑΜΜΕΣ ΕΔΩ ---
 // 3. UI Helpers (Παράθυρα, Ήχοι, Ειδοποιήσεις)
@@ -296,6 +297,14 @@ const initApp = async () => {
         // Instagram post or a newsletter
         const deepTab = new URLSearchParams(location.search).get('tab');
         if (deepTab === 'vote' || deepTab === 'starter') switchTab(deepTab);
+        // The private link in an order email: ?order=<number>&t=<token>. The token leaves the address
+        // bar at once (history, screenshots, sharing the page), the order page keeps it.
+        const linkParams = new URLSearchParams(location.search);
+        const orderNumber = linkParams.get('order'), orderToken = linkParams.get('t');
+        if (orderNumber && orderToken) {
+            history.replaceState({}, '', location.pathname);
+            if (window.openOrderPage) window.openOrderPage({ number: orderNumber, token: orderToken });
+        }
         updateCartUI();
         initMatrix();
         // Last, once the real card content is in the DOM — the layout has no scroll by design, so on

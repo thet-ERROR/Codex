@@ -162,7 +162,7 @@ const translations = {
         voteHelpUnlockedMembers: "Προτεραιότητα για τα μέλη έως {until}, μετά για όλους · 1 τεμάχιο.",
 
         // Όροι — HTML (data-i18n-html): ο τίτλος του κάθε σημείου είναι <strong>, τα data-info-go είναι συνδέσεις προς άλλη καρτέλα
-        rules1: "<strong>Παραγγελίες.</strong> Το απόθεμα ενημερώνεται όταν φορτώνει η σελίδα. Η παραγγελία στέλνεται μέσω WhatsApp και ολοκληρώνεται όταν την επιβεβαιώσουμε μαζί σου.",
+        rules1: "<strong>Παραγγελίες.</strong> Η παραγγελία καταχωρείται στο site και παίρνει αριθμό· το σύστημα δεσμεύεται για εσένα και δεν πωλείται σε άλλον. Την πληρωμή και τα μεταφορικά τα συμφωνούμε μαζί σου στο WhatsApp. Μπορείς να ακυρώσεις από τη σελίδα της παραγγελίας όσο δεν έχει πακεταριστεί.",
         rules2: "<strong>Τιμές.</strong> Οι τιμές περιλαμβάνουν ΦΠΑ, εκτός αν αναφέρεται διαφορετικά.",
         rules3: "<strong>Επιστροφές & εγγύηση.</strong> Ισχύει δικαίωμα υπαναχώρησης 14 ημερών και νόμιμη εγγύηση 2 ετών — δες την καρτέλα <a href=\"#\" data-info-go=\"returns\">Εγγύηση & Επιστροφές</a>.",
         rules4: "<strong>Custom βαφή.</strong> Η βαφή φτιάχνεται κατά παραγγελία, με βάση τη δική σου επιλογή. Για αυτήν δεν γίνεται επιστροφή λόγω αλλαγής γνώμης (εξαίρεση από το δικαίωμα υπαναχώρησης 14 ημερών, ν. 2251/1994 & Οδηγία 2011/83/ΕΕ). Η νόμιμη εγγύηση 2 ετών για ελαττώματα ισχύει κανονικά.",
@@ -276,7 +276,25 @@ const translations = {
         coDoneNumber: "Αριθμός παραγγελίας",
         coDoneText: "Κράτα αυτόν τον αριθμό και στείλε μας στο WhatsApp για να κανονίσουμε πληρωμή και παράδοση.",
         coDoneDemoText: "Είναι δοκιμαστική: δεν θα χρεωθείς και δεν θα σταλεί τίποτα.",
-        coWaBtn: "Συνέχεια στο WhatsApp", coDoneClose: "Κλείσιμο",
+        coWaBtn: "Συνέχεια στο WhatsApp", coDoneClose: "Κλείσιμο", coViewOrder: "Δες την παραγγελία",
+
+        // My order (js/modules/order-page.js)
+        ordTitle: "Η παραγγελία μου", ordNotFound: "Δεν βρέθηκε η παραγγελία. Έλεγξε ότι άνοιξες ολόκληρο το link από το email.",
+        ordSt_new: "Καταχωρήθηκε", ordSt_paid: "Πληρώθηκε", ordSt_building: "Σε κατασκευή", ordSt_packed: "Πακεταρίστηκε",
+        ordSt_shipped: "Στάλθηκε", ordSt_delivered: "Παραδόθηκε", ordSt_completed: "Ολοκληρώθηκε", ordSt_cancelled: "Ακυρώθηκε",
+        ordTracking: "Αριθμός αποστολής", ordItems: "Συστήματα", ordDelivery: "Παράδοση",
+        ordCancelHeading: "Ακύρωση", ordCancelNote: "Μπορείς να ακυρώσεις όσο η παραγγελία δεν έχει πακεταριστεί. Το σύστημα ξαναγίνεται διαθέσιμο.",
+        ordCancelBtn: "Ακύρωση παραγγελίας", ordCancelConfirm: "Να ακυρωθεί η παραγγελία;", ordCancelled: "Η παραγγελία ακυρώθηκε",
+        ordCancelTooLate: "Η παραγγελία έχει ήδη προχωρήσει και δεν ακυρώνεται από εδώ. Στείλε μας στο WhatsApp.",
+        ordAfterHeading: "Μετά την παραλαβή",
+        ordReturnNote: "Επιστροφή μπορείς να ζητήσεις έως {date}.", ordProblemNote: "Αν κάτι δεν πάει καλά με το PC, η εγγύηση ισχύει έως {date}.",
+        ordReturn: "Επιστροφή", ordProblem: "Έχω πρόβλημα",
+        ordReturnLabel: "Γιατί θέλεις να το επιστρέψεις;", ordProblemLabel: "Τι πρόβλημα έχει το PC;",
+        ordMessagePlaceholder: "Γράψε μας με δικά σου λόγια…", ordSend: "Αποστολή", ordBack: "Πίσω",
+        ordMessageShort: "Γράψε λίγα λόγια για να μπορέσουμε να βοηθήσουμε.", ordRequestSent: "Το αίτημά σου στάλθηκε. Θα επικοινωνήσουμε σύντομα.",
+        ordRequestNotAllowed: "Έχεις ήδη ανοιχτό αίτημα αυτού του είδους, ή η προθεσμία έχει λήξει.",
+        ordRequests: "Τα αιτήματά σου", ordReqOpen: "Σε εξέταση", ordReqDone: "Ολοκληρώθηκε",
+        ordWaBtn: "Μίλα μαζί μας στο WhatsApp", ordWaMsg: "Γεια σας! Γράφω για την παραγγελία {number}.",
         coWaMsg: "Γεια σας! Έκανα την παραγγελία {number} στο PHOENIX CODEX (σύνολο {total}). Πώς προχωράμε με την πληρωμή και την παράδοση;"
     },
     en: {
@@ -440,7 +458,7 @@ const translations = {
         membersOnlyAlert: "Until {until} only members can order this — sign in to get it first.",
         voteHelpUnlockedMembers: "Members first until {until}, then everyone · 1 unit.",
 
-        rules1: "<strong>Orders.</strong> Stock is refreshed when the page loads. Your order is sent over WhatsApp and is complete once we confirm it with you.",
+        rules1: "<strong>Orders.</strong> Your order is registered on the site and gets a number; the system is held for you and is not sold to anyone else. Payment and shipping are agreed with you on WhatsApp. You can cancel from the order page until it is packed.",
         rules2: "<strong>Prices.</strong> Prices include VAT unless stated otherwise.",
         rules3: "<strong>Returns & warranty.</strong> A 14-day right of withdrawal and a 2-year statutory warranty apply — see the <a href=\"#\" data-info-go=\"returns\">Warranty & Returns</a> tab.",
         rules4: "<strong>Custom paint.</strong> Paint is made to order from your own choice. It cannot be returned for change of mind (exempt from the 14-day right of withdrawal under Greek law 2251/1994 & EU Directive 2011/83/EU). The 2-year statutory warranty against defects still applies in full.",
@@ -550,7 +568,25 @@ const translations = {
         coDoneNumber: "Order number",
         coDoneText: "Keep this number and message us on WhatsApp to arrange payment and delivery.",
         coDoneDemoText: "It's a demo: you won't be charged and nothing will be sent.",
-        coWaBtn: "Continue on WhatsApp", coDoneClose: "Close",
+        coWaBtn: "Continue on WhatsApp", coDoneClose: "Close", coViewOrder: "View your order",
+
+        // My order (js/modules/order-page.js)
+        ordTitle: "My order", ordNotFound: "Order not found. Make sure you opened the whole link from the email.",
+        ordSt_new: "Placed", ordSt_paid: "Paid", ordSt_building: "Being built", ordSt_packed: "Packed",
+        ordSt_shipped: "Shipped", ordSt_delivered: "Delivered", ordSt_completed: "Completed", ordSt_cancelled: "Cancelled",
+        ordTracking: "Tracking number", ordItems: "Systems", ordDelivery: "Delivery",
+        ordCancelHeading: "Cancel", ordCancelNote: "You can cancel until the order is packed. The system goes back on sale.",
+        ordCancelBtn: "Cancel order", ordCancelConfirm: "Cancel this order?", ordCancelled: "The order is cancelled",
+        ordCancelTooLate: "The order has already moved on and can't be cancelled from here. Message us on WhatsApp.",
+        ordAfterHeading: "After delivery",
+        ordReturnNote: "You can ask to return it until {date}.", ordProblemNote: "If something is wrong with the PC, the guarantee runs until {date}.",
+        ordReturn: "Return", ordProblem: "I have a problem",
+        ordReturnLabel: "Why do you want to return it?", ordProblemLabel: "What is wrong with the PC?",
+        ordMessagePlaceholder: "Tell us in your own words…", ordSend: "Send", ordBack: "Back",
+        ordMessageShort: "Write a few words so we can help.", ordRequestSent: "Your request was sent. We'll be in touch shortly.",
+        ordRequestNotAllowed: "You already have an open request of this kind, or the deadline has passed.",
+        ordRequests: "Your requests", ordReqOpen: "Being looked at", ordReqDone: "Done",
+        ordWaBtn: "Message us on WhatsApp", ordWaMsg: "Hello! I'm writing about order {number}.",
         coWaMsg: "Hello! I placed order {number} on PHOENIX CODEX (total {total}). How do we go on with payment and delivery?"
     }
 };

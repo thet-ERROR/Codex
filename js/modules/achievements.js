@@ -250,6 +250,7 @@ export function openAgentDashboard() {
     }
 
     renderDossierCoupons();
+    if (window.loadMyOrders) window.loadMyOrders();
     if (window.openModal) window.openModal('agent-dashboard-modal');
 }
 

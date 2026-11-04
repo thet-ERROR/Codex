@@ -123,3 +123,12 @@
         .sec-codes code { font-family: monospace; font-size: 1rem; letter-spacing: 1px; background: #080808; border: 1px solid #333; border-radius: 6px; padding: 6px; text-align: center; color: #fff; }
         .sec-off { margin-top: 12px; }
         .sec-off summary { cursor: pointer; color: #ff3333; font-size: 0.85rem; }
+
+        /* customer requests on an order (returns / guarantee problems) */
+        .ord-flag.req { border-color: #ffc43d; color: #000; background: #ffc43d; }
+        .ord-request { padding: 10px 0; border-top: 1px solid #2a2a2a; }
+        .ord-request:first-of-type { border-top: 0; padding-top: 0; }
+        .ord-request.handled { opacity: 0.65; }
+        .ord-request-top { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 4px; }
+        .ord-request-act { display: flex; gap: 8px; margin-top: 8px; }
+        .ord-request-act input { flex: 1; }

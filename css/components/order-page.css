@@ -1,0 +1,68 @@
+/* ===== "My order" window (#order-modal, js/modules/order-page.js) =====
+   The slab and header come from the sign-in windows' purple HUD (auth-hud.css lists #order-modal); the
+   DEMO notice, price lines, errors and buttons reuse checkout.css. This file adds the order's own
+   parts: the number, the steps, the blocks, the request forms, and the profile's order rows. */
+#order-modal .op-body { display: flex; flex-direction: column; gap: 14px; }
+#order-modal .op-head { text-align: center; }
+#order-modal .op-number { font-family: var(--font-ui); font-size: 1.8rem; font-weight: 800; letter-spacing: 3px; color: #fff; text-shadow: 0 0 16px rgba(176, 38, 255, 0.6); }
+#order-modal .op-date { font-size: 0.78rem; color: #9b93b5; margin-top: 2px; }
+
+/* --- the steps: a vertical line with a dot per step --- */
+#order-modal .op-steps { list-style: none; margin: 0; padding: 4px 0 0 4px; display: flex; flex-direction: column; }
+#order-modal .op-step { position: relative; display: flex; align-items: flex-start; gap: 12px; padding-bottom: 14px; }
+#order-modal .op-step:last-child { padding-bottom: 0; }
+#order-modal .op-step::before { content: ''; position: absolute; left: 10px; top: 22px; bottom: 0; width: 2px; background: rgba(176, 38, 255, 0.22); }
+#order-modal .op-step:last-child::before { display: none; }
+#order-modal .op-step.done::before { background: var(--neon-green); }
+#order-modal .op-dot { flex: none; display: grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; border: 2px solid rgba(176, 38, 255, 0.45); background: #0d0a18; font-size: 0.7rem; color: #000; }
+#order-modal .op-step.done .op-dot { background: var(--neon-green); border-color: var(--neon-green); }
+#order-modal .op-step.now .op-dot { border-color: var(--neon-green); box-shadow: 0 0 0 4px rgba(204, 255, 0, 0.18), 0 0 12px var(--neon-green); background: #0d0a18; }
+#order-modal .op-step.cancelled .op-dot { background: #ff4d4d; border-color: #ff4d4d; color: #fff; }
+#order-modal .op-step-text { display: flex; flex-direction: column; min-width: 0; font-size: 0.9rem; color: #e7e3f1; }
+#order-modal .op-step.todo .op-step-text { color: #7d7695; }
+#order-modal .op-step.now .op-step-text b { color: var(--neon-green); }
+#order-modal .op-step.cancelled .op-step-text b { color: #ff9a9a; }
+#order-modal .op-step-text small { font-size: 0.72rem; color: #9b93b5; font-weight: 400; }
+#order-modal .op-track { padding: 10px 12px; border-radius: 12px; border: 1px solid rgba(255, 196, 61, 0.4); background: rgba(255, 196, 61, 0.07); color: #ffd56b; font-size: 0.88rem; }
+
+/* --- blocks --- */
+#order-modal .op-block { display: flex; flex-direction: column; gap: 8px; padding: 12px 14px; border-radius: 14px; border: 1px solid rgba(176, 38, 255, 0.25); background: var(--s-panel); color: #e7e3f1; font-size: 0.88rem; }
+#order-modal .op-k { font-family: var(--font-ui); font-size: 0.72rem; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; color: var(--s-purple); }
+#order-modal .op-note { margin: 0; font-size: 0.82rem; line-height: 1.5; color: #b3acc9; }
+#order-modal .op-btns { display: flex; flex-wrap: wrap; gap: 8px; }
+#order-modal .op-btns .info-btn, #order-modal .op-btns .btn-inspect { flex: 1 1 140px; }
+#order-modal .op-danger { border-color: rgba(255, 77, 77, 0.6); color: #ff9a9a; }
+#order-modal .op-danger:hover { background: rgba(255, 77, 77, 0.12); border-color: #ff4d4d; }
+#order-modal .op-form { display: flex; flex-direction: column; gap: 8px; }
+#order-modal .op-form label { font-size: 0.82rem; color: #c9c3d9; }
+#order-modal .op-form textarea { min-height: 96px; resize: vertical; font-family: inherit; }
+#order-modal .op-wa { width: 100%; text-decoration: none; }
+
+/* --- the customer's requests --- */
+#order-modal .op-request { display: flex; flex-direction: column; gap: 3px; padding-top: 8px; border-top: 1px solid rgba(176, 38, 255, 0.18); }
+#order-modal .op-request:first-of-type { border-top: 0; padding-top: 0; }
+#order-modal .op-request-top { display: flex; align-items: center; gap: 8px; }
+#order-modal .op-request-msg { white-space: pre-wrap; color: #c9c3d9; }
+#order-modal .op-request small { color: #7d7695; }
+.op-tag { border: 1px solid #555; color: #ccc; border-radius: 999px; padding: 1px 9px; font-size: 0.68rem; font-weight: 800; letter-spacing: 0.5px; white-space: nowrap; }
+.op-tag.open { border-color: #ffc43d; color: #ffc43d; }
+.op-tag.done { border-color: var(--neon-green); color: var(--neon-green); }
+.op-tag.demo { border-color: #ffc43d; color: #ffc43d; }
+.op-tag.st-delivered, .op-tag.st-completed { border-color: var(--neon-green); color: var(--neon-green); }
+.op-tag.st-cancelled { border-color: #ff4d4d; color: #ff9a9a; }
+.op-tag.st-shipped, .op-tag.st-packed { border-color: #ffc43d; color: #ffc43d; }
+
+/* --- the profile's order rows --- */
+#agent-dashboard-modal .dossier-order-row {
+    display: flex; flex-direction: column; gap: 3px; width: 100%; text-align: left; cursor: pointer;
+    padding: 9px 12px; border-radius: 12px; border: 1px solid rgba(176, 38, 255, 0.28);
+    background: rgba(255, 255, 255, 0.03); color: #fff; font-family: inherit;
+    transition: border-color 0.2s, background-color 0.2s;
+}
+#agent-dashboard-modal .dossier-order-row:hover { border-color: #b026ff; background: rgba(176, 38, 255, 0.1); }
+#agent-dashboard-modal .dor-top { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-size: 0.9rem; }
+#agent-dashboard-modal .dor-sub { font-size: 0.75rem; color: #9b93b5; }
+
+/* Opened from the profile's "My orders", it must sit above the profile window (both are modal
+   overlays at the same level, and the profile comes later in the page, so it would cover this one) */
+#order-modal.active { z-index: 1000000 !important; }

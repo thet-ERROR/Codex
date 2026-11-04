@@ -61,7 +61,7 @@ export async function loadOrders() {
 
     // The tab's badge counts the new ones (only meaningful on an unfiltered list)
     if (!q.toString()) {
-        const fresh = data.filter(o => o.status === 'new').length;
+        const fresh = data.filter(o => o.status === 'new').length + data.filter(o => o.openRequests).length;
         const b = $('orders-new-badge');
         if (b) { b.textContent = fresh; b.classList.toggle('hidden', !fresh); }
     }
@@ -76,6 +76,7 @@ export async function loadOrders() {
                 ${o.demo ? '<span class="ord-flag demo">DEMO</span>' : ''}
                 ${badge(o.status)}
                 ${o.priorNoShows ? `<span class="ord-flag warn" title="Προηγούμενες μη εμφανίσεις">⚠ ${esc(o.priorNoShows)}</span>` : ''}
+                ${o.openRequests ? `<span class="ord-flag req" title="Ανοιχτό αίτημα πελάτη">ΑΙΤΗΜΑ${o.openRequests > 1 ? ` ×${esc(o.openRequests)}` : ''}</span>` : ''}
                 ${o.refundDue ? '<span class="ord-flag refund">ΕΠΙΣΤΡΟΦΗ ΧΡΗΜΑΤΩΝ</span>' : ''}
                 <span class="ord-total">${formatPrice(o.totalCents)}</span>
             </span>
@@ -164,6 +165,23 @@ function renderDetail() {
 
         ${o.notes ? `<div class="ord-card"><div class="ord-k">ΣΗΜΕΙΩΣΕΙΣ ΠΕΛΑΤΗ</div><div class="ord-notes">${esc(o.notes)}</div></div>` : ''}
 
+        ${(o.requests || []).length ? `
+        <div class="ord-card">
+            <div class="ord-k">ΑΙΤΗΜΑΤΑ ΠΕΛΑΤΗ</div>
+            ${o.requests.map(r => `
+                <div class="ord-request ${r.handledAt ? 'handled' : 'open'}">
+                    <div class="ord-request-top">
+                        <b>${esc(r.type === 'return' ? 'Επιστροφή' : 'Πρόβλημα (εγγύηση)')}</b>
+                        <span class="ord-flag ${r.handledAt ? '' : 'req'}">${r.handledAt ? 'ΧΕΙΡΙΣΤΗΚΕ' : 'ΑΝΟΙΧΤΟ'}</span>
+                        <span class="ord-muted">${esc(when(r.createdAt))}</span>
+                    </div>
+                    <div class="ord-notes">${esc(r.message)}</div>
+                    ${r.handledAt
+                        ? `<div class="ord-muted">${esc(when(r.handledAt))}${r.handledNote ? ` — ${esc(r.handledNote)}` : ''}</div>`
+                        : `<div class="ord-request-act"><input type="text" maxlength="300" placeholder="Σημείωση (προαιρετικά)" data-request-note="${esc(r._id)}"><button type="button" class="btn-sm ord-next" style="--c:#ccff00" data-action="handle-request" data-id="${esc(r._id)}">ΤΟ ΧΕΙΡΙΣΤΗΚΑ</button></div>`}
+                </div>`).join('')}
+        </div>` : ''}
+
         ${ahead.length || cancellable ? `
         <div class="ord-card ord-actions">
             <div class="ord-k">ΕΝΕΡΓΕΙΕΣ</div>
@@ -198,6 +216,15 @@ async function moveTo(status) {
         if (r.expired) return;
     }
     if (!r.res.ok) { alert(r.data?.error || 'Η αλλαγή δεν έγινε'); return; }
+    current = { ...r.data, priorNoShows: current.priorNoShows };
+    renderDetail();
+}
+
+async function handleRequest(id) {
+    const note = (document.querySelector(`[data-request-note="${CSS.escape(id)}"]`)?.value || '').trim();
+    const r = await call('POST', `/admin/orders/${encodeURIComponent(current.number)}/requests/${encodeURIComponent(id)}/handle`, { note });
+    if (r.expired) return;
+    if (!r.res.ok) { alert(r.data?.error || 'Δεν έγινε'); return; }
     current = { ...r.data, priorNoShows: current.priorNoShows };
     renderDetail();
 }
@@ -271,6 +298,7 @@ export function initOrders(opts) {
             if (el.dataset.action === 'status') moveTo(el.dataset.status);
             if (el.dataset.action === 'cancel') cancel(false);
             if (el.dataset.action === 'no-show') cancel(true);
+            if (el.dataset.action === 'handle-request') handleRequest(el.dataset.id);
         });
         $('save-order-settings-btn')?.addEventListener('click', saveOrderSettings);
     }
