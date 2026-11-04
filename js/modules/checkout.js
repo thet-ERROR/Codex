@@ -81,7 +81,7 @@ function renderSummary() {
     const { discount, coupon } = cartCouponDiscount(subtotal);
     box.innerHTML = state.cart.map(item => `
         <div class="co-line">
-            <span class="co-line-name">${esc(item.name)}${(item.options || []).map(o => `<small>+ ${esc(o.label)}</small>`).join('')}</span>
+            <span class="co-line-name">${esc(item.name)}${(item.options || []).map(o => `<small>+ ${esc(String(o.label).replace(/^\+\s*/, ''))}</small>`).join('')}</span>
             <b>${formatPrice(item.priceCents)}</b>
         </div>`).join('') +
         (discount ? `<div class="co-line co-line-discount"><span>${esc(t('cartCouponLine', { p: coupon.percent }))}</span><b>-${formatPrice(discount)}</b></div>` : '') +
@@ -237,8 +237,14 @@ function showDone(result) {
         <a class="info-btn primary co-wa-btn" href="https://wa.me/${encodeURIComponent(CONFIG.WHATSAPP_NUM)}?text=${encodeURIComponent(waText)}" target="_blank" rel="noopener">
             <i class="ph-bold ph-whatsapp-logo" aria-hidden="true"></i> <span>${esc(t('coWaBtn'))}</span>
         </a>
+        <button type="button" class="info-btn co-done-view">${esc(t('coViewOrder'))}</button>
         <button type="button" class="info-btn co-done-close">${esc(t('coDoneClose'))}</button>`;
     done.querySelector('.co-done-close').addEventListener('click', () => window.closeModal && window.closeModal('checkout-modal'));
+    // The order page opens over this window; the order's private token is the proof
+    done.querySelector('.co-done-view').addEventListener('click', () => {
+        if (window.closeModal) window.closeModal('checkout-modal');
+        if (window.openOrderPage) window.openOrderPage({ number: result.number, token: result.accessToken });
+    });
     done.classList.remove('hidden');
     done.scrollIntoView({ block: 'start' });
 }

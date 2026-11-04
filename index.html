@@ -655,6 +655,15 @@ Type 'help' for a list of commands.
         </div>
     </div>
 
+    <!-- "My order" (js/modules/order-page.js fills #op-body). The window shell is built by modals.js. -->
+    <div class="modal-overlay" id="order-modal">
+        <div class="modal-content" style="width:560px;">
+            <span class="close-modal" onclick="closeModal('order-modal')">X</span>
+            <h2 class="modal-title" data-i18n="ordTitle">MY ORDER</h2>
+            <div class="op-body" id="op-body"></div>
+        </div>
+    </div>
+
     <div class="modal-overlay" id="newsletter-modal">
         <div class="modal-content" style="width:450px;">
             <span class="close-modal" onclick="closeModal('newsletter-modal')">X</span>

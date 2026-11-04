@@ -193,7 +193,7 @@ describe('checkout', () => {
             assert.deepEqual(sent.items, [{ pcId: 'pc1', storage: '', proConfig: false, paint: false, paintAck: false }]);
             assert.equal('priceCents' in sent.items[0], false, 'the page must send choices, not prices');
             assert.equal(sent.delivery.method, 'courier');
-            assert.equal(sent.termsVersion, '2026-11');
+            assert.equal(sent.termsVersion, '2026-11-2');
             assert.equal(sent.lang, 'en', 'the emails follow the language the order was placed in');
             assert.equal(sent.acceptTerms, true);
             assert.equal(sent.adultOrGuardian, true);

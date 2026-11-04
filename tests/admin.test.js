@@ -25,14 +25,14 @@ const lastCall = (page, pathPart) => page.apiLog.filter(c => c.path.includes(pat
 
 describe('admin: orders', () => {
     it('logs in under the strict CSP with no errors, and shows the new-orders badge', () => withAdmin(async (page) => {
-        await page.waitForFunction(() => document.getElementById('orders-new-badge').textContent === '2');
+        await page.waitForFunction(() => document.getElementById('orders-new-badge').textContent === '3');
         assert.equal(await page.locator('#orders-new-badge').isVisible(), true);
         assert.deepEqual(page.problems, []);
     }));
 
     it('lists the orders; a customer name carrying HTML is shown as text, never run', () => withAdmin(async (page) => {
         await openOrdersTab(page);
-        assert.equal(await page.locator('.ord-row').count(), 2);
+        assert.equal(await page.locator('.ord-row').count(), 3);
         const rows = await page.locator('#orders-list').innerText();
         assert.match(rows, /DEMO-0001/);
         assert.match(rows, /<img src=x onerror/);
@@ -157,5 +157,32 @@ describe('admin: two-factor sign-in', () => {
         await page.waitForFunction(() => document.getElementById('os-result').textContent !== '');
         assert.equal(page.apiLog.filter(c => c.path === '/site-config').at(-1).auth, 'Bearer admin-token-after-2fa');
         assert.deepEqual(page.problems, []);
+    }));
+});
+
+describe('admin: customer requests on an order', () => {
+    it('the list flags an order with an open request, and the detail shows the words as text', () => withAdmin(async (page) => {
+        await openOrdersTab(page);
+        assert.equal(await page.locator('.ord-row[data-number="DEMO-0003"] .ord-flag.req').isVisible(), true);
+        assert.equal(await page.locator('.ord-row[data-number="DEMO-0001"] .ord-flag.req').count(), 0);
+        await openOrder(page, 'DEMO-0003');
+        const text = await page.locator('#order-detail').innerText();
+        assert.match(text, /Πρόβλημα \(εγγύηση\)/);
+        assert.match(text, /<b>rattles<\/b>/);
+        assert.equal(await page.locator('#order-detail .ord-notes b').count(), 0, 'no markup from the customer is run');
+    }));
+
+    it('"Το χειρίστηκα" closes it with the note', () => withAdmin(async (page) => {
+        await openOrdersTab(page);
+        await openOrder(page, 'DEMO-0003');
+        await page.fill('[data-request-note]', 'sent a new fan');
+        await page.click('[data-action="handle-request"]');
+        await page.locator('#order-detail .ord-request.handled').waitFor();
+        assert.deepEqual(page.apiLog.filter(c => c.path.endsWith('/handle')).at(-1).body, { note: 'sent a new fan' });
+        assert.match(await page.locator('#order-detail .ord-request').innerText(), /sent a new fan/);
+        assert.equal(await page.locator('[data-action="handle-request"]').count(), 0);
+        await page.click('[data-action="back"]');
+        await page.locator('.ord-row').first().waitFor();
+        assert.equal(await page.locator('.ord-row[data-number="DEMO-0003"] .ord-flag.req').count(), 0, 'the flag is gone from the list');
     }));
 });

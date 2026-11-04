@@ -139,7 +139,24 @@ export const api = {
         });
         const data = await res.json().catch(() => ({}));
         return { res, data };
-    }
+    },
+
+    // --- an order, after it is placed ---
+    // All of these resolve with { res, data } and never throw on a 4xx: the order page reads the code
+    // and the message. The customer's private link carries a token (t); a signed-in member who placed
+    // the order can act without one, so the session is sent whenever there is one.
+    _orderCall(method, path, body) {
+        const session = localStorage.getItem('codex_token');
+        return fetch(`${CONFIG.API_URL}${path}`, {
+            method,
+            headers: { ...(body ? { 'Content-Type': 'application/json' } : {}), ...(session ? { 'Authorization': `Bearer ${session}` } : {}) },
+            body: body ? JSON.stringify(body) : undefined
+        }).then(async res => ({ res, data: await res.json().catch(() => ({})) }));
+    },
+    getOrder(number, token) { return this._orderCall('GET', `/orders/${encodeURIComponent(number)}?t=${encodeURIComponent(token)}`); },
+    myOrders() { return this._orderCall('GET', '/my-orders'); },
+    cancelOrder(number, token) { return this._orderCall('POST', `/orders/${encodeURIComponent(number)}/cancel`, { t: token || '' }); },
+    orderRequest(number, token, type, message) { return this._orderCall('POST', `/orders/${encodeURIComponent(number)}/request`, { t: token || '', type, message }); }
 };
 
 window.api = api;

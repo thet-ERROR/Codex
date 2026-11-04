@@ -78,6 +78,30 @@ const STATUS = {
     orders: { live: false, returnDays: 14, handDeliveryAreas: ['Θεσσαλονίκη', 'Καλαμαριά'], handDeliveryCenter: { lat: 40.64, lng: 22.94 }, handDeliveryRadiusKm: 10 }
 };
 
+// Orders as the customer's own page gets them (the server's publicView), kept per page so a cancel or
+// a request changes what the next read says
+const T0 = '2026-11-04T10:00:00Z';
+const publicOrder = (number, over = {}) => ({
+    number, demo: true, status: 'new', history: [{ status: 'new', at: T0 }],
+    customer: { firstName: 'Nikos', lastName: 'Papadopoulos' },
+    delivery: { method: 'courier', city: 'Thessaloniki', trackingNumber: null },
+    items: [{ name: 'TEST RIG 1', basePriceCents: 110000, extras: [{ key: 'storage', choice: 'ssd', priceCents: 8000 }], totalCents: 118000, paint: false }],
+    subtotalCents: 118000, discountCents: 0, coupon: null, totalCents: 118000,
+    createdAt: T0, deliveredAt: null, returnDeadline: null, warrantyUntil: null,
+    canCancel: true, canReturn: false, canReportProblem: false, requests: [],
+    ...over
+});
+const STORE_TOKEN = 'a'.repeat(48);
+const storeOrders = () => ({
+    'DEMO-0001': publicOrder('DEMO-0001'),
+    'DEMO-0002': publicOrder('DEMO-0002', {
+        status: 'delivered', canCancel: false, canReturn: true, canReportProblem: true,
+        history: [{ status: 'new', at: T0 }, { status: 'paid', at: T0 }, { status: 'shipped', at: T0 }, { status: 'delivered', at: '2026-11-08T10:00:00Z' }],
+        delivery: { method: 'hand', area: 'Καλαμαριά', trackingNumber: 'ACS 123' },
+        deliveredAt: '2026-11-08T10:00:00Z', returnDeadline: '2026-11-22T10:00:00Z', warrantyUntil: '2028-11-08T10:00:00Z'
+    })
+});
+
 // Orders as the admin API returns them. One has a customer name that is an HTML injection attempt:
 // the panel must show it as text.
 const adminOrder = (n, over = {}) => ({
@@ -94,7 +118,11 @@ const adminOrder = (n, over = {}) => ({
 });
 const ADMIN_ORDERS = () => [
     adminOrder(1),
-    adminOrder(2, { customer: { firstName: '<img src=x onerror="window.__xss=1">', lastName: 'X', phone: '6900000000', email: 'x@gmail.com' }, priorNoShows: 1 })
+    adminOrder(2, { customer: { firstName: '<img src=x onerror="window.__xss=1">', lastName: 'X', phone: '6900000000', email: 'x@gmail.com' }, priorNoShows: 1 }),
+    adminOrder(3, {
+        status: 'delivered', payment: { method: 'agreed', paidAt: '2026-11-05T10:00:00Z' }, deliveredAt: '2026-11-08T10:00:00Z', returnDeadline: '2026-11-22T10:00:00Z',
+        requests: [{ _id: 'aaaaaaaaaaaaaaaaaaaaaaaa', type: 'problem', message: 'The fan <b>rattles</b>', createdAt: '2026-11-09T10:00:00Z' }], openRequests: 1
+    })
 ];
 const SITE_CONFIG = {
     maintenanceMode: false, maintenanceMessage: '', proConfigPrice: 30, voteInfoText: '', voteInfoTextEl: '',
@@ -103,7 +131,7 @@ const SITE_CONFIG = {
 
 // log: every request that changes something ({ method, path, body, auth }), for the tests to read.
 // sec: the admin's two-factor state for this page (on/off), changed by the setup calls.
-async function answer(route, log, adminOrders, sec) {
+async function answer(route, log, adminOrders, sec, store) {
     const req = route.request();
     const url = new URL(req.url());
     const p = url.pathname.replace(/^\/api/, '');
@@ -121,6 +149,30 @@ async function answer(route, log, adminOrders, sec) {
         const totalCents = body.items.reduce((sum, i) => sum + (PCS.find(pc => pc._id === i.pcId)?.priceCents || 0), 0);
         const number = `DEMO-${String(log.filter(l => l.path === '/orders').length).padStart(4, '0')}`;
         return json({ success: true, number, demo: true, accessToken: 'a'.repeat(48), order: { number, totalCents, subtotalCents: totalCents, discountCents: 0, items: [] } });
+    }
+
+    // --- the customer's order page ---
+    const om = p.match(/^\/orders\/([A-Z0-9-]+)(\/cancel|\/request)?$/);
+    if (om && om[1] !== '' && p !== '/orders') {
+        const o = store[om[1]];
+        const token = method === 'GET' ? url.searchParams.get('t') : body?.t;
+        const member = req.headers()['authorization'] === 'Bearer member-token';
+        if (!o || (token !== STORE_TOKEN && !member)) return json({ error: 'Order not found' }, 404);
+        if (!om[2]) return json(o);
+        if (om[2] === '/cancel') {
+            if (!o.canCancel) return json({ error: 'too late', code: 'NOT_CANCELLABLE' }, 409);
+            o.status = 'cancelled'; o.canCancel = false; o.history.push({ status: 'cancelled', at: T0 });
+            return json({ success: true, order: o });
+        }
+        if (body.message.trim().length < 5) return json({ error: 'short', field: 'message' }, 400);
+        if (!(body.type === 'return' ? o.canReturn : o.canReportProblem)) return json({ error: 'no', code: 'NOT_ALLOWED' }, 409);
+        o.requests.push({ type: body.type, message: body.message, createdAt: T0, handled: false });
+        if (body.type === 'return') o.canReturn = false; else o.canReportProblem = false;
+        return json({ success: true, order: o });
+    }
+    if (p === '/my-orders') return json(Object.values(store));
+    if (p === '/me') {
+        return json({ username: 'Tester', wishlist: [], achievements: ['recruited'], xp: 25, rank: 'recruit', rankMinXp: 0, nextRank: 'operative', nextRankXp: 100, progress: 25, ranks: [], bonusSpins: 0, rankRewards: [], coupons: [], unlockedColors: [] });
     }
 
     // --- the admin panel ---
@@ -145,6 +197,15 @@ async function answer(route, log, adminOrders, sec) {
     if (p === '/admin/orders') {
         const status = url.searchParams.get('status');
         return json(adminOrders.filter(o => !status || o.status === status));
+    }
+    const hm = p.match(/^\/admin\/orders\/([A-Z0-9-]+)\/requests\/([a-f0-9]+)\/handle$/);
+    if (hm) {
+        const o = adminOrders.find(x => x.number === hm[1]);
+        const r = o?.requests?.find(x => x._id === hm[2] && !x.handledAt);
+        if (!r) return json({ error: 'Request not found or already handled' }, 404);
+        r.handledAt = '2026-11-10T09:00:00Z'; r.handledNote = body.note || '';
+        o.openRequests = o.requests.filter(x => !x.handledAt).length;
+        return json(o);
     }
     const m = p.match(/^\/admin\/orders\/([A-Z0-9-]+)(\/status|\/cancel)?$/);
     if (m) {
@@ -178,7 +239,7 @@ export async function launch() {
 
 // page: '' for the storefront, 'admin.html' for the panel (logged in, dashboard showing; with
 // twoFactor the sign-in takes the code step too, unless login: false leaves it at the login screen)
-export async function newPage(browser, site, { width = 390, height = 844, locale = 'en-US', storage = {}, mobile = width < 700, tourDone = true, page: which = '', twoFactor = false, login = true } = {}) {
+export async function newPage(browser, site, { width = 390, height = 844, locale = 'en-US', storage = {}, mobile = width < 700, tourDone = true, page: which = '', twoFactor = false, login = true, member = false, query = '' } = {}) {
     const context = await browser.newContext({
         viewport: { width, height }, locale, deviceScaleFactor: 2, isMobile: mobile, hasTouch: mobile,
         // Fixed, so the mascot / tour / "night mode" never depend on the time the suite is run at
@@ -186,16 +247,18 @@ export async function newPage(browser, site, { width = 390, height = 844, locale
     });
     // Saved settings go in before any of the site's code runs. The tour is marked done: it would
     // open over the page and block every click (it has its own test).
-    await context.addInitScript(({ storage, tourDone }) => {
+    await context.addInitScript(({ storage, tourDone, member }) => {
         try {
             if (tourDone) localStorage.setItem('codex_tutorial_done', 'true');
+            if (member) { localStorage.setItem('codex_token', 'member-token'); localStorage.setItem('codex_username', 'Tester'); }
             for (const [k, v] of Object.entries(storage)) localStorage.setItem(k, v);
         } catch (e) {}
-    }, { storage, tourDone });
+    }, { storage, tourDone, member });
     const log = [];
     const adminOrders = ADMIN_ORDERS();
     const sec = { enabled: twoFactor };
-    await context.route(url => url.href.startsWith(API), route => answer(route, log, adminOrders, sec));
+    const store = storeOrders();
+    await context.route(url => url.href.startsWith(API), route => answer(route, log, adminOrders, sec, store));
     // Everything that is neither the site nor the API stays offline
     await context.route(url => !url.href.startsWith(site.url) && !url.href.startsWith(API) && /^https?:/.test(url.href), r => r.abort());
 
@@ -206,7 +269,7 @@ export async function newPage(browser, site, { width = 390, height = 844, locale
     page.problems = problems;
     page.apiLog = log;
     Object.defineProperty(page, 'orders', { get: () => log.filter(l => l.path === '/orders').map(l => l.body) });
-    await page.goto(site.url + which);
+    await page.goto(site.url + which + query);
     if (which === 'admin.html') {
         if (!login) return page;
         await page.fill('#admin-pass', 'test');
