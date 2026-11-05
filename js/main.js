@@ -147,6 +147,9 @@ function applyStatus(status) {
     if (typeof status.voteInfoTextEl === 'string') state.voteInfoTextEl = status.voteInfoTextEl;
     // Checkout settings: demo or live, return window, hand-delivery areas and map
     if (status.orders && typeof status.orders === 'object') state.orders = status.orders;
+    // "N deliveries" by the reviews: a number only once the shop has enough of them, else null
+    state.deliveries = Number.isInteger(status.deliveries) && status.deliveries > 0 ? status.deliveries : null;
+    if (window.renderGlobalReviews) window.renderGlobalReviews();
 }
 
 function showMaintenance(status) {

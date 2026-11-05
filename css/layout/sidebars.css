@@ -69,6 +69,13 @@ body.pointer-input .side-btn:focus-visible { outline: none; }
 /* The reviewer's rank badge (reviews.js rankBadge) — purple like the profile; the top rank in gold */
 .r-rank { margin-left: 4px; font-size: 0.85rem; vertical-align: -1px; color: #c084fc; filter: drop-shadow(0 0 4px rgba(176, 38, 255, 0.6)); }
 .r-rank.r-rank-top { color: #ffc43d; filter: drop-shadow(0 0 4px rgba(255, 196, 61, 0.7)); }
+/* "✓ Verified purchase" — the review was written with the code from the box (reviews.js) */
+.r-verified { display: inline-flex; align-items: center; gap: 4px; margin-top: 4px; font-size: 0.68rem; font-weight: 700; color: var(--neon-green); letter-spacing: 0.3px; }
+/* Above the list: "N deliveries" and what the ✓ means */
+.reviews-meta { display: flex; flex-direction: column; gap: 6px; margin: -8px 0 14px; }
+.reviews-meta[hidden] { display: none; }
+.rm-deliveries { display: inline-flex; align-items: center; gap: 6px; align-self: flex-start; padding: 4px 10px; border-radius: 999px; border: 1px solid rgba(204, 255, 0, 0.35); background: rgba(204, 255, 0, 0.06); color: var(--neon-green); font-family: var(--font-ui); font-size: 0.75rem; font-weight: 800; letter-spacing: 1px; }
+.rm-note { font-size: 0.68rem; line-height: 1.4; color: #8f88a8; }
 .r-text { font-size: 0.8rem; color: #aaa; margin-top: 5px; line-height: 1.4; font-style: italic; }
 .r-date { font-size: 0.65rem; color: #666; position: absolute; top: 12px; right: 12px; font-family: monospace; }
 .add-review-btn { background: transparent; border: 1px solid var(--neon-purple); color: var(--neon-purple); padding: 8px 20px; border-radius: 6px; font-family:var(--font-ui); font-weight:bold; cursor: pointer; transition: 0.3s; margin-top:10px; width:100%; }

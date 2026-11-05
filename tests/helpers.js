@@ -121,17 +121,20 @@ const ADMIN_ORDERS = () => [
     adminOrder(2, { customer: { firstName: '<img src=x onerror="window.__xss=1">', lastName: 'X', phone: '6900000000', email: 'x@gmail.com' }, priorNoShows: 1 }),
     adminOrder(3, {
         status: 'delivered', payment: { method: 'agreed', paidAt: '2026-11-05T10:00:00Z' }, deliveredAt: '2026-11-08T10:00:00Z', returnDeadline: '2026-11-22T10:00:00Z',
-        requests: [{ _id: 'aaaaaaaaaaaaaaaaaaaaaaaa', type: 'problem', message: 'The fan <b>rattles</b>', createdAt: '2026-11-09T10:00:00Z' }], openRequests: 1
+        requests: [{ _id: 'aaaaaaaaaaaaaaaaaaaaaaaa', type: 'problem', message: 'The fan <b>rattles</b>', createdAt: '2026-11-09T10:00:00Z' }], openRequests: 1,
+        history: [{ status: 'new', at: '2026-11-04T10:00:00Z', by: 'customer' }, { status: 'delivered', at: '2026-11-08T10:00:00Z', by: 'customer', note: 'box code entered' }],
+        reviewCodes: [{ code: 'CDX-0123456789', pcName: 'TEST RIG 1', status: 'active', itemIndex: 0 }]
     })
 ];
 const SITE_CONFIG = {
     maintenanceMode: false, maintenanceMessage: '', proConfigPrice: 30, voteInfoText: '', voteInfoTextEl: '',
-    returnDays: 14, handDeliveryAreas: ['Θεσσαλονίκη', 'Καλαμαριά'], handDeliveryRadiusKm: 10, handDeliveryCenter: { lat: 40.64, lng: 22.94 }
+    returnDays: 14, handDeliveryAreas: ['Θεσσαλονίκη', 'Καλαμαριά'], handDeliveryRadiusKm: 10, handDeliveryCenter: { lat: 40.64, lng: 22.94 },
+    deliveriesBadgeOn: true, deliveriesBadgeMin: 10
 };
 
 // log: every request that changes something ({ method, path, body, auth }), for the tests to read.
 // sec: the admin's two-factor state for this page (on/off), changed by the setup calls.
-async function answer(route, log, adminOrders, sec, store) {
+async function answer(route, log, adminOrders, sec, store, opts) {
     const req = route.request();
     const url = new URL(req.url());
     const p = url.pathname.replace(/^\/api/, '');
@@ -141,8 +144,8 @@ async function answer(route, log, adminOrders, sec, store) {
     const json = (data, status = 200) => route.fulfill({ status, contentType: 'application/json', body: JSON.stringify(data) });
 
     // --- the storefront ---
-    if (p === '/status') return json(STATUS);
-    if (p === '/drops') return json(PCS);
+    if (p === '/status') return json({ ...STATUS, ...opts.status });
+    if (p === '/drops') return json(opts.reviews ? PCS.map((pc, i) => (i === 0 ? { ...pc, reviews: opts.reviews } : pc)) : PCS);
     if (p === '/vote-event') return json({});
     if (p === '/orders' && method === 'POST') {
         // Priced the way the real server does it: from its own data, base prices only here
@@ -192,6 +195,10 @@ async function answer(route, log, adminOrders, sec, store) {
         return json({ success: true, token: 'admin-token-after-2fa', recoveryCodes: Array.from({ length: 10 }, (_, i) => `AAA${i}-BBB${i}`) });
     }
     if (p === '/users/count') return json({ count: 2 });
+    if (p === '/admin/order-stats') {
+        const s = (n) => ({ delivered: n, delivered30: n, completed: n, inReturnWindow: 0, returns: 0, returns30: 0, problems: 2, problems30: 1, openRequests: 1 });
+        return json({ live: { ...s(12), publicCount: 12 }, demo: s(3) });
+    }
     if (p === '/users' || p === '/tickets' || p === '/newsletter') return json([]);
     if (p === '/site-config') return json(method === 'GET' ? SITE_CONFIG : { success: true, config: { ...SITE_CONFIG, ...body } });
     if (p === '/admin/orders') {
@@ -239,7 +246,7 @@ export async function launch() {
 
 // page: '' for the storefront, 'admin.html' for the panel (logged in, dashboard showing; with
 // twoFactor the sign-in takes the code step too, unless login: false leaves it at the login screen)
-export async function newPage(browser, site, { width = 390, height = 844, locale = 'en-US', storage = {}, mobile = width < 700, tourDone = true, page: which = '', twoFactor = false, login = true, member = false, query = '' } = {}) {
+export async function newPage(browser, site, { width = 390, height = 844, locale = 'en-US', storage = {}, mobile = width < 700, tourDone = true, page: which = '', twoFactor = false, login = true, member = false, query = '', status = {}, reviews = null } = {}) {
     const context = await browser.newContext({
         viewport: { width, height }, locale, deviceScaleFactor: 2, isMobile: mobile, hasTouch: mobile,
         // Fixed, so the mascot / tour / "night mode" never depend on the time the suite is run at
@@ -258,7 +265,7 @@ export async function newPage(browser, site, { width = 390, height = 844, locale
     const adminOrders = ADMIN_ORDERS();
     const sec = { enabled: twoFactor };
     const store = storeOrders();
-    await context.route(url => url.href.startsWith(API), route => answer(route, log, adminOrders, sec, store));
+    await context.route(url => url.href.startsWith(API), route => answer(route, log, adminOrders, sec, store, { status, reviews }));
     // Everything that is neither the site nor the API stays offline
     await context.route(url => !url.href.startsWith(site.url) && !url.href.startsWith(API) && /^https?:/.test(url.href), r => r.abort());
 

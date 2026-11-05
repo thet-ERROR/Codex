@@ -153,6 +153,38 @@ describe('cart', () => {
     }));
 });
 
+describe('reviews', () => {
+    const REVIEWS = [
+        { _id: 'r1', user: 'Maria', rating: 5, text: 'Fast and quiet', date: '2026-11-20T10:00:00Z', verified: true },
+        { _id: 'r2', user: 'Shop', rating: 4, text: 'Typed by hand', date: '2026-11-19T10:00:00Z' }
+    ];
+    const openList = (page) => page.locator('#review-list .review-card').first().waitFor({ state: 'attached' });
+
+    it('a review written with the box code says verified purchase; one typed by hand does not', () => withPage({ width: 1440, height: 900, reviews: REVIEWS }, async (page) => {
+        await openList(page);
+        const cards = page.locator('#review-list .review-card');
+        assert.equal(await cards.nth(0).locator('.r-verified').count(), 1);
+        assert.match(await cards.nth(0).innerText(), /Verified purchase/);
+        assert.equal(await cards.nth(1).locator('.r-verified').count(), 0);
+        assert.match(await page.locator('#reviews-meta').innerText(), /only inside the PC's box/, 'says how the ✓ is earned');
+    }));
+
+    it('"N deliveries" shows only when the server sends a number', () => withPage({ width: 1440, height: 900, reviews: REVIEWS, status: { deliveries: 37 } }, async (page) => {
+        await openList(page);
+        await page.waitForFunction(() => /37 deliveries/.test(document.getElementById('reviews-meta').innerText));
+    }));
+
+    it('nothing above the list with no number and no verified review', () => withPage({ width: 1440, height: 900, status: { deliveries: null } }, async (page) => {
+        assert.equal(await page.locator('#reviews-meta').isHidden(), true);
+    }));
+
+    it('in Greek', () => withPage({ width: 1440, height: 900, locale: 'el-GR', reviews: REVIEWS, status: { deliveries: 12 } }, async (page) => {
+        await openList(page);
+        await page.waitForFunction(() => /12 παραδόσεις/.test(document.getElementById('reviews-meta').innerText));
+        assert.match(await page.locator('.r-verified').innerText(), /Επαληθευμένη αγορά/);
+    }));
+});
+
 describe('checkout', () => {
     // One PC in the cart, then the checkout window open
     async function toCheckout(page) {

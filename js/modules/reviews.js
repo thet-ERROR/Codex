@@ -83,20 +83,27 @@ export async function submitMissionCode() {
     }
 }
 
+// A box code runs for two weeks from delivery, so the time left is shown in days once it's over one
+let missionInterval = null;
 export function startMissionTimer(ms) {
     const timerEl = document.getElementById('mission-timer');
     let timeLeft = ms;
-    const interval = setInterval(() => { 
-        timeLeft -= 1000; 
-        if (timeLeft <= 0) { 
-            clearInterval(interval); 
-            if(timerEl) timerEl.innerText = window.t('missionExpired'); 
-        } else { 
-            const h = Math.floor(timeLeft / (1000 * 60 * 60)); 
-            const m = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60)); 
-            const s = Math.floor((timeLeft % (1000 * 60)) / 1000); 
-            if(timerEl) timerEl.innerText = `${h}h ${m}m ${s}s`; 
-        } 
+    const paint = () => {
+        if (!timerEl) return;
+        if (timeLeft <= 0) { timerEl.innerText = window.t('missionExpired'); return; }
+        const d = Math.floor(timeLeft / 86400000);
+        const h = Math.floor((timeLeft % 86400000) / 3600000);
+        const m = Math.floor((timeLeft % 3600000) / 60000);
+        const s = Math.floor((timeLeft % 60000) / 1000);
+        timerEl.innerText = d > 0 ? `${d}d ${h}h ${m}m` : `${h}h ${m}m ${s}s`;
+    };
+    // Opening the window again must not leave the previous countdown running beside the new one
+    if (missionInterval) clearInterval(missionInterval);
+    paint();
+    missionInterval = setInterval(() => {
+        timeLeft -= 1000;
+        paint();
+        if (timeLeft <= 0) { clearInterval(missionInterval); missionInterval = null; }
     }, 1000);
 }
 
@@ -166,10 +173,26 @@ export function requestReturn() {
     window.location.href = `mailto:${CONFIG.SUPPORT_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
 }
 
+// Above the list: the shop's completed deliveries (the server sends a number only past the admin's
+// threshold — never a count of problems), and one line saying what the ✓ means, so a visitor knows
+// how reviews are checked.
+function renderReviewsMeta(hasVerified) {
+    const meta = document.getElementById('reviews-meta');
+    if (!meta) return;
+    const t = window.t || (k => k);
+    const parts = [];
+    if (state.deliveries) {
+        parts.push(`<div class="rm-deliveries"><i class="ph-fill ph-package"></i> ${esc(t('reviewsDeliveries', { n: state.deliveries }))}</div>`);
+    }
+    if (hasVerified) parts.push(`<div class="rm-note">${esc(t('reviewsVerifiedNote'))}</div>`);
+    meta.innerHTML = parts.join('');
+    meta.hidden = parts.length === 0;
+}
+
 export function renderGlobalReviews() {
     const rList = document.getElementById('review-list');
     if(!rList) return;
-    
+
     let allReviews = [];
     // Συλλέγουμε όλα τα reviews από το inventory
     state.inventory.forEach(pc => { 
@@ -182,7 +205,9 @@ export function renderGlobalReviews() {
     
     // Ταξινομούμε από το πιο πρόσφατο στο πιο παλιό
     allReviews.sort((a, b) => new Date(b.date) - new Date(a.date));
-    
+    renderReviewsMeta(allReviews.some(r => r.verified === true));
+    const verifiedLabel = window.t ? window.t('reviewsVerified') : 'Verified purchase';
+
     if(allReviews.length === 0) { 
         rList.innerHTML = '<div style="color:#666;text-align:center;margin-top:50px; font-size:0.8rem;">NO TRANSMISSIONS YET</div>'; 
     } else { 
@@ -194,6 +219,7 @@ export function renderGlobalReviews() {
             return `<div class="review-card">
                         <span class="r-date">${esc(date)}</span>
                         <div class="r-user">${esc(r.user)}${rankBadge(r.rank)} <span class="r-stars">★${rating}</span></div>
+                        ${r.verified === true ? `<div class="r-verified"><i class="ph-bold ph-seal-check"></i> ${esc(verifiedLabel)}</div>` : ''}
                         <div style="font-size:0.7rem; color:var(--neon-purple); margin-bottom:4px; font-weight:bold;">${esc(window.t ? window.t('purchasedLabel') : 'PURCHASED')}: ${esc(r.pcName)}</div>
                         <div class="r-text">"${esc(r.text)}"</div>
                     </div>`;
