@@ -93,11 +93,10 @@ describe('admin: order settings', () => {
         await page.waitForFunction(() => document.getElementById('os-areas').value.includes('Καλαμαριά'));
         await page.fill('#os-return-days', '30');
         await page.fill('#os-areas', 'Καλαμαριά\n  Θέρμη  \n\nΠυλαία');
-        await page.fill('#os-radius', '12');
         await page.click('#save-order-settings-btn');
         await page.waitForFunction(() => document.getElementById('os-result').textContent === 'Αποθηκεύτηκε.');
         const saved = page.apiLog.filter(c => c.method === 'POST' && c.path === '/site-config').at(-1).body;
-        assert.deepEqual(saved, { returnDays: 30, handDeliveryAreas: ['Καλαμαριά', 'Θέρμη', 'Πυλαία'], handDeliveryRadiusKm: 12, handDeliveryCenter: { lat: 40.64, lng: 22.94 } });
+        assert.deepEqual(saved, { returnDays: 30, handDeliveryAreas: ['Καλαμαριά', 'Θέρμη', 'Πυλαία'] });
     }));
 });
 

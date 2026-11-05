@@ -248,17 +248,13 @@ async function loadOrderSettings() {
     if (expired || !res.ok || !data) return;
     if (data.returnDays) $('os-return-days').value = data.returnDays;
     if (Array.isArray(data.handDeliveryAreas)) $('os-areas').value = data.handDeliveryAreas.join('\n');
-    if (data.handDeliveryRadiusKm) $('os-radius').value = data.handDeliveryRadiusKm;
-    if (data.handDeliveryCenter) { $('os-lat').value = data.handDeliveryCenter.lat; $('os-lng').value = data.handDeliveryCenter.lng; }
 }
 
 async function saveOrderSettings() {
     const out = $('os-result');
     const body = {
         returnDays: Number($('os-return-days').value),
-        handDeliveryAreas: $('os-areas').value.split('\n').map(s => s.trim()).filter(Boolean),
-        handDeliveryRadiusKm: Number($('os-radius').value),
-        handDeliveryCenter: { lat: Number($('os-lat').value), lng: Number($('os-lng').value) }
+        handDeliveryAreas: $('os-areas').value.split('\n').map(s => s.trim()).filter(Boolean)
     };
     const { res, data, expired } = await call('POST', '/site-config', body);
     if (expired) return;

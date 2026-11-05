@@ -1,7 +1,7 @@
 // js/modules/checkout.js
 //
 // The checkout window (index.html #checkout-modal): contact, delivery (courier / in person in
-// Thessaloniki with a map of the zone / BOX NOW), receipt or invoice, the terms and the 18+ check,
+// Thessaloniki, in the areas the admin lists / BOX NOW), receipt or invoice, the terms and the 18+ check,
 // then POST /api/orders. The server prices the order itself from its own data and holds the stock;
 // the totals shown here are the same arithmetic, for the customer's eyes only. While the shop is not
 // open (state.orders.live false) every order is a DEMO and the window says so plainly.
@@ -14,53 +14,6 @@ import { updateCartUI, cartCouponDiscount } from './cart.js';
 import { hydrateProfile } from './auth.js';
 
 const $ = (id) => document.getElementById(id);
-
-// --- the map (Leaflet + OpenStreetMap), fetched the first time "in person" is picked ---
-const LEAFLET_JS = 'https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js';
-const LEAFLET_JS_SRI = 'sha384-cxOPjt7s7Iz04uaHJceBmS+qpjv2JkIHNVcuOrM+YHwZOmJGBXI00mdUXEq65HTH';
-const LEAFLET_CSS = 'https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css';
-const LEAFLET_CSS_SRI = 'sha384-sHL9NAb7lN7rfvG5lfHpm643Xkcjzp4jFvuavGOndn6pjVqS6ny56CAt3nsEVT4H';
-let leafletPromise = null;
-let map = null;
-
-function loadLeaflet() {
-    if (window.L) return Promise.resolve(window.L);
-    if (!leafletPromise) {
-        leafletPromise = new Promise((resolve, reject) => {
-            const css = document.createElement('link');
-            Object.assign(css, { rel: 'stylesheet', href: LEAFLET_CSS, integrity: LEAFLET_CSS_SRI, crossOrigin: 'anonymous' });
-            document.head.appendChild(css);
-            const s = document.createElement('script');
-            Object.assign(s, { src: LEAFLET_JS, integrity: LEAFLET_JS_SRI, crossOrigin: 'anonymous' });
-            s.onload = () => (window.L ? resolve(window.L) : reject(new Error('Leaflet missing')));
-            s.onerror = () => reject(new Error('Leaflet failed to load'));
-            document.head.appendChild(s);
-        }).catch(err => { leafletPromise = null; throw err; }); // offline now ≠ offline next time
-    }
-    return leafletPromise;
-}
-
-async function showMap() {
-    const box = $('co-map');
-    const settings = state.orders;
-    if (!box || !settings) return;
-    if (map) { map.invalidateSize(); return; }
-    try {
-        const L = await loadLeaflet();
-        const { lat, lng } = settings.handDeliveryCenter;
-        const accent = getComputedStyle(document.documentElement).getPropertyValue('--neon-green').trim() || '#ccff00';
-        map = L.map(box, { scrollWheelZoom: false, attributionControl: true });
-        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            maxZoom: 17, attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>'
-        }).addTo(map);
-        const zone = L.circle([lat, lng], { radius: settings.handDeliveryRadiusKm * 1000, color: accent, weight: 2, fillColor: accent, fillOpacity: 0.14 }).addTo(map);
-        map.fitBounds(zone.getBounds(), { padding: [8, 8] });
-        box.classList.remove('is-failed');
-    } catch (e) {
-        box.classList.add('is-failed');
-        box.textContent = t('coMapFail');
-    }
-}
 
 // --- opening ---
 function fillAreas() {
@@ -90,7 +43,6 @@ function renderSummary() {
 
 function setMethod(method) {
     document.querySelectorAll('.co-fields[data-method]').forEach(f => f.classList.toggle('hidden', f.dataset.method !== method));
-    if (method === 'hand') showMap();
 }
 
 function setInvoice(type) {

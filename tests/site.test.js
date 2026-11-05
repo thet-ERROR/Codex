@@ -212,15 +212,15 @@ describe('checkout', () => {
         assert.equal(page.orders.length, 0);
     }));
 
-    it('in person lists the Thessaloniki areas, even when the map cannot load', () => withPage({ width: 390, height: 844 }, async (page) => {
+    it('in person lists the Thessaloniki areas, and no map is fetched', () => withPage({ width: 390, height: 844 }, async (page) => {
         await toCheckout(page);
         await page.locator('.co-method:has(input[value="hand"])').click();
         await page.locator('#co-area').waitFor({ state: 'visible' });
         const areas = await page.locator('#co-area option').allInnerTexts();
         assert.ok(areas.includes('Καλαμαριά'));
         assert.match(await page.locator('#co-areas').innerText(), /Θεσσαλονίκη/);
-        // The map host is offline in tests: the window says so instead of showing an empty box
-        await page.waitForFunction(() => document.getElementById('co-map').classList.contains('is-failed'), null, { timeout: 5000 });
+        assert.equal(await page.locator('#co-map').count(), 0);
+        assert.equal(await page.evaluate(() => [...document.scripts].some(s => /leaflet/i.test(s.src))), false, 'no map library is loaded');
         assert.equal(await page.locator('#co-address').isVisible(), false, 'the courier fields are hidden');
     }));
 

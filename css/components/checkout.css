@@ -46,16 +46,7 @@
 :is(#checkout-modal, #order-modal) .co-method:has(input:checked) small { color: #d8c9f2; }
 :is(#checkout-modal, #order-modal) .co-method:has(input:focus-visible) { outline: 2px solid #fff; outline-offset: 2px; }
 
-/* --- the in-person zone: a dark OpenStreetMap with the accent circle, and the areas as chips --- */
-:is(#checkout-modal, #order-modal) .co-map {
-    height: 220px; border-radius: 14px; overflow: hidden;
-    border: 1px solid rgba(176, 38, 255, 0.35); background: #0d0a18;
-}
-/* The standard light map, turned to the site's night look */
-:is(#checkout-modal, #order-modal) .co-map .leaflet-tile-pane { filter: invert(1) hue-rotate(180deg) brightness(0.9) contrast(0.9); }
-:is(#checkout-modal, #order-modal) .co-map .leaflet-control-attribution { background: rgba(8, 6, 15, 0.78); color: #9b93b5; }
-:is(#checkout-modal, #order-modal) .co-map .leaflet-control-attribution a { color: #c9b6f5; }
-:is(#checkout-modal, #order-modal) .co-map.is-failed { height: auto; padding: 14px; font-size: 0.82rem; color: #9b93b5; }
+/* --- the in-person areas, as chips --- */
 :is(#checkout-modal, #order-modal) .co-areas { display: flex; flex-wrap: wrap; gap: 6px; }
 :is(#checkout-modal, #order-modal) .co-area-chip {
     padding: 4px 10px; border-radius: 999px; border: 1px solid rgba(176, 38, 255, 0.3);
