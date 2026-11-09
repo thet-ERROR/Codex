@@ -16,14 +16,6 @@
         0 2px 0 #0d0d10, 0 4px 0 #0a0a0d, 0 6px 0 #08080a, 0 8px 0 #060608,
         0 30px 70px rgba(0, 0, 0, 0.75);
 }
-@media (hover: hover) {
-    #main-card:hover {
-        box-shadow:
-            var(--edge-light), var(--edge-dark),
-            0 2px 0 #0d0d10, 0 4px 0 #0a0a0d, 0 6px 0 #08080a, 0 8px 0 #060608,
-            0 44px 90px rgba(0, 0, 0, 0.8);
-    }
-}
 body.night-mode #main-card {
     box-shadow:
         var(--edge-light), var(--edge-dark),
