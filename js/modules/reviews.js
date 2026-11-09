@@ -209,7 +209,7 @@ export function renderGlobalReviews() {
     const verifiedLabel = window.t ? window.t('reviewsVerified') : 'Verified purchase';
 
     if(allReviews.length === 0) { 
-        rList.innerHTML = '<div style="color:#666;text-align:center;margin-top:50px; font-size:0.8rem;">NO TRANSMISSIONS YET</div>'; 
+        rList.innerHTML = '<div style="color:#9a93b5;text-align:center;margin-top:50px; font-size:0.8rem;">NO TRANSMISSIONS YET</div>'; 
     } else { 
         // r.user and r.text come from whoever redeemed a mission code — the one place on the
         // site where a stranger's text reaches every visitor's DOM. Never interpolate them raw.

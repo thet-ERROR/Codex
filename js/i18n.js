@@ -22,6 +22,7 @@ const translations = {
         termUnknown: "Άγνωστη εντολή: {cmd}. Γράψε 'help'.", termDidYouMean: "Εννοούσες '{cmd}';",
 
         reviewsLabel: "Κριτικές", writeReviewBtn: "[+] Γράψε κριτική",
+        profileBtnAria: "Προφίλ", rcRatingLabel: "Βαθμολογία (1 έως 5)", missionReasonLabel: "Τι δεν πάει καλά",
         reviewsVerified: "Επαληθευμένη αγορά", reviewsDeliveries: "{n} παραδόσεις",
         reviewsVerifiedNote: "Οι κριτικές με ✓ γράφτηκαν με κωδικό που υπάρχει μόνο μέσα στη συσκευασία του PC.", cartLabel: "Καλάθι",
         packGaming: "GAMING", packStreaming: "STREAMING", packCoding: "CODING",
@@ -320,6 +321,7 @@ const translations = {
         termUnknown: "Unknown command: {cmd}. Type 'help'.", termDidYouMean: "Did you mean '{cmd}'?",
 
         reviewsLabel: "REVIEWS", writeReviewBtn: "[+] WRITE REVIEW",
+        profileBtnAria: "Profile", rcRatingLabel: "Rating (1 to 5)", missionReasonLabel: "What is wrong",
         reviewsVerified: "Verified purchase", reviewsDeliveries: "{n} deliveries",
         reviewsVerifiedNote: "Reviews with a ✓ were written with a code that comes only inside the PC's box.", cartLabel: "CART",
         packGaming: "GAMING", packStreaming: "STREAMING", packCoding: "CODING",

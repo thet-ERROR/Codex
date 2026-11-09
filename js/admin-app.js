@@ -109,7 +109,7 @@
 
             return `
             <div class="item">
-                <img src="${escUrl((pc.images || [])[0])}">
+                <img src="${escUrl((pc.images || [])[0])}" alt="">
                 <div class="item-info">
                     <div style="font-weight:bold; color:#fff;">${esc(pc.name)}</div>
                     <div style="font-size:0.8rem; color:#888;">
@@ -158,7 +158,7 @@
         const list = document.getElementById('users-list');
         if (!list) return;
         if (filtered.length === 0) {
-            list.innerHTML = `<div style="color:#666; text-align:center; padding:15px; font-size:0.85rem;">${allUsers.length === 0 ? 'NO AGENTS YET' : 'NO MATCHES'}</div>`;
+            list.innerHTML = `<div style="color:#9a9a9a; text-align:center; padding:15px; font-size:0.85rem;">${allUsers.length === 0 ? 'NO AGENTS YET' : 'NO MATCHES'}</div>`;
             return;
         }
 

@@ -23,8 +23,7 @@
     #main-card, .card-ghost > .holo-card { padding: 8px !important; border-radius: 18px !important; }
     .tc-face { gap: 6px; }
     .tc-title { padding: 5px 6px 5px 10px; gap: 8px; border-radius: 12px; }
-    .tc-cube { font-size: max(18px, 6.4cqw); }
-    .tc-name { font-size: max(15px, 5.2cqw); }
+    .tc-name { font-size: max(16px, 5.9cqw); }
     .tc-attr { width: 9cqw; height: 9cqw; font-size: 4.8cqw; }
     .tc-art { aspect-ratio: 16 / 10; border-radius: 12px; }
     .tc-dots { bottom: 7px; padding: 4px 8px; }

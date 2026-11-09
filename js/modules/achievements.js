@@ -100,7 +100,7 @@ function badgeCards() {
         return `<div class="ach-card ${unlocked ? 'unlocked' : ''}">
                     <i class="ph-fill ${esc(a.icon)} ach-icon"></i>
                     <div class="ach-info">
-                        <h4>${esc(localise(a.title))}</h4>
+                        <h3>${esc(localise(a.title))}</h3>
                         <p>${esc(localise(a.desc))}</p>
                     </div>
                     <div class="ach-status" title="${unlocked ? esc(t('achUnlocked')) : esc(t('achLocked'))}"><i class="ph-bold ${unlocked ? 'ph-check' : 'ph-lock-simple'}" aria-hidden="true"></i><span class="ach-status-text">${unlocked ? esc(t('achUnlocked')) : esc(t('achLocked'))}</span></div>

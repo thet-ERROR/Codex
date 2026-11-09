@@ -153,6 +153,36 @@ describe('cart', () => {
     }));
 });
 
+describe('the PC card header and hover', () => {
+    it('the title has no cube icon in front of it', () => withPage({ width: 1440, height: 900 }, async (page) => {
+        assert.equal(await page.locator('#main-card .tc-title .tc-cube').count(), 0);
+        assert.equal(await page.locator('#main-card .tc-title .tc-name').count(), 1);
+    }));
+
+    it('the card does not lift, lean or glow when the mouse is over it', () => withPage({ width: 1440, height: 900 }, async (page) => {
+        const look = () => page.evaluate(() => {
+            const s = getComputedStyle(document.getElementById('main-card'));
+            return { transform: s.transform, rotate: s.rotate, scale: s.scale, shadow: s.boxShadow };
+        });
+        const before = await look();
+        const box = await page.locator('#main-card').boundingBox();
+        // Over the card and moving around in it, as a visitor reading it would
+        await page.mouse.move(box.x + box.width * 0.5, box.y + box.height * 0.5);
+        await page.mouse.move(box.x + box.width * 0.85, box.y + box.height * 0.2, { steps: 6 });
+        await page.waitForTimeout(700);
+        assert.deepEqual(await look(), before);
+    }));
+
+    it('the title is not cut off for a normal PC name, on a phone and a desktop', async () => {
+        for (const size of [{ width: 390, height: 844 }, { width: 1440, height: 900 }]) {
+            await withPage(size, async (page) => {
+                const fits = await page.evaluate(() => { const n = document.querySelector('#main-card .tc-name'); return n.scrollWidth <= n.clientWidth; });
+                assert.equal(fits, true);
+            });
+        }
+    });
+});
+
 // Cumulative Layout Shift while the page loads: the card grows from an empty box to its full size when
 // the catalogue arrives. That happens under the splash, but Chrome (and WebPageTest) count it anyway —
 // it was 0.08 on a desktop and 0.11 on a phone, where "good" is 0.1 or less.

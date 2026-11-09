@@ -171,7 +171,7 @@
 #agent-dashboard-modal .ach-card .ach-icon { color: #4c3a6b; }
 #agent-dashboard-modal .ach-card.unlocked { border-color: rgba(255, 61, 166, 0.7); box-shadow: 0 0 10px rgba(255, 61, 166, 0.15), inset 0 0 10px rgba(176, 38, 255, 0.1); }
 #agent-dashboard-modal .ach-card.unlocked .ach-icon { color: var(--d-pink); filter: drop-shadow(0 0 5px rgba(255, 61, 166, 0.6)); }
-#agent-dashboard-modal .ach-card.unlocked .ach-info h4 { color: var(--d-pink); }
+#agent-dashboard-modal .ach-card.unlocked .ach-info h3 { color: var(--d-pink); }
 #agent-dashboard-modal .ach-card.unlocked .ach-status { color: #c084fc; }
 #agent-dashboard-modal #dossier-achievements { max-height: 260px; }
 
