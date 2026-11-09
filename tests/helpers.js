@@ -246,7 +246,7 @@ export async function launch() {
 
 // page: '' for the storefront, 'admin.html' for the panel (logged in, dashboard showing; with
 // twoFactor the sign-in takes the code step too, unless login: false leaves it at the login screen)
-export async function newPage(browser, site, { width = 390, height = 844, locale = 'en-US', storage = {}, mobile = width < 700, tourDone = true, page: which = '', twoFactor = false, login = true, member = false, query = '', status = {}, reviews = null } = {}) {
+export async function newPage(browser, site, { width = 390, height = 844, locale = 'en-US', storage = {}, mobile = width < 700, tourDone = true, page: which = '', twoFactor = false, login = true, member = false, query = '', status = {}, reviews = null, initScript = '' } = {}) {
     const context = await browser.newContext({
         viewport: { width, height }, locale, deviceScaleFactor: 2, isMobile: mobile, hasTouch: mobile,
         // Fixed, so the mascot / tour / "night mode" never depend on the time the suite is run at
@@ -261,6 +261,8 @@ export async function newPage(browser, site, { width = 390, height = 844, locale
             for (const [k, v] of Object.entries(storage)) localStorage.setItem(k, v);
         } catch (e) {}
     }, { storage, tourDone, member });
+    // A script that must run before the page's own (a layout-shift observer, say)
+    if (initScript) await context.addInitScript(initScript);
     const log = [];
     const adminOrders = ADMIN_ORDERS();
     const sec = { enabled: twoFactor };

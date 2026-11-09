@@ -153,6 +153,20 @@ describe('cart', () => {
     }));
 });
 
+// Cumulative Layout Shift while the page loads: the card grows from an empty box to its full size when
+// the catalogue arrives. That happens under the splash, but Chrome (and WebPageTest) count it anyway —
+// it was 0.08 on a desktop and 0.11 on a phone, where "good" is 0.1 or less.
+const CLS_OBSERVER = `window.__cls = 0; new PerformanceObserver(l => { for (const e of l.getEntries()) if (!e.hadRecentInput) window.__cls += e.value; }).observe({ type: 'layout-shift', buffered: true });`;
+describe('loading without jumping', () => {
+    for (const [label, width, height] of [['phone 390', 390, 844], ['desktop 1440', 1440, 900]]) {
+        it(`the page does not shift while it loads — ${label}`, () => withPage({ width, height, initScript: CLS_OBSERVER }, async (page) => {
+            await page.waitForTimeout(1500);
+            const cls = await page.evaluate(() => window.__cls);
+            assert.ok(cls < 0.02, `layout shift while loading was ${cls.toFixed(3)}`);
+        }));
+    }
+});
+
 describe('reviews', () => {
     const REVIEWS = [
         { _id: 'r1', user: 'Maria', rating: 5, text: 'Fast and quiet', date: '2026-11-20T10:00:00Z', verified: true },
