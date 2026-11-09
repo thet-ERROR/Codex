@@ -110,6 +110,8 @@ Type 'help' for a list of commands.
 
     <div class="right-sidebar">
         <div class="feed-header"><span><i class="ph-bold ph-star"></i> <span data-i18n="reviewsLabel">REVIEWS</span></span><div class="live-dot"></div></div>
+        <!-- "N deliveries" (only once there are enough) and how the ✓ on a review is earned — reviews.js -->
+        <div class="reviews-meta" id="reviews-meta" hidden></div>
         <div class="review-list" id="review-list"></div>
         <div style="text-align:center; margin-top:10px;">
             <button class="add-review-btn" onclick="checkMissionCode()" data-i18n="writeReviewBtn">[+] WRITE REVIEW</button>
@@ -613,8 +615,7 @@ Type 'help' for a list of commands.
                     </div>
                 </div>
                 <div class="co-fields hidden" data-method="hand">
-                    <p class="co-note" data-i18n="coHandNote">I deliver in person inside the shaded zone, in these areas:</p>
-                    <div class="co-map" id="co-map"></div>
+                    <p class="co-note" data-i18n="coHandNote">I deliver in person, only in these areas of Thessaloniki:</p>
                     <div class="co-areas" id="co-areas"></div>
                     <select id="co-area" class="auth-input" aria-label="Area" data-i18n-aria="coArea"></select>
                     <input id="co-hand-address" class="auth-input" autocomplete="street-address" maxlength="120" placeholder="Address" data-i18n-placeholder="coAddress">

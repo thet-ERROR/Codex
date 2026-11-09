@@ -22,6 +22,12 @@ const FLOW = ['new', 'paid', 'building', 'packed', 'shipped', 'delivered'];
 const NEXT_LABEL = { paid: 'ΠΛΗΡΩΘΗΚΕ', building: 'ΣΕ ΚΑΤΑΣΚΕΥΗ', packed: 'ΠΑΚΕΤΑΡΙΣΤΗΚΕ', shipped: 'ΑΠΕΣΤΑΛΗ', delivered: 'ΠΑΡΑΔΟΘΗΚΕ' };
 const DELIVERY = { courier: 'Courier', hand: 'Χέρι με χέρι', boxnow: 'BOX NOW' };
 const EXTRA = { hdd: '+1TB HDD', ssd: '+1TB SSD', proConfig: 'Pro Configuration', paint: 'Βαφή' };
+const CODE_STATE = { pending: 'ΣΤΟ ΚΟΥΤΙ', active: 'ΤΟΝ ΕΒΑΛΕ', used: 'ΕΓΡΑΨΕ ΚΡΙΤΙΚΗ', void: 'ΑΚΥΡΟΣ' };
+// Who made a step in the history
+const BOX_CODE_NOTE = 'box code entered';
+const byLabel = (h) => h.by === 'auto' ? 'αυτόματα (τέλος επιστροφών)'
+    : h.by === 'customer' && h.note === BOX_CODE_NOTE ? 'πελάτης — έβαλε τον κωδικό του κουτιού'
+    : h.by === 'customer' ? 'πελάτης' : h.by === 'admin' ? 'εσύ' : (h.by || '');
 
 let API = '', getToken = () => null, onAuthError = () => false;
 let current = null;          // the order open in the detail view
@@ -163,6 +169,15 @@ function renderDetail() {
             <div class="ord-line total"><span>ΣΥΝΟΛΟ</span><b>${formatPrice(o.totalCents)}</b></div>
         </div>
 
+        ${(o.reviewCodes || []).length ? `
+        <div class="ord-card">
+            <div class="ord-k">ΚΩΔΙΚΟΙ ΚΡΙΤΙΚΗΣ — ΓΙΑ ΤΟ ΚΟΥΤΙ</div>
+            <div class="ord-muted">Τύπωσέ τους και βάλε τον καθένα στο κουτί του. Όταν ο πελάτης τον βάλει, η παραγγελία γίνεται «Παραδόθηκε» αν δεν το έχεις πατήσει, και έχει 14 μέρες για κριτική.</div>
+            ${o.reviewCodes.map(c => `<div class="ord-line"><span><code class="ord-code">${esc(c.code)}</code> ${esc(c.pcName)}</span><span class="ord-flag">${esc(CODE_STATE[c.status] || c.status)}</span></div>`).join('')}
+            <div class="ord-btns"><button type="button" class="btn-sm edit-btn" data-action="print-codes">🖨 ΕΚΤΥΠΩΣΗ</button></div>
+        </div>` : ''}
+        ${o.status === 'delivered' && o.returnDeadline ? `<div class="ord-muted ord-autonote">Κλείνει αυτόματα ως «Ολοκληρώθηκε» στις ${esc(when(o.returnDeadline))}, αν δεν υπάρχει ανοιχτό αίτημα επιστροφής.</div>` : ''}
+
         ${o.notes ? `<div class="ord-card"><div class="ord-k">ΣΗΜΕΙΩΣΕΙΣ ΠΕΛΑΤΗ</div><div class="ord-notes">${esc(o.notes)}</div></div>` : ''}
 
         ${(o.requests || []).length ? `
@@ -200,7 +215,7 @@ function renderDetail() {
 
         <div class="ord-card">
             <div class="ord-k">ΙΣΤΟΡΙΚΟ</div>
-            ${(o.history || []).map(h => `<div class="ord-line sub"><span>${badge(h.status)} ${esc(h.by === 'customer' ? 'πελάτης' : h.by === 'admin' ? 'εσύ' : h.by || '')}${h.note ? ` — ${esc(h.note)}` : ''}</span><span>${esc(when(h.at))}</span></div>`).join('')}
+            ${(o.history || []).map(h => `<div class="ord-line sub"><span>${badge(h.status)} ${esc(byLabel(h))}${h.note && h.note !== BOX_CODE_NOTE ? ` — ${esc(h.note)}` : ''}</span><span>${esc(when(h.at))}</span></div>`).join('')}
         </div>`;
 }
 
@@ -220,12 +235,33 @@ async function moveTo(status) {
     renderDetail();
 }
 
+// A slip per code, for the box. Printed from this page: everything else is hidden while printing
+// (admin-style.css, body.printing-slips).
+function printCodes() {
+    const slips = document.createElement('div');
+    slips.id = 'print-slips';
+    slips.innerHTML = (current.reviewCodes || []).filter(c => c.status !== 'void').map(c => `
+        <div class="slip">
+            <div class="slip-title">PHOENIX CODEX</div>
+            <div>Πώς πάει το νέο σου PC; Γράψε κριτική · How's your new PC? Write a review</div>
+            <div class="slip-pc">${esc(c.pcName)}</div>
+            <div class="slip-code">${esc(c.code)}</div>
+            <div>${esc(location.origin)} → «Γράψε κριτική» / "Write review"</div>
+            <div class="slip-small">Ισχύει 14 ημέρες από την παράδοση, μία φορά · Valid for 14 days from delivery, once</div>
+        </div>`).join('');
+    document.body.appendChild(slips);
+    document.body.classList.add('printing-slips');
+    const done = () => { document.body.classList.remove('printing-slips'); slips.remove(); window.removeEventListener('afterprint', done); };
+    window.addEventListener('afterprint', done);
+    window.print();
+}
+
 async function handleRequest(id) {
     const note = (document.querySelector(`[data-request-note="${CSS.escape(id)}"]`)?.value || '').trim();
     const r = await call('POST', `/admin/orders/${encodeURIComponent(current.number)}/requests/${encodeURIComponent(id)}/handle`, { note });
     if (r.expired) return;
     if (!r.res.ok) { alert(r.data?.error || 'Δεν έγινε'); return; }
-    current = { ...r.data, priorNoShows: current.priorNoShows };
+    current = { ...r.data, priorNoShows: current.priorNoShows, reviewCodes: r.data.reviewCodes || current.reviewCodes };
     renderDetail();
 }
 
@@ -238,7 +274,8 @@ async function cancel(noShow) {
     const r = await call('POST', `/admin/orders/${encodeURIComponent(current.number)}/cancel`, { reason: noShow ? 'no_show' : 'admin', note });
     if (r.expired) return;
     if (!r.res.ok) { alert(r.data?.error || 'Η ακύρωση δεν έγινε'); return; }
-    current = { ...r.data, priorNoShows: current.priorNoShows };
+    // The server voided the unused codes with the order
+    current = { ...r.data, priorNoShows: current.priorNoShows, reviewCodes: (current.reviewCodes || []).map(c => (c.status === 'used' ? c : { ...c, status: 'void' })) };
     renderDetail();
 }
 
@@ -248,8 +285,8 @@ async function loadOrderSettings() {
     if (expired || !res.ok || !data) return;
     if (data.returnDays) $('os-return-days').value = data.returnDays;
     if (Array.isArray(data.handDeliveryAreas)) $('os-areas').value = data.handDeliveryAreas.join('\n');
-    if (data.handDeliveryRadiusKm) $('os-radius').value = data.handDeliveryRadiusKm;
-    if (data.handDeliveryCenter) { $('os-lat').value = data.handDeliveryCenter.lat; $('os-lng').value = data.handDeliveryCenter.lng; }
+    $('os-deliveries-on').checked = data.deliveriesBadgeOn !== false;
+    $('os-deliveries-min').value = data.deliveriesBadgeMin || 10;
 }
 
 async function saveOrderSettings() {
@@ -257,14 +294,36 @@ async function saveOrderSettings() {
     const body = {
         returnDays: Number($('os-return-days').value),
         handDeliveryAreas: $('os-areas').value.split('\n').map(s => s.trim()).filter(Boolean),
-        handDeliveryRadiusKm: Number($('os-radius').value),
-        handDeliveryCenter: { lat: Number($('os-lat').value), lng: Number($('os-lng').value) }
+        deliveriesBadgeOn: $('os-deliveries-on').checked,
+        deliveriesBadgeMin: Number($('os-deliveries-min').value)
     };
     const { res, data, expired } = await call('POST', '/site-config', body);
     if (expired) return;
     out.style.color = res.ok ? '#ccff00' : '#ff3333';
     out.textContent = res.ok ? 'Αποθηκεύτηκε.' : (data?.error || 'Δεν αποθηκεύτηκε.');
-    if (res.ok) loadOrderSettings();
+    if (res.ok) { loadOrderSettings(); loadStats(); }
+}
+
+// --- the admin's own figures (never public) ---
+async function loadStats() {
+    const box = $('order-stats');
+    if (!box) return;
+    const { res, data, expired } = await call('GET', '/admin/order-stats');
+    if (expired) return;
+    if (!res.ok || !data?.live) { box.textContent = 'Δεν φορτώθηκαν.'; return; }
+    const row = (label, all, d30) => `<div class="ord-line sub"><span>${esc(label)}</span><b>${esc(all)}${d30 !== undefined ? ` <span class="ord-muted">(30 ημ.: ${esc(d30)})</span>` : ''}</b></div>`;
+    const block = (s) => [
+        row('Παραδόσεις', s.delivered, s.delivered30),
+        row('Ολοκληρώθηκαν', s.completed),
+        row('Μέσα στο διάστημα επιστροφής', s.inReturnWindow),
+        row('Αιτήματα επιστροφής', s.returns, s.returns30),
+        row('Προβλήματα (εγγύηση)', s.problems, s.problems30),
+        row('Ανοιχτά αιτήματα', s.openRequests)
+    ].join('');
+    box.innerHTML = `
+        <div class="ord-k">ΠΡΑΓΜΑΤΙΚΕΣ</div>${block(data.live)}
+        <div class="ord-muted ord-stats-note">Στη βιτρίνα μετράνε ${esc(data.live.publicCount)} (ολοκληρωμένες, χωρίς αίτημα επιστροφής) — φαίνονται μόνο από το όριο και πάνω. Τα προβλήματα δεν φαίνονται ποτέ δημόσια.</div>
+        <div class="ord-k">DEMO</div>${block(data.demo)}`;
 }
 
 // --- tabs and wiring ---
@@ -299,11 +358,13 @@ export function initOrders(opts) {
             if (el.dataset.action === 'cancel') cancel(false);
             if (el.dataset.action === 'no-show') cancel(true);
             if (el.dataset.action === 'handle-request') handleRequest(el.dataset.id);
+            if (el.dataset.action === 'print-codes') printCodes();
         });
         $('save-order-settings-btn')?.addEventListener('click', saveOrderSettings);
     }
     loadOrders();
     loadOrderSettings();
+    loadStats();
     // New orders show up while the panel is open (the badge, and the list when nothing is open)
     clearInterval(refreshTimer);
     refreshTimer = setInterval(() => { if (!current) loadOrders(); }, 60 * 1000);

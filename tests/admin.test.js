@@ -93,11 +93,49 @@ describe('admin: order settings', () => {
         await page.waitForFunction(() => document.getElementById('os-areas').value.includes('Καλαμαριά'));
         await page.fill('#os-return-days', '30');
         await page.fill('#os-areas', 'Καλαμαριά\n  Θέρμη  \n\nΠυλαία');
-        await page.fill('#os-radius', '12');
+        assert.equal(await page.locator('#os-deliveries-on').isChecked(), true);
+        assert.equal(await page.inputValue('#os-deliveries-min'), '10');
+        await page.uncheck('#os-deliveries-on');
+        await page.fill('#os-deliveries-min', '25');
         await page.click('#save-order-settings-btn');
         await page.waitForFunction(() => document.getElementById('os-result').textContent === 'Αποθηκεύτηκε.');
         const saved = page.apiLog.filter(c => c.method === 'POST' && c.path === '/site-config').at(-1).body;
-        assert.deepEqual(saved, { returnDays: 30, handDeliveryAreas: ['Καλαμαριά', 'Θέρμη', 'Πυλαία'], handDeliveryRadiusKm: 12, handDeliveryCenter: { lat: 40.64, lng: 22.94 } });
+        assert.deepEqual(saved, { returnDays: 30, handDeliveryAreas: ['Καλαμαριά', 'Θέρμη', 'Πυλαία'], deliveriesBadgeOn: false, deliveriesBadgeMin: 25 });
+    }));
+
+    it('the admin-only figures show deliveries, returns and problems', () => withAdmin(async (page) => {
+        await page.waitForFunction(() => document.getElementById('order-stats').textContent.includes('Παραδόσεις'));
+        const text = await page.locator('#order-stats').innerText();
+        assert.match(text, /Προβλήματα \(εγγύηση\)\s*2/);
+        assert.match(text, /μετράνε 12/);
+        assert.match(text, /DEMO/);
+    }));
+});
+
+describe('admin: review codes for the box', () => {
+    it('an order shows its codes with their state, and who marked it delivered', () => withAdmin(async (page) => {
+        await openOrdersTab(page);
+        await openOrder(page, 'DEMO-0003');
+        const text = await page.locator('#order-detail').innerText();
+        assert.match(text, /CDX-0123456789/);
+        assert.match(text, /ΤΟΝ ΕΒΑΛΕ/);
+        assert.match(text, /έβαλε τον κωδικό του κουτιού/);
+        assert.doesNotMatch(text, /box code entered/, 'the raw note is not shown');
+        assert.match(text, /Κλείνει αυτόματα/);
+    }));
+
+    it('printing makes one slip per code and cleans up after', () => withAdmin(async (page) => {
+        await openOrdersTab(page);
+        await openOrder(page, 'DEMO-0003');
+        // Catch the print instead of opening the dialog, and look at the page as it would print
+        await page.evaluate(() => { window.print = () => { window.__printed = document.getElementById('print-slips')?.innerText; window.dispatchEvent(new Event('afterprint')); }; });
+        await page.click('[data-action="print-codes"]');
+        const printed = await page.evaluate(() => window.__printed);
+        assert.match(printed, /CDX-0123456789/);
+        assert.match(printed, /14/);
+        assert.equal(await page.locator('#print-slips').count(), 0);
+        assert.equal(await page.evaluate(() => document.body.classList.contains('printing-slips')), false);
+        assert.deepEqual(page.problems, []);
     }));
 });
 

@@ -153,6 +153,52 @@ describe('cart', () => {
     }));
 });
 
+// Cumulative Layout Shift while the page loads: the card grows from an empty box to its full size when
+// the catalogue arrives. That happens under the splash, but Chrome (and WebPageTest) count it anyway —
+// it was 0.08 on a desktop and 0.11 on a phone, where "good" is 0.1 or less.
+const CLS_OBSERVER = `window.__cls = 0; new PerformanceObserver(l => { for (const e of l.getEntries()) if (!e.hadRecentInput) window.__cls += e.value; }).observe({ type: 'layout-shift', buffered: true });`;
+describe('loading without jumping', () => {
+    for (const [label, width, height] of [['phone 390', 390, 844], ['desktop 1440', 1440, 900]]) {
+        it(`the page does not shift while it loads — ${label}`, () => withPage({ width, height, initScript: CLS_OBSERVER }, async (page) => {
+            await page.waitForTimeout(1500);
+            const cls = await page.evaluate(() => window.__cls);
+            assert.ok(cls < 0.02, `layout shift while loading was ${cls.toFixed(3)}`);
+        }));
+    }
+});
+
+describe('reviews', () => {
+    const REVIEWS = [
+        { _id: 'r1', user: 'Maria', rating: 5, text: 'Fast and quiet', date: '2026-11-20T10:00:00Z', verified: true },
+        { _id: 'r2', user: 'Shop', rating: 4, text: 'Typed by hand', date: '2026-11-19T10:00:00Z' }
+    ];
+    const openList = (page) => page.locator('#review-list .review-card').first().waitFor({ state: 'attached' });
+
+    it('a review written with the box code says verified purchase; one typed by hand does not', () => withPage({ width: 1440, height: 900, reviews: REVIEWS }, async (page) => {
+        await openList(page);
+        const cards = page.locator('#review-list .review-card');
+        assert.equal(await cards.nth(0).locator('.r-verified').count(), 1);
+        assert.match(await cards.nth(0).innerText(), /Verified purchase/);
+        assert.equal(await cards.nth(1).locator('.r-verified').count(), 0);
+        assert.match(await page.locator('#reviews-meta').innerText(), /only inside the PC's box/, 'says how the ✓ is earned');
+    }));
+
+    it('"N deliveries" shows only when the server sends a number', () => withPage({ width: 1440, height: 900, reviews: REVIEWS, status: { deliveries: 37 } }, async (page) => {
+        await openList(page);
+        await page.waitForFunction(() => /37 deliveries/.test(document.getElementById('reviews-meta').innerText));
+    }));
+
+    it('nothing above the list with no number and no verified review', () => withPage({ width: 1440, height: 900, status: { deliveries: null } }, async (page) => {
+        assert.equal(await page.locator('#reviews-meta').isHidden(), true);
+    }));
+
+    it('in Greek', () => withPage({ width: 1440, height: 900, locale: 'el-GR', reviews: REVIEWS, status: { deliveries: 12 } }, async (page) => {
+        await openList(page);
+        await page.waitForFunction(() => /12 παραδόσεις/.test(document.getElementById('reviews-meta').innerText));
+        assert.match(await page.locator('.r-verified').innerText(), /Επαληθευμένη αγορά/);
+    }));
+});
+
 describe('checkout', () => {
     // One PC in the cart, then the checkout window open
     async function toCheckout(page) {
@@ -212,15 +258,15 @@ describe('checkout', () => {
         assert.equal(page.orders.length, 0);
     }));
 
-    it('in person lists the Thessaloniki areas, even when the map cannot load', () => withPage({ width: 390, height: 844 }, async (page) => {
+    it('in person lists the Thessaloniki areas, and no map is fetched', () => withPage({ width: 390, height: 844 }, async (page) => {
         await toCheckout(page);
         await page.locator('.co-method:has(input[value="hand"])').click();
         await page.locator('#co-area').waitFor({ state: 'visible' });
         const areas = await page.locator('#co-area option').allInnerTexts();
         assert.ok(areas.includes('Καλαμαριά'));
         assert.match(await page.locator('#co-areas').innerText(), /Θεσσαλονίκη/);
-        // The map host is offline in tests: the window says so instead of showing an empty box
-        await page.waitForFunction(() => document.getElementById('co-map').classList.contains('is-failed'), null, { timeout: 5000 });
+        assert.equal(await page.locator('#co-map').count(), 0);
+        assert.equal(await page.evaluate(() => [...document.scripts].some(s => /leaflet/i.test(s.src))), false, 'no map library is loaded');
         assert.equal(await page.locator('#co-address').isVisible(), false, 'the courier fields are hidden');
     }));
 

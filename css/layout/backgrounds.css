@@ -3,6 +3,11 @@
     display: flex; flex-direction: column; align-items: center; justify-content: center; pointer-events: auto;
 }
 #startup-overlay.hidden { opacity: 0; pointer-events: none; transition: opacity 0.5s; }
+/* While the splash is up the stage is still being filled in: the card grows from an empty box to its
+   full size when the catalogue arrives, and pushes the heading with it. Nobody sees that (the splash
+   is opaque) but Chrome counts it as layout shift. visibility, not display: the stage keeps its layout,
+   so the script can still measure it, and it is shown the moment the splash starts to fade. */
+body:has(#startup-overlay:not(.hidden)) .stage { visibility: hidden; }
 #startup-text { font-family: var(--font-ui); font-size: 4rem; font-weight: 800; letter-spacing: 10px; color: #fff; margin-bottom: 20px; }
 .loader-bar { width: 300px; height: 4px; background: #111; border-radius: 2px; overflow: hidden; }
 .loader-fill { height: 100%; width: 0%; background: var(--neon-green); transition: width 0.1s linear; }

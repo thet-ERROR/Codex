@@ -236,18 +236,21 @@
                 <div id="security-box">LOADING...</div>
             </div>
 
+            <!-- Only the admin sees these (js/admin-orders.js loadStats) -->
+            <div class="tool-box" style="border-color:#7dffb0;">
+                <h3 style="color:#7dffb0;">📊 ΠΑΡΑΔΟΣΕΙΣ & ΑΙΤΗΜΑΤΑ</h3>
+                <div id="order-stats">LOADING...</div>
+            </div>
+
             <div class="tool-box" style="border-color:#ffc43d;">
                 <h3 style="color:#ffc43d;">📦 ΡΥΘΜΙΣΕΙΣ ΠΑΡΑΓΓΕΛΙΩΝ</h3>
                 <label>Διάστημα επιστροφής (ημέρες, τουλάχιστον 14 — νόμιμο ελάχιστο)</label>
                 <input type="number" id="os-return-days" min="14" max="365" value="14">
                 <label>Περιοχές χέρι με χέρι (μία ανά γραμμή)</label>
                 <textarea id="os-areas" style="height:120px;"></textarea>
-                <label>Κύκλος στον χάρτη: ακτίνα (km)</label>
-                <input type="number" id="os-radius" min="1" max="100" step="0.5" value="10">
-                <div style="display:flex; gap:8px;">
-                    <div style="flex:1;"><label>Κέντρο: πλάτος (lat)</label><input type="number" id="os-lat" step="0.0001" value="40.6401"></div>
-                    <div style="flex:1;"><label>Κέντρο: μήκος (lng)</label><input type="number" id="os-lng" step="0.0001" value="22.9444"></div>
-                </div>
+                <label class="os-check"><input type="checkbox" id="os-deliveries-on" checked> Δείξε «Ν παραδόσεις» δίπλα στις κριτικές</label>
+                <label>Από πόσες παραδόσεις και πάνω να φαίνεται</label>
+                <input type="number" id="os-deliveries-min" min="1" max="10000" value="10">
                 <button class="btn btn-green" id="save-order-settings-btn">SAVE</button>
                 <p id="os-result" style="font-size:0.8rem; margin:8px 0 0 0;"></p>
             </div>
