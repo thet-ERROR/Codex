@@ -150,6 +150,7 @@ const SHELL_KICKERS = {
 const SHELL_ICONS = {
     'login-modal': 'ph-user-circle', 'signup-modal': 'ph-user-plus', 'forgot-modal': 'ph-key', 'reset-modal': 'ph-lock-key', 'achievements-modal': 'ph-trophy', 'checkout-modal': 'ph-package', 'order-modal': 'ph-package'
 };
+const READ_ONLY_SHELLS = ['achievements-modal', 'rank-info-modal', 'spec-info-modal', 'proconfig-info-modal'];
 const SHELL_SMALL = ['login-modal', 'signup-modal', 'forgot-modal', 'reset-modal', 'newsletter-modal', 'review-code-modal', 'spec-info-modal', 'tutorial-lang-modal', 'qr-modal', 'rank-info-modal'];
 
 function upgradeModalShells() {
@@ -193,6 +194,8 @@ function upgradeModalShells() {
 
         const body = document.createElement('div');
         body.className = 'info-body';
+        // Text and nothing to Tab to: without this a keyboard user can't scroll them on a small screen
+        if (READ_ONLY_SHELLS.includes(id)) body.tabIndex = 0;
         while (box.firstChild) body.appendChild(box.firstChild);
         box.append(head, body);
 

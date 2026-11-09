@@ -96,7 +96,7 @@
         .ord-grid .ord-card { margin-bottom: 0; }
         .ord-card a { color: #00f0ff; }
         .ord-k { font-size: 0.7rem; color: #888; letter-spacing: 1px; font-weight: bold; margin-bottom: 6px; }
-        .ord-muted { color: #777; font-size: 0.8rem; }
+        .ord-muted { color: #9a9a9a; font-size: 0.8rem; }
         .ord-line { display: flex; justify-content: space-between; gap: 12px; padding: 3px 0; }
         .ord-line.sub { color: #999; font-size: 0.82rem; }
         .ord-line.total { border-top: 1px solid #2a2a2a; margin-top: 6px; padding-top: 8px; font-size: 1rem; }
@@ -150,3 +150,6 @@
             #print-slips .slip-code { font-family: monospace; font-size: 22pt; font-weight: bold; letter-spacing: 3px; margin: 8px 0; }
             #print-slips .slip-small { font-size: 9pt; color: #333; }
         }
+
+/* For screen readers only */
+.visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }

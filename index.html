@@ -59,7 +59,7 @@ Type 'help' for a list of commands.
         </div>
     </div>
 
-    <canvas id="matrix-canvas"></canvas>
+    <canvas id="matrix-canvas" aria-hidden="true"></canvas>
 
     <div id="startup-overlay">
         <div id="startup-text">PHOENIX CODEX</div>
@@ -75,7 +75,7 @@ Type 'help' for a list of commands.
     <div class="grid-overlay"></div>
     <div class="moon-glow"></div>
 
-    <div class="left-sidebar">
+    <nav class="left-sidebar">
         <div class="side-group">
             <button class="side-btn" onclick="playClick(); openModal('settings')" title="System Settings" data-i18n-title="sideSettings"><img class="side-ico" src="assets/icons/bar/gear.png" alt="" aria-hidden="true"></button>
             <div class="side-divider"></div>
@@ -94,7 +94,7 @@ Type 'help' for a list of commands.
 
         <!-- The help button is the mascot: the phoenix's head in a round frame (mascot.css) -->
         <button class="side-btn chat-toggle mascot-btn" onclick="toggleChat()" data-i18n-title="chatTop" data-i18n-aria="chatTop" title="Quick answers" aria-label="Quick answers"><img class="mascot-head" src="assets/mascot/phoenix-head.png" alt="" aria-hidden="true"></button>
-    </div>
+    </nav>
 
     <!-- Deliberately NOT inside .side-group. On phones that group is a horizontally scrolling strip
          (overflow-x: auto + -webkit-overflow-scrolling: touch), and iOS Safari clips even a
@@ -108,7 +108,7 @@ Type 'help' for a list of commands.
         <button class="side-btn" onclick="playClick(); openQr()" title="QR" data-i18n-title="sideQr"><i class="ph-duotone ph-qr-code"></i></button>
     </div>
 
-    <div class="right-sidebar">
+    <aside class="right-sidebar">
         <div class="feed-header"><span><i class="ph-bold ph-star"></i> <span data-i18n="reviewsLabel">REVIEWS</span></span><div class="live-dot"></div></div>
         <!-- "N deliveries" (only once there are enough) and how the ✓ on a review is earned — reviews.js -->
         <div class="reviews-meta" id="reviews-meta" hidden></div>
@@ -116,7 +116,7 @@ Type 'help' for a list of commands.
         <div style="text-align:center; margin-top:10px;">
             <button class="add-review-btn" onclick="checkMissionCode()" data-i18n="writeReviewBtn">[+] WRITE REVIEW</button>
         </div>
-    </div>
+    </aside>
     
     <header>
         <img src="assets/images/logo.webp" alt="PHOENIX CODEX" class="logo" onclick="playClick(); openWhoAmI();">
@@ -137,7 +137,7 @@ Type 'help' for a list of commands.
             </button>
             <span id="user-display" class="hidden"></span>
             <div class="profile-container">
-                <button class="profile-btn" onclick="playClick(); toggleProfileMenu()">
+                <button class="profile-btn" aria-label="Profile" data-i18n-aria="profileBtnAria" onclick="playClick(); toggleProfileMenu()">
                     <i class="ph-bold ph-user"></i>
                 </button>
                 <div class="profile-menu" id="profile-menu"></div>
@@ -153,7 +153,7 @@ Type 'help' for a list of commands.
         </div>
     </header>
 
-    <div class="stage">
+    <main class="stage">
         <!-- Heading over the stage: a >// kicker, a translated title and how many PCs are here.
              Filled by renderStageHeading() in js/modules/catalog.js on every tab/pack/language change. -->
         <div class="stage-heading" id="stage-heading">
@@ -280,7 +280,7 @@ Type 'help' for a list of commands.
                 </button>
             </div>
         </div>
-    </div>
+    </main>
 
     <div class="chat-widget" id="chat-widget">
         <div class="chat-body">
@@ -403,17 +403,17 @@ Type 'help' for a list of commands.
     </div>
 
     <div class="modal-overlay" id="whoami-modal">
-        <div class="modal-content whoami-content">
+        <div class="modal-content whoami-content" role="dialog" aria-modal="true" aria-labelledby="whoami-title">
             <span class="close-modal" onclick="closeModal('whoami-modal')">X</span>
-            <div class="whoami-title"><span class="cli-prompt">&gt;</span> whoami</div>
+            <div class="whoami-title" id="whoami-title"><span class="cli-prompt">&gt;</span> whoami</div>
             <div class="whoami-body"><span id="whoami-text"></span><span class="whoami-cursor">_</span></div>
         </div>
     </div>
 
     <div class="modal-overlay" id="wheel-modal">
-        <div class="modal-content wheel-content">
+        <div class="modal-content wheel-content" role="dialog" aria-modal="true" aria-labelledby="wheel-title">
             <span class="close-modal" onclick="closeModal('wheel-modal')">X</span>
-            <h2 class="modal-title" style="font-size:1.4rem;" data-i18n="wheelTitle">SPIN THE WHEEL</h2>
+            <h2 class="modal-title" id="wheel-title" style="font-size:1.4rem;" data-i18n="wheelTitle">SPIN THE WHEEL</h2>
             <div class="wheel-grid">
                 <div class="wheel-col-left">
                     <div id="wheel-attempts">SPINS LEFT: 3/3</div>
@@ -684,7 +684,7 @@ Type 'help' for a list of commands.
             <div class="auth-form">
                 <input type="text" id="rc-code" class="auth-input" placeholder="CDX-XXXXXX">
                 <input type="text" id="rc-user" class="auth-input" placeholder="Agent Name" data-i18n-placeholder="rcUserPlaceholder">
-                <input type="number" id="rc-rating" class="auth-input" min="1" max="5" value="5">
+                <input type="number" id="rc-rating" aria-label="Rating (1 to 5)" data-i18n-aria="rcRatingLabel" class="auth-input" min="1" max="5" value="5">
                 <textarea id="rc-text" class="auth-input" style="height:80px; resize:none;" placeholder="System performance..." data-i18n-placeholder="rcTextPlaceholder"></textarea>
                 <button class="btn-inspect" onclick="submitReviewCode()" data-i18n="reviewCodeBtn">SUBMIT TRANSMISSION</button>
             </div>
@@ -694,9 +694,9 @@ Type 'help' for a list of commands.
     <!-- Asks for the code on the box before a review (checkMissionCode / submitMissionCode in
          modules/reviews.js). Was the browser's prompt() box; a wrong code is said here, under the field. -->
     <div class="modal-overlay" id="mission-code-modal">
-        <div class="modal-content" style="width:400px;">
+        <div class="modal-content" style="width:400px;" role="dialog" aria-modal="true" aria-labelledby="mission-code-title">
             <span class="close-modal" onclick="closeModal('mission-code-modal')">X</span>
-            <h2 class="modal-title" data-i18n="missionCodeTitle">WRITE A REVIEW</h2>
+            <h2 class="modal-title" id="mission-code-title" data-i18n="missionCodeTitle">WRITE A REVIEW</h2>
             <form class="auth-form" onsubmit="event.preventDefault(); submitMissionCode()">
                 <label for="mc-code" class="mc-label" data-i18n="missionPromptCode">Enter the code you'll find inside your PC's box.</label>
                 <input type="text" id="mc-code" class="auth-input" placeholder="CDX-XXXXXX" autocomplete="off" autocapitalize="characters" spellcheck="false">
@@ -712,10 +712,10 @@ Type 'help' for a list of commands.
          css/components/mission.css — the old buttons used .btn-inspect, which is only styled inside
          .auth-form, which is why "keep & review" rendered as a flat unstyled strip. -->
     <div class="modal-overlay" id="mission-modal">
-        <div class="modal-content mission-box">
+        <div class="modal-content mission-box" role="dialog" aria-modal="true" aria-labelledby="mission-kicker">
             <span class="close-modal" onclick="closeModal('mission-modal')">X</span>
 
-            <div class="mission-kicker" data-i18n="missionTitle">HOW'S YOUR NEW RIG?</div>
+            <div class="mission-kicker" id="mission-kicker" data-i18n="missionTitle">HOW'S YOUR NEW RIG?</div>
             <div class="mission-pc" id="mission-pc-name">PROJECT X</div>
 
             <div class="mission-timer-pill">
@@ -745,7 +745,7 @@ Type 'help' for a list of commands.
                         <div class="mission-option-text" data-i18n="missionReportText">Pick what's wrong and we'll sort out a return with you on WhatsApp.</div>
                     </div>
                 </div>
-                <select id="return-reason" class="mission-select">
+                <select id="return-reason" aria-label="What is wrong" data-i18n-aria="missionReasonLabel" class="mission-select">
                     <option value="" disabled selected data-i18n="missionSelectReason">Choose the problem...</option>
                     <option value="1" data-i18n="missionReason1">FPS lower than advertised</option>
                     <option value="2" data-i18n="missionReason2">Hardware defect / won't start</option>
@@ -773,7 +773,7 @@ Type 'help' for a list of commands.
     </div>
 
     <div class="modal-overlay" id="agent-dashboard-modal">
-        <div class="dossier-box">
+        <div class="dossier-box" role="dialog" aria-modal="true" aria-label="Profile" data-i18n-aria="profileBtnAria">
             <button class="modal-close" onclick="closeModal('agent-dashboard-modal')">X</button>
             
             <!-- Styled by css/components/dossier-hud.css: a HUD panel with cut corners, the rank emblem
@@ -833,7 +833,7 @@ Type 'help' for a list of commands.
 
                 <div class="dossier-col dossier-right">
                     <h3 class="dossier-heading purple-heading"><i class="ph-fill ph-chart-bar" aria-hidden="true"></i> <span data-i18n="dossierAchievementsHeading">ACHIEVEMENTS</span></h3>
-                    <div class="dossier-list" id="dossier-achievements">
+                    <div class="dossier-list" id="dossier-achievements" tabindex="0" aria-label="Achievements" data-i18n-aria="achievementsTitle">
                         <div class="dossier-empty">> NO ACHIEVEMENTS UNLOCKED.</div>
                     </div>
                     <!-- #achievements-modal already existed but nothing ever opened it. With

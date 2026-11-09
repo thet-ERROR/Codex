@@ -25,14 +25,15 @@
         </div>
     </div>
 
-    <div class="dashboard-container" id="dashboard-ui">
+    <div class="dashboard-container" id="dashboard-ui" role="main">
+        <h1 class="visually-hidden">Phoenix Codex: πίνακας διαχείρισης</h1>
         
         <div class="col-left">
             <h3 style="color:#ccff00;">SYSTEM CONFIGURATOR</h3>
             
             <div style="display:flex; gap:10px;">
                 <div style="flex:1;">
-                    <label>STATUS (LOCATION)</label>
+                    <label for="status">STATUS (LOCATION)</label>
                     <select id="status">
                         <option value="available">🟢 LIVE (Άμεσα Διαθέσιμο)</option>
                         <option value="coming">🟠 ΣΥΝΤΟΜΑ (στο τέλος του Live Drops, χωρίς αγορά)</option>
@@ -40,7 +41,7 @@
                     </select>
                 </div>
                 <div style="flex:1;">
-                    <label>CATEGORY</label>
+                    <label for="category">CATEGORY</label>
                     <select id="category">
                         <option value="drop">🔥 Live Drop (Main)</option>
                         <option value="gaming">🎮 Starter: Gaming</option>
@@ -50,21 +51,21 @@
                 </div>
             </div>
 
-            <label>System Name</label><input type="text" id="name" placeholder="PROJECT X">
+            <label for="name">System Name</label><input type="text" id="name" placeholder="PROJECT X">
             
             <div style="display:flex; gap:10px;">
-                <div style="flex:1;"><label>Price (€) — π.χ. 449 ή 449,99</label><input type="text" inputmode="decimal" id="price" placeholder="449,99"></div>
-                <div style="flex:1;"><label>Stock</label><input type="number" id="stock" value="1"></div>
+                <div style="flex:1;"><label for="price">Price (€) — π.χ. 449 ή 449,99</label><input type="text" inputmode="decimal" id="price" placeholder="449,99"></div>
+                <div style="flex:1;"><label for="stock">Stock</label><input type="number" id="stock" value="1"></div>
             </div>
 
-            <label>Φωτογραφίες (Discord / Imgur) — ένα link ανά γραμμή· η πρώτη είναι το εξώφυλλο</label>
+            <label for="imageUrl">Φωτογραφίες (Discord / Imgur) — ένα link ανά γραμμή· η πρώτη είναι το εξώφυλλο</label>
             <textarea id="imageUrl" placeholder="https://i.imgur.com/πρώτη.jpg&#10;https://i.imgur.com/δεύτερη.jpg&#10;https://i.imgur.com/τρίτη.jpg" style="height:96px;"></textarea>
             
-            <label>Description</label><textarea id="description" placeholder="System details..."></textarea>
+            <label for="description">Description</label><textarea id="description" placeholder="System details..."></textarea>
             <!-- ΑΡΧΗ ΠΡΟΣΘΗΚΗΣ LORE -->
-            <label style="color:#a855f7; margin-top:10px;">Classified Brief (Lore / Story) — EN</label>
+            <label style="color:#a855f7; margin-top:10px;" for="lore">Classified Brief (Lore / Story) — EN</label>
             <textarea id="lore" placeholder="Mini story for the front card..." style="height:60px;"></textarea>
-            <label style="color:#a855f7; margin-top:10px;">Classified Brief (Lore / Story) — EL (shown when site is in Greek)</label>
+            <label style="color:#a855f7; margin-top:10px;" for="loreEl">Classified Brief (Lore / Story) — EL (shown when site is in Greek)</label>
             <textarea id="loreEl" placeholder="Ίδιο κείμενο στα ελληνικά..." style="height:60px;"></textarea>
             <!-- ΤΕΛΟΣ ΠΡΟΣΘΗΚΗΣ LORE -->
             <label style="color:#00f0ff; margin-top:20px;">HARDWARE SPECS</label>
@@ -102,8 +103,8 @@
                     <input type="checkbox" id="opt-storage-enabled" checked> ΕΠΕΚΤΑΣΗ ΑΠΟΘΗΚΕΥΤΙΚΟΥ ΧΩΡΟΥ
                 </label>
                 <div style="display:flex; gap:10px;">
-                    <div style="flex:1;"><label>+1TB HDD (€) — 0 = κρυφό</label><input type="number" id="opt-storage-hdd" value="50"></div>
-                    <div style="flex:1;"><label>+1TB SSD (€) — 0 = κρυφό</label><input type="number" id="opt-storage-ssd" value="80"></div>
+                    <div style="flex:1;"><label for="opt-storage-hdd">+1TB HDD (€) — 0 = κρυφό</label><input type="number" id="opt-storage-hdd" value="50"></div>
+                    <div style="flex:1;"><label for="opt-storage-ssd">+1TB SSD (€) — 0 = κρυφό</label><input type="number" id="opt-storage-ssd" value="80"></div>
                 </div>
             </div>
 
@@ -120,7 +121,7 @@
                 </label>
                 <p class="extras-hint">⚠ Εξατομικευμένο προϊόν — ο πελάτης πρέπει να αποδεχτεί τους όρους (εξαίρεση από υπαναχώρηση 14 ημερών) πριν το βάλει στο καλάθι.</p>
 
-                <label>Έτοιμο χρώμα (γεμίζει τα πεδία από κάτω)</label>
+                <label for="opt-paint-preset">Έτοιμο χρώμα (γεμίζει τα πεδία από κάτω)</label>
                 <select id="opt-paint-preset">
                     <option value="">— διάλεξε ή γράψε δικό σου —</option>
                     <option value="Matte Black|Ματ Μαύρο|#1a1a1a">⬛ Matte Black / Ματ Μαύρο</option>
@@ -136,14 +137,14 @@
                 </select>
 
                 <div style="display:flex; gap:10px;">
-                    <div style="flex:1;"><label>Όνομα χρώματος (EN)</label><input type="text" id="opt-paint-name" placeholder="Matte Black"></div>
-                    <div style="flex:1;"><label>Όνομα χρώματος (EL)</label><input type="text" id="opt-paint-nameEl" placeholder="Ματ Μαύρο"></div>
+                    <div style="flex:1;"><label for="opt-paint-name">Όνομα χρώματος (EN)</label><input type="text" id="opt-paint-name" placeholder="Matte Black"></div>
+                    <div style="flex:1;"><label for="opt-paint-nameEl">Όνομα χρώματος (EL)</label><input type="text" id="opt-paint-nameEl" placeholder="Ματ Μαύρο"></div>
                 </div>
 
                 <div style="display:flex; gap:10px; align-items:flex-end;">
-                    <div><label>Χρώμα δείγματος</label><input type="color" id="opt-paint-hex" value="#1a1a1a" style="height:38px; padding:2px;"></div>
-                    <div style="flex:1;"><label>Τιμή (€)</label><input type="number" id="opt-paint-price" value="40"></div>
-                    <div style="flex:1;"><label>Χρόνος σκλήρυνσης (ώρες)</label><input type="number" id="opt-paint-lead" value="48"></div>
+                    <div><label for="opt-paint-hex">Χρώμα δείγματος</label><input type="color" id="opt-paint-hex" value="#1a1a1a" style="height:38px; padding:2px;"></div>
+                    <div style="flex:1;"><label for="opt-paint-price">Τιμή (€)</label><input type="number" id="opt-paint-price" value="40"></div>
+                    <div style="flex:1;"><label for="opt-paint-lead">Χρόνος σκλήρυνσης (ώρες)</label><input type="number" id="opt-paint-lead" value="48"></div>
                 </div>
 
                 <label>ΦΩΤΟΓΡΑΦΙΕΣ ΜΕ ΤΟ ΒΑΨΙΜΟ — ένα URL ανά γραμμή</label>
@@ -151,11 +152,11 @@
                 <textarea id="opt-paint-images" placeholder="https://cdn.discordapp.com/...&#10;https://i.imgur.com/..." style="height:70px;"></textarea>
             </div>
 
-            <label>Multitasking (0-100)</label><input type="number" id="multitasking">
+            <label for="multitasking">Multitasking (0-100)</label><input type="number" id="multitasking">
 
             <label style="color:#ccff00;">PERFORMANCE (FPS)</label>
             <div class="add-row">
-                <select id="fps-game"><option>Fortnite</option><option>Warzone</option><option>GTA V</option><option>Valorant</option><option>LoL</option></select>
+                <select id="fps-game" aria-label="Παιχνίδι"><option>Fortnite</option><option>Warzone</option><option>GTA V</option><option>Valorant</option><option>LoL</option></select>
                 <input type="number" id="fps-score" placeholder="FPS" style="width:80px;">
                 <button class="btn-sm edit-btn" id="add-fps-btn">+</button>
             </div>
@@ -244,12 +245,12 @@
 
             <div class="tool-box" style="border-color:#ffc43d;">
                 <h3 style="color:#ffc43d;">📦 ΡΥΘΜΙΣΕΙΣ ΠΑΡΑΓΓΕΛΙΩΝ</h3>
-                <label>Διάστημα επιστροφής (ημέρες, τουλάχιστον 14 — νόμιμο ελάχιστο)</label>
+                <label for="os-return-days">Διάστημα επιστροφής (ημέρες, τουλάχιστον 14 — νόμιμο ελάχιστο)</label>
                 <input type="number" id="os-return-days" min="14" max="365" value="14">
-                <label>Περιοχές χέρι με χέρι (μία ανά γραμμή)</label>
+                <label for="os-areas">Περιοχές χέρι με χέρι (μία ανά γραμμή)</label>
                 <textarea id="os-areas" style="height:120px;"></textarea>
                 <label class="os-check"><input type="checkbox" id="os-deliveries-on" checked> Δείξε «Ν παραδόσεις» δίπλα στις κριτικές</label>
-                <label>Από πόσες παραδόσεις και πάνω να φαίνεται</label>
+                <label for="os-deliveries-min">Από πόσες παραδόσεις και πάνω να φαίνεται</label>
                 <input type="number" id="os-deliveries-min" min="1" max="10000" value="10">
                 <button class="btn btn-green" id="save-order-settings-btn">SAVE</button>
                 <p id="os-result" style="font-size:0.8rem; margin:8px 0 0 0;"></p>
@@ -261,20 +262,20 @@
                     <input type="checkbox" id="maint-toggle" style="width:18px; height:18px; accent-color:#ff3333;">
                     SITE IN MAINTENANCE MODE
                 </label>
-                <label>Message shown to visitors</label>
+                <label for="maint-message">Message shown to visitors</label>
                 <textarea id="maint-message" placeholder="PHOENIX CODEX is currently undergoing scheduled maintenance..."></textarea>
                 <button class="btn btn-red" id="save-maint-btn">SAVE</button>
             </div>
 
             <div class="tool-box" style="border-color:#ccff00;">
                 <h3 style="color:#ccff00;">⚙ GLOBAL SETTINGS</h3>
-                <label>Τιμή Pro Configuration (€) — ισχύει για όλα τα PC</label>
+                <label for="proconfig-price">Τιμή Pro Configuration (€) — ισχύει για όλα τα PC</label>
                 <input type="number" id="proconfig-price" value="30">
                 <button class="btn btn-green" id="save-proconfig-btn">SAVE PRICE</button>
 
-                <label style="margin-top:15px;">Κείμενο "?" στην κάρτα Vote (EN) — δεν επαναγράφεται σε κάθε νέο event</label>
+                <label style="margin-top:15px;" for="vote-info-text">Κείμενο "?" στην κάρτα Vote (EN) — δεν επαναγράφεται σε κάθε νέο event</label>
                 <textarea id="vote-info-text" placeholder="Vote is a community system..." style="height:90px;"></textarea>
-                <label>Ίδιο κείμενο (EL)</label>
+                <label for="vote-info-text-el">Ίδιο κείμενο (EL)</label>
                 <textarea id="vote-info-text-el" placeholder="Το Vote είναι ένα κοινοτικό σύστημα..." style="height:90px;"></textarea>
                 <button class="btn btn-green" id="save-vote-info-btn">SAVE VOTE INFO</button>
             </div>
@@ -283,25 +284,25 @@
                 <h3 style="color:#b026ff;">VOTE EVENT</h3>
                 <p style="font-size:0.75rem; color:#888; margin:-5px 0 10px 0;">Όταν μαζευτούν οι ψήφοι, το PC μπαίνει αμέσως στα Live Drops (stock 1, badge «Κοινοτικό drop»). Αν λήξει ο χρόνος πριν, μπαίνει κι αυτό στα Live Drops. Χωρίς τιμή μπαίνει ως ΣΥΝΤΟΜΑ μέχρι να του βάλεις τιμή.</p>
                 <p id="v-status-line" style="font-size:0.8rem; margin:0 0 10px 0; color:#ffc43d;"></p>
-                <label>Event Title</label><input type="text" id="v-title" placeholder="Project Ronin">
-                <label>Estimated Price (€) — προαιρετικό, κενό = TBD</label><input type="text" inputmode="decimal" id="v-price" placeholder="1200">
-                <label>Hero Image URL (Discord / Imgur Link)</label><input type="text" id="v-imageUrl" placeholder="https://cdn.discordapp.com/...">
+                <label for="v-title">Event Title</label><input type="text" id="v-title" placeholder="Project Ronin">
+                <label for="v-price">Estimated Price (€) — προαιρετικό, κενό = TBD</label><input type="text" inputmode="decimal" id="v-price" placeholder="1200">
+                <label for="v-imageUrl">Hero Image URL (Discord / Imgur Link)</label><input type="text" id="v-imageUrl" placeholder="https://cdn.discordapp.com/...">
                 <div style="display:flex; gap:10px;">
-                    <div><label>Votes Needed</label><input type="number" id="v-target" placeholder="50"></div>
-                    <div><label>Duration (Days)</label><input type="number" id="v-days" placeholder="3"></div>
+                    <div><label for="v-target">Votes Needed</label><input type="number" id="v-target" placeholder="50"></div>
+                    <div><label for="v-days">Duration (Days)</label><input type="number" id="v-days" placeholder="3"></div>
                 </div>
-                <label>Start Date</label><input type="datetime-local" id="v-start">
+                <label for="v-start">Start Date</label><input type="datetime-local" id="v-start">
 
                 <label style="color:#ffc43d; margin-top:15px;">INSPECT CARD CONTENT</label>
                 <p class="extras-hint">Εμφανίζονται όταν ο επισκέπτης πατήσει INSPECT SYSTEM στην κάρτα του vote.</p>
-                <label>Description</label><textarea id="v-description" placeholder="System details..." style="height:55px;"></textarea>
-                <label>Classified Brief (Lore) — EN</label><textarea id="v-lore" placeholder="Mini story..." style="height:55px;"></textarea>
-                <label>Classified Brief (Lore) — EL</label><textarea id="v-loreEl" placeholder="Ίδιο κείμενο στα ελληνικά..." style="height:55px;"></textarea>
-                <label>Multitasking (0-100)</label><input type="number" id="v-multitasking" placeholder="0">
+                <label for="v-description">Description</label><textarea id="v-description" placeholder="System details..." style="height:55px;"></textarea>
+                <label for="v-lore">Classified Brief (Lore) — EN</label><textarea id="v-lore" placeholder="Mini story..." style="height:55px;"></textarea>
+                <label for="v-loreEl">Classified Brief (Lore) — EL</label><textarea id="v-loreEl" placeholder="Ίδιο κείμενο στα ελληνικά..." style="height:55px;"></textarea>
+                <label for="v-multitasking">Multitasking (0-100)</label><input type="number" id="v-multitasking" placeholder="0">
 
                 <label style="color:#ccff00; margin-top:15px;">PERFORMANCE (FPS)</label>
                 <div class="add-row">
-                    <select id="v-fps-game"><option>Fortnite</option><option>Warzone</option><option>GTA V</option><option>Valorant</option><option>LoL</option></select>
+                    <select id="v-fps-game" aria-label="Παιχνίδι"><option>Fortnite</option><option>Warzone</option><option>GTA V</option><option>Valorant</option><option>LoL</option></select>
                     <input type="number" id="v-fps-score" placeholder="FPS" style="width:80px;">
                     <button class="btn-sm edit-btn" id="add-vote-fps-btn">+</button>
                 </div>
@@ -326,7 +327,7 @@
             <div class="tool-box">
                 <h3 style="color:#ffc43d;">ΚΟΥΠΟΝΙΑ ΤΡΟΧΟΥ</h3>
                 <p style="font-size:0.75rem; color:#888; margin:-5px 0 10px 0;">Κουπόνι που μπαίνει σε παραγγελία από το site εξαργυρώνεται μόνο του (και επιστρέφει αν ακυρωθεί). Εδώ: έλεγχος ενός κωδικού, ή εξαργύρωση με το χέρι για πώληση εκτός site.</p>
-                <label>Κωδικός</label><input type="text" id="coupon-code" placeholder="CDX-XXXXXX" style="text-transform:uppercase;">
+                <label for="coupon-code">Κωδικός</label><input type="text" id="coupon-code" placeholder="CDX-XXXXXX" style="text-transform:uppercase;">
                 <div style="display:flex; gap:8px; margin-top:8px;">
                     <button class="btn" id="coupon-check-btn" style="flex:1;">ΕΛΕΓΧΟΣ</button>
                     <button class="btn btn-purple" id="coupon-redeem-btn" style="flex:1;">ΕΞΑΡΓΥΡΩΣΗ</button>
@@ -338,7 +339,7 @@
                 <h3 style="color:#00f0ff;">ORDER CODES</h3>
                 <label>Generate for Sold Item:</label>
                 <div class="add-row">
-                    <select id="sold-pc-select"></select>
+                    <select id="sold-pc-select" aria-label="Πωλημένο PC"></select>
                     <button class="btn-sm btn-cyan" id="generate-code-btn">GENERATE</button>
                 </div>
                 <div id="tickets-list" style="margin-top:15px; max-height:300px; overflow-y:auto;"></div>

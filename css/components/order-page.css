@@ -27,7 +27,7 @@
 
 /* --- blocks --- */
 #order-modal .op-block { display: flex; flex-direction: column; gap: 8px; padding: 12px 14px; border-radius: 14px; border: 1px solid rgba(176, 38, 255, 0.25); background: var(--s-panel); color: #e7e3f1; font-size: 0.88rem; }
-#order-modal .op-k { font-family: var(--font-ui); font-size: 0.72rem; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; color: var(--s-purple); }
+#order-modal .op-k { font-family: var(--font-ui); font-size: 0.72rem; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; color: var(--s-purple-text, #c77dff); }
 #order-modal .op-note { margin: 0; font-size: 0.82rem; line-height: 1.5; color: #b3acc9; }
 #order-modal .op-btns { display: flex; flex-wrap: wrap; gap: 8px; }
 #order-modal .op-btns .info-btn, #order-modal .op-btns .btn-inspect { flex: 1 1 140px; }

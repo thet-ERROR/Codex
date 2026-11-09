@@ -15,7 +15,7 @@
 /* --- section labels and rows --- */
 :is(#checkout-modal, #order-modal) .co-label {
     margin-top: 8px; font-family: var(--font-ui); font-size: 0.72rem; font-weight: 800; letter-spacing: 2px;
-    text-transform: uppercase; color: var(--s-purple);
+    text-transform: uppercase; color: var(--s-purple-text, #c77dff);
 }
 :is(#checkout-modal, #order-modal) .co-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 :is(#checkout-modal, #order-modal) .co-row > * { min-width: 0; }
