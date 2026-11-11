@@ -35,12 +35,58 @@
          or simply broken release would execute on this page with full access to the DOM and to
          the login token, with no change on our side. crossorigin is required for the browser to
          report errors from these scripts. -->
-    <script src="https://unpkg.com/@phosphor-icons/web@2.1.2" crossorigin="anonymous" defer></script>
+    <!-- Phosphor icons: only the three weights the site uses (ph-bold, ph-fill, ph-duotone). The package's
+         script used to add all six stylesheets (regular, thin and light too, ~250 KB of CSS for nothing),
+         and only after the script itself had loaded — so the icons appeared late. Same version, same files. -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.2/src/bold/style.css" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.2/src/fill/style.css" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.2/src/duotone/style.css" crossorigin="anonymous">
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/driver.js@1.0.1/dist/driver.css" crossorigin="anonymous"/>
     <script src="https://cdn.jsdelivr.net/npm/driver.js@1.0.1/dist/driver.js.iife.js" crossorigin="anonymous" defer></script>
 
-    <link rel="stylesheet" href="css/style.css">
+    <!-- The stylesheets, in cascade order (later wins). They used to be @imports inside css/style.css, which
+         the browser could only discover after style.css itself had arrived: one round trip more before
+         anything could be drawn. Listed here, they are all requested at once. A new stylesheet goes in
+         this list, in the right place (tcg-card.css and the *-hud.css files must stay after the older rules). -->
+    <link rel="stylesheet" href="css/base/variables.css">
+    <link rel="stylesheet" href="css/base/tokens.css">
+    <link rel="stylesheet" href="css/base/animations.css">
+    <link rel="stylesheet" href="css/layout/backgrounds.css">
+    <link rel="stylesheet" href="css/layout/header.css">
+    <link rel="stylesheet" href="css/layout/sidebars.css">
+    <link rel="stylesheet" href="css/layout/stage.css">
+    <link rel="stylesheet" href="css/components/modals.css">
+    <link rel="stylesheet" href="css/components/cart.css">
+    <link rel="stylesheet" href="css/components/chat-terminal.css">
+    <link rel="stylesheet" href="css/components/compare.css">
+    <link rel="stylesheet" href="css/components/dossier.css">
+    <link rel="stylesheet" href="css/components/vote.css">
+    <link rel="stylesheet" href="css/components/wheel.css">
+    <link rel="stylesheet" href="css/components/mission.css">
+    <link rel="stylesheet" href="css/gallery/card-front.css">
+    <link rel="stylesheet" href="css/gallery/card-back.css">
+    <link rel="stylesheet" href="css/gallery/ui-lock.css">
+    <link rel="stylesheet" href="css/components/texture.css">
+    <link rel="stylesheet" href="css/components/card-body.css">
+    <link rel="stylesheet" href="css/responsive/tablet.css">
+    <link rel="stylesheet" href="css/responsive/mobile.css">
+    <link rel="stylesheet" href="css/components/tcg-card.css">
+    <link rel="stylesheet" href="css/components/card-hud.css">
+    <link rel="stylesheet" href="css/components/inspect-hud.css">
+    <link rel="stylesheet" href="css/components/vote-hud.css">
+    <link rel="stylesheet" href="css/components/packs-hud.css">
+    <link rel="stylesheet" href="css/components/mascot.css">
+    <link rel="stylesheet" href="css/components/dossier-hud.css">
+    <link rel="stylesheet" href="css/components/settings-hud.css">
+    <link rel="stylesheet" href="css/components/cart-hud.css">
+    <link rel="stylesheet" href="css/components/auth-hud.css">
+    <link rel="stylesheet" href="css/components/checkout.css">
+    <link rel="stylesheet" href="css/components/order-page.css">
+    <link rel="stylesheet" href="css/components/menus-hud.css">
+    <link rel="stylesheet" href="css/components/compare-hud.css">
+    <link rel="stylesheet" href="css/components/qr-hud.css">
+    <link rel="stylesheet" href="css/responsive/phone-compact.css">
 </head>
 <body id="main-body">
 

@@ -1,5 +1,5 @@
 /* ===== The PC card as a collectible card (renderCard in js/modules/catalog.js) =====
-   Loaded LAST in style.css: the older card rules (stage / tablet / mobile / card-body / texture) are
+   Loaded LAST (index.html link order): the older card rules (stage / tablet / mobile / card-body / texture) are
    still in those files for the other panels that share classes, and several of them are !important —
    so everything here restates what it needs, with the same weight, and wins on order.
 
