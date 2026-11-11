@@ -222,6 +222,9 @@ export async function loadMyOrders() {
             <span class="dor-sub">${esc(dateOnly(o.createdAt))} · ${formatPrice(o.totalCents)}</span>
         </button>`).join('');
     box.dataset.orders = JSON.stringify(data);
+    // The profile's "Orders" tab shows how many there are
+    const count = document.getElementById('dtab-count-orders');
+    if (count) count.textContent = String(data.length);
 }
 
 // --- wiring ---
