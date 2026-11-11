@@ -5,12 +5,11 @@
    Its own FIXED black / deep purple / magenta (user's call, 2026-11-11) — the profile has an identity
    of its own, the way the vote drop has its gold — rather than the visitor's accent.
 
-   Layout (change 01): the window is a flex column. On tablet/desktop it has a fixed height, so the
-   two columns share the space left between the header and the footer: the wishlist grows into
-   whatever the left column has left and scrolls inside itself, the ranks do the same on the right,
-   and the footer (SIGN OUT + tube) sits at the bottom. If a short screen can't fit even the
-   minimums, the window scrolls and the footer stays stuck to its bottom edge. On a phone it is one
-   column that scrolls, with the same sticky footer.
+   Layout: header, then four tabs (orders + coupons, wishlist, achievements, ranks) and ONE open section
+   (2026-11-12, the owner's choice: on laptops and tablets five panels side by side were crowded). On
+   tablet/desktop the window has a fixed height and the open section takes all the space between the
+   tabs and the footer, scrolling inside itself; SIGN OUT + the tube sit at the bottom (change 01). On a
+   phone the window scrolls as one, the tabs stick to its top and the footer to its bottom.
 
    Loaded last and scoped to the modal's id, so it wins over dossier.css / texture.css / mobile.css;
    those files still hold the base layout this restyles.
@@ -35,7 +34,6 @@
 #agent-dashboard-modal .wishlist-grid,
 #agent-dashboard-modal .dossier-ladder,
 #agent-dashboard-modal .dossier-heading,
-#agent-dashboard-modal .ach-viewall-btn,
 #agent-dashboard-modal #dossier-logout-btn {
     --rim: linear-gradient(135deg, rgba(176, 38, 255, 0.75), rgba(255, 61, 166, 0.5) 50%, rgba(109, 40, 217, 0.7));
     --fill: linear-gradient(180deg, rgba(23, 12, 44, 0.92), rgba(11, 6, 22, 0.94));
@@ -121,24 +119,42 @@
 #agent-dashboard-modal .network-status .live-dot { background: #2ee87a; box-shadow: 0 0 6px #2ee87a; }
 #agent-dashboard-modal .neon-green-text { color: #2ee87a; text-shadow: 0 0 6px rgba(46, 232, 122, 0.5); }
 
-#agent-dashboard-modal .dossier-stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; margin-top: 12px; }
-#agent-dashboard-modal .dossier-stat-chip {
-    display: flex; align-items: center; justify-content: center; gap: 6px; min-height: 32px; padding: 4px 10px;
-    border-radius: 999px; border: 1px solid rgba(176, 38, 255, 0.6); background: rgba(176, 38, 255, 0.1);
-    box-shadow: 0 0 10px rgba(176, 38, 255, 0.22), inset 0 0 8px rgba(176, 38, 255, 0.12);
-    color: #f1e9ff; font-size: 0.7rem; text-align: center; line-height: 1.15;
+/* --- the tabs: four pills, each with its count; the open one lit --- */
+#agent-dashboard-modal .dossier-tabs {
+    flex: none; display: flex; gap: 8px;
+    position: sticky; top: -1px; z-index: 4; padding: 2px 0;
 }
-#agent-dashboard-modal .dossier-stat-chip i { flex: none; font-size: 1rem; color: #c084fc; }
-#agent-dashboard-modal .dossier-stat-chip:first-child i { color: var(--d-pink); }
-#agent-dashboard-modal .dossier-stat-chip:last-child i { color: var(--d-gold); }
+/* Shared by what each name needs ("Achievements" is long, "Ranks" short), not in four equal quarters */
+#agent-dashboard-modal .dossier-tab { flex: 1 1 auto; }
+#agent-dashboard-modal .dossier-tab {
+    position: relative; display: flex; align-items: center; justify-content: center; gap: 6px; min-height: 42px; min-width: 0; padding: 6px 8px;
+    border-radius: 999px; border: 1px solid rgba(176, 38, 255, 0.45); background: rgba(16, 8, 31, 0.92); cursor: pointer;
+    color: #cbb8ee; font-family: var(--font-ui); font-weight: 800; font-size: 0.74rem; letter-spacing: 0; text-transform: uppercase;
+    transition: background-color 0.2s, border-color 0.2s, color 0.2s;
+}
+/* A fixed box for the icon, so the room it takes doesn't depend on the icon font having loaded yet */
+#agent-dashboard-modal .dossier-tab i { flex: none; width: 1.05rem; font-size: 1.05rem; color: #c084fc; }
+#agent-dashboard-modal .dossier-tab .dtab-label { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+#agent-dashboard-modal .dtab-count {
+    flex: none; padding: 1px 7px; border-radius: 999px; font-size: 0.66rem; font-weight: 800; letter-spacing: 0;
+    color: #f1e9ff; background: rgba(176, 38, 255, 0.28); max-width: 9em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+#agent-dashboard-modal .dtab-count:empty { display: none; }
+#agent-dashboard-modal .dossier-tab:hover { border-color: rgba(255, 61, 166, 0.7); color: #fff; }
+#agent-dashboard-modal .dossier-tab.active {
+    color: #fff; border-color: transparent;
+    background: linear-gradient(90deg, rgba(124, 58, 237, 0.95), rgba(176, 38, 255, 0.95) 55%, rgba(214, 36, 159, 0.95));
+    box-shadow: 0 0 14px rgba(255, 61, 166, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.18);
+}
+#agent-dashboard-modal .dossier-tab.active i { color: #fff; }
+#agent-dashboard-modal .dossier-tab.active .dtab-count { background: rgba(10, 4, 20, 0.45); }
 
-/* --- the two columns --- */
-#agent-dashboard-modal .dossier-col { gap: 12px; min-height: 0; }
-#agent-dashboard-modal .dossier-col > div { display: flex; flex-direction: column; min-height: 0; }
-#agent-dashboard-modal .dossier-right { display: flex; flex-direction: column; }
-/* The right column's heading is a direct child (the column's gap adds to its margin): line it up
-   with the left ones, which sit in a wrapper */
-#agent-dashboard-modal .dossier-right > .dossier-heading { margin-bottom: -4px; }
+/* --- the open section --- */
+#agent-dashboard-modal .dossier-panels { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; }
+#agent-dashboard-modal .dossier-panel { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; gap: 10px; animation: dossierPanelIn 0.22s ease-out; }
+#agent-dashboard-modal .dossier-panel[hidden] { display: none; }
+#agent-dashboard-modal .dossier-panel:focus-visible { outline-offset: 4px; }
+@keyframes dossierPanelIn { from { opacity: 0; transform: translateY(6px); } }
 
 /* --- section headings: slim rounded bars with an icon --- */
 #agent-dashboard-modal .dossier-heading {
@@ -181,9 +197,8 @@
 #agent-dashboard-modal .dossier-empty-rich strong { display: block; color: #f1e9ff; font-size: 0.88rem; font-weight: 700; }
 #agent-dashboard-modal .dossier-empty-rich small { display: block; margin-top: 2px; color: var(--d-dim); font-size: 0.72rem; line-height: 1.4; }
 
-/* Wishlist: fills what the left column has left and scrolls inside itself (change 01) */
-#agent-dashboard-modal .dossier-left > div:last-child { flex: 1 1 0; }
-#agent-dashboard-modal #dossier-wishlist { flex: 1 1 0; height: 0; min-height: 96px; max-height: none; overflow-y: auto; }
+/* The lists keep their natural height; the open section scrolls around them */
+#agent-dashboard-modal #dossier-wishlist, #agent-dashboard-modal #dossier-orders, #agent-dashboard-modal #dossier-coupons { flex: none; max-height: none; overflow: visible; }
 #agent-dashboard-modal .dossier-wish-row {
     flex: none; padding: 8px 10px; gap: 12px; border: 1px solid rgba(176, 38, 255, 0.35); border-radius: 10px;
     background: linear-gradient(90deg, rgba(176, 38, 255, 0.1), rgba(176, 38, 255, 0.03));
@@ -197,8 +212,8 @@
     border: 1px solid rgba(255, 61, 120, 0.6); color: #ff4d7d; background: rgba(255, 61, 120, 0.08); font-size: 1.05rem;
 }
 
-/* Achievements in the column: compact rounded rows, unlocked ones lit in pink */
-#agent-dashboard-modal #dossier-achievements { flex: 0 1 auto; max-height: 232px; overflow-y: auto; }
+/* Achievements: the whole list, compact rounded rows, unlocked ones lit in pink */
+#agent-dashboard-modal #dossier-achievements { flex: none; max-height: none; overflow: visible; }
 #agent-dashboard-modal .ach-card { flex: none; padding: 8px 10px; gap: 12px; border-color: rgba(176, 38, 255, 0.25); background: rgba(176, 38, 255, 0.05); border-radius: 10px; }
 #agent-dashboard-modal .ach-card .ach-icon { font-size: 1.5rem; color: #4c3a6b; }
 #agent-dashboard-modal .ach-card.unlocked { border-color: rgba(255, 61, 166, 0.6); background: linear-gradient(90deg, rgba(255, 61, 166, 0.1), rgba(176, 38, 255, 0.05)); box-shadow: 0 0 10px rgba(255, 61, 166, 0.12); }
@@ -206,23 +221,12 @@
 #agent-dashboard-modal .ach-card.unlocked .ach-info h3 { color: var(--d-pink); }
 #agent-dashboard-modal .ach-card.unlocked .ach-status { color: #2ee87a; }
 
-/* VIEW ALL: a lit pill, purple to pink */
-#agent-dashboard-modal .ach-viewall-btn {
-    --rim: linear-gradient(90deg, #c04dff, #ff3da6);
-    --fill: linear-gradient(90deg, rgba(88, 28, 160, 0.95), rgba(150, 30, 120, 0.95));
-    flex: none; display: flex; align-items: center; justify-content: center; gap: 10px; min-height: 44px; margin-top: 0;
-    border-radius: 999px !important;
-    font-size: 0.82rem; letter-spacing: 2px; color: #fff; text-shadow: 0 0 8px rgba(255, 61, 166, 0.7);
-    box-shadow: 0 0 16px rgba(255, 61, 166, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.15);
-}
-#agent-dashboard-modal .ach-viewall-btn i { color: #fff; }
-#agent-dashboard-modal .ach-viewall-btn:hover { --fill: linear-gradient(90deg, rgba(110, 38, 196, 0.95), rgba(186, 36, 146, 0.95)); box-shadow: 0 0 22px rgba(255, 61, 166, 0.5); }
-
-/* The rank ladder (renderRankLadder): takes what the right column has left and scrolls inside itself.
-   With no ladder from the server (offline, an old backend) the crest and a line stay instead. */
+/* The rank ladder (renderRankLadder): its natural height, the section scrolls around it. With no ladder
+   from the server (offline, an old backend) the crest and a line stay instead. */
 #agent-dashboard-modal .dossier-ladder {
-    flex: 1 1 0; min-height: 150px; display: flex; flex-direction: column; gap: 8px; padding: 10px 12px; overflow: hidden;
+    flex: none; display: flex; flex-direction: column; gap: 8px; padding: 10px 12px; overflow: visible;
 }
+#agent-dashboard-modal .dossier-ladder:not(.has-ranks) { flex: 1 1 auto; min-height: 220px; }
 #agent-dashboard-modal .dossier-ladder-head { flex: none; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
 #agent-dashboard-modal .dossier-ladder-title { display: flex; align-items: center; gap: 8px; font-family: var(--font-ui); font-weight: 800; font-size: 0.85rem; letter-spacing: 1px; color: #f1e9ff; text-transform: uppercase; }
 #agent-dashboard-modal .dossier-ladder-title i { color: #d36bff; filter: drop-shadow(0 0 4px rgba(176, 38, 255, 0.7)); }
@@ -233,11 +237,7 @@
 }
 #agent-dashboard-modal .rank-info-btn:hover { background: rgba(176, 38, 255, 0.3); color: #fff; box-shadow: 0 0 16px rgba(255, 61, 166, 0.45); }
 
-/* Only the steps scroll; the RANKS title and its (i) stay put */
-#agent-dashboard-modal .dossier-ladder-list {
-    display: none; flex: 1 1 0; min-height: 0; flex-direction: column; gap: 6px; overflow-y: auto; margin-right: -6px; padding-right: 6px;
-    scrollbar-color: var(--d-purple) transparent; scrollbar-width: thin;
-}
+#agent-dashboard-modal .dossier-ladder-list { display: none; flex-direction: column; gap: 6px; }
 #agent-dashboard-modal .dossier-ladder.has-ranks .dossier-ladder-list { display: flex; }
 #agent-dashboard-modal .dossier-ladder-empty { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; padding: 10px 0; }
 #agent-dashboard-modal .dossier-ladder.has-ranks .dossier-ladder-empty { display: none; }
@@ -358,18 +358,19 @@
 #agent-dashboard-modal .dossier-box :focus-visible { outline: 2px solid var(--d-pink); outline-offset: 2px; }
 
 @media (prefers-reduced-motion: reduce) {
+    #agent-dashboard-modal .dossier-panel,
     #agent-dashboard-modal .dossier-emblem[data-rank="phantom"],
     #agent-dashboard-modal .tube-liquid { animation: none; }
     #agent-dashboard-modal .tube-monitor polyline { animation: none; stroke-dashoffset: 0; }
 }
 
-/* --- tablet / desktop: a fixed-height window, the columns share the space (change 01) --- */
+/* --- tablet / desktop: a fixed-height window; the open section scrolls inside it (change 01) --- */
 @media (min-width: 769px) {
-    #agent-dashboard-modal .dossier-box { height: min(880px, calc(100dvh - 40px)); max-height: none; }
-    #agent-dashboard-modal .dossier-grid { flex: 1 1 auto; min-height: 0; }
+    #agent-dashboard-modal .dossier-box { height: min(820px, calc(100dvh - 40px)); max-height: none; }
+    #agent-dashboard-modal .dossier-panel { overflow-y: auto; overscroll-behavior: contain; margin-right: -8px; padding-right: 8px; scrollbar-color: var(--d-purple) transparent; scrollbar-width: thin; }
 }
 
-/* --- phone: one column that scrolls, a smaller emblem, chips 2 × 2 --- */
+/* --- phone: the window scrolls as one; tabs stuck to its top (icon over label), footer to its bottom --- */
 @media (max-width: 768px) {
     #agent-dashboard-modal .dossier-box { padding: 14px 14px 0 !important; border-radius: 20px !important; }
     #agent-dashboard-modal .dossier-header { padding: 12px; }
@@ -378,11 +379,10 @@
     #agent-dashboard-modal .agent-handle-box { font-size: 1.15rem; }
     #agent-dashboard-modal .dossier-crest { width: 70px; right: 0; opacity: 0.2; }
     #agent-dashboard-modal .dossier-rank-bar { max-width: 100%; }
-    #agent-dashboard-modal .dossier-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-    #agent-dashboard-modal .dossier-left > div:last-child { flex: none; }
-    #agent-dashboard-modal #dossier-wishlist { flex: none; height: auto; max-height: 300px; }
-    #agent-dashboard-modal .dossier-ladder { flex: none; overflow: visible; }
-    #agent-dashboard-modal .dossier-ladder-list { flex: none; overflow: visible; }
+    #agent-dashboard-modal .dossier-tabs { gap: 6px; top: -14px; margin: 0 -14px; padding: 8px 14px; background: linear-gradient(180deg, #0d0719 75%, rgba(13, 7, 25, 0)); }
+    #agent-dashboard-modal .dossier-tab { flex-direction: column; gap: 3px; min-height: 58px; padding: 6px 4px; border-radius: 14px; font-size: 0.62rem; letter-spacing: 0; }
+    #agent-dashboard-modal .dossier-tab i { font-size: 1.2rem; }
+    #agent-dashboard-modal .dtab-count { position: absolute; top: 3px; right: 4px; padding: 0 5px; font-size: 0.58rem; max-width: 4.5em; }
     #agent-dashboard-modal .dossier-footer { margin: 0 -14px; padding: 12px 14px 10px; gap: 8px; border-radius: 0 0 18px 18px; }
     #agent-dashboard-modal .dossier-tube { height: 26px; }
     #agent-dashboard-modal .tube-glass { height: 12px; }

@@ -107,7 +107,7 @@ const translations = {
         loginBtn: "Σύνδεση", lostAccessLink: "[ Ξέχασες τον κωδικό; ]",
 
         dossierProfileLabel: "[Προφίλ]", dossierOrdersHeading: "Οι παραγγελίες μου", dossierNoOrders: "Δεν υπάρχουν παραγγελίες ακόμα.", dossierNoOrdersSub: "Ξεκίνησε τις αγορές σου και θα βλέπεις εδώ τις παραγγελίες σου.", dossierJourney: "Το ταξίδι σου ξεκινά εδώ",
-        dossierWishlistHeading: "Λίστα επιθυμιών", dossierWishlistSub: "(Αποθηκευμένα συστήματα)",
+        dossierWishlistHeading: "Λίστα επιθυμιών", dossierWishlistSub: "(Αποθηκευμένα συστήματα)", dtabOrders: "Παραγγελίες", dtabWishlist: "Wishlist", dtabAchievements: "Επιτεύγματα", dtabRanks: "Επίπεδα",
         dossierAchievementsHeading: "Επιτεύγματα", dossierSignIn: "> Σύνδεση", dossierRegister: "> Εγγραφή", dossierSignOut: "Αποσύνδεση",
         dossierNoTargets: "> Κανένας στόχος κλειδωμένος.", dossierRemoveTarget: "Αφαίρεση από τη λίστα",
 
@@ -415,7 +415,7 @@ const translations = {
         loginBtn: "AUTHENTICATE", lostAccessLink: "[ LOST ACCESS? ]",
 
         dossierProfileLabel: "[AGENT PROFILE]", dossierOrdersHeading: "My orders", dossierNoOrders: "No orders yet.", dossierNoOrdersSub: "Start shopping and your orders will show up here.", dossierJourney: "Your journey begins here",
-        dossierWishlistHeading: "Wishlist", dossierWishlistSub: "(SAVED SYSTEMS)",
+        dossierWishlistHeading: "Wishlist", dossierWishlistSub: "(SAVED SYSTEMS)", dtabOrders: "Orders", dtabWishlist: "Wishlist", dtabAchievements: "Achievements", dtabRanks: "Ranks",
         dossierAchievementsHeading: "Achievements", dossierSignIn: "> SIGN IN", dossierRegister: "> REGISTER", dossierSignOut: "SIGN OUT",
         dossierNoTargets: "> NO TARGETS LOCKED.", dossierRemoveTarget: "Remove from wishlist",
 

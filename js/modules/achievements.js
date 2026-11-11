@@ -174,17 +174,11 @@ export function refreshProgressionUI() {
 
     renderRankLadder();
 
-    const unlockedCount = state.achievements.length;
+    // The counts ride on the profile's tabs (they used to be a row of chips)
+    const unlockedCount = state.achievements.filter(id => BY_ID.has(id)).length;
     const total = CONFIG.ACHIEVEMENTS_LIST.length;
-    const statsEl = document.getElementById('dossier-stats');
-    if (statsEl) {
-        statsEl.innerHTML = `
-            <div class="dossier-stat-chip"><i class="ph-fill ph-star" aria-hidden="true"></i> ${state.xp} XP</div>
-            <div class="dossier-stat-chip"><i class="ph-bold ph-crosshair" aria-hidden="true"></i> ${state.wishlist.length} ${esc(t('chipWishlist'))}</div>
-            <div class="dossier-stat-chip"><i class="ph-bold ph-medal" aria-hidden="true"></i> ${unlockedCount}/${total} ${esc(t('chipAchievements'))}</div>
-            <div class="dossier-stat-chip"><i class="ph-bold ph-shopping-cart" aria-hidden="true"></i> ${state.cart.length} ${esc(t('chipInCart'))}</div>
-        `;
-    }
+    setTabCount('wishlist', state.wishlist.length ? String(state.wishlist.length) : '');
+    setTabCount('achievements', `${unlockedCount}/${total}`);
 
     const cards = badgeCards();
     const list = document.getElementById('ach-list');
@@ -192,6 +186,57 @@ export function refreshProgressionUI() {
     const dossierList = document.getElementById('dossier-achievements');
     if (dossierList) dossierList.innerHTML = cards;
 }
+
+// --- the profile's tabs: one section at a time ---
+const DOSSIER_TABS = ['orders', 'wishlist', 'achievements', 'ranks'];
+const TAB_KEY = 'codex_dossier_tab';
+
+export function setTabCount(name, text) {
+    const el = document.getElementById(`dtab-count-${name}`);
+    if (el && el.textContent !== text) el.textContent = text;
+}
+
+export function selectDossierTab(name, { focus = false } = {}) {
+    if (!DOSSIER_TABS.includes(name)) name = 'orders';
+    DOSSIER_TABS.forEach(id => {
+        const on = id === name;
+        const tab = document.getElementById(`dtab-${id}`);
+        const panel = document.getElementById(`dpanel-${id}`);
+        if (tab) { tab.setAttribute('aria-selected', String(on)); tab.tabIndex = on ? 0 : -1; tab.classList.toggle('active', on); }
+        if (panel) panel.hidden = !on;
+    });
+    try { sessionStorage.setItem(TAB_KEY, name); } catch (e) {}
+    if (focus) document.getElementById(`dtab-${name}`)?.focus();
+    const panel = document.getElementById(`dpanel-${name}`);
+    if (panel) panel.scrollTop = 0;
+    // The ladder shows the current rank and the next one (what you're going for): scrolled only as far
+    // as it takes to bring that next step into view, so the RANKS title stays put whenever it can
+    if (name === 'ranks') requestAnimationFrame(() => {
+        const list = document.getElementById('dossier-ladder-list');
+        const scroller = window.matchMedia('(max-width: 768px)').matches ? null : panel;
+        const target = list?.querySelector('.rank-step.next') || list?.querySelector('.rank-step.current');
+        if (!scroller || !target) return;
+        const over = target.getBoundingClientRect().bottom - scroller.getBoundingClientRect().bottom + 12;
+        if (over > 0) scroller.scrollTop += over;
+    });
+}
+
+// Click, and the arrow keys / Home / End between tabs (the ARIA tabs pattern)
+document.addEventListener('click', (e) => {
+    const tab = e.target.closest('#agent-dashboard-modal [data-dtab]');
+    if (!tab) return;
+    if (window.playClick) window.playClick();
+    selectDossierTab(tab.dataset.dtab);
+});
+document.addEventListener('keydown', (e) => {
+    const tab = e.target.closest && e.target.closest('#agent-dashboard-modal [data-dtab]');
+    if (!tab) return;
+    const i = DOSSIER_TABS.indexOf(tab.dataset.dtab);
+    const to = { ArrowRight: i + 1, ArrowLeft: i - 1, Home: 0, End: DOSSIER_TABS.length - 1 }[e.key];
+    if (to === undefined) return;
+    e.preventDefault();
+    selectDossierTab(DOSSIER_TABS[(to + DOSSIER_TABS.length) % DOSSIER_TABS.length], { focus: true });
+});
 
 export function openAchievements() {
     if (!state.isLoggedIn) {
@@ -255,18 +300,11 @@ export function openAgentDashboard() {
 
     renderDossierCoupons();
     if (window.loadMyOrders) window.loadMyOrders();
+    // Back on the section the visitor was last looking at (this visit), orders the first time
+    let last = null;
+    try { last = sessionStorage.getItem(TAB_KEY); } catch (e) {}
     if (window.openModal) window.openModal('agent-dashboard-modal');
-
-    // On tablet/desktop the rank steps scroll inside their panel: open it on the current rank, not on
-    // the first one. Only that panel moves (on a phone it doesn't scroll, so nothing happens).
-    requestAnimationFrame(() => {
-        const ladder = document.getElementById('dossier-ladder-list');
-        const current = ladder?.querySelector('.rank-step.current');
-        if (!ladder || !current || ladder.scrollHeight <= ladder.clientHeight) return;
-        const offset = current.getBoundingClientRect().top - ladder.getBoundingClientRect().top + ladder.scrollTop;
-        // The current rank at the top, the next one (what you're going for) under it
-        ladder.scrollTop = Math.max(0, offset - 4);
-    });
+    selectDossierTab(last || 'orders');
 }
 
 // Coupons won on the daily wheel (issued and stored by the server — see POST /api/wheel/spin). Each

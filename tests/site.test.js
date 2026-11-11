@@ -269,38 +269,87 @@ async function openProfile(page, wishCount) {
     await page.waitForTimeout(500);
     return page.evaluate(() => {
         const r = s => document.querySelector(s).getBoundingClientRect();
-        const box = document.querySelector('#agent-dashboard-modal .dossier-box'), wish = document.getElementById('dossier-wishlist');
-        return { box: r('#agent-dashboard-modal .dossier-box'), logout: r('#dossier-logout-btn'), wish: r('#dossier-wishlist'), left: r('.dossier-left'),
-            boxScrolls: box.scrollHeight > box.clientHeight + 1, wishScrolls: wish.scrollHeight > wish.clientHeight + 1,
+        const box = document.querySelector('#agent-dashboard-modal .dossier-box');
+        return { box: r('#agent-dashboard-modal .dossier-box'), logout: r('#dossier-logout-btn'),
+            boxScrolls: box.scrollHeight > box.clientHeight + 1,
             sideways: document.documentElement.scrollWidth > innerWidth || box.scrollWidth > box.clientWidth + 1,
-            rows: wish.querySelectorAll('.dossier-wish-row').length };
+            rows: document.querySelectorAll('#dossier-wishlist .dossier-wish-row').length };
     });
 }
-describe('the profile (UI brief 01 + 04)', () => {
-    for (const [label, width, height] of [['tablet 820', 820, 1180], ['desktop 1440', 1440, 900]]) {
-        it(`SIGN OUT sits at the bottom and the wishlist fills the space down to it — ${label}`, () => withPage({ width, height, member: true }, async (page) => {
-            for (const n of [1, 9]) {
+const openPanel = (page) => page.evaluate(() => {
+    const p = document.querySelector('#agent-dashboard-modal .dossier-panel:not([hidden])');
+    const t = document.querySelector('#agent-dashboard-modal [role="tab"][aria-selected="true"]');
+    return { panel: p && p.id, tab: t && t.dataset.dtab, scrolls: p ? p.scrollHeight > p.clientHeight + 1 : null, shown: document.querySelectorAll('#agent-dashboard-modal .dossier-panel:not([hidden])').length };
+});
+// The profile (UI brief 01 + 04, then the owner's 2026-11-12 call): a header, four tabs and ONE open
+// section — five panels side by side crowded laptops and tablets. SIGN OUT stays at the bottom.
+describe('the profile: tabs and one section at a time', () => {
+    for (const [label, width, height] of [['laptop 1366×768', 1366, 768], ['tablet 820', 820, 1180], ['desktop 1440', 1440, 900]]) {
+        it(`the window does not scroll, SIGN OUT is at the bottom, a long list scrolls inside its section — ${label}`, () => withPage({ width, height, member: true }, async (page) => {
+            for (const n of [1, 12]) {
                 const m = await openProfile(page, n);
                 assert.equal(m.rows, n);
                 assert.equal(m.boxScrolls, false, 'the window itself does not scroll');
                 assert.ok(m.logout.bottom <= m.box.bottom && m.box.bottom - m.logout.bottom < 90, 'SIGN OUT is at the bottom of the window');
-                assert.ok(Math.abs(m.wish.bottom - m.left.bottom) <= 2, 'no dead space under the wishlist');
-                assert.equal(m.wishScrolls, n === 9, 'a long wishlist scrolls inside itself');
                 assert.equal(m.sideways, false);
+                await page.locator('#dtab-wishlist').click();
+                const p = await openPanel(page);
+                assert.deepEqual([p.panel, p.tab, p.shown], ['dpanel-wishlist', 'wishlist', 1]);
+                assert.equal(p.scrolls, n === 12, 'twelve saved systems scroll inside the section');
+                await page.evaluate(() => window.closeModal('agent-dashboard-modal'));
             }
         }));
     }
-    it('on a phone SIGN OUT stays in view while the window scrolls, with no sideways scroll', () => withPage({ width: 390, height: 844, member: true }, async (page) => {
-        const m = await openProfile(page, 6);
+    for (const [label, width, height, locale] of [['laptop el', 1366, 768, 'el-GR'], ['laptop en', 1366, 768, 'en-US'], ['phone 360 el', 360, 740, 'el-GR'], ['phone 390 en', 390, 844, 'en-US']]) {
+        it(`every tab shows its whole name and its count — ${label}`, () => withPage({ width, height, member: true, locale }, async (page) => {
+            await openProfile(page, 3);
+            const tabs = await page.evaluate(() => [...document.querySelectorAll('#agent-dashboard-modal .dossier-tab')].map(t => {
+                const l = t.querySelector('.dtab-label'), b = t.getBoundingClientRect();
+                return { name: t.dataset.dtab, cut: l.scrollWidth > l.clientWidth + 1, count: t.querySelector('.dtab-count').textContent, h: b.height, w: b.width };
+            }));
+            assert.equal(tabs.length, 4);
+            for (const t of tabs) { assert.equal(t.cut, false, `${t.name} label is not cut`); assert.ok(t.h >= 40 && t.w >= 60, `${t.name} is a full-size target`); }
+            assert.equal(tabs.find(t => t.name === 'wishlist').count, '3');
+            assert.match(tabs.find(t => t.name === 'achievements').count, /^\d+\/\d+$/);
+        }));
+    }
+    it('tabs switch by click and by arrow keys, and the window opens on the last one this visit', () => withPage({ width: 1366, height: 768, member: true }, async (page) => {
+        await openProfile(page, 2);
+        assert.equal((await openPanel(page)).panel, 'dpanel-orders', 'orders first');
+        await page.locator('#dtab-achievements').click();
+        assert.equal((await openPanel(page)).panel, 'dpanel-achievements');
+        await page.keyboard.press('ArrowRight');
+        let p = await openPanel(page);
+        assert.equal(p.panel, 'dpanel-ranks');
+        assert.equal(await page.evaluate(() => document.activeElement.id), 'dtab-ranks', 'focus moves with the selection');
+        await page.keyboard.press('ArrowRight');
+        assert.equal((await openPanel(page)).panel, 'dpanel-orders', 'wraps around');
+        await page.keyboard.press('End');
+        assert.equal((await openPanel(page)).panel, 'dpanel-ranks');
+        await page.evaluate(() => { window.closeModal('agent-dashboard-modal'); window.openAgentDashboard(); });
+        await page.waitForTimeout(300);
+        p = await openPanel(page);
+        assert.equal(p.panel, 'dpanel-ranks', 'reopens where it was left');
+        // The current rank and the next one are both in view, and so is the RANKS title
+        const ladder = await page.evaluate(() => {
+            const panel = document.getElementById('dpanel-ranks').getBoundingClientRect();
+            const inView = (s) => { const e = document.querySelector(s); if (!e) return null; const b = e.getBoundingClientRect(); return b.top >= panel.top - 1 && b.bottom <= panel.bottom + 1; };
+            return { current: inView('.rank-step.current'), next: inView('.rank-step.next') };
+        });
+        assert.deepEqual(ladder, { current: true, next: true });
+    }));
+    it('on a phone the tabs stay on top and SIGN OUT at the bottom while the window scrolls', () => withPage({ width: 390, height: 844, member: true }, async (page) => {
+        const m = await openProfile(page, 10);
         assert.equal(m.sideways, false);
+        await page.locator('#dtab-wishlist').click();
         for (const at of [0, 0.5, 1]) {
             const seen = await page.evaluate(f => {
                 const box = document.querySelector('#agent-dashboard-modal .dossier-box');
                 box.scrollTop = (box.scrollHeight - box.clientHeight) * f;
-                const b = box.getBoundingClientRect(), l = document.getElementById('dossier-logout-btn').getBoundingClientRect();
-                return l.top >= b.top && l.bottom <= b.bottom;
+                const b = box.getBoundingClientRect(), l = document.getElementById('dossier-logout-btn').getBoundingClientRect(), t = document.querySelector('.dossier-tabs').getBoundingClientRect();
+                return { logout: l.top >= b.top && l.bottom <= b.bottom, tabs: t.top >= b.top - 1 && t.bottom <= b.bottom };
             }, at);
-            assert.equal(seen, true, `SIGN OUT visible at scroll ${at}`);
+            assert.deepEqual(seen, { logout: true, tabs: true }, `at scroll ${at}`);
         }
     }));
     it('panels are rounded, with no cut corners', () => withPage({ width: 1440, height: 900, member: true }, async (page) => {
