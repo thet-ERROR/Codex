@@ -79,6 +79,41 @@ describe('the tour', () => {
         }));
     }
 
+    for (const [label, width, height] of [['phone 390', 390, 844], ['tablet 820', 820, 1180], ['desktop 1440', 1440, 900]]) {
+        for (const lang of ['en', 'el']) {
+            it(`is seven steps and every popover stays on screen — ${label}, ${lang}`, () => withPage({ width, height, locale: lang === 'el' ? 'el-GR' : 'en-US' }, async (page) => {
+                // driver.js comes from a CDN the suite blocks: the same pinned version (1.0.1) is kept in tests/fixtures
+                const fix = (f) => new URL(`./fixtures/${f}`, import.meta.url);
+                await page.route('https://cdn.jsdelivr.net/npm/driver.js@1.0.1/dist/driver.js.iife.js', r => r.fulfill({ path: fix('driver.js.iife.js').pathname.replace(/^\/([A-Za-z]:)/, '$1'), contentType: 'application/javascript' }));
+                await page.route('https://cdn.jsdelivr.net/npm/driver.js@1.0.1/dist/driver.css', r => r.fulfill({ path: fix('driver.css').pathname.replace(/^\/([A-Za-z]:)/, '$1'), contentType: 'text/css' }));
+                await page.reload();
+                await page.waitForSelector('#startup-overlay.hidden', { state: 'attached', timeout: 15000 });
+                await page.evaluate((l) => window.startTutorialTour(l), lang);
+                const titles = [];
+                for (let i = 0; i < 12; i++) {
+                    await page.locator('.driver-popover').waitFor({ timeout: 5000 });
+                    await page.waitForTimeout(450);
+                    const m = await page.evaluate(() => {
+                        const p = document.querySelector('.driver-popover').getBoundingClientRect();
+                        const hl = document.querySelector('.driver-active-element');
+                        const hb = hl && hl.getBoundingClientRect();
+                        return { title: document.querySelector('.driver-popover-title').textContent, progress: document.querySelector('.driver-popover-progress-text')?.textContent || '',
+                            inView: p.left >= -1 && p.top >= -1 && p.right <= innerWidth + 1 && p.bottom <= innerHeight + 1,
+                            // The welcome step has no target (driver.js points at an empty dummy element)
+                            targetShown: !hl || hl.id === 'driver-dummy-element' || (hb.width > 0 && hb.height > 0) };
+                    });
+                    titles.push(m.title);
+                    assert.ok(m.inView, `popover "${m.title}" is on screen`);
+                    assert.ok(m.targetShown, `the target of "${m.title}" is visible`);
+                    const done = await page.locator('.driver-popover-next-btn').textContent();
+                    await page.locator('.driver-popover-next-btn').click();
+                    if (/ΤΕΛΟΣ|FINISH/.test(done)) break;
+                }
+                assert.equal(titles.length, 7, titles.join(' | '));
+                await page.locator('.driver-popover').waitFor({ state: 'detached', timeout: 3000 });
+            }));
+        }
+    }
     it('Skip tour closes it and is remembered', () => withPage({ tourDone: false }, async (page) => {
         await page.locator('#tutorial-lang-modal.active').waitFor({ timeout: 5000 });
         await page.locator('.tutorial-skip-link').click();
@@ -374,6 +409,33 @@ describe('the wheel for everyone, and the way between sign-in and sign-up (chang
             await page.locator('#signup-modal .auth-switch-btn').click();
             await page.locator('#login-modal.active').waitFor();
             assert.equal(await page.locator('#signup-modal.active').count(), 0);
+        }));
+    }
+});
+
+describe('the empty stage (changes doc, step 4)', () => {
+    const text = (page) => page.locator('#main-card .card-empty').textContent();
+    for (const [lang, locale, custom, none] of [['en', 'en-US', /build custom/, /No systems here yet/], ['el', 'el-GR', /φτιάχνω custom/, /Δεν υπάρχουν συστήματα/]]) {
+        it(`a budget with nothing in it invites a custom build; no systems at all says they are coming — ${lang}`, () => withPage({ width: 390, height: 844, locale }, async (page) => {
+            await page.evaluate(() => window.setPriceFilter(50000, null));   // over €50,000: nothing matches
+            await page.locator('#main-card .card-empty').waitFor();
+            assert.match(await text(page), custom);
+            assert.equal(await page.locator('#main-card .card-empty-btn').count(), 1);
+            // "Talk to me" opens the help assistant, where the admin is one tap away
+            await page.locator('#main-card .card-empty-btn').click();
+            assert.ok(await page.evaluate(() => document.getElementById('chat-widget').classList.contains('open')));
+            await page.evaluate(() => window.toggleChat());
+            // ...and the quiet link clears the filter and brings the systems back
+            await page.locator('#main-card .card-empty-link').click();
+            await page.locator('#main-card .stock-badge').waitFor();
+            assert.equal(await page.locator('#main-card .card-empty').count(), 0);
+        }));
+        it(`with no systems at all, even a budget filter does not invite a custom build — ${lang}`, () => withPage({ width: 390, height: 844, locale }, async (page) => {
+            await page.evaluate(() => import('./js/state.js').then(m => { m.state.inventory = []; }));
+            await page.evaluate(() => window.setPriceFilter(0, 100));
+            await page.locator('#main-card .card-empty').waitFor();
+            assert.match(await text(page), none);
+            assert.equal(await page.locator('#main-card .card-empty-link').count(), 0);
         }));
     }
 });
