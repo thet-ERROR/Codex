@@ -1,0 +1,145 @@
+/* ===== The QR window (index.html #qr-modal, js/modules/qr.js) =====
+   UI brief v4 (2026-11-04), change 03: the approved purple neon artwork. A thin glowing purple frame
+   (no armour), the QR in a dark socket, a neon loop that runs over it and down into two small
+   canisters of glowing liquid, and two tilted icon chips (scan, link) sitting on the loop.
+   The frame is the site's purple; the liquid, the loop and the icons follow the visitor's accent
+   (--neon-green, lime by default — which is the approved artwork's green).
+
+   The QR itself (functional spec): drawn at runtime from the real address, white tile with a 4-module
+   quiet zone (qr.js) inside it, and nothing decorative ever over the tile — it sits in an opaque
+   socket above the loop. The liquid moves gently and stops for reduced motion. */
+
+#qr-modal { --q-purple: #b026ff; --q-pink: #ff3da6; }
+
+/* --- the frame --- */
+#qr-modal .info-box {
+    border: 1.5px solid rgba(192, 77, 255, 0.85);
+    border-radius: 22px;
+    background:
+        radial-gradient(120% 45% at 50% 0%, rgba(176, 38, 255, 0.18), transparent 70%),
+        linear-gradient(180deg, #120a22 0%, #0a0614 55%, #0c0716 100%);
+    box-shadow: 0 0 0 1px rgba(255, 61, 166, 0.15), 0 0 26px rgba(176, 38, 255, 0.45), 0 30px 80px rgba(0, 0, 0, 0.85), inset 0 0 30px rgba(176, 38, 255, 0.12);
+}
+#qr-modal .info-box::before, #qr-modal .info-box::after { display: none; }
+#qr-modal .info-head { background: none; padding: 16px 16px 8px 18px; }
+#qr-modal .info-kicker {
+    align-self: flex-start; padding: 2px 10px; border-radius: 6px; font-family: var(--font-ui);
+    border: 1px solid color-mix(in srgb, var(--neon-green) 55%, transparent); background: color-mix(in srgb, var(--neon-green) 8%, transparent);
+    color: var(--neon-green); opacity: 1;
+}
+#qr-modal .info-title { font-size: 1.15rem; letter-spacing: 2px; text-shadow: 0 0 10px rgba(176, 38, 255, 0.6); }
+#qr-modal .modal-x {
+    width: 40px; height: 40px; border-radius: 10px;
+    border: 1px solid rgba(192, 77, 255, 0.7); background: rgba(176, 38, 255, 0.14); color: #f1e9ff;
+}
+#qr-modal .modal-x:hover { border-color: var(--q-pink); background: rgba(255, 61, 166, 0.18); color: #fff; }
+#qr-modal .info-body { padding: 4px 18px 18px; }
+
+/* --- the line of text, in its own panel --- */
+#qr-modal .qr-text {
+    margin: 0 0 14px; padding: 10px 14px; border-radius: 12px; text-align: center; line-height: 1.5; font-size: 0.88rem; color: #d9d0ea;
+    border: 1px solid rgba(176, 38, 255, 0.4); background: rgba(176, 38, 255, 0.06);
+}
+
+/* --- the stage: side | socket | side, with the loop behind --- */
+#qr-modal .qr-stage {
+    --side: 54px;
+    position: relative; display: grid; grid-template-columns: var(--side) minmax(0, 1fr) var(--side); align-items: stretch; gap: 8px;
+    padding-top: 16px;
+}
+/* The loop: up from one canister, over the QR, down into the other. Behind the socket. */
+#qr-modal .qr-loop {
+    position: absolute; z-index: 0; pointer-events: none;
+    left: calc(var(--side) / 2 - 1px); right: calc(var(--side) / 2 - 1px); top: 4px; bottom: 74px;
+    border: 2px solid var(--neon-green); border-bottom: none; border-radius: 46px 46px 0 0;
+    /* drop-shadow follows the drawn line only (a box-shadow would also light the open bottom edge) */
+    filter: drop-shadow(0 0 3px var(--neon-green)) drop-shadow(0 0 7px color-mix(in srgb, var(--neon-green) 60%, transparent));
+    opacity: 0.9;
+}
+#qr-modal .qr-side { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; justify-content: space-between; padding: 26px 0 0; }
+
+/* Icon chips: small tilted glass cards sitting on the loop */
+#qr-modal .qr-chip {
+    width: 44px; height: 44px; display: grid; place-items: center; border-radius: 11px; font-size: 1.35rem;
+    color: var(--neon-green); filter: drop-shadow(0 0 6px color-mix(in srgb, var(--neon-green) 60%, transparent));
+    border: 1.5px solid rgba(192, 77, 255, 0.85);
+    background: linear-gradient(160deg, rgba(60, 22, 110, 0.95), rgba(20, 10, 40, 0.95));
+    box-shadow: 0 0 12px rgba(176, 38, 255, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+}
+#qr-modal .qr-side-l .qr-chip { transform: rotate(-10deg); }
+#qr-modal .qr-side-r .qr-chip { transform: rotate(10deg); }
+
+/* Canisters: a metal cap, glass with glowing liquid and rising bubbles, a metal base */
+#qr-modal .qr-can {
+    position: relative; width: 28px; height: 64px; margin: 12px 0 2px; border-radius: 7px;
+    border: 1px solid rgba(220, 255, 200, 0.45);
+    background: linear-gradient(90deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.03) 35%, rgba(255, 255, 255, 0.1) 80%);
+    box-shadow: 0 0 14px color-mix(in srgb, var(--neon-green) 45%, transparent);
+}
+#qr-modal .qr-can::before, #qr-modal .qr-can::after {
+    content: ''; position: absolute; left: -4px; right: -4px; height: 9px; border-radius: 3px;
+    background: linear-gradient(90deg, #3d3152, #d4c8ea 40%, #7a6a99 60%, #2b2140);
+    box-shadow: 0 0 6px rgba(176, 38, 255, 0.5);
+}
+#qr-modal .qr-can::before { top: -7px; }
+#qr-modal .qr-can::after { bottom: -7px; }
+#qr-modal .qr-can-liquid {
+    position: absolute; left: 3px; right: 3px; bottom: 3px; height: 72%; border-radius: 4px;
+    background:
+        radial-gradient(circle at 30% 80%, rgba(255, 255, 255, 0.7) 0 1.5px, transparent 2px),
+        radial-gradient(circle at 70% 40%, rgba(255, 255, 255, 0.6) 0 1.2px, transparent 1.8px),
+        radial-gradient(circle at 45% 10%, rgba(255, 255, 255, 0.5) 0 1px, transparent 1.6px),
+        linear-gradient(180deg, color-mix(in srgb, var(--neon-green) 95%, #fff), color-mix(in srgb, var(--neon-green) 70%, #000));
+    background-size: 100% 40px, 100% 40px, 100% 40px, 100% 100%;
+    box-shadow: 0 0 12px var(--neon-green), inset 0 2px 0 rgba(255, 255, 255, 0.35);
+    animation: qrBubbles 3s linear infinite, qrLevel 4s ease-in-out infinite;
+}
+#qr-modal .qr-side-r .qr-can-liquid { animation-delay: -1.5s, -2s; }
+@keyframes qrBubbles { to { background-position: 0 -40px, 0 -40px, 0 -40px, 0 0; } }
+@keyframes qrLevel { 50% { height: 64%; } }
+
+/* The socket: an opaque dark frame for the white tile, so no glow ever reaches the code */
+#qr-modal .qr-socket {
+    position: relative; z-index: 1; justify-self: center; width: min(232px, 100%); padding: 10px; box-sizing: border-box;
+    border-radius: 18px; border: 1.5px solid rgba(192, 77, 255, 0.75);
+    background: linear-gradient(180deg, #1c1030, #0d0819);
+    box-shadow: 0 0 16px rgba(176, 38, 255, 0.45), inset 0 0 12px rgba(0, 0, 0, 0.6);
+}
+#qr-modal .qr-tile {
+    width: 100%; aspect-ratio: 1 / 1; padding: 0; box-sizing: border-box; display: grid; place-items: center; overflow: hidden;
+    background: #fff; border-radius: 10px; border: none;
+}
+#qr-modal .qr-tile svg { width: 100%; height: 100%; display: block; }
+#qr-modal .qr-tile.is-loading { background: #111; }
+#qr-modal .qr-wait { padding: 12px; color: #9a9aa2; font-size: 0.85rem; text-align: center; line-height: 1.4; }
+
+/* --- the address, then the buttons --- */
+#qr-modal .qr-url {
+    width: fit-content; max-width: 100%; box-sizing: border-box; margin: 14px auto; padding: 6px 16px; border-radius: 999px;
+    font-family: 'Courier New', monospace; font-size: 0.8rem; text-align: center; overflow-wrap: anywhere;
+    color: var(--neon-green); border: 1px solid color-mix(in srgb, var(--neon-green) 60%, transparent);
+    background: color-mix(in srgb, var(--neon-green) 6%, transparent);
+    box-shadow: 0 0 10px color-mix(in srgb, var(--neon-green) 25%, transparent);
+}
+#qr-modal .qr-actions { flex-direction: column; align-items: center; gap: 10px; }
+#qr-modal .qr-actions .info-btn { width: min(300px, 100%); min-height: 46px; border-radius: 999px; }
+#qr-modal .qr-actions .info-btn[hidden] { display: none; }
+#qr-modal .qr-actions .info-btn.primary {
+    border: 1px solid rgba(220, 150, 255, 0.8); background: linear-gradient(90deg, #7c3aed, #b026ff 55%, #d6249f);
+    box-shadow: 0 0 16px rgba(176, 38, 255, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+#qr-modal .qr-actions .info-btn.primary:hover { box-shadow: 0 0 24px rgba(255, 61, 166, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.2); }
+#qr-modal .qr-actions .info-btn:not(.primary) { border: 1px solid rgba(176, 38, 255, 0.55); background: rgba(176, 38, 255, 0.08); }
+#qr-modal .qr-actions .info-btn:not(.primary):hover { border-color: var(--q-pink); background: rgba(255, 61, 166, 0.12); }
+
+@media (prefers-reduced-motion: reduce) {
+    #qr-modal .qr-can-liquid { animation: none; }
+}
+
+/* --- small phones: slimmer sides --- */
+@media (max-width: 360px) {
+    #qr-modal .qr-stage { --side: 44px; gap: 6px; }
+    #qr-modal .qr-chip { width: 38px; height: 38px; font-size: 1.15rem; }
+    #qr-modal .qr-can { width: 24px; height: 56px; }
+    #qr-modal .qr-loop { bottom: 66px; }   /* still lands on the (shorter) canister's cap */
+}

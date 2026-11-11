@@ -575,7 +575,20 @@ Type 'help' for a list of commands.
             <span class="close-modal" onclick="closeModal('qr-modal')">X</span>
             <h2 class="modal-title" data-i18n="qrTitle">QR LINK</h2>
             <p class="qr-text" data-i18n="qrText">Scan it with your phone's camera to open the site there.</p>
-            <div class="qr-tile" id="qr-tile"></div>
+            <!-- UI brief 03: the neon loop, two canisters and two icon chips around the QR (css/components/qr-hud.css).
+                 Decoration only, and never over the white tile: the tile and its quiet zone sit in an opaque socket. -->
+            <div class="qr-stage">
+                <span class="qr-loop" aria-hidden="true"></span>
+                <div class="qr-side qr-side-l" aria-hidden="true">
+                    <span class="qr-chip"><i class="ph-bold ph-scan"></i></span>
+                    <span class="qr-can"><span class="qr-can-liquid"></span></span>
+                </div>
+                <div class="qr-socket"><div class="qr-tile" id="qr-tile"></div></div>
+                <div class="qr-side qr-side-r" aria-hidden="true">
+                    <span class="qr-chip"><i class="ph-bold ph-link-simple"></i></span>
+                    <span class="qr-can"><span class="qr-can-liquid"></span></span>
+                </div>
+            </div>
             <div class="qr-url" id="qr-url"></div>
             <div class="info-actions qr-actions">
                 <button type="button" class="info-btn primary" onclick="playClick(); copyQrLink()"><i class="ph-bold ph-copy"></i> <span data-i18n="qrCopy">Copy link</span></button>

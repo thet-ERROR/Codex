@@ -2,13 +2,12 @@
 //
 // "Open it on your phone": a QR code of the page the visitor is on, from the share menu
 // (index.html #social-menu → #qr-modal). Built at runtime from location, so it follows whatever
-// address the site is served from — production, a Vercel preview, localhost. The QR library is
-// only fetched the first time the window opens; it comes from jsDelivr (allowed by the CSP in
-// vercel.json) as the static, unminified file so it can carry an SRI hash.
+// address the site is served from — production, a Vercel preview, localhost. The QR library
+// (qrcode-generator 1.4.4, the same file the admin panel's 2FA uses) is served from js/vendor, so
+// the QR never depends on a CDN being up; it is only fetched the first time the window opens.
 import { t } from '../i18n.js';
 
-const QR_SRC = 'https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js';
-const QR_SRI = 'sha384-8FWZA6BGMXhsfO+BLtrJK0We6gg5o1JyO8xQm6peWDEUs17ACA5ziE/NIAkl9z2k';
+const QR_SRC = 'js/vendor/qrcode.js';
 
 let libPromise = null;
 
@@ -18,8 +17,6 @@ function loadLib() {
         libPromise = new Promise((resolve, reject) => {
             const s = document.createElement('script');
             s.src = QR_SRC;
-            s.integrity = QR_SRI;
-            s.crossOrigin = 'anonymous';
             s.onload = () => (window.qrcode ? resolve(window.qrcode) : reject(new Error('qrcode missing')));
             s.onerror = () => reject(new Error('qrcode failed to load'));
             document.head.appendChild(s);
@@ -52,7 +49,9 @@ export async function openQr() {
         const qr = qrcode(0, 'M');       // type 0 = smallest version that fits the URL
         qr.addData(url);
         qr.make();
-        tile.innerHTML = qr.createSvgTag({ cellSize: 4, margin: 2, scalable: true, alt: url });
+        // The quiet zone scanners expect: 4 modules of white around the code. The library's margin is in
+        // the same units as cellSize (px), not modules — so 4 modules × 4 = 16.
+        tile.innerHTML = qr.createSvgTag({ cellSize: 4, margin: 16, scalable: true, alt: url });
     } catch (e) {
         tile.innerHTML = `<span class="qr-wait">${t('qrFailed')}</span>`;
     }
