@@ -9,8 +9,10 @@
 //             "right" put them off-screen — and reviews move to .mobile-reviews-btn.
 //   desktop   logo | centred tabs with CART | terminal, profile; sidebar is a left rail.
 //
-// Steps are listed in the order they appear on screen for that layout, so the tour reads top to
-// bottom instead of jumping around. Keep this in sync with any change to those areas.
+// Seven steps, in the order they appear on screen for that layout, so the tour reads top to bottom
+// instead of jumping around: welcome, LIVE DROPS, VOTE, terminal and cart, the card, the phoenix.
+// (It used to be fourteen; the logo, profile, settings, info, wheel, language and review buttons
+// explain themselves and are left to be found.) Keep this in sync with any change to those areas.
 const isPhone = () => window.matchMedia('(max-width: 768px)').matches;
 const hasBottomBar = () => window.matchMedia('(max-width: 1024px)').matches;
 
@@ -18,36 +20,22 @@ const COPY = {
     en: {
         welcome: ['WELCOME TO PHOENIX!', "I'm the guardian of this place. Let me show you around — this is where we build your ultimate gaming PC."],
         mascot: ["I'M RIGHT HERE", 'Whenever you need help, tap me: I take you to the right PC or the ones in your budget, or put you in touch with the admin.'],
-        logo: ['IDENTITY CHECK', "Tap the logo anytime to see who's really running this operation."],
         live: ['LIVE DROPS', 'Every custom-built rig, ready for deployment. A blinking red badge means only one unit is left; COMING SOON builds wait at the end of the list.'],
         vote: ['VOTE', "The community votes to unlock a mystery PC — one vote per signed-in agent with a verified email. Reach the target and it unlocks straight into Live Drops — members can order it first."],
         browsePhone: ['BROWSE SYSTEMS', 'Swipe the card left or right to see the next PC — the dots show where you are. The tabs switch between the unit data and the extras; INSPECT SYSTEM opens full specs, FPS and options.'],
         browseDesktop: ['BROWSE SYSTEMS', 'Use the arrows beside the card (or ← →) to see the next PC — the dots show where you are. The tabs switch between the unit data and the extras; INSPECT SYSTEM opens full specs, FPS and options.'],
         cart: ['YOUR LOOT', 'Everything you pick lands here. Check your total, press CHECKOUT, fill in your details and you get an order number — then we arrange payment and delivery on WhatsApp.'],
         cli: ['THE TERMINAL', 'Tap here (or press [`] on a keyboard) to open the command line. Tap a command inside it — try "theme" or "color".'],
-        profile: ['AGENT PROFILE', 'Sign in or register here to save your wishlist, follow your orders, track your rank, and unlock rewards.'],
-        settings: ['SYSTEM PREFERENCES', 'Sound, language and your accent colour — and you can replay this tour from here.'],
-        info: ['INFORMATION', 'Warranty & returns, terms and support live here. Need to send something back? Press Return and we handle it by email.'],
-        wheel: ['DAILY SPIN', 'Spin the wheel once a day for a chance at a premium accent colour or a discount coupon — coupons wait in your profile and your cart.'],
-        lang: ['LANGUAGE', 'Switch between Greek and English anytime. The button shows the language you\'ll switch TO — the whole site updates instantly.'],
-        reviews: ['MISSION CODES', 'Found a code in your PC box? Enter it here to leave a review — or to start a return if something\'s wrong.']
     },
     el: {
         welcome: ['ΚΑΛΩΣ ΗΡΘΕΣ ΣΤΗΝ PHOENIX!', 'Είμαι ο φύλακας του site. Έλα να σου δείξω γρήγορα πού είναι τι — εδώ φτιάχνουμε το δικό σου απόλυτο gaming PC.'],
         mascot: ['ΕΓΩ ΕΙΜΑΙ ΕΔΩ', 'Όποτε χρειαστείς βοήθεια, πάτα με: σε πάω στο σωστό PC ή σε όσα χωράνε στο budget σου, ή σε φέρνω σε επαφή με τον admin.'],
-        logo: ['ΕΛΕΓΧΟΣ ΤΑΥΤΟΤΗΤΑΣ', 'Πάτα το λογότυπο όποτε θες, για να δεις ποιος πραγματικά τρέχει αυτή την επιχείρηση.'],
         live: ['LIVE DROPS', 'Όλα τα χειροποίητα gaming rigs, έτοιμα για παράδοση. Κόκκινο badge που αναβοσβήνει σημαίνει ότι έμεινε μόνο ένα τεμάχιο· όσα έρχονται ΣΥΝΤΟΜΑ είναι στο τέλος της λίστας.'],
         vote: ['VOTE', 'Η κοινότητα ψηφίζει για να ξεκλειδώσει ένα μυστηριώδες PC — μία ψήφος ανά συνδεδεμένο πράκτορα με επιβεβαιωμένο email. Μόλις μαζευτούν οι ψήφοι, ξεκλειδώνει και μπαίνει αμέσως στα Live Drops — με προτεραιότητα για τα μέλη.'],
         browsePhone: ['ΠΕΡΙΗΓΗΣΗ', 'Σύρε την κάρτα αριστερά ή δεξιά για να δεις το επόμενο PC — οι τελίτσες δείχνουν πού βρίσκεσαι. Οι καρτέλες αλλάζουν ανάμεσα στα στοιχεία και στις επιπλέον επιλογές· το ΕΠΙΘΕΩΡΗΣΗ ΣΥΣΤΗΜΑΤΟΣ δείχνει πλήρη specs, FPS και επιλογές.'],
         browseDesktop: ['ΠΕΡΙΗΓΗΣΗ', 'Με τα βελάκια δίπλα στην κάρτα (ή ← →) βλέπεις το επόμενο PC — οι τελίτσες δείχνουν πού βρίσκεσαι. Οι καρτέλες αλλάζουν ανάμεσα στα στοιχεία και στις επιπλέον επιλογές· το ΕΠΙΘΕΩΡΗΣΗ ΣΥΣΤΗΜΑΤΟΣ δείχνει πλήρη specs, FPS και επιλογές.'],
         cart: ['Η ΛΕΙΑ ΣΟΥ', 'Ό,τι διαλέγεις μπαίνει εδώ. Δες το σύνολο, πάτα «Ολοκλήρωση παραγγελίας», συμπλήρωσε τα στοιχεία σου και παίρνεις αριθμό παραγγελίας — μετά κανονίζουμε πληρωμή και παράδοση στο WhatsApp.'],
         cli: ['ΤΟ ΤΕΡΜΑΤΙΚΟ', 'Πάτα εδώ (ή το πλήκτρο [`] σε πληκτρολόγιο) για να ανοίξεις τη γραμμή εντολών. Πάτα μια εντολή μέσα — δοκίμασε το "theme" ή το "color".'],
-        profile: ['ΠΡΟΦΙΛ ΠΡΑΚΤΟΡΑ', 'Συνδέσου ή κάνε εγγραφή εδώ για να αποθηκεύσεις τη λίστα επιθυμιών σου, να παρακολουθείς τις παραγγελίες σου, να παρακολουθείς το rank σου και να ξεκλειδώνεις έπαθλα.'],
-        settings: ['ΡΥΘΜΙΣΕΙΣ ΣΥΣΤΗΜΑΤΟΣ', 'Ήχος, γλώσσα και χρώμα τονισμού — κι από εδώ μπορείς να δεις ξανά αυτή την ξενάγηση.'],
-        info: ['ΠΛΗΡΟΦΟΡΙΕΣ', 'Εδώ βρίσκεις εγγύηση & επιστροφές, όρους και υποστήριξη. Θες να επιστρέψεις κάτι; Πάτα «Επιστροφή» και τα λέμε με email.'],
-        wheel: ['ΚΑΘΗΜΕΡΙΝΗ ΠΕΡΙΣΤΡΟΦΗ', 'Γύρνα τον τροχό μία φορά τη μέρα για premium χρώμα ή κουπόνι έκπτωσης — τα κουπόνια σε περιμένουν στο προφίλ και στο καλάθι σου.'],
-        lang: ['ΓΛΩΣΣΑ', 'Άλλαξε ανά πάσα στιγμή μεταξύ ελληνικών και αγγλικών. Το κουμπί δείχνει τη γλώσσα στην οποία θα ΠΑΣ — όλο το site ενημερώνεται αμέσως.'],
-        reviews: ['ΚΩΔΙΚΟΙ ΑΠΟΣΤΟΛΗΣ', 'Βρήκες κωδικό στο κουτί του PC σου; Βάλ\' τον εδώ για να γράψεις κριτική — ή για να ξεκινήσεις επιστροφή αν κάτι δεν πάει καλά.']
     }
 };
 
@@ -71,38 +59,25 @@ function buildSteps(lang) {
     // and ended up over the card's lower half
     const browse = step('#carousel-wrapper', touch ? 'browsePhone' : 'browseDesktop', bar ? 'top' : 'right');
 
+    // The terminal and the cart sit in the header in a different order on a phone than on a desktop
     const header = phone
-        ? [...tabs,
-           step('.logo', 'logo', 'bottom', 'start'),
-           step('.cli-btn', 'cli', 'bottom'),
-           step('.profile-btn', 'profile', 'bottom'),
-           step('.cart-btn-mobile', 'cart', 'bottom', 'end'),
-           browse]
-        : [step('.logo', 'logo', 'bottom', 'start'),
-           ...tabs,
-           step('.cart-btn', 'cart', 'bottom', 'end'),
-           step('.cli-btn', 'cli', 'bottom', 'end'),
-           step('.profile-btn', 'profile', 'bottom', 'end'),
-           browse];
+        ? [step('.cli-btn', 'cli', 'bottom'),
+           step('.cart-btn-mobile', 'cart', 'bottom', 'end')]
+        : [step('.cart-btn', 'cart', 'bottom', 'end'),
+           step('.cli-btn', 'cli', 'bottom', 'end')];
 
     // On the bottom bar a popover has to open upwards; on the desktop rail, to the right
     const sideSide = bar ? 'top' : 'right';
-    const sidebar = [
-        step('[data-i18n-title="sideSettings"]', 'settings', sideSide),
-        step('.side-btn-info', 'info', sideSide),
-        step('[data-i18n-title="sideWheel"]', 'wheel', sideSide),
-        step('#lang-toggle-btn', 'lang', sideSide),
-        // .add-review-btn (desktop right sidebar) and .mobile-reviews-btn swap at 1024px, not 768px
-        step(bar ? '.mobile-reviews-btn' : '.add-review-btn', 'reviews', bar ? 'top' : 'left')
-    ];
 
     // The phoenix opens the tour (it greets you) and closes it on its own button — the help button
     // (css/components/mascot.css), at the end of the bottom bar / foot of the desktop rail.
     return [
         step(null, 'welcome', 'over', 'center', 'tour-mascot'),
+        ...tabs,
         ...header,
-        ...sidebar,
-        step('.mascot-btn', 'mascot', sideSide, bar ? 'end' : 'center', 'tour-mascot tour-mascot-sm')
+        browse,
+        // "end": the button is at the foot of the rail, a centred popover ran off the bottom of a 900px screen
+        step('.mascot-btn', 'mascot', sideSide, 'end', 'tour-mascot tour-mascot-sm')
     ];
 }
 
