@@ -153,6 +153,8 @@ const translations = {
         communityDropBadge: "ΚΟΙΝΟΤΙΚΟ DROP",
         // Τροχός + κουπόνια (wheel.js, dashboard, καλάθι)
         wheelSpinsLeft: "ΠΡΟΣΠΑΘΕΙΕΣ: {n}/{max}", wheelBonusSpins: " · +{n} ΜΠΟΝΟΥΣ", wheelLoginRequired: "Συνδέσου για να γυρίσεις τον τροχό.",
+        wheelGuestLine: "ΣΥΝΔΕΣΟΥ ΓΙΑ ΝΑ ΓΥΡΙΣΕΙΣ · 3 ΠΡΟΣΠΑΘΕΙΕΣ ΤΗ ΜΕΡΑ", wheelVerifyLine: "ΕΠΙΒΕΒΑΙΩΣΕ ΤΟ EMAIL ΣΟΥ ΓΙΑ ΝΑ ΓΥΡΙΣΕΙΣ",
+        authNoAccount: "Δεν έχεις λογαριασμό;", authSignupLink: "Εγγραφή", authHaveAccount: "Έχεις ήδη λογαριασμό;", authLoginLink: "Σύνδεση",
         wheelError: "Ο τροχός δεν απάντησε — δοκίμασε ξανά σε λίγο.", wheelNoSpins: "Τελείωσαν οι προσπάθειες — ξανά σε {time}.",
         wheelSkinNew: "> ΞΕΚΛΕΙΔΩΣΕΣ ΤΟ SKIN {name} — ΕΦΑΡΜΟΣΤΗΚΕ ΣΤΟ SITE.", wheelSkinAgain: "> ΤΟ SKIN {name} ΤΟ ΕΙΧΕΣ ΗΔΗ — ΕΦΑΡΜΟΣΤΗΚΕ ΞΑΝΑ.",
         wheelCouponWon: "> ΚΕΡΔΙΣΕΣ ΚΟΥΠΟΝΙ -{p}%: {code} — ισχύει έως {until}. Το βρίσκεις στο προφίλ σου και στο καλάθι.",
@@ -457,6 +459,8 @@ const translations = {
         communityDropBadge: "COMMUNITY DROP",
         // Wheel + coupons (wheel.js, dashboard, cart)
         wheelSpinsLeft: "SPINS LEFT: {n}/{max}", wheelBonusSpins: " · +{n} BONUS", wheelLoginRequired: "Sign in to spin the wheel.",
+        wheelGuestLine: "SIGN IN TO SPIN · 3 SPINS A DAY", wheelVerifyLine: "VERIFY YOUR EMAIL TO SPIN",
+        authNoAccount: "No account yet?", authSignupLink: "Sign up", authHaveAccount: "Already an agent?", authLoginLink: "Sign in",
         wheelError: "The wheel didn't respond — try again in a moment.", wheelNoSpins: "No spins left — next in {time}.",
         wheelSkinNew: "> SKIN {name} UNLOCKED — APPLIED TO THE SITE.", wheelSkinAgain: "> YOU ALREADY HAD SKIN {name} — RE-APPLIED.",
         wheelCouponWon: "> YOU WON A -{p}% COUPON: {code} — valid until {until}. It's in your profile and your cart.",

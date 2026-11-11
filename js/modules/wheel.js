@@ -88,6 +88,8 @@ function formatCountdown(ms) {
 
 function updateAttemptsDisplay() {
     const el = document.getElementById('wheel-attempts');
+    const gate = visitorGate();
+    if (el && gate) { el.textContent = t(gate === 'guest' ? 'wheelGuestLine' : 'wheelVerifyLine'); return; }
     if (el) el.textContent = t('wheelSpinsLeft', { n: Math.max(status.attemptsLeft, 0), max: status.maxAttempts })
         + (status.bonusSpins > 0 ? t('wheelBonusSpins', { n: status.bonusSpins }) : '');
 }
@@ -98,28 +100,13 @@ function authHeaders() {
 
 function notify(msg, type = 'error') { if (window.showToast) window.showToast(msg, type); }
 
-export async function openWheelFromSettings() {
-    if (!state.isLoggedIn) {
-        notify(t('wheelLoginRequired'));
-        if (window.openModal) window.openModal('login-modal');
-        return;
-    }
-    if (!state.emailVerified) { notify(t('toastVerifyReminder')); return; }
+// Who may look and who may spin: everyone sees the wheel (curiosity brings more sign-ups than a closed
+// door); signing in — and a verified email — is asked for only when INITIATE is pressed.
+const LOGIN_RESUME_MS = 5 * 60 * 1000;
+let resumeAfterLoginUntil = 0;
+const visitorGate = () => (!state.isLoggedIn ? 'guest' : !state.emailVerified ? 'unverified' : null);
 
-    try {
-        const res = await fetch(`${CONFIG.API_URL}/wheel`, { headers: authHeaders() });
-        const data = await res.json().catch(() => ({}));
-        if (res.status === 401) { if (window.logout) window.logout(); if (window.openModal) window.openModal('login-modal'); return; }
-        if (!res.ok) { notify(data.code === 'EMAIL_NOT_VERIFIED' ? t('toastVerifyReminder') : t('wheelError')); return; }
-        applyWheelData(data);
-    } catch (e) { notify(t('wheelError')); return; }
-
-    if (!canSpin()) {
-        const wait = status.nextAvailableAt ? Date.parse(status.nextAvailableAt) - Date.now() : 0;
-        notify(t('wheelNoSpins', { time: formatCountdown(wait) }));
-        return;
-    }
-
+function showWheel() {
     if (window.openModal) window.openModal('wheel-modal');
     const resultEl = document.getElementById('wheel-result');
     if (resultEl) resultEl.textContent = '';
@@ -139,6 +126,27 @@ export async function openWheelFromSettings() {
     if (btn) btn.disabled = false;
 
     requestAnimationFrame(buildWheel);
+}
+
+export async function openWheelFromSettings() {
+    const gate = visitorGate();
+    if (gate) { showWheel(); return; }
+
+    try {
+        const res = await fetch(`${CONFIG.API_URL}/wheel`, { headers: authHeaders() });
+        const data = await res.json().catch(() => ({}));
+        if (res.status === 401) { if (window.logout) window.logout(); if (window.openModal) window.openModal('login-modal'); return; }
+        if (!res.ok) { notify(data.code === 'EMAIL_NOT_VERIFIED' ? t('toastVerifyReminder') : t('wheelError')); return; }
+        applyWheelData(data);
+    } catch (e) { notify(t('wheelError')); return; }
+
+    if (!canSpin()) {
+        const wait = status.nextAvailableAt ? Date.parse(status.nextAvailableAt) - Date.now() : 0;
+        notify(t('wheelNoSpins', { time: formatCountdown(wait) }));
+        return;
+    }
+
+    showWheel();
 }
 
 function resolveSpin(data) {
@@ -171,7 +179,18 @@ function resolveSpin(data) {
 }
 
 export async function spinWheel() {
-    if (spinning || !canSpin()) return;
+    if (spinning) return;
+    // The gate is here, at the press — not at the door
+    const gate = visitorGate();
+    if (gate === 'guest') {
+        notify(t('wheelLoginRequired'));
+        resumeAfterLoginUntil = Date.now() + LOGIN_RESUME_MS;
+        if (window.closeModal) window.closeModal('wheel-modal');
+        if (window.openModal) window.openModal('login-modal');
+        return;
+    }
+    if (gate === 'unverified') { notify(t('toastVerifyReminder')); return; }
+    if (!canSpin()) return;
     const wheel = document.getElementById('wheel');
     if (!wheel) return;
 
@@ -222,6 +241,12 @@ export async function spinWheel() {
 }
 
 document.addEventListener('codex:lang', updateAttemptsDisplay);
+// Signed in because the wheel asked for it (a few minutes ago at most): back to the wheel
+document.addEventListener('codex:login', () => {
+    if (Date.now() > resumeAfterLoginUntil) return;
+    resumeAfterLoginUntil = 0;
+    openWheelFromSettings();
+});
 
 window.spinWheel = spinWheel;
 window.openWheelFromSettings = openWheelFromSettings;

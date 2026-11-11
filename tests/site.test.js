@@ -328,6 +328,56 @@ describe('the hidden terminal commands (changes doc, step 1)', () => {
     }));
 });
 
+describe('the wheel for everyone, and the way between sign-in and sign-up (changes doc, step 2)', () => {
+    const wheelStatus = { attemptsLeft: 3, maxAttempts: 3, nextAvailableAt: null, bonusSpins: 0, unlockedColors: [], coupons: [] };
+    it('a guest sees the wheel; INITIATE asks for the sign-in; signing in brings the wheel back', () => withPage({ width: 1440, height: 900, locale: 'en-US' }, async (page) => {
+        await page.route(u => u.href === `${API}/user-login`, r => r.fulfill({ status: 200, contentType: 'application/json',
+            body: JSON.stringify({ success: true, username: 'Tester', token: 'member-token', emailVerified: true }) }));
+        await page.route(u => u.href === `${API}/wheel`, r => r.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(wheelStatus) }));
+        await page.evaluate(() => window.openWheelFromSettings());
+        await page.locator('#wheel-modal.active').waitFor();
+        assert.match(await page.locator('#wheel-attempts').textContent(), /SIGN IN TO SPIN/);
+        assert.equal(await page.locator('#login-modal.active').count(), 0, 'no sign-in form at the door');
+
+        await page.locator('#wheel-initiate-btn').click({ force: true });   // it pulses (wheel.css)
+        await page.locator('#login-modal.active').waitFor();
+        assert.equal(await page.locator('#wheel-modal.active').count(), 0);
+
+        await page.fill('#login-user', 'Tester');
+        await page.fill('#login-pass', 'secret123');
+        await page.locator('#login-modal .auth-form .btn-inspect').click();
+        await page.locator('#wheel-modal.active').waitFor({ timeout: 5000 });
+        assert.match(await page.locator('#wheel-attempts').textContent(), /SPINS LEFT: 3\/3/);
+    }));
+    it('a signed-in visitor without a verified email sees the wheel and is reminded at INITIATE', () => withPage({ width: 1440, height: 900, locale: 'en-US', member: true }, async (page) => {
+        // The same module instance the site uses: mark the email unverified
+        const signedIn = await page.evaluate(() => import('./js/state.js').then(m => { m.state.emailVerified = false; return m.state.isLoggedIn; }));
+        assert.equal(signedIn, true);
+        await page.evaluate(() => window.openWheelFromSettings());
+        await page.locator('#wheel-modal.active').waitFor();
+        assert.match(await page.locator('#wheel-attempts').textContent(), /VERIFY YOUR EMAIL/);
+        // The button pulses (wheel.css), which Playwright reads as "not stable"
+        await page.locator('#wheel-initiate-btn').click({ force: true });
+        assert.equal(await page.locator('#wheel-modal.active').count(), 1, 'stays on the wheel');
+        assert.equal(await page.locator('#login-modal.active').count(), 0);
+    }));
+    for (const [label, width, height] of [['desktop', 1440, 900], ['phone 390', 390, 844]]) {
+        it(`sign-in links to sign-up and back, in both languages — ${label}`, () => withPage({ width, height, locale: 'el-GR' }, async (page) => {
+            await page.evaluate(() => window.openModal('login-modal'));
+            const toSignup = page.locator('#login-modal .auth-switch-btn');
+            assert.equal((await toSignup.textContent()).trim(), 'Εγγραφή');
+            const box = await toSignup.boundingBox();
+            assert.ok(box.height >= 40, `touch target ${box.height}px`);
+            await toSignup.click();
+            await page.locator('#signup-modal.active').waitFor();
+            assert.equal(await page.locator('#login-modal.active').count(), 0);
+            await page.locator('#signup-modal .auth-switch-btn').click();
+            await page.locator('#login-modal.active').waitFor();
+            assert.equal(await page.locator('#signup-modal.active').count(), 0);
+        }));
+    }
+});
+
 describe('the QR window (UI brief 03)', () => {
     const openQr = async (page) => {
         await page.evaluate(() => window.openQr());
