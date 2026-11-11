@@ -63,6 +63,10 @@
 .vote-container .vote-info-btn { color: #ece4ff; border-color: rgba(192, 77, 255, 0.7); background: rgba(176, 38, 255, 0.12); }
 .vote-container .vote-info-btn:hover { color: #fff; background: rgba(255, 61, 166, 0.2); border-color: var(--v-pink); box-shadow: 0 0 10px rgba(255, 61, 166, 0.45); }
 .vote-container .vote-info-btn:focus-visible { outline-color: var(--v-pink); }
+@media (max-width: 768px) {
+    .vote-container .vote-info-btn { width: auto; padding: 0 10px; gap: 5px; font-size: 0.68rem; }
+    .vote-container .vote-info-btn span { display: inline; }
+}
 
 /* --- the title plate: hazard stripes at both ends, the cube, the name --- */
 .vote-container .vote-title {
@@ -122,7 +126,7 @@
 .vote-container .vote-progress-fill,
 .vote-container[data-phase="unlocked"] .vote-progress-fill {
     border-radius: 999px;
-    background: repeating-linear-gradient(-45deg, var(--v-slime) 0 7px, color-mix(in srgb, var(--neon-green) 55%, #0a1a00) 7px 14px);
+    background: repeating-linear-gradient(-45deg, var(--v-slime) 0 7px, #14100a 7px 14px);
     background-size: 19.8px 19.8px;
     box-shadow: 0 0 12px var(--v-slime-glow);
     animation: voteStripes 1.2s linear infinite;
@@ -154,6 +158,8 @@
     background: linear-gradient(180deg, color-mix(in srgb, var(--neon-green) 70%, #fff), var(--neon-green) 45%, color-mix(in srgb, var(--neon-green) 80%, #000));
     box-shadow: 0 0 18px var(--v-slime-glow), 0 0 4px var(--v-slime), inset 0 1px 0 rgba(255, 255, 255, 0.55), inset 0 -3px 0 rgba(0, 0, 0, 0.18);
 }
+.vote-container .vote-btn[data-action="golive"] { margin: 7px 7px 5px; width: calc(100% - 14px); }
+.vote-container .vote-btn[data-action="golive"], .vote-container .vote-btn[data-action="golive"]:hover { outline: 1.5px solid rgba(192, 77, 255, 0.85); outline-offset: 6px; }
 .vote-container .vote-btn[data-action="golive"]:hover { box-shadow: 0 0 28px var(--v-slime), inset 0 1px 0 rgba(255, 255, 255, 0.55), inset 0 -3px 0 rgba(0, 0, 0, 0.18); }
 /* A light sweeping across "go to it" now and then */
 .vote-container .vote-btn[data-action="golive"]::after {
@@ -172,59 +178,21 @@
 .vote-container .vote-brief .sys-brief-title { color: var(--v-slime); }
 .vote-container .vote-brief .sys-brief-more { color: var(--v-slime); }
 
-/* --- INSPECT: a purple pill with /// on the left and a round chevron on the right, every screen --- */
+/* --- INSPECT: a plain purple pill, every screen --- */
 .vote-container .vote-inspect {
-    position: relative; display: flex; align-items: center; justify-content: center; gap: 10px;
-    width: 100%; min-height: 46px; margin: 0 !important; padding: 8px 52px !important; border-radius: 999px !important;
+    display: flex; align-items: center; justify-content: center;
+    width: 100%; min-height: 46px; margin: 0 !important; padding: 8px 16px !important; border-radius: 999px !important;
     border: 1.5px solid rgba(192, 77, 255, 0.85) !important; color: #fff !important; text-decoration: none !important;
     font-size: 0.85rem !important; letter-spacing: 1.5px;
     background: linear-gradient(90deg, rgba(60, 22, 110, 0.95), rgba(110, 30, 170, 0.9) 50%, rgba(60, 22, 110, 0.95)) !important;
     box-shadow: 0 0 14px rgba(176, 38, 255, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.15) !important;
 }
 .vote-container .vote-inspect:hover { border-color: var(--v-pink) !important; box-shadow: 0 0 20px rgba(255, 61, 166, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.15) !important; }
-.vote-container .vote-inspect::before {
-    content: '///'; content: '///' / ''; position: absolute; left: 18px; top: 50%; transform: translateY(-50%);
-    color: var(--v-slime); font-weight: 900; font-style: italic; letter-spacing: -1px; text-shadow: 0 0 6px var(--v-slime-glow);
-}
-.vote-container .vote-inspect::after {
-    content: ''; position: absolute; right: 6px; top: 50%; transform: translateY(-50%); width: 32px; height: 32px; border-radius: 50%;
-    border: 1.5px solid var(--v-slime); box-shadow: 0 0 8px var(--v-slime-glow);
-    background: rgba(0, 0, 0, 0.35) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Cpath d='m181.66 133.66-80 80a8 8 0 0 1-11.32-11.32L164.69 128 90.34 53.66a8 8 0 0 1 11.32-11.32l80 80a8 8 0 0 1 0 11.32Z' fill='white'/%3E%3C/svg%3E") center / 15px no-repeat;
-}
 
-/* --- the tube along the bottom: glass of slime, metal clamps, end caps, a heartbeat monitor --- */
-.vote-tube { display: flex; align-items: center; height: 32px; margin-top: 2px; padding: 0 2px; pointer-events: none; }
-.vote-tube .vt-cap {
-    flex: none; width: 13px; height: 22px; border-radius: 7px;
-    background: linear-gradient(180deg, #ffd0ec, var(--v-pink) 40%, #6b0f45 60%, #ff7ac4);
-    box-shadow: 0 0 8px rgba(255, 61, 166, 0.6);
-}
-.vote-tube .vt-glass {
-    flex: 1; position: relative; height: 15px; margin: 0 -2px; border-radius: 8px;
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0.25), rgba(255, 255, 255, 0.04) 40%, rgba(255, 255, 255, 0.1));
-    border: 1px solid rgba(201, 211, 238, 0.55);
-    box-shadow: 0 0 10px var(--v-slime-glow);
-}
-.vote-tube .vt-glass::before, .vote-tube .vt-glass::after {
-    content: ''; position: absolute; top: -5px; bottom: -5px; width: 9px; border-radius: 3px; z-index: 2;
-    background: linear-gradient(90deg, var(--v-steel-dk), #e3e9fa 40%, var(--v-steel) 60%, #2a3047);
-    box-shadow: 0 0 6px rgba(176, 38, 255, 0.5);
-}
-.vote-tube .vt-glass::before { left: 16%; }
-.vote-tube .vt-glass::after { right: 16%; }
-.vote-tube .vt-liquid {
-    position: absolute; inset: 3px; border-radius: 5px;
-    background:
-        linear-gradient(180deg, rgba(255, 255, 255, 0.4), transparent 45%),
-        repeating-linear-gradient(90deg, var(--v-slime) 0 18px, color-mix(in srgb, var(--neon-green) 60%, #fff) 18px 24px, color-mix(in srgb, var(--neon-green) 75%, #000) 24px 40px);
-    background-size: 100% 100%, 80px 100%;
-    box-shadow: 0 0 10px var(--v-slime-glow);
-    animation: vtFlow 4s linear infinite;
-}
-.vote-tube .vt-glass:last-of-type .vt-liquid { animation-direction: reverse; }
-@keyframes vtFlow { to { background-position: 0 0, 80px 0; } }
+/* --- along the bottom: a small heartbeat monitor, centred --- */
+.vote-tube { display: flex; align-items: center; justify-content: center; height: 32px; margin-top: 2px; pointer-events: none; }
 .vote-tube .vt-monitor {
-    flex: none; position: relative; z-index: 3; width: 84px; height: 28px; margin: 0 4px; display: grid; place-items: center;
+    flex: none; position: relative; width: 84px; height: 28px; display: grid; place-items: center;
     border-radius: 9px; border: 1.5px solid var(--v-pink);
     background: radial-gradient(80% 90% at 50% 50%, #0c2a33, #070b14 80%);
     box-shadow: 0 0 12px rgba(255, 61, 166, 0.55), inset 0 0 10px rgba(62, 240, 255, 0.25);
@@ -251,14 +219,12 @@
     .vote-container .vote-progress { padding: 10px 12px; }
     .vote-container .vote-inspect { min-height: 42px; }
     .vote-tube { height: 26px; }
-    .vote-tube .vt-glass { height: 12px; }
-    .vote-tube .vt-cap { width: 11px; height: 18px; }
     .vote-tube .vt-monitor { width: 70px; height: 24px; }
     .vote-tube .vt-monitor svg { width: 54px; height: 15px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
     .vote-container .vote-progress-fill, .vote-container[data-phase="unlocked"] .vote-progress-fill,
-    .vote-container .vote-btn[data-action="golive"]::after, .vote-tube .vt-liquid { animation: none; }
+    .vote-container .vote-btn[data-action="golive"]::after { animation: none; }
     .vote-tube .vt-monitor polyline { animation: none; stroke-dashoffset: 0; }
 }

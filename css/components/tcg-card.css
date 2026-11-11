@@ -303,3 +303,16 @@ body.night-mode #main-card { box-shadow: inset 1px 1px 0 rgba(255, 255, 255, 0.5
 @keyframes ygSheen { to { transform: translateX(300%) skewX(-12deg); } }
 @media (prefers-reduced-motion: reduce) { .yg-card.sheen .yg-card-front::before { animation: none; display: none; } }
 
+/* While INSPECT is fully open (gallery.js setSolo) the page under it is switched off. The overlay hides
+   it anyway, but at 99% opacity the browser still had to draw all of it on every frame — the video, the
+   stage card and its glows — under the flipping card. Solid overlay + hidden layers = nothing to draw
+   but the card. The header and the bar keep their place (their animations just pause). */
+body.inspect-solo .gallery-overlay { background: #0a0a0c !important; }
+body.inspect-solo .bg-layer, body.inspect-solo .vignette, body.inspect-solo .grid-overlay, body.inspect-solo .moon-glow,
+body.inspect-solo #matrix-canvas, body.inspect-solo main.stage, body.inspect-solo .right-sidebar { visibility: hidden !important; }
+body.inspect-solo header *, body.inspect-solo .left-sidebar * { animation-play-state: paused !important; }
+/* Behind any open window the page is blurred and dimmed (ui-lock.css). Behind INSPECT the blur can't be
+   seen — its backdrop is all but opaque — yet it was being faded in over the whole stage, on the main
+   thread, during the very moment the card grows. Dim only. */
+body.ui-locked:has(> #gallery-overlay[style*="display: flex"]) :is(header, .stage, .left-sidebar, .right-sidebar) { filter: none !important; transition: opacity 0.3s ease !important; }
+
