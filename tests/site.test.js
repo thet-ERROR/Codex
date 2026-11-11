@@ -277,6 +277,67 @@ describe('the profile (UI brief 01 + 04)', () => {
     }));
 });
 
+// The QR window (UI brief 03): the artwork around a QR drawn from the real address, a white quiet zone
+// that nothing decorative reaches, working buttons, a phone fit, and motion that stops when asked.
+describe('the QR window (UI brief 03)', () => {
+    const openQr = async (page) => {
+        await page.evaluate(() => window.openQr());
+        await page.locator('#qr-tile svg').waitFor({ timeout: 5000 });
+        await page.waitForTimeout(400);
+    };
+    it('the QR is drawn from the page address, with a white quiet zone nothing covers', () => withPage({ width: 1440, height: 900 }, async (page) => {
+        await openQr(page);
+        const m = await page.evaluate(() => {
+            const tile = document.getElementById('qr-tile'), svg = tile.querySelector('svg'), path = svg.querySelector('path');
+            const vb = svg.viewBox.baseVal, bb = path.getBBox();
+            const r = tile.getBoundingClientRect();
+            // Every point over the tile must hit the tile itself, not the loop, a chip or a canister
+            const covered = [];
+            for (let i = 0; i <= 10; i++) for (let j = 0; j <= 10; j++) {
+                // 6px in from the edge: the tile's rounded corners show the socket behind them
+                const x = r.left + 6 + (r.width - 12) * i / 10, y = r.top + 6 + (r.height - 12) * j / 10;
+                const hit = document.elementFromPoint(x, y);
+                if (!tile.contains(hit)) covered.push(`${hit?.className} @${i},${j}`);
+            }
+            // One module's size: the code's drawn width over its module count (the same library, same input)
+            const q = window.qrcode(0, 'M'); q.addData(location.origin + '/'); q.make();
+            const cell = bb.width / q.getModuleCount();
+            return { url: document.getElementById('qr-url').textContent, bg: getComputedStyle(tile).backgroundColor,
+                margin: Math.min(bb.x, bb.y, vb.width - bb.x - bb.width, vb.height - bb.y - bb.height) / cell, covered };
+        });
+        assert.equal(m.url, site.url.replace(/^https?:\/\//, ''));
+        assert.equal(m.bg, 'rgb(255, 255, 255)');
+        assert.ok(m.margin >= 3.9, `a 4-module white margin around the code, got ${m.margin}`);
+        assert.deepEqual(m.covered, [], 'nothing decorative over the code');
+    }));
+    it('Copy link copies the same address the QR holds', () => withPage({ width: 1440, height: 900 }, async (page) => {
+        await page.evaluate(() => { window.__copied = null; navigator.clipboard.writeText = async (s) => { window.__copied = s; }; });
+        await openQr(page);
+        await page.locator('#qr-modal .qr-actions .info-btn.primary').click();
+        assert.equal(await page.evaluate(() => window.__copied), site.url);
+    }));
+    for (const [label, width, height] of [['phone 390', 390, 844], ['phone 360', 360, 740]]) {
+        it(`fits the screen with full-size buttons and the close button — ${label}`, () => withPage({ width, height }, async (page) => {
+            await openQr(page);
+            const m = await page.evaluate(() => {
+                const box = document.querySelector('#qr-modal .info-box').getBoundingClientRect();
+                return { sideways: document.documentElement.scrollWidth > innerWidth, fitsWide: box.left >= 0 && box.right <= innerWidth,
+                    btns: [...document.querySelectorAll('#qr-modal .qr-actions .info-btn:not([hidden]), #qr-modal .modal-x')].map(b => Math.min(b.getBoundingClientRect().width, b.getBoundingClientRect().height)) };
+            });
+            assert.equal(m.sideways, false);
+            assert.equal(m.fitsWide, true);
+            for (const b of m.btns) assert.ok(b >= 40, `touch target ${b}px`);
+            await page.locator('#qr-modal .modal-x').click();
+            await page.waitForFunction(() => !document.getElementById('qr-modal').classList.contains('active'));
+        }));
+    }
+    it('the liquid stands still for reduced motion', () => withPage({ width: 390, height: 844 }, async (page) => {
+        await page.emulateMedia({ reducedMotion: 'reduce' });
+        await openQr(page);
+        assert.equal(await page.evaluate(() => getComputedStyle(document.querySelector('#qr-modal .qr-can-liquid')).animationName), 'none');
+    }));
+});
+
 // Cumulative Layout Shift while the page loads: the card grows from an empty box to its full size when
 // the catalogue arrives. That happens under the splash, but Chrome (and WebPageTest) count it anyway —
 // it was 0.08 on a desktop and 0.11 on a phone, where "good" is 0.1 or less.
