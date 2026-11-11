@@ -20,6 +20,11 @@ const translations = {
         termVoteCount: "{votes} / {target} ψήφοι", termVoteTime: "Κλείνει σε {time}", termVoteVoted: "Έχεις ήδη ψηφίσει.",
         termCartEmpty: "Το καλάθι είναι άδειο.", termCartTotal: "ΣΥΝΟΛΟ: {total}", termTour: "Ξεκινά η ξενάγηση...",
         termUnknown: "Άγνωστη εντολή: {cmd}. Γράψε 'help'.", termDidYouMean: "Εννοούσες '{cmd}';",
+        termWhoami: "Ταυτότητα: CODEX.",
+        termSudo: "Nice try, agent. Δεν είσαι στη λίστα των sudoers. Το περιστατικό θα αναφερθεί. (Αστειεύομαι.)",
+        termLsHead: "projects/", termLsEmpty: "(άδειο — τα συστήματα φορτώνουν ακόμα)",
+        termRm1: "Διαγραφή του / ...", termRm2: "Διαγράφηκε το /boot ... /usr ... /home ... /opt/codex ...", termRm3: "Πλάκα κάνω. Τίποτα δεν χάθηκε. Το Codex δεν σβήνεται τόσο εύκολα.", termRmNope: "rm: δεν έχεις δικαίωμα.",
+        termMatrixOn: ">> ΞΥΠΝΑ, ΠΡΑΚΤΟΡΑ.", termMatrixOff: ">> ΕΠΑΝΑΦΟΡΑ ΣΤΗΝ ΠΡΑΓΜΑΤΙΚΟΤΗΤΑ.",
 
         reviewsLabel: "Κριτικές", writeReviewBtn: "[+] Γράψε κριτική",
         profileBtnAria: "Προφίλ", rcRatingLabel: "Βαθμολογία (1 έως 5)", missionReasonLabel: "Τι δεν πάει καλά",
@@ -319,6 +324,11 @@ const translations = {
         termVoteCount: "{votes} / {target} votes", termVoteTime: "Closes in {time}", termVoteVoted: "You have already voted.",
         termCartEmpty: "The cart is empty.", termCartTotal: "TOTAL: {total}", termTour: "Starting the tour...",
         termUnknown: "Unknown command: {cmd}. Type 'help'.", termDidYouMean: "Did you mean '{cmd}'?",
+        termWhoami: "Identity: CODEX.",
+        termSudo: "Nice try, agent. You are not in the sudoers file. This incident will be reported. (Kidding.)",
+        termLsHead: "projects/", termLsEmpty: "(empty — the systems are still loading)",
+        termRm1: "Deleting / ...", termRm2: "Removed /boot ... /usr ... /home ... /opt/codex ...", termRm3: "Just kidding. Nothing was lost. The Codex is not that easy to delete.", termRmNope: "rm: permission denied.",
+        termMatrixOn: ">> WAKE UP, AGENT.", termMatrixOff: ">> BACK TO REALITY.",
 
         reviewsLabel: "REVIEWS", writeReviewBtn: "[+] WRITE REVIEW",
         profileBtnAria: "Profile", rcRatingLabel: "Rating (1 to 5)", missionReasonLabel: "What is wrong",

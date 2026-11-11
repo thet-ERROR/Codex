@@ -83,7 +83,20 @@ export const CONFIG = {
           desc:  { en: 'Switched the interface language.', el: 'Άλλαξες τη γλώσσα της διεπαφής.' } },
         { id: 'night_owl', source: 'client', icon: 'ph-moon-stars',
           title: { en: 'NIGHT OWL', el: 'ΝΥΧΤΟΠΟΥΛΙ' },
-          desc:  { en: 'Browsed the codex between 00:00 and 05:00.', el: 'Περιηγήθηκες μεταξύ 00:00 και 05:00.' } }
+          desc:  { en: 'Browsed the codex between 00:00 and 05:00.', el: 'Περιηγήθηκες μεταξύ 00:00 και 05:00.' } },
+        // Secrets: shown as "???" with a hint until found (achievements.js badgeCards)
+        { id: 'nice_try', source: 'client', secret: true, icon: 'ph-shield-warning',
+          title: { en: 'NICE TRY', el: 'ΔΕΝ ΠΕΡΑΣΕ' },
+          desc:  { en: 'Asked the terminal for more power than you have.', el: 'Ζήτησες από το τερματικό περισσότερη εξουσία απ’ όση έχεις.' },
+          hint:  { en: 'Some doors are not meant for visitors.', el: 'Κάποιες πόρτες δεν είναι για επισκέπτες.' } },
+        { id: 'scorched_earth', source: 'client', secret: true, icon: 'ph-fire',
+          title: { en: 'SCORCHED EARTH', el: 'ΚΑΜΕΝΗ ΓΗ' },
+          desc:  { en: 'Tried to wipe everything. It was a joke.', el: 'Προσπάθησες να σβήσεις τα πάντα. Ήταν πλάκα.' },
+          hint:  { en: 'Never type this on a real machine.', el: 'Μην το γράψεις ποτέ σε αληθινό μηχάνημα.' } },
+        { id: 'curious_agent', source: 'client', secret: true, icon: 'ph-detective',
+          title: { en: 'CURIOUS AGENT', el: 'ΠΕΡΙΕΡΓΟΣ ΠΡΑΚΤΟΡΑΣ' },
+          desc:  { en: 'Found the three hidden commands: ls, whoami, matrix.', el: 'Βρήκες τις τρεις κρυφές εντολές: ls, whoami, matrix.' },
+          hint:  { en: 'The terminal knows more than ‘help’ says.', el: 'Το τερματικό ξέρει περισσότερα απ’ όσα λέει το ‘help’.' } }
     ],
 
     // Display names for the ranks the API reports. Thresholds are deliberately NOT here — the
