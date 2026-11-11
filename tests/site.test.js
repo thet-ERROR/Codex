@@ -413,6 +413,33 @@ describe('the wheel for everyone, and the way between sign-in and sign-up (chang
     }
 });
 
+describe('the empty stage (changes doc, step 4)', () => {
+    const text = (page) => page.locator('#main-card .card-empty').textContent();
+    for (const [lang, locale, custom, none] of [['en', 'en-US', /build custom/, /No systems here yet/], ['el', 'el-GR', /φτιάχνω custom/, /Δεν υπάρχουν συστήματα/]]) {
+        it(`a budget with nothing in it invites a custom build; no systems at all says they are coming — ${lang}`, () => withPage({ width: 390, height: 844, locale }, async (page) => {
+            await page.evaluate(() => window.setPriceFilter(50000, null));   // over €50,000: nothing matches
+            await page.locator('#main-card .card-empty').waitFor();
+            assert.match(await text(page), custom);
+            assert.equal(await page.locator('#main-card .card-empty-btn').count(), 1);
+            // "Talk to me" opens the help assistant, where the admin is one tap away
+            await page.locator('#main-card .card-empty-btn').click();
+            assert.ok(await page.evaluate(() => document.getElementById('chat-widget').classList.contains('open')));
+            await page.evaluate(() => window.toggleChat());
+            // ...and the quiet link clears the filter and brings the systems back
+            await page.locator('#main-card .card-empty-link').click();
+            await page.locator('#main-card .stock-badge').waitFor();
+            assert.equal(await page.locator('#main-card .card-empty').count(), 0);
+        }));
+        it(`with no systems at all, even a budget filter does not invite a custom build — ${lang}`, () => withPage({ width: 390, height: 844, locale }, async (page) => {
+            await page.evaluate(() => import('./js/state.js').then(m => { m.state.inventory = []; }));
+            await page.evaluate(() => window.setPriceFilter(0, 100));
+            await page.locator('#main-card .card-empty').waitFor();
+            assert.match(await text(page), none);
+            assert.equal(await page.locator('#main-card .card-empty-link').count(), 0);
+        }));
+    }
+});
+
 describe('the QR window (UI brief 03)', () => {
     const openQr = async (page) => {
         await page.evaluate(() => window.openQr());
