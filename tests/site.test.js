@@ -440,6 +440,54 @@ describe('the empty stage (changes doc, step 4)', () => {
     }
 });
 
+describe('title, share preview, headings and names (changes doc, step 5)', () => {
+    it('the title and the share preview describe the shop, not a version number', () => withPage({ width: 1440, height: 900 }, async (page) => {
+        const m = await page.evaluate(() => ({ title: document.title, og: document.querySelector('meta[property="og:title"]').content,
+            desc: document.querySelector('meta[name="description"]').content, ogDesc: document.querySelector('meta[property="og:description"]').content }));
+        assert.equal(m.title, 'PHOENIX CODEX | Custom Gaming PCs Θεσσαλονίκη');
+        assert.equal(m.og, m.title);
+        for (const s of [m.title, m.og, m.desc, m.ogDesc]) assert.ok(!/v52|TERMINAL/.test(s), s);
+        assert.match(m.desc, /Θεσσαλονίκη/);
+        assert.match(m.desc, /custom/i);
+    }));
+    it('there is exactly one h1, and it is not visible', () => withPage({ width: 1440, height: 900 }, async (page) => {
+        const h1 = await page.evaluate(() => [...document.querySelectorAll('h1')].filter(h => h.id !== 'yg-title' && !h.closest('.modal-overlay, #gallery-overlay')).map(h => ({ t: h.textContent, w: h.getBoundingClientRect().width })));
+        assert.equal(h1.length, 1);
+        assert.match(h1[0].t, /PHOENIX CODEX/);
+        assert.ok(h1[0].w <= 1, 'invisible');
+    }));
+    for (const lang of ['en-US', 'el-GR']) {
+        it(`every icon-only button has a name, and every X is a button — ${lang}`, () => withPage({ width: 1440, height: 900, locale: lang }, async (page) => {
+            const bad = await page.evaluate(() => [...document.querySelectorAll('.side-btn, .cli-btn, .cart-btn-mobile, .profile-btn, .close-modal, .modal-close, .modal-x')].filter(b => {
+                const name = (b.getAttribute('aria-label') || b.textContent || '').trim();
+                return !name || (b.matches('.close-modal, .modal-close') && b.tagName !== 'BUTTON');
+            }).map(b => b.outerHTML.slice(0, 90)));
+            assert.deepEqual(bad, []);
+            const wheel = await page.evaluate(() => document.querySelector('[data-i18n-aria="sideWheel"]').getAttribute('aria-label'));
+            assert.equal(wheel, lang === 'el-GR' ? 'Καθημερινή περιστροφή' : 'Daily Spin', 'the name follows the language');
+        }));
+    }
+    it('an X works from the keyboard and still looks like a bare X', () => withPage({ width: 1440, height: 900 }, async (page) => {
+        await page.evaluate(() => window.openModal('wheel-modal'));
+        await page.locator('#wheel-modal.active').waitFor();
+        const style = await page.evaluate(() => { const s = getComputedStyle(document.querySelector('#wheel-modal .close-modal')); return [s.backgroundColor, s.borderTopWidth]; });
+        assert.deepEqual(style, ['rgba(0, 0, 0, 0)', '0px']);
+        await page.locator('#wheel-modal .close-modal').focus();
+        await page.keyboard.press('Enter');
+        await page.waitForFunction(() => !document.getElementById('wheel-modal').classList.contains('active'));
+    }));
+    it('robots.txt and sitemap.xml are served, and the admin panel is kept out of the index', () => withPage({ width: 1440, height: 900 }, async (page) => {
+        const get = (p) => page.evaluate(async (u) => { const r = await fetch(u); return { ok: r.ok, text: await r.text() }; }, p);
+        const robots = await get('/robots.txt');
+        assert.ok(robots.ok);
+        assert.match(robots.text, /Disallow: \/admin\.html/);
+        assert.match(robots.text, /Sitemap: https:\/\/\S+\/sitemap\.xml/);
+        const sitemap = await get('/sitemap.xml');
+        assert.ok(sitemap.ok);
+        assert.match(sitemap.text, /<loc>https:\/\/\S+\/<\/loc>/);
+    }));
+});
+
 describe('the QR window (UI brief 03)', () => {
     const openQr = async (page) => {
         await page.evaluate(() => window.openQr());
