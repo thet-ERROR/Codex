@@ -508,21 +508,16 @@ function flipFrom(from, to) {
 }
 
 // While INSPECT is open the page under it is switched off (body.inspect-solo, tcg-card.css): hidden and
-// its animations paused, the background video stopped. The overlay covers the whole screen anyway, but
-// what is under it was still drawn on every frame (video, stage card, glows) — on a slow machine that
-// took the flip from ~70 frames to ~6. It comes back just before the close animation starts, so the card
-// still shrinks into a page that is there.
-let videoWasPlaying = false;
+// its animations paused (the background video is paused by ui-lock.js, as behind every window). The
+// overlay covers the whole screen anyway, but what is under it was still drawn on every frame (stage
+// card, glows) — on a slow machine that took the flip from ~70 frames to ~6. It comes back just before
+// the close animation starts, so the card still shrinks into a page that is there.
 function setSolo(on) {
     const had = document.body.classList.contains('inspect-solo');
     if (on === had) return;
     const overlay = document.getElementById('gallery-overlay');
     if (on && (!overlay || overlay.style.display !== 'flex' || closing)) return;   // closed again in the meantime
     document.body.classList.toggle('inspect-solo', on);
-    const video = document.querySelector('.bg-video');
-    if (!video) return;
-    if (on) { videoWasPlaying = !video.paused; video.pause(); }
-    else if (videoWasPlaying) { videoWasPlaying = false; video.play().catch(() => {}); }
 }
 
 function playOpen() {

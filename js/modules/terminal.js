@@ -19,6 +19,7 @@ export function toggleCLI() {
 export function toggleHackMode() {
     state.isHacked = !state.isHacked;
     state.matrixEnabled = state.isHacked;
+    if (state.matrixEnabled) startMatrix(); else stopMatrix();
 
     const canvas = document.getElementById('matrix-canvas');
     if (state.isHacked) {
@@ -32,37 +33,62 @@ export function toggleHackMode() {
     }
 }
 
-export function initMatrix() {
-    const canvas = document.getElementById('matrix-canvas');
-    if(!canvas) return;
+// The matrix rain (hack / matrix): it runs only while it's switched on. It used to tick 30 times a second
+// from page load to page close, drawing nothing, on a full-screen canvas sized before anyone asked for
+// it. Now the canvas is sized when the rain starts (and on resize while it runs), each frame comes from
+// requestAnimationFrame — which also stops in a background tab — and switching it off stops the loop and
+// gives the canvas's memory back.
+const MATRIX_CHARS = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZｱｲｳｴｵｶｷｸｹｺｻｼｽｾｿ';
+const MATRIX_FONT = 16;
+const MATRIX_STEP_MS = 33;        // the rain's own pace (about 30 rows a second), whatever the screen's rate
+let matrixRaf = 0, matrixDrops = [], matrixLast = 0;
 
-    const ctx = canvas.getContext('2d');
+function sizeMatrix() {
+    const canvas = document.getElementById('matrix-canvas');
+    if (!canvas) return;
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
-
-    const chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZｱｲｳｴｵｶｷｸｹｺｻｼｽｾｿ';
-    const fontSize = 16;
-    const columns = canvas.width / fontSize;
-    const drops = Array(Math.floor(columns)).fill(1);
-
-    const draw = () => {
-        if (!state.matrixEnabled) return;
-
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        ctx.fillStyle = '#0f0';
-        ctx.font = fontSize + 'px monospace';
-
-        drops.forEach((y, i) => {
-            const text = chars[Math.floor(Math.random() * chars.length)];
-            ctx.fillText(text, i * fontSize, y * fontSize);
-            if (y * fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
-            drops[i]++;
-        });
-    };
-    setInterval(draw, 33);
+    matrixDrops = Array(Math.floor(canvas.width / MATRIX_FONT)).fill(1);
 }
 
+function matrixFrame(now) {
+    matrixRaf = requestAnimationFrame(matrixFrame);
+    if (now - matrixLast < MATRIX_STEP_MS) return;
+    matrixLast = now;
+    const canvas = document.getElementById('matrix-canvas');
+    const ctx = canvas && canvas.getContext('2d');
+    if (!ctx) return;
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = '#0f0';
+    ctx.font = MATRIX_FONT + 'px monospace';
+    matrixDrops.forEach((y, i) => {
+        ctx.fillText(MATRIX_CHARS[Math.floor(Math.random() * MATRIX_CHARS.length)], i * MATRIX_FONT, y * MATRIX_FONT);
+        if (y * MATRIX_FONT > canvas.height && Math.random() > 0.975) matrixDrops[i] = 0;
+        matrixDrops[i]++;
+    });
+}
+
+function startMatrix() {
+    if (matrixRaf) return;
+    sizeMatrix();
+    window.addEventListener('resize', sizeMatrix);
+    matrixRaf = requestAnimationFrame(matrixFrame);
+}
+
+function stopMatrix() {
+    if (!matrixRaf) return;
+    cancelAnimationFrame(matrixRaf);
+    matrixRaf = 0;
+    window.removeEventListener('resize', sizeMatrix);
+    const canvas = document.getElementById('matrix-canvas');
+    if (canvas) { canvas.width = 0; canvas.height = 0; }
+}
+
+// Kept for main.js: the rain starts on its own if the page opens with it already on
+export function initMatrix() {
+    if (state.matrixEnabled) startMatrix();
+}
 // --- COMMANDS ---------------------------------------------------------------------------------------
 // Every command is also a tappable chip (buildChips), so on a phone nothing has to be typed — the
 // keyboard stays down and the terminal keeps its room. Output is written in the site's language.

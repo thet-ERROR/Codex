@@ -634,6 +634,62 @@ describe('staying smooth on a slow machine', () => {
             assert.equal((await under()).solo, false);
         }));
     }
+    it('the matrix rain costs nothing while it is off, runs when switched on, and lets go when switched off', () => withPage({ width: 1366, height: 768 }, async (page) => {
+        // Off: no full-screen canvas held, and no timer waking the page up
+        const canvasSize = () => page.evaluate(() => { const c = document.getElementById('matrix-canvas'); return [c.width, c.height]; });
+        const [w0, h0] = await canvasSize();
+        assert.ok(w0 <= 300 && h0 <= 150, `not a full-screen canvas before it is needed (${w0}×${h0})`);
+        const wakes = await page.evaluate(async () => {
+            let n = 0; const orig = window.setTimeout;
+            const ctx = document.getElementById('matrix-canvas').getContext('2d'); const fill = ctx.fillText.bind(ctx);
+            ctx.fillText = (...a) => { n++; return fill(...a); };
+            await new Promise(r => orig(r, 500));
+            return n;
+        });
+        assert.equal(wakes, 0, 'nothing is drawn while it is off');
+        await page.evaluate(() => window.runTerminalCommand('matrix'));
+        await page.waitForTimeout(300);
+        assert.deepEqual(await canvasSize(), [1366, 768]);
+        const drawn = await page.evaluate(async () => {
+            let n = 0; const ctx = document.getElementById('matrix-canvas').getContext('2d'); const fill = ctx.fillText.bind(ctx);
+            ctx.fillText = (...a) => { n++; return fill(...a); };
+            await new Promise(r => setTimeout(r, 400));
+            return n;
+        });
+        assert.ok(drawn > 0, 'it rains');
+        await page.evaluate(() => window.runTerminalCommand('matrix'));
+        assert.deepEqual(await canvasSize(), [0, 0], 'switched off, the canvas is given back');
+    }));
+    it('nothing behind an open window is blurred, and the dimming is not !important (so it stays on the compositor)', () => withPage({ width: 1366, height: 768 }, async (page) => {
+        await page.evaluate(() => window.openModal('settings'));
+        await page.waitForTimeout(500);
+        const m = await page.evaluate(() => {
+            const blurred = [...document.querySelectorAll('body *')].filter(e => { const s = getComputedStyle(e); return e.getClientRects().length && (/blur/.test(s.filter) || /blur/.test(s.backdropFilter)); })
+                .map(e => e.className || e.tagName).filter(c => !/nav-bar/.test(c));   // the tab bar is real glass over the video
+            let important = null;
+            for (const sheet of document.styleSheets) { let rules; try { rules = sheet.cssRules; } catch (e) { continue; }
+                for (const r of rules) if (r.selectorText && r.selectorText.includes('body.ui-locked header')) important = r.style.getPropertyPriority('opacity'); }
+            return { blurred, important, stage: getComputedStyle(document.querySelector('.stage')).opacity };
+        });
+        assert.deepEqual(m.blurred, []);
+        assert.equal(m.important, '');
+        assert.equal(m.stage, '0.5', 'the page still steps back');
+    }));
+    it('the background video pauses behind a window and plays again after, but not behind the terminal', () => withPage({ width: 1366, height: 768 }, async (page) => {
+        const paused = () => page.evaluate(() => document.querySelector('.bg-video').paused);
+        await page.evaluate(() => document.querySelector('.bg-video').play().catch(() => {}));
+        await page.waitForTimeout(200);
+        assert.equal(await paused(), false);
+        await page.evaluate(() => window.openModal('settings'));
+        await page.waitForTimeout(100);
+        assert.equal(await paused(), true, 'nobody can see it behind the window');
+        await page.evaluate(() => window.closeModal('settings-modal'));
+        await page.waitForTimeout(200);
+        assert.equal(await paused(), false, 'back once the window is gone');
+        await page.evaluate(() => window.toggleCLI());
+        await page.waitForTimeout(100);
+        assert.equal(await paused(), false, 'the terminal does not cover the page');
+    }));
     it('INSPECT is filled once while the page is idle, without showing or changing anything', () => withPage({ width: 390, height: 844 }, async (page) => {
         await page.waitForFunction(() => document.getElementById('yg-title').textContent.trim() === 'TEST RIG 1', null, { timeout: 12000 });
         const m = await page.evaluate(() => import('./js/state.js').then(s => ({ shown: document.getElementById('gallery-overlay').style.display === 'flex',
