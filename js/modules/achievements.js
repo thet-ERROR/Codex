@@ -252,6 +252,17 @@ export function openAgentDashboard() {
     renderDossierCoupons();
     if (window.loadMyOrders) window.loadMyOrders();
     if (window.openModal) window.openModal('agent-dashboard-modal');
+
+    // On tablet/desktop the rank steps scroll inside their panel: open it on the current rank, not on
+    // the first one. Only that panel moves (on a phone it doesn't scroll, so nothing happens).
+    requestAnimationFrame(() => {
+        const ladder = document.getElementById('dossier-ladder-list');
+        const current = ladder?.querySelector('.rank-step.current');
+        if (!ladder || !current || ladder.scrollHeight <= ladder.clientHeight) return;
+        const offset = current.getBoundingClientRect().top - ladder.getBoundingClientRect().top + ladder.scrollTop;
+        // The current rank at the top, the next one (what you're going for) under it
+        ladder.scrollTop = Math.max(0, offset - 4);
+    });
 }
 
 // Coupons won on the daily wheel (issued and stored by the server — see POST /api/wheel/spin). Each

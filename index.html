@@ -857,6 +857,9 @@ Type 'help' for a list of commands.
                 </div>
             </div>
             
+            <!-- Footer: always at the bottom of the window (sticky while it scrolls), the purple tube under it.
+                 Styled in css/components/dossier-hud.css -->
+            <div class="dossier-footer">
             <div class="dossier-auth-actions">
                 <button id="dossier-signin-btn" class="yg-btn yg-btn-specs" onclick="playClick(); closeModal('agent-dashboard-modal'); openModal('login-modal')" data-i18n="dossierSignIn">
                     > SIGN IN
@@ -867,6 +870,14 @@ Type 'help' for a list of commands.
                 <button id="dossier-logout-btn" class="yg-btn yg-btn-specs dossier-btn-logout" onclick="playClick(); logout(); closeModal('agent-dashboard-modal')" data-i18n="dossierSignOut">
                     > SIGN OUT
                 </button>
+            </div>
+            <div class="dossier-tube" aria-hidden="true">
+                <span class="tube-cap"></span>
+                <span class="tube-glass"><span class="tube-liquid"></span></span>
+                <span class="tube-monitor"><svg viewBox="0 0 60 20" focusable="false"><polyline points="0,10 16,10 20,5 24,15 28,2 32,18 36,10 44,10 47,7 50,10 60,10"/></svg></span>
+                <span class="tube-glass"><span class="tube-liquid"></span></span>
+                <span class="tube-cap"></span>
+            </div>
             </div>
         </div>
     </div>

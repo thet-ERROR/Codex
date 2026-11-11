@@ -218,6 +218,65 @@ describe('the full achievements window (UI brief 02)', () => {
     }
 });
 
+// The profile window (UI brief 01 + 04): SIGN OUT always at the bottom, the wishlist filling the space
+// down to it (scrolling inside itself when long), rounded panels instead of cut corners.
+const API = 'https://codex-backend-9kij.onrender.com/api';
+async function openProfile(page, wishCount) {
+    const wishlist = Array.from({ length: wishCount }, (_, i) => ({ _id: `w${i}`, name: `PROJECT ${i}`, priceCents: 34000 + i * 1000, images: ['assets/images/icon-512.png'] }));
+    const me = { username: 'Tester', emailVerified: true, wishlist, achievements: ['recruited'], xp: 25, rank: 'recruit', rankMinXp: 0, nextRank: 'operative', nextRankXp: 100, progress: 25,
+        ranks: [{ id: 'recruit', minXp: 0, rewards: {} }, { id: 'operative', minXp: 100, rewards: { spins: 1 } }, { id: 'fieldAgent', minXp: 250, rewards: { color: 'ultraviolet' } }],
+        bonusSpins: 0, rankRewards: [], coupons: [], unlockedColors: [] };
+    await page.route(u => u.href === `${API}/me`, r => r.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(me) }));
+    await page.reload();
+    await page.waitForSelector('#startup-overlay.hidden', { state: 'attached', timeout: 15000 });
+    await page.evaluate(() => window.openAgentDashboard());
+    await page.locator('#agent-dashboard-modal.active').waitFor();
+    await page.waitForTimeout(500);
+    return page.evaluate(() => {
+        const r = s => document.querySelector(s).getBoundingClientRect();
+        const box = document.querySelector('#agent-dashboard-modal .dossier-box'), wish = document.getElementById('dossier-wishlist');
+        return { box: r('#agent-dashboard-modal .dossier-box'), logout: r('#dossier-logout-btn'), wish: r('#dossier-wishlist'), left: r('.dossier-left'),
+            boxScrolls: box.scrollHeight > box.clientHeight + 1, wishScrolls: wish.scrollHeight > wish.clientHeight + 1,
+            sideways: document.documentElement.scrollWidth > innerWidth || box.scrollWidth > box.clientWidth + 1,
+            rows: wish.querySelectorAll('.dossier-wish-row').length };
+    });
+}
+describe('the profile (UI brief 01 + 04)', () => {
+    for (const [label, width, height] of [['tablet 820', 820, 1180], ['desktop 1440', 1440, 900]]) {
+        it(`SIGN OUT sits at the bottom and the wishlist fills the space down to it — ${label}`, () => withPage({ width, height, member: true }, async (page) => {
+            for (const n of [1, 9]) {
+                const m = await openProfile(page, n);
+                assert.equal(m.rows, n);
+                assert.equal(m.boxScrolls, false, 'the window itself does not scroll');
+                assert.ok(m.logout.bottom <= m.box.bottom && m.box.bottom - m.logout.bottom < 90, 'SIGN OUT is at the bottom of the window');
+                assert.ok(Math.abs(m.wish.bottom - m.left.bottom) <= 2, 'no dead space under the wishlist');
+                assert.equal(m.wishScrolls, n === 9, 'a long wishlist scrolls inside itself');
+                assert.equal(m.sideways, false);
+            }
+        }));
+    }
+    it('on a phone SIGN OUT stays in view while the window scrolls, with no sideways scroll', () => withPage({ width: 390, height: 844, member: true }, async (page) => {
+        const m = await openProfile(page, 6);
+        assert.equal(m.sideways, false);
+        for (const at of [0, 0.5, 1]) {
+            const seen = await page.evaluate(f => {
+                const box = document.querySelector('#agent-dashboard-modal .dossier-box');
+                box.scrollTop = (box.scrollHeight - box.clientHeight) * f;
+                const b = box.getBoundingClientRect(), l = document.getElementById('dossier-logout-btn').getBoundingClientRect();
+                return l.top >= b.top && l.bottom <= b.bottom;
+            }, at);
+            assert.equal(seen, true, `SIGN OUT visible at scroll ${at}`);
+        }
+    }));
+    it('panels are rounded, with no cut corners', () => withPage({ width: 1440, height: 900, member: true }, async (page) => {
+        await openProfile(page, 1);
+        const panels = await page.evaluate(() => [...document.querySelectorAll('#agent-dashboard-modal :is(.dossier-box, .dossier-header, .dossier-list, .wishlist-grid, .dossier-ladder, .dossier-heading, #dossier-logout-btn)')]
+            .map(e => ({ clip: getComputedStyle(e).clipPath, radius: parseFloat(getComputedStyle(e).borderTopLeftRadius) })));
+        assert.ok(panels.length >= 8);
+        for (const p of panels) { assert.equal(p.clip, 'none'); assert.ok(p.radius >= 10); }
+    }));
+});
+
 // Cumulative Layout Shift while the page loads: the card grows from an empty box to its full size when
 // the catalogue arrives. That happens under the splash, but Chrome (and WebPageTest) count it anyway —
 // it was 0.08 on a desktop and 0.11 on a phone, where "good" is 0.1 or less.
