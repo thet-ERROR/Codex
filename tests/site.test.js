@@ -338,6 +338,78 @@ describe('the QR window (UI brief 03)', () => {
     }));
 });
 
+describe('the vote card (UI brief 06)', () => {
+    const now = Date.now();
+    const drop = (over) => ({
+        _id: 'ev1', title: 'PROJECT CASTLE', image: 'assets/images/ProjectX.jpeg', price: '480', priceCents: 48000, targetVotes: 10, currentVotes: 6,
+        startDate: new Date(now - 86400000).toISOString(), endsAt: new Date(now + 3 * 86400000).toISOString(), serverNow: new Date(now).toISOString(),
+        lore: 'A test lore line.', phase: 'open', ...over
+    });
+    const openVote = async (page, ev) => {
+        await page.route(u => u.href === `${API}/vote-event`, r => r.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(ev) }));
+        await page.addInitScript(() => { try { localStorage.setItem('codex_vote_unlock_seen', 'ev1'); } catch (e) {} });
+        await page.reload();
+        await page.waitForSelector('#startup-overlay.hidden', { state: 'attached', timeout: 15000 });
+        await page.evaluate(() => window.switchTab('vote'));
+        await page.waitForTimeout(500);
+    };
+    it('keeps its parts and labels, the slime never covers the lock, the decoration stays out of screen readers', () => withPage({ width: 1440, height: 900, locale: 'en-US' }, async (page) => {
+        await openVote(page, drop());
+        const m = await page.evaluate(() => {
+            const lock = document.getElementById('v-lock').getBoundingClientRect();
+            const hit = document.elementFromPoint(lock.left + lock.width / 2, lock.top + lock.height / 2);
+            return { phase: document.getElementById('vote-container').dataset.phase, title: document.getElementById('v-title').textContent,
+                btn: document.getElementById('v-btn-label').textContent, action: document.getElementById('v-btn').dataset.action,
+                inspect: document.querySelector('.vote-inspect').textContent.trim(), lockHit: hit && (hit.id === 'v-lock' || hit.id === 'v-img'),
+                tubeHidden: document.querySelector('.vote-tube').getAttribute('aria-hidden') };
+        });
+        assert.equal(m.phase, 'open');
+        assert.equal(m.title, 'PROJECT CASTLE');
+        assert.equal(m.action, 'login');
+        assert.equal(m.btn, 'Sign in to vote');
+        assert.equal(m.inspect, 'INSPECT SYSTEM');
+        assert.equal(m.lockHit, true, 'the lock shows through the slime frame');
+        assert.equal(m.tubeHidden, 'true');
+    }));
+    for (const [label, width, height] of [['phone 390', 390, 844], ['phone 360', 360, 740]]) {
+        it(`unlocked: SEE IT IN LIVE DROPS and INSPECT are full-size and reachable, nothing sideways — ${label}`, () => withPage({ width, height }, async (page) => {
+            await openVote(page, drop({ phase: 'unlocked', status: 'unlocked', currentVotes: 10, pcId: 'pc1' }));
+            const m = await page.evaluate(() => {
+                const card = document.getElementById('vote-container').getBoundingClientRect();
+                const ins = document.querySelector('.vote-inspect');
+                // Scrolled all the way down, as a visitor would: the page leaves room for the bottom bar
+                window.scrollTo(0, document.scrollingElement.scrollHeight);
+                const r = ins.getBoundingClientRect();
+                const hit = document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2);
+                return { sideways: document.documentElement.scrollWidth > innerWidth, fitsWide: card.left >= 0 && card.right <= innerWidth,
+                    action: document.getElementById('v-btn').dataset.action, btnH: document.getElementById('v-btn').getBoundingClientRect().height,
+                    insH: r.height, insReachable: ins.contains(hit) };
+            });
+            assert.equal(m.sideways, false);
+            assert.equal(m.fitsWide, true);
+            assert.equal(m.action, 'golive');
+            assert.ok(m.btnH >= 40 && m.insH >= 40, `touch targets ${m.btnH} / ${m.insH}`);
+            assert.equal(m.insReachable, true, 'INSPECT is not under the bottom bar once scrolled to');
+            await page.locator('#v-btn').click();
+            // The button still takes you there
+            await page.waitForFunction(() => document.getElementById('vote-view').classList.contains('hidden'), null, { timeout: 5000 });
+        }));
+    }
+    it('the countdown stays plain text beside the count on a phone', () => withPage({ width: 390, height: 844 }, async (page) => {
+        await openVote(page, drop());
+        const bg = await page.evaluate(() => getComputedStyle(document.getElementById('v-timer')).backgroundColor);
+        assert.equal(bg, 'rgba(0, 0, 0, 0)');
+    }));
+    it('the slime stands still for reduced motion', () => withPage({ width: 390, height: 844 }, async (page) => {
+        await page.emulateMedia({ reducedMotion: 'reduce' });
+        await openVote(page, drop({ phase: 'unlocked', status: 'unlocked', currentVotes: 10, pcId: 'pc1' }));
+        const names = await page.evaluate(() => ['.vote-progress-fill', '.vote-tube .vt-liquid', '.vote-tube .vt-monitor polyline']
+            .map(s => getComputedStyle(document.querySelector(s)).animationName)
+            .concat(getComputedStyle(document.getElementById('v-btn'), '::after').animationName));
+        assert.deepEqual(names, ['none', 'none', 'none', 'none']);
+    }));
+});
+
 // Cumulative Layout Shift while the page loads: the card grows from an empty box to its full size when
 // the catalogue arrives. That happens under the splash, but Chrome (and WebPageTest) count it anyway —
 // it was 0.08 on a desktop and 0.11 on a phone, where "good" is 0.1 or less.
