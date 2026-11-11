@@ -311,8 +311,4 @@ body.inspect-solo .gallery-overlay { background: #0a0a0c !important; }
 body.inspect-solo .bg-layer, body.inspect-solo .vignette, body.inspect-solo .grid-overlay, body.inspect-solo .moon-glow,
 body.inspect-solo #matrix-canvas, body.inspect-solo main.stage, body.inspect-solo .right-sidebar { visibility: hidden !important; }
 body.inspect-solo header *, body.inspect-solo .left-sidebar * { animation-play-state: paused !important; }
-/* Behind any open window the page is blurred and dimmed (ui-lock.css). Behind INSPECT the blur can't be
-   seen — its backdrop is all but opaque — yet it was being faded in over the whole stage, on the main
-   thread, during the very moment the card grows. Dim only. */
-body.ui-locked:has(> #gallery-overlay[style*="display: flex"]) :is(header, .stage, .left-sidebar, .right-sidebar) { filter: none !important; transition: opacity 0.3s ease !important; }
 

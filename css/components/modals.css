@@ -11,7 +11,8 @@
    sheet at the bottom): the toasts come down from the top instead */
 body:has(.modal-overlay.active) #toast-container { top: max(16px, env(safe-area-inset-top)); bottom: auto; }
 
-.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 6000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(15px); }
+/* No backdrop-filter: behind 95% black a blur can't be seen, and it re-renders the whole screen (ui-lock.css) */
+.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 6000; display: none; align-items: center; justify-content: center; }
 .modal-overlay.active { display: flex; animation: fadeInUp 0.3s forwards; z-index: 99999 !important; pointer-events: auto !important; }
 /* .gallery-overlay sits at z-index 999999 (css/gallery/card-front.css) so any modal opened from
    inside the gallery card (spec info, Pro Config info, paint consent) must render above it. */
@@ -48,7 +49,7 @@ button.close-modal { padding: 0; border: 0; background: none; font-family: inher
 .whoami-cursor { display: inline-block; color: #0f0; font-weight: bold; animation: cursorBlink 1s step-end infinite; }
 
 /* Driver.js Overrides */
-.driver-popover { background-color: rgba(10, 5, 20, 0.95) !important; border: 1px solid var(--neon-purple, #b026ff) !important; color: #fff !important; border-radius: 12px !important; box-shadow: 0 0 20px rgba(176, 38, 255, 0.3) !important; backdrop-filter: blur(10px) !important; }
+.driver-popover { background-color: rgba(10, 5, 20, 0.95) !important; border: 1px solid var(--neon-purple, #b026ff) !important; color: #fff !important; border-radius: 12px !important; box-shadow: 0 0 20px rgba(176, 38, 255, 0.3) !important; }
 .driver-popover-title { color: var(--neon-green, #ccff00) !important; font-family: 'Orbitron', sans-serif !important; font-size: 1.2rem !important; margin-bottom: 5px !important; }
 .driver-popover-description { color: #ccc !important; font-family: 'Space Grotesk', sans-serif !important; font-size: 0.95rem !important; }
 .driver-popover-footer button { background-color: transparent !important; border: 1px solid var(--neon-purple, #b026ff) !important; color: #fff !important; text-shadow: 0 0 5px var(--neon-purple, #b026ff) !important; transition: 0.3s ease !important; font-family: 'Chakra Petch', sans-serif !important; border-radius: 4px !important; }
