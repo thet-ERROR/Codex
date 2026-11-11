@@ -279,6 +279,55 @@ describe('the profile (UI brief 01 + 04)', () => {
 
 // The QR window (UI brief 03): the artwork around a QR drawn from the real address, a white quiet zone
 // that nothing decorative reaches, working buttons, a phone fit, and motion that stops when asked.
+describe('the hidden terminal commands (changes doc, step 1)', () => {
+    const run = (page, cmd) => page.evaluate((c) => window.runTerminalCommand(c), cmd);
+    const out = (page) => page.evaluate(() => document.getElementById('cli-output').textContent);
+    const mine = (page) => page.evaluate(() => JSON.parse(localStorage.getItem('codex_achievements') || '[]'));
+    it('sudo answers with a joke and unlocks NICE TRY; help does not list it', () => withPage({ width: 1440, height: 900, locale: 'en-US' }, async (page) => {
+        await run(page, 'sudo rm -rf /');
+        assert.match(await out(page), /Nice try, agent/);
+        assert.ok((await mine(page)).includes('nice_try'));
+        await run(page, 'help');
+        const text = await out(page);
+        for (const c of ['sudo', 'whoami', 'matrix']) assert.ok(!new RegExp(`\\n  ${c}\\s`).test(text), `${c} is not in help`);
+    }));
+    it('rm -rf / pretends, then says it was a joke, and unlocks SCORCHED EARTH; other rm is refused', () => withPage({ width: 1440, height: 900, locale: 'en-US' }, async (page) => {
+        await run(page, 'rm notes.txt');
+        assert.match(await out(page), /permission denied/);
+        assert.ok(!(await mine(page)).includes('scorched_earth'));
+        await run(page, 'rm -rf /');
+        const text = await out(page);
+        assert.match(text, /Deleting/);
+        assert.match(text, /Just kidding/);
+        assert.ok((await mine(page)).includes('scorched_earth'));
+    }));
+    it('ls lists the systems, whoami opens the identity window, matrix is hack; all three together unlock CURIOUS AGENT', () => withPage({ width: 1440, height: 900, locale: 'en-US' }, async (page) => {
+        await run(page, 'ls');
+        assert.match(await out(page), /projects\/\n\s+\S/);
+        assert.ok(!(await mine(page)).includes('curious_agent'), 'one command is not enough');
+        await run(page, 'whoami');
+        await page.locator('#whoami-modal.active').waitFor();
+        await page.evaluate(() => closeModal('whoami-modal'));
+        assert.ok(!(await mine(page)).includes('curious_agent'), 'two are not enough');
+        await run(page, 'matrix');
+        assert.match(await out(page), /visitor@codex:~\$ matrix/);
+        assert.equal(await page.evaluate(() => getComputedStyle(document.documentElement).getPropertyValue('--neon-green').trim()), '#00ff00', 'matrix does what hack does');
+        assert.ok((await mine(page)).includes('curious_agent'));
+    }));
+    it('a secret stays a riddle in the list until it is found', () => withPage({ width: 1440, height: 900, locale: 'en-US' }, async (page) => {
+        await page.evaluate(() => window.openAchievements());
+        const locked = await page.evaluate(() => [...document.querySelectorAll('#ach-list .ach-card.secret')].map(c => c.textContent));
+        assert.equal(locked.length, 3);
+        for (const t of locked) { assert.match(t, /\?\?\?/); assert.ok(!/NICE TRY|SCORCHED|CURIOUS/.test(t), 'name not revealed'); }
+        await page.evaluate(() => { window.closeModal('achievements-modal'); });
+        await run(page, 'sudo');
+        await page.evaluate(() => window.openAchievements());
+        const after = await page.evaluate(() => [...document.querySelectorAll('#ach-list .ach-card.secret')].length);
+        assert.equal(after, 2);
+        assert.ok(await page.evaluate(() => document.querySelector('#ach-list').textContent.includes('NICE TRY')));
+    }));
+});
+
 describe('the QR window (UI brief 03)', () => {
     const openQr = async (page) => {
         await page.evaluate(() => window.openQr());

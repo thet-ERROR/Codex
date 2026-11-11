@@ -207,8 +207,47 @@ const COMMANDS = {
     },
     codex() {
         print(">> ACCESSING MAINFRAME...\n>> WAKE UP, AGENT.\n>> THE MATRIX HAS YOU.\n");
+    },
+    // The curious visitor's commands (also not listed in help). Each is a small joke; sudo and rm -rf /
+    // earn a secret achievement of their own, and finding ls + whoami + matrix earns a third.
+    sudo() {
+        print('>> ' + T('termSudo') + '\n');
+        if (window.checkAchievement) window.checkAchievement('nice_try');
+    },
+    ls() {
+        print(T('termLsHead') + '\n');
+        const names = (state.inventory || []).map(p => p && p.name).filter(Boolean);
+        if (!names.length) print('  ' + T('termLsEmpty') + '\n');
+        names.forEach(n => print('  ' + String(n).replace(/\s+/g, '_') + '\n'));
+        found('ls');
+    },
+    whoami() {
+        print('>> ' + T('termWhoami') + '\n');
+        found('whoami');
+        toggleCLI();
+        if (window.openWhoAmI) window.openWhoAmI();
+    },
+    matrix() {
+        COMMANDS.hack();
+        found('matrix');
+    },
+    async rm(arg) {
+        // Only the famous one; anything else is just refused
+        if (!/^-(rf|fr|r|f)\s+\/\*?$/.test(arg)) { print('>> ' + T('termRmNope') + '\n'); return; }
+        for (const k of ['termRm1', 'termRm2']) { print('>> ' + T(k) + '\n'); await pause(450); }
+        print('>> ' + T('termRm3') + '\n');
+        if (window.checkAchievement) window.checkAchievement('scorched_earth');
     }
 };
+
+const pause = (ms) => new Promise(r => setTimeout(r, ms));
+// ls, whoami and matrix together earn "curious agent". Which of them were found is kept in this browser.
+function found(cmd) {
+    let set = [];
+    try { set = JSON.parse(localStorage.getItem('codex_term_found')) || []; } catch (e) { set = []; }
+    if (!set.includes(cmd)) { set.push(cmd); try { localStorage.setItem('codex_term_found', JSON.stringify(set)); } catch (e) {} }
+    if (['ls', 'whoami', 'matrix'].every(c => set.includes(c)) && window.checkAchievement) window.checkAchievement('curious_agent');
+}
 
 export async function runCommand(raw) {
     const line = String(raw || '').trim().toLowerCase();
