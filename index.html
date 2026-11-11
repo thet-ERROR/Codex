@@ -3,21 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="PHOENIX CODEX - Secure your ultimate custom gaming rig.">
+    <meta name="description" content="PHOENIX CODEX: custom gaming PC χειροποίητα στη Θεσσαλονίκη. Διάλεξε έτοιμο σύστημα ή ψήφισε το επόμενο drop. Gaming, streaming και coding rigs με εγγύηση.">
     <meta name="theme-color" content="#b026ff">
     <!-- Share previews (Instagram, WhatsApp, Facebook, Discord). og:image MUST be absolute: crawlers
          fetch it without knowing the page's URL, so a relative path resolves to nothing and every
          share showed up with no picture. Update the domain here when the site moves to its own. -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://codex-iota-nine.vercel.app/">
-    <meta property="og:title" content="PHOENIX CODEX | TERMINAL v52.0">
-    <meta property="og:description" content="Secure your ultimate custom gaming rig.">
+    <meta property="og:title" content="PHOENIX CODEX | Custom Gaming PCs Θεσσαλονίκη">
+    <meta property="og:locale" content="el_GR">
+    <meta property="og:site_name" content="PHOENIX CODEX">
+    <meta property="og:description" content="Custom gaming PC φτιαγμένα στο χέρι στη Θεσσαλονίκη. Διάλεξε έτοιμο σύστημα ή ψήφισε το επόμενο drop.">
     <meta property="og:image" content="https://codex-iota-nine.vercel.app/assets/images/og-image.jpg">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
     <meta name="twitter:card" content="summary_large_image">
 
-    <title>PHOENIX CODEX | TERMINAL v52.0</title>
+    <title>PHOENIX CODEX | Custom Gaming PCs Θεσσαλονίκη</title>
 
     <!-- favicon.ico was referenced here but never existed in the repo. PNG favicons are supported by
          every current browser; apple-touch-icon is what iOS uses for "Add to Home Screen". -->
@@ -77,19 +79,19 @@ Type 'help' for a list of commands.
 
     <nav class="left-sidebar">
         <div class="side-group">
-            <button class="side-btn" onclick="playClick(); openModal('settings')" title="System Settings" data-i18n-title="sideSettings"><img class="side-ico" src="assets/icons/bar/gear.png" alt="" aria-hidden="true"></button>
+            <button class="side-btn" onclick="playClick(); openModal('settings')" title="System Settings" data-i18n-title="sideSettings" data-i18n-aria="sideSettings" aria-label="System Settings"><img class="side-ico" src="assets/icons/bar/gear.png" alt="" aria-hidden="true"></button>
             <div class="side-divider"></div>
             <!-- Warranty & Returns / Terms / Support used to be three icons here (a shield, a book and a
                  headset — nothing on a phone said which was which). One button, three tabs inside. -->
             <button class="side-btn side-btn-info" onclick="playClick(); openInfo()" title="Information: warranty, terms, support" data-i18n-title="sideInfo" data-i18n-aria="sideInfo" aria-label="Information"><img class="side-ico" src="assets/icons/bar/info.png" alt="" aria-hidden="true"><span class="side-label">INFO</span></button>
-            <button class="side-btn" onclick="playClick(); openWheelFromSettings()" title="Daily Spin" data-i18n-title="sideWheel"><img class="side-ico" src="assets/icons/bar/gift.png" alt="" aria-hidden="true"></button>
-            <button class="side-btn" id="lang-toggle-btn" onclick="playClick(); toggleLanguage()" title="Toggle Language" data-i18n-title="sideLang"><img class="side-ico" src="assets/icons/bar/flag-gr.png" alt="" aria-hidden="true"></button>
+            <button class="side-btn" onclick="playClick(); openWheelFromSettings()" title="Daily Spin" data-i18n-title="sideWheel" data-i18n-aria="sideWheel" aria-label="Daily Spin"><img class="side-ico" src="assets/icons/bar/gift.png" alt="" aria-hidden="true"></button>
+            <button class="side-btn" id="lang-toggle-btn" onclick="playClick(); toggleLanguage()" title="Toggle Language" data-i18n-title="sideLang" data-i18n-aria="sideLang" aria-label="Toggle Language"><img class="side-ico" src="assets/icons/bar/flag-gr.png" alt="" aria-hidden="true"></button>
             <div class="side-divider"></div>
 
             <!-- #social-menu itself lives at the end of this sidebar, outside .side-group — see there -->
-            <button class="side-btn" id="social-toggle-btn" onclick="playClick(); toggleSocials()" title="Social Networks" data-i18n-title="sideSocial"><img class="side-ico" src="assets/icons/bar/share.png" alt="" aria-hidden="true"></button>
+            <button class="side-btn" id="social-toggle-btn" onclick="playClick(); toggleSocials()" title="Social Networks" data-i18n-title="sideSocial" data-i18n-aria="sideSocial" aria-label="Social Networks"><img class="side-ico" src="assets/icons/bar/share.png" alt="" aria-hidden="true"></button>
 
-            <button class="side-btn mobile-reviews-btn" onclick="playClick(); toggleMobileReviews()" title="Reviews" data-i18n-title="sideReviews"><img class="side-ico" src="assets/icons/bar/star.png" alt="" aria-hidden="true"></button>
+            <button class="side-btn mobile-reviews-btn" onclick="playClick(); toggleMobileReviews()" title="Reviews" data-i18n-title="sideReviews" data-i18n-aria="sideReviews" aria-label="Reviews"><img class="side-ico" src="assets/icons/bar/star.png" alt="" aria-hidden="true"></button>
         </div>
 
         <!-- The help button is the mascot: the phoenix's head in a round frame (mascot.css) -->
@@ -102,10 +104,10 @@ Type 'help' for a list of commands.
          painted inside the 60px bar and never seen. At body level nothing can clip it; toggleSocials()
          in js/ui/modals.js places it next to #social-toggle-btn instead. -->
     <div class="social-menu" id="social-menu">
-        <button class="side-btn" onclick="playClick(); showToast('DISCORD SERVER: COMING SOON', 'normal')" title="Discord" data-i18n-title="sideDiscord"><i class="ph-duotone ph-discord-logo"></i></button>
-        <button class="side-btn" onclick="playClick(); window.open('https://instagram.com/codex_rigs', '_blank')" title="Instagram" data-i18n-title="sideInstagram"><i class="ph-duotone ph-instagram-logo"></i></button>
-        <button class="side-btn" onclick="playClick(); openModal('newsletter')" title="Drop Alerts" data-i18n-title="sideDropAlerts"><i class="ph-duotone ph-envelope-simple"></i></button>
-        <button class="side-btn" onclick="playClick(); openQr()" title="QR" data-i18n-title="sideQr"><i class="ph-duotone ph-qr-code"></i></button>
+        <button class="side-btn" onclick="playClick(); showToast('DISCORD SERVER: COMING SOON', 'normal')" title="Discord" data-i18n-title="sideDiscord" data-i18n-aria="sideDiscord" aria-label="Discord"><i class="ph-duotone ph-discord-logo"></i></button>
+        <button class="side-btn" onclick="playClick(); window.open('https://instagram.com/codex_rigs', '_blank')" title="Instagram" data-i18n-title="sideInstagram" data-i18n-aria="sideInstagram" aria-label="Instagram"><i class="ph-duotone ph-instagram-logo"></i></button>
+        <button class="side-btn" onclick="playClick(); openModal('newsletter')" title="Drop Alerts" data-i18n-title="sideDropAlerts" data-i18n-aria="sideDropAlerts" aria-label="Drop Alerts"><i class="ph-duotone ph-envelope-simple"></i></button>
+        <button class="side-btn" onclick="playClick(); openQr()" title="QR" data-i18n-title="sideQr" data-i18n-aria="sideQr" aria-label="QR"><i class="ph-duotone ph-qr-code"></i></button>
     </div>
 
     <aside class="right-sidebar">
@@ -119,6 +121,8 @@ Type 'help' for a list of commands.
     </aside>
     
     <header>
+        <!-- The page's one h1: for screen readers and search engines (the logo's own name is its alt) -->
+        <h1 class="sr-only">PHOENIX CODEX: Custom Gaming PCs Θεσσαλονίκη</h1>
         <img src="assets/images/logo.webp" alt="PHOENIX CODEX" class="logo" onclick="playClick(); openWhoAmI();">
         
         <div class="nav-bar">
@@ -132,7 +136,7 @@ Type 'help' for a list of commands.
         </div>
 
         <div class="right-header-group">
-            <button class="cli-btn" onclick="toggleCLI()" title="Terminal" data-i18n-title="sideTerminal">
+            <button class="cli-btn" onclick="toggleCLI()" title="Terminal" data-i18n-title="sideTerminal" data-i18n-aria="sideTerminal" aria-label="Terminal">
                 <i class="ph-bold ph-terminal-window"></i>
             </button>
             <span id="user-display" class="hidden"></span>
@@ -394,7 +398,7 @@ Type 'help' for a list of commands.
     <!-- MODALS -->
     <div class="modal-overlay" id="tutorial-lang-modal">
         <div class="modal-content" style="width:380px; text-align:center;">
-            <span class="close-modal" onclick="playClick(); skipTutorial()">X</span>
+            <button type="button" class="close-modal" onclick="playClick(); skipTutorial()" data-i18n-aria="closeLabel" aria-label="Close">X</button>
             <!-- Shown before any language has been chosen, so it says it in both -->
             <h2 class="modal-title" style="font-size:1.3rem;">ΓΛΩΣΣΑ ΞΕΝΑΓΗΣΗΣ · TOUR LANGUAGE</h2>
             <div class="tutorial-lang-opts">
@@ -413,7 +417,7 @@ Type 'help' for a list of commands.
 
     <div class="modal-overlay" id="whoami-modal">
         <div class="modal-content whoami-content" role="dialog" aria-modal="true" aria-labelledby="whoami-title">
-            <span class="close-modal" onclick="closeModal('whoami-modal')">X</span>
+            <button type="button" class="close-modal" onclick="closeModal('whoami-modal')" data-i18n-aria="closeLabel" aria-label="Close">X</button>
             <div class="whoami-title" id="whoami-title"><span class="cli-prompt">&gt;</span> whoami</div>
             <div class="whoami-body"><span id="whoami-text"></span><span class="whoami-cursor">_</span></div>
         </div>
@@ -421,7 +425,7 @@ Type 'help' for a list of commands.
 
     <div class="modal-overlay" id="wheel-modal">
         <div class="modal-content wheel-content" role="dialog" aria-modal="true" aria-labelledby="wheel-title">
-            <span class="close-modal" onclick="closeModal('wheel-modal')">X</span>
+            <button type="button" class="close-modal" onclick="closeModal('wheel-modal')" data-i18n-aria="closeLabel" aria-label="Close">X</button>
             <h2 class="modal-title" id="wheel-title" style="font-size:1.4rem;" data-i18n="wheelTitle">SPIN THE WHEEL</h2>
             <div class="wheel-grid">
                 <div class="wheel-col-left">
@@ -519,7 +523,7 @@ Type 'help' for a list of commands.
 
     <div class="modal-overlay" id="spec-info-modal">
         <div class="modal-content" style="width:400px; text-align:center; border-color: var(--neon-purple);">
-            <span class="close-modal" onclick="closeModal('spec-info-modal')">X</span>
+            <button type="button" class="close-modal" onclick="closeModal('spec-info-modal')" data-i18n-aria="closeLabel" aria-label="Close">X</button>
             <div style="font-size: 3rem; color: var(--neon-purple); margin-bottom: 10px;">
                 <i class="ph-duotone ph-cpu"></i>
             </div>
@@ -581,7 +585,7 @@ Type 'help' for a list of commands.
     <!-- Share menu → QR of this page (js/modules/qr.js); moved into the window shell by modals.js -->
     <div class="modal-overlay" id="qr-modal">
         <div class="modal-content" style="width:420px;">
-            <span class="close-modal" onclick="closeModal('qr-modal')">X</span>
+            <button type="button" class="close-modal" onclick="closeModal('qr-modal')" data-i18n-aria="closeLabel" aria-label="Close">X</button>
             <h2 class="modal-title" data-i18n="qrTitle">QR LINK</h2>
             <p class="qr-text" data-i18n="qrText">Scan it with your phone's camera to open the site there.</p>
             <!-- UI brief 03: the neon loop, two canisters and two icon chips around the QR (css/components/qr-hud.css).
@@ -610,7 +614,7 @@ Type 'help' for a list of commands.
          are attached in checkout.js, not inline. -->
     <div class="modal-overlay" id="checkout-modal">
         <div class="modal-content" style="width:560px;">
-            <span class="close-modal" onclick="closeModal('checkout-modal')">X</span>
+            <button type="button" class="close-modal" onclick="closeModal('checkout-modal')" data-i18n-aria="closeLabel" aria-label="Close">X</button>
             <h2 class="modal-title" data-i18n="coTitle">CHECKOUT</h2>
             <div class="co-demo hidden" id="co-demo" role="note"><i class="ph-fill ph-flask" aria-hidden="true"></i><span data-i18n="coDemoNotice">Demo mode: orders are a demo.</span></div>
 
@@ -681,7 +685,7 @@ Type 'help' for a list of commands.
     <!-- "My order" (js/modules/order-page.js fills #op-body). The window shell is built by modals.js. -->
     <div class="modal-overlay" id="order-modal">
         <div class="modal-content" style="width:560px;">
-            <span class="close-modal" onclick="closeModal('order-modal')">X</span>
+            <button type="button" class="close-modal" onclick="closeModal('order-modal')" data-i18n-aria="closeLabel" aria-label="Close">X</button>
             <h2 class="modal-title" data-i18n="ordTitle">MY ORDER</h2>
             <div class="op-body" id="op-body"></div>
         </div>
@@ -689,7 +693,7 @@ Type 'help' for a list of commands.
 
     <div class="modal-overlay" id="newsletter-modal">
         <div class="modal-content" style="width:450px;">
-            <span class="close-modal" onclick="closeModal('newsletter-modal')">X</span>
+            <button type="button" class="close-modal" onclick="closeModal('newsletter-modal')" data-i18n-aria="closeLabel" aria-label="Close">X</button>
             <h2 class="modal-title" data-i18n="newsletterTitle">DROP ALERTS</h2>
             <p style="color:#888; font-size:0.8rem; text-align:center; margin-top:-10px; margin-bottom:15px;" data-i18n="newsletterDesc">Ειδοποιήσου μόλις βγει νέο PC ή ξεκινήσει ψηφοφορία.</p>
             <div class="auth-form">
@@ -701,7 +705,7 @@ Type 'help' for a list of commands.
 
     <div class="modal-overlay" id="review-code-modal">
         <div class="modal-content" style="width:450px;">
-            <span class="close-modal" onclick="closeModal('review-code-modal')">X</span>
+            <button type="button" class="close-modal" onclick="closeModal('review-code-modal')" data-i18n-aria="closeLabel" aria-label="Close">X</button>
             <h2 class="modal-title" data-i18n="reviewCodeTitle">VERIFIED REVIEW</h2>
             <div class="auth-form">
                 <input type="text" id="rc-code" class="auth-input" placeholder="CDX-XXXXXX">
@@ -717,7 +721,7 @@ Type 'help' for a list of commands.
          modules/reviews.js). Was the browser's prompt() box; a wrong code is said here, under the field. -->
     <div class="modal-overlay" id="mission-code-modal">
         <div class="modal-content" style="width:400px;" role="dialog" aria-modal="true" aria-labelledby="mission-code-title">
-            <span class="close-modal" onclick="closeModal('mission-code-modal')">X</span>
+            <button type="button" class="close-modal" onclick="closeModal('mission-code-modal')" data-i18n-aria="closeLabel" aria-label="Close">X</button>
             <h2 class="modal-title" id="mission-code-title" data-i18n="missionCodeTitle">WRITE A REVIEW</h2>
             <form class="auth-form" onsubmit="event.preventDefault(); submitMissionCode()">
                 <label for="mc-code" class="mc-label" data-i18n="missionPromptCode">Enter the code you'll find inside your PC's box.</label>
@@ -735,7 +739,7 @@ Type 'help' for a list of commands.
          .auth-form, which is why "keep & review" rendered as a flat unstyled strip. -->
     <div class="modal-overlay" id="mission-modal">
         <div class="modal-content mission-box" role="dialog" aria-modal="true" aria-labelledby="mission-kicker">
-            <span class="close-modal" onclick="closeModal('mission-modal')">X</span>
+            <button type="button" class="close-modal" onclick="closeModal('mission-modal')" data-i18n-aria="closeLabel" aria-label="Close">X</button>
 
             <div class="mission-kicker" id="mission-kicker" data-i18n="missionTitle">HOW'S YOUR NEW RIG?</div>
             <div class="mission-pc" id="mission-pc-name">PROJECT X</div>
@@ -783,7 +787,7 @@ Type 'help' for a list of commands.
 
     <div class="modal-overlay" id="login-modal">
         <div class="modal-content" style="width:400px;">
-            <span class="close-modal" onclick="closeModal('login-modal')">X</span>
+            <button type="button" class="close-modal" onclick="closeModal('login-modal')" data-i18n-aria="closeLabel" aria-label="Close">X</button>
             <h2 class="modal-title" data-i18n="loginTitle">AGENT LOGIN</h2>
             <div class="auth-form">
                 <input type="text" id="login-user" class="auth-input" placeholder="USERNAME" data-i18n-placeholder="usernamePlaceholder">
@@ -797,7 +801,7 @@ Type 'help' for a list of commands.
 
     <div class="modal-overlay" id="agent-dashboard-modal">
         <div class="dossier-box" role="dialog" aria-modal="true" aria-label="Profile" data-i18n-aria="profileBtnAria">
-            <button class="modal-close" onclick="closeModal('agent-dashboard-modal')">X</button>
+            <button class="modal-close" onclick="closeModal('agent-dashboard-modal')" data-i18n-aria="closeLabel" aria-label="Close">X</button>
             
             <!-- Styled by css/components/dossier-hud.css: a HUD panel with cut corners, the rank emblem
                  on the left and the phoenix crest as a watermark on the right -->
@@ -909,7 +913,7 @@ Type 'help' for a list of commands.
          after the profile in the page so it opens on top of it. -->
     <div class="modal-overlay" id="rank-info-modal">
         <div class="modal-content" style="width:460px;">
-            <span class="close-modal" onclick="closeModal('rank-info-modal')">X</span>
+            <button type="button" class="close-modal" onclick="closeModal('rank-info-modal')" data-i18n-aria="closeLabel" aria-label="Close">X</button>
             <h2 class="modal-title" data-i18n="rankInfoTitle">How ranks work</h2>
             <p class="rank-info-lead" data-i18n="rankInfoIntro">Every achievement you unlock gives XP, and XP raises your rank.</p>
             <ol class="rank-info-list">
@@ -928,7 +932,7 @@ Type 'help' for a list of commands.
 
     <div class="modal-overlay" id="signup-modal">
         <div class="modal-content" style="width:400px;">
-            <span class="close-modal" onclick="closeModal('signup-modal')">X</span>
+            <button type="button" class="close-modal" onclick="closeModal('signup-modal')" data-i18n-aria="closeLabel" aria-label="Close">X</button>
             <h2 class="modal-title" data-i18n="signupTitle">NEW RECRUIT</h2>
             <div class="auth-form">
                 <input type="text" id="reg-user" class="auth-input" placeholder="USERNAME" data-i18n-placeholder="usernamePlaceholder">
@@ -946,7 +950,7 @@ Type 'help' for a list of commands.
 
     <div class="modal-overlay" id="forgot-modal">
         <div class="modal-content" style="width:400px;">
-            <span class="close-modal" onclick="closeModal('forgot-modal')">X</span>
+            <button type="button" class="close-modal" onclick="closeModal('forgot-modal')" data-i18n-aria="closeLabel" aria-label="Close">X</button>
             <h2 class="modal-title" data-i18n="forgotTitle">RECOVERY PROTOCOL</h2>
             <div class="auth-form">
                 <input type="email" id="forgot-email" class="auth-input" placeholder="agent@codex.com">
@@ -957,7 +961,7 @@ Type 'help' for a list of commands.
 
     <div class="modal-overlay" id="reset-modal">
         <div class="modal-content" style="width:400px;">
-            <span class="close-modal" onclick="closeModal('reset-modal')">X</span>
+            <button type="button" class="close-modal" onclick="closeModal('reset-modal')" data-i18n-aria="closeLabel" aria-label="Close">X</button>
             <h2 class="modal-title" data-i18n="resetTitle">NEW CREDENTIALS</h2>
             <div class="auth-form">
                 <input type="text" id="reset-token" class="auth-input" placeholder="Token" data-i18n-placeholder="resetTokenPlaceholder">
@@ -969,7 +973,7 @@ Type 'help' for a list of commands.
 
     <div class="modal-overlay" id="achievements-modal">
         <div class="modal-content">
-            <span class="close-modal" onclick="closeModal('achievements-modal')">X</span>
+            <button type="button" class="close-modal" onclick="closeModal('achievements-modal')" data-i18n-aria="closeLabel" aria-label="Close">X</button>
             <h2 class="modal-title" data-i18n="achievementsTitle">AGENT RECORD</h2>
             <div class="ach-grid" id="ach-list"></div>
         </div>
@@ -1014,7 +1018,7 @@ Type 'help' for a list of commands.
 
     <div class="modal-overlay" id="proconfig-info-modal">
         <div class="modal-content">
-            <span class="close-modal" onclick="closeModal('proconfig-info-modal')">X</span>
+            <button type="button" class="close-modal" onclick="closeModal('proconfig-info-modal')" data-i18n-aria="closeLabel" aria-label="Close">X</button>
             <h2 style="color:var(--neon-green); margin-bottom:15px;" data-i18n="proConfigInfoTitle">What Pro Configuration includes</h2>
             <p style="color:#ccc; font-size:0.9rem; line-height:1.7; text-align:left;" data-i18n-html="proConfigInfoText"></p>
         </div>
@@ -1025,7 +1029,7 @@ Type 'help' for a list of commands.
          the checkbox. Nothing about custom paint takes effect until one of those runs. -->
     <div class="modal-overlay" id="paint-consent-modal">
         <div class="modal-content" style="width:520px;">
-            <span class="close-modal" onclick="declinePaintConsent()">X</span>
+            <button type="button" class="close-modal" onclick="declinePaintConsent()" data-i18n-aria="closeLabel" aria-label="Close">X</button>
             <h2 style="color:#ffaa00; margin-bottom:15px;" data-i18n="paintTitle">Custom Paint</h2>
             <p id="paint-consent-lead" style="color:#ccc; font-size:0.85rem; margin-bottom:15px;"></p>
             <p class="yg-paint-legal" id="paint-consent-legal"></p>
