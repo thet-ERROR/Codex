@@ -81,9 +81,13 @@ const COLORS = {
     // Rank colours (config.js RANK_COLORS) — unlocked by levelling up, not on the wheel
     ultraviolet: { hex: '#7c4dff', id: 'ultraviolet' },
     arctic:      { hex: '#8fe8ff', id: 'arctic' },
-    phantom:     { hex: '#e9e4ff', id: 'phantom' }
+    phantom:     { hex: '#e9e4ff', id: 'phantom' },
+    // Secret (the Konami code): not listed, not even as locked, until it's yours
+    cheatcode:   { hex: '#ff0a54', id: 'cheatCode', secret: true }
 };
 const colorUnlocked = (c) => !c.id || (state.unlockedColors || []).includes(c.id);
+// The names this visitor may see: every colour, minus secrets they haven't found
+const visibleColors = () => Object.keys(COLORS).filter(n => !COLORS[n].secret || colorUnlocked(COLORS[n]));
 
 const CHIPS = ['help', 'theme', 'color', 'sound', 'lang', 'vote', 'cart', 'tour', 'clear'];
 const HISTORY = [];
@@ -144,13 +148,14 @@ const COMMANDS = {
         print('>> ' + T('termThemeSet', { mode: T('termMode_' + next) }) + '\n');
     },
     color(arg) {
-        const names = Object.keys(COLORS);
+        const names = visibleColors();
         if (!arg) {
             print(T('termColorList') + '\n');
             printChips(names.map(n => ({ label: n + (colorUnlocked(COLORS[n]) ? '' : ' 🔒'), run: 'color ' + n, color: COLORS[n].hex, locked: !colorUnlocked(COLORS[n]) })));
             return;
         }
-        const c = COLORS[arg];
+        // A secret someone guessed the name of answers exactly like a colour that doesn't exist
+        const c = names.includes(arg) ? COLORS[arg] : null;
         if (!c) { print(T('termColorUnknown', { list: names.join(', ') }) + '\n'); return; }
         if (!colorUnlocked(c)) { print('>> ' + (window.colorLockMessage ? window.colorLockMessage(c.id) : T('toastColorLocked')) + '\n'); return; }
         if (window.setTheme) window.setTheme(c.hex, c.id);

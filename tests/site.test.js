@@ -352,13 +352,13 @@ describe('the hidden terminal commands (changes doc, step 1)', () => {
     it('a secret stays a riddle in the list until it is found', () => withPage({ width: 1440, height: 900, locale: 'en-US' }, async (page) => {
         await page.evaluate(() => window.openAchievements());
         const locked = await page.evaluate(() => [...document.querySelectorAll('#ach-list .ach-card.secret')].map(c => c.textContent));
-        assert.equal(locked.length, 3);
-        for (const t of locked) { assert.match(t, /\?\?\?/); assert.ok(!/NICE TRY|SCORCHED|CURIOUS/.test(t), 'name not revealed'); }
+        assert.equal(locked.length, 4);
+        for (const t of locked) { assert.match(t, /\?\?\?/); assert.ok(!/NICE TRY|SCORCHED|CURIOUS|CHEAT CODE/.test(t), 'name not revealed'); }
         await page.evaluate(() => { window.closeModal('achievements-modal'); });
         await run(page, 'sudo');
         await page.evaluate(() => window.openAchievements());
         const after = await page.evaluate(() => [...document.querySelectorAll('#ach-list .ach-card.secret')].length);
-        assert.equal(after, 2);
+        assert.equal(after, 3);
         assert.ok(await page.evaluate(() => document.querySelector('#ach-list').textContent.includes('NICE TRY')));
     }));
 });
@@ -485,6 +485,49 @@ describe('title, share preview, headings and names (changes doc, step 5)', () =>
         const sitemap = await get('/sitemap.xml');
         assert.ok(sitemap.ok);
         assert.match(sitemap.text, /<loc>https:\/\/\S+\/<\/loc>/);
+    }));
+});
+
+describe('the Konami code and its hidden colour (changes doc, step 6)', () => {
+    const KONAMI = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
+    const type = async (page, keys) => { for (const k of keys) await page.keyboard.press(k); };
+    const secretShown = (page) => page.evaluate(() => !document.querySelector('.color-btn[data-id="cheatCode"]').hidden);
+    const terminalColors = async (page) => {
+        await page.evaluate(() => window.runTerminalCommand('color'));
+        return page.evaluate(() => [...document.querySelectorAll('#cli-output .cli-chip')].map(c => c.textContent));
+    };
+    it('the colour is nowhere until the code is entered — not in the settings, not in the terminal, not by name', () => withPage({ width: 1440, height: 900, locale: 'en-US' }, async (page) => {
+        assert.equal(await secretShown(page), false);
+        assert.ok(!(await terminalColors(page)).some(c => /cheat/i.test(c)), 'not even locked in the list');
+        await page.evaluate(() => window.runTerminalCommand('color cheatcode'));
+        assert.match(await page.evaluate(() => document.getElementById('cli-output').textContent), /cheatcode[\s\S]*(Unknown|Άγνωστ|[Cc]olou?rs?)/);
+        assert.notEqual(await page.evaluate(() => getComputedStyle(document.documentElement).getPropertyValue('--neon-green').trim()), '#ff0a54');
+    }));
+    it('↑↑↓↓←→←→BA unlocks the badge and the colour, puts it on, and shows it in the settings and the terminal', () => withPage({ width: 1440, height: 900, locale: 'en-US' }, async (page) => {
+        await type(page, ['ArrowUp', ...KONAMI]);     // a stray extra ↑ first does not spoil it
+        assert.equal(await page.evaluate(() => getComputedStyle(document.documentElement).getPropertyValue('--neon-green').trim()), '#ff0a54');
+        const mine = await page.evaluate(() => ({ ach: JSON.parse(localStorage.getItem('codex_achievements') || '[]'), colors: JSON.parse(localStorage.getItem('codex_unlocked_colors') || '[]') }));
+        assert.ok(mine.ach.includes('cheat_code'));
+        assert.ok(mine.colors.includes('cheatCode'));
+        assert.equal(await secretShown(page), true);
+        assert.ok((await terminalColors(page)).some(c => c === 'cheatcode'));
+        // ...and it survives a reload
+        await page.reload();
+        await page.waitForSelector('#startup-overlay.hidden', { state: 'attached', timeout: 15000 });
+        assert.equal(await secretShown(page), true);
+    }));
+    it('a signed-in agent reports the badge to the account (the server grants the colour with it)', () => withPage({ width: 1440, height: 900, locale: 'en-US', member: true }, async (page) => {
+        await page.evaluate(() => import('./js/state.js').then(m => { m.state.emailVerified = true; }));
+        await type(page, KONAMI);
+        await page.waitForTimeout(300);
+        const sent = page.apiLog.filter(c => c.path === '/achievements').map(c => c.body && c.body.id);
+        assert.ok(sent.includes('cheat_code'), JSON.stringify(sent));
+    }));
+    it('typing the code into a field does nothing', () => withPage({ width: 1440, height: 900, locale: 'en-US' }, async (page) => {
+        await page.evaluate(() => window.toggleCLI());
+        await page.locator('#cli-input').focus();
+        await type(page, KONAMI);
+        assert.equal(await secretShown(page), false);
     }));
 });
 

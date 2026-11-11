@@ -57,6 +57,10 @@ export function refreshColorLocks() {
         const id = btn.dataset.id;
         if (id && state.unlockedColors.includes(id)) btn.classList.remove('locked');
     });
+    // A secret colour isn't shown locked — it isn't shown at all until it's yours
+    document.querySelectorAll('.color-btn[data-secret]').forEach(btn => {
+        btn.hidden = !state.unlockedColors.includes(btn.dataset.id);
+    });
 }
 
 // Colours and coupons the server holds for the account — merged with colours unlocked on this

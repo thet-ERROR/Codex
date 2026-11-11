@@ -96,7 +96,11 @@ export const CONFIG = {
         { id: 'curious_agent', source: 'client', secret: true, icon: 'ph-detective',
           title: { en: 'CURIOUS AGENT', el: 'ΠΕΡΙΕΡΓΟΣ ΠΡΑΚΤΟΡΑΣ' },
           desc:  { en: 'Found the three hidden commands: ls, whoami, matrix.', el: 'Βρήκες τις τρεις κρυφές εντολές: ls, whoami, matrix.' },
-          hint:  { en: 'The terminal knows more than ‘help’ says.', el: 'Το τερματικό ξέρει περισσότερα απ’ όσα λέει το ‘help’.' } }
+          hint:  { en: 'The terminal knows more than ‘help’ says.', el: 'Το τερματικό ξέρει περισσότερα απ’ όσα λέει το ‘help’.' } },
+        { id: 'cheat_code', source: 'client', secret: true, icon: 'ph-game-controller',
+          title: { en: 'CHEAT CODE', el: 'CHEAT CODE' },
+          desc:  { en: 'Entered the oldest code in gaming. A secret colour is yours.', el: 'Έβαλες τον πιο παλιό κωδικό του gaming. Ένα κρυφό χρώμα είναι δικό σου.' },
+          hint:  { en: 'Up, up… old gamers know the rest.', el: 'Πάνω, πάνω… οι παλιοί gamers ξέρουν τη συνέχεια.' } }
     ],
 
     // Display names for the ranks the API reports. Thresholds are deliberately NOT here — the

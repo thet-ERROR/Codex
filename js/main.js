@@ -21,6 +21,7 @@ import './modules/wishlist.js';
 import './modules/chat.js';
 import './modules/achievements.js';
 import './modules/whoami.js';
+import './modules/konami.js';
 import './modules/wheel.js';
 import './modules/info.js';
 import './modules/qr.js';

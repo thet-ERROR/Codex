@@ -133,6 +133,10 @@ body.lang-el .info-terms li { font-size: 0.85rem; }
 /* Four across, two rows — free colours on top, wheel rewards below. 44px circles that never squash:
    they were 30px flex items that shrank into ovals on a phone. */
 .color-opts { display: grid; grid-template-columns: repeat(4, 44px); gap: 14px; justify-content: center; }
+/* A secret colour (data-secret) stays out of sight until it is unlocked — whatever display a skin gives the buttons */
+.color-btn[hidden] { display: none !important; }
+/* Once found: a glowing ring of its own colour says "you found a secret" */
+.color-btn.secret-color { border-color: transparent; box-shadow: 0 0 0 2px #ff0a54, 0 0 12px rgba(255, 10, 84, 0.6); }
 .color-btn { flex: none; width: 44px; height: 44px; padding: 0; border-radius: 50%; border: 2px solid rgba(255, 255, 255, 0.18); cursor: pointer; position: relative; transition: transform 0.15s, border-color 0.2s, box-shadow 0.2s; }
 @media (hover: hover) { .color-btn:hover { transform: scale(1.1); } }
 .color-btn:active { transform: scale(0.94); }

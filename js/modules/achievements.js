@@ -38,6 +38,8 @@ export function applyProfile(profile) {
     state.rankProgress = profile.progress ?? 0;
     if (Array.isArray(profile.ranks)) state.ranks = profile.ranks;
     if (typeof profile.bonusSpins === 'number' && window.applyWheelData) window.applyWheelData({ bonusSpins: profile.bonusSpins });
+    // A colour a badge paid (the Konami code's) comes with the profile — usable at once
+    if (Array.isArray(profile.unlockedColors) && window.applyWheelData) window.applyWheelData({ unlockedColors: profile.unlockedColors });
     localStorage.setItem('codex_achievements', JSON.stringify(state.achievements));
     // Rewards the server paid out on this very request — shown once, and a colour is usable at once
     if (Array.isArray(profile.rankRewards) && profile.rankRewards.length) announceRankRewards(profile.rankRewards);
