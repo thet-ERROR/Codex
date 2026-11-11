@@ -647,6 +647,31 @@ describe('the vote card (UI brief 06)', () => {
             await page.waitForFunction(() => document.getElementById('vote-view').classList.contains('hidden'), null, { timeout: 5000 });
         }));
     }
+    for (const [label, width, height, locale] of [['phone 390 el', 390, 844, 'el-GR'], ['phone 360 el', 360, 740, 'el-GR'], ['phone 390 en', 390, 844, 'en-US']]) {
+        it(`both pills in the top row show their words and fit, and INSPECT is a plain pill — ${label}`, () => withPage({ width, height, locale }, async (page) => {
+            await openVote(page, drop());
+            const m = await page.evaluate(() => {
+                const card = document.getElementById('vote-container').getBoundingClientRect();
+                const st = document.getElementById('v-status').getBoundingClientRect(), info = document.querySelector('.vote-info-btn');
+                const ib = info.getBoundingClientRect(), insp = getComputedStyle(document.querySelector('.vote-inspect'), '::before').content;
+                return { infoText: info.textContent.trim(), infoLabelShown: getComputedStyle(info.querySelector('span')).display !== 'none',
+                    row: st.right <= ib.left + 1 && ib.right <= card.right && st.left >= card.left, inspBefore: insp, sideways: document.documentElement.scrollWidth > innerWidth };
+            });
+            assert.ok(m.infoLabelShown, 'the words are there');
+            assert.ok(m.infoText.length > 3);
+            assert.ok(m.row, 'status and "how it works" side by side inside the card');
+            assert.ok(m.inspBefore === 'none' || m.inspBefore === 'normal', 'no decoration on INSPECT');
+            assert.equal(m.sideways, false);
+        }));
+    }
+    it('SEE IT IN LIVE DROPS sits in its own ring and the card has no tubes, only the monitor', () => withPage({ width: 390, height: 844, locale: 'en-US' }, async (page) => {
+        await openVote(page, drop({ phase: 'unlocked', status: 'unlocked', currentVotes: 10, pcId: 'pc1' }));
+        const m = await page.evaluate(() => ({ ring: getComputedStyle(document.getElementById('v-btn')).outlineStyle, tube: document.querySelectorAll('.vote-tube .vt-glass, .vote-tube .vt-cap').length,
+            monitor: document.querySelectorAll('.vote-tube .vt-monitor').length }));
+        assert.equal(m.ring, 'solid');
+        assert.equal(m.tube, 0);
+        assert.equal(m.monitor, 1);
+    }));
     it('the countdown stays plain text beside the count on a phone', () => withPage({ width: 390, height: 844 }, async (page) => {
         await openVote(page, drop());
         const bg = await page.evaluate(() => getComputedStyle(document.getElementById('v-timer')).backgroundColor);
@@ -655,10 +680,10 @@ describe('the vote card (UI brief 06)', () => {
     it('the slime stands still for reduced motion', () => withPage({ width: 390, height: 844 }, async (page) => {
         await page.emulateMedia({ reducedMotion: 'reduce' });
         await openVote(page, drop({ phase: 'unlocked', status: 'unlocked', currentVotes: 10, pcId: 'pc1' }));
-        const names = await page.evaluate(() => ['.vote-progress-fill', '.vote-tube .vt-liquid', '.vote-tube .vt-monitor polyline']
+        const names = await page.evaluate(() => ['.vote-progress-fill', '.vote-tube .vt-monitor polyline']
             .map(s => getComputedStyle(document.querySelector(s)).animationName)
             .concat(getComputedStyle(document.getElementById('v-btn'), '::after').animationName));
-        assert.deepEqual(names, ['none', 'none', 'none', 'none']);
+        assert.deepEqual(names, ['none', 'none', 'none']);
     }));
 });
 
