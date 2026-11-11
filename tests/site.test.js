@@ -183,6 +183,41 @@ describe('the PC card header and hover', () => {
     });
 });
 
+describe('the full achievements window (UI brief 02)', () => {
+    for (const [label, width, height] of [['phone 390', 390, 844], ['desktop 1440', 1440, 900]]) {
+        it(`every achievement is a filled card with a body, and nothing is cut off — ${label}`, () => withPage({ width, height, member: true, locale: 'el-GR' }, async (page) => {
+            await page.evaluate(() => window.openAchievements());
+            await page.locator('#achievements-modal.active').waitFor();
+            await page.waitForTimeout(500);
+            const rows = await page.evaluate(() => [...document.querySelectorAll('#ach-list .ach-card')].map(c => {
+                const s = getComputedStyle(c), p = c.querySelector('.ach-info p'), ico = getComputedStyle(c.querySelector('.ach-icon'));
+                return {
+                    unlocked: c.classList.contains('unlocked'),
+                    filled: s.backgroundImage.includes('gradient'),
+                    opacity: s.opacity,
+                    radius: parseFloat(s.borderTopLeftRadius),
+                    divider: parseFloat(ico.borderRightWidth),
+                    descNowrap: getComputedStyle(p).whiteSpace === 'nowrap',
+                    descCut: p.scrollWidth > p.clientWidth + 1 || p.scrollHeight > p.clientHeight + 1
+                };
+            }));
+            assert.ok(rows.length >= 10, 'the list is drawn');
+            assert.ok(rows.some(r => r.unlocked) && rows.some(r => !r.unlocked), 'the test needs both kinds of row');
+            for (const r of rows) {
+                assert.equal(r.filled, true, 'a row is a filled card, not text on the dark background');
+                assert.equal(r.opacity, '1', 'a locked row is not faded into the background');
+                assert.ok(r.radius >= 14, 'rounded');
+                assert.equal(r.divider, 1, 'a divider line between the icon and the text');
+                assert.equal(r.descNowrap, false);
+                assert.equal(r.descCut, false, 'the description is not cut off');
+            }
+            // Unlocked and locked must still look different
+            const look = await page.evaluate(() => { const g = k => getComputedStyle(document.querySelector(`#ach-list .ach-card${k}`)); return [g('.unlocked').borderTopColor, g(':not(.unlocked)').borderTopColor]; });
+            assert.notEqual(look[0], look[1]);
+        }));
+    }
+});
+
 // Cumulative Layout Shift while the page loads: the card grows from an empty box to its full size when
 // the catalogue arrives. That happens under the splash, but Chrome (and WebPageTest) count it anyway —
 // it was 0.08 on a desktop and 0.11 on a phone, where "good" is 0.1 or less.
