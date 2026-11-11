@@ -531,6 +531,71 @@ describe('the Konami code and its hidden colour (changes doc, step 6)', () => {
     }));
 });
 
+// What keeps the site smooth on a weak machine. Each of these was measured (CPU throttled 6x): an animated
+// drop-shadow recalculated style on every frame of the whole visit, an !important transform kept the flip
+// off the compositor, and the page under INSPECT was drawn on every frame behind it.
+describe('staying smooth on a slow machine', () => {
+    it('nothing on the page animates a filter that moves pixels (it cannot run on the compositor)', () => withPage({ width: 1366, height: 768 }, async (page) => {
+        await page.waitForTimeout(600);
+        const bad = await page.evaluate(() => document.getAnimations().filter(a => a.playState === 'running').flatMap(a => {
+            const kf = a.effect && a.effect.getKeyframes ? a.effect.getKeyframes() : [];
+            return kf.some(k => /drop-shadow|blur/.test(k.filter || '')) ? [a.animationName] : [];
+        }));
+        assert.deepEqual(bad, []);
+        // The logo still glows and still breathes — by opacity
+        const logo = await page.evaluate(() => ({ glow: getComputedStyle(document.querySelector('.logo')).filter, aura: getComputedStyle(document.querySelector('.logo-aura')).animationName }));
+        assert.match(logo.glow, /drop-shadow/);
+        assert.equal(logo.aura, 'logoAura');
+    }));
+    it('the flip is a plain transform, so the browser can run it on the compositor', () => withPage({ width: 1366, height: 768 }, async (page) => {
+        const prio = await page.evaluate(() => {
+            for (const sheet of document.styleSheets) {
+                let rules; try { rules = sheet.cssRules; } catch (e) { continue; }
+                for (const r of rules) if (r.selectorText === '.yg-card.flipped') return { value: r.style.getPropertyValue('transform'), priority: r.style.getPropertyPriority('transform') };
+            }
+            return null;
+        });
+        assert.ok(prio, 'the rule exists');
+        assert.match(prio.value, /rotateY\(180deg\)/);
+        assert.equal(prio.priority, '', 'not !important');
+        await page.evaluate(() => window.openGallery());
+        await page.evaluate(() => document.getElementById('yg-card').classList.add('flipped'));
+        await page.waitForTimeout(900);
+        assert.match(await page.evaluate(() => getComputedStyle(document.getElementById('yg-card')).transform), /matrix3d\(-1/, 'and it still flips');
+    }));
+    for (const [label, width, height] of [['phone', 390, 844], ['laptop', 1366, 768]]) {
+        it(`the page under INSPECT is switched off once it is open and is back before it closes — ${label}`, () => withPage({ width, height }, async (page) => {
+            const under = () => page.evaluate(() => ({ solo: document.body.classList.contains('inspect-solo'), stage: getComputedStyle(document.querySelector('main.stage')).visibility,
+                video: document.querySelector('.bg-video').paused }));
+            await page.evaluate(() => document.querySelector('.bg-video').play().catch(() => {}));
+            await page.evaluate(() => window.openGallery());
+            assert.equal((await under()).solo, false, 'not while the card is still growing out of the page');
+            await page.waitForTimeout(900);
+            const open = await under();
+            assert.deepEqual([open.solo, open.stage, open.video], [true, 'hidden', true]);
+            await page.evaluate(() => window.closeModal('gallery-overlay'));
+            await page.waitForTimeout(120);   // well inside the 340ms shrink
+            const closing = await under();
+            assert.deepEqual([closing.solo, closing.stage], [false, 'visible'], 'the page is there for the card to shrink into');
+            await page.waitForTimeout(700);
+            assert.equal(await page.evaluate(() => document.getElementById('gallery-overlay').style.display), 'none');
+            // Opened and closed at once: the page must not be left switched off
+            await page.evaluate(() => { window.openGallery(); window.closeModal('gallery-overlay'); });
+            await page.waitForTimeout(1200);
+            assert.equal((await under()).solo, false);
+        }));
+    }
+    it('INSPECT is filled once while the page is idle, without showing or changing anything', () => withPage({ width: 390, height: 844 }, async (page) => {
+        await page.waitForFunction(() => document.getElementById('yg-title').textContent.trim() === 'TEST RIG 1', null, { timeout: 12000 });
+        const m = await page.evaluate(() => import('./js/state.js').then(s => ({ shown: document.getElementById('gallery-overlay').style.display === 'flex',
+            visible: getComputedStyle(document.getElementById('gallery-overlay')).visibility, pc: s.state.currentGalleryPC, solo: document.body.classList.contains('inspect-solo') })));
+        assert.equal(m.shown, false);
+        assert.equal(m.visible, 'hidden');
+        assert.equal(m.pc, null, 'no PC is "open"');
+        assert.equal(m.solo, false);
+    }));
+});
+
 describe('the QR window (UI brief 03)', () => {
     const openQr = async (page) => {
         await page.evaluate(() => window.openQr());

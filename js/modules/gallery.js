@@ -269,7 +269,7 @@ export function openProConfigInfo() {
 
 // pc is passed explicitly only by the community drop (js/modules/vote.js openVoteGallery);
 // catalog cards call this with no argument and get the currently carousel-selected build.
-export function openGallery(pc) {
+export function openGallery(pc, opts) {
     state.currentGalleryPC = pc || state.filtered[state.index];
     if(!state.currentGalleryPC) return;
     // A card closing a moment ago is still shrinking away — finish that first
@@ -455,9 +455,32 @@ export function openGallery(pc) {
     const elFpsList = document.getElementById('yg-fps-list');
     if (elFpsList) elFpsList.innerHTML = benchH;
 
+    if (opts && opts.prime) return;   // filled and laid out, not shown (primeGallery below)
     if(window.openModal) window.openModal('gallery-overlay');
     playOpen();
 }
+
+// The first INSPECT of a visit cost three to four times a later one: the card's text had never been
+// shaped, its two faces never laid out, its photo never decoded. So the card is filled once with the
+// first PC while the page is idle — it is in the layout all the time, only hidden (inspect-hud.css) —
+// and the first tap is as quick as any other. Nothing the visitor sees changes, and the state the fill
+// touches is put back.
+let primed = false;
+function primeGallery() {
+    const overlay = document.getElementById('gallery-overlay');
+    if (primed || !state.filtered.length || (overlay && overlay.style.display === 'flex')) return;
+    primed = true;
+    const keep = { pc: state.currentGalleryPC, build: state.build, index: state.galleryIndex, origin: galleryOrigin };
+    try { openGallery(state.filtered[0], { prime: true }); } catch (e) { /* the real open will say what's wrong */ }
+    state.currentGalleryPC = keep.pc; state.build = keep.build; state.galleryIndex = keep.index; galleryOrigin = keep.origin;
+}
+(function schedulePrime(tries) {
+    const idle = window.requestIdleCallback || ((fn) => setTimeout(fn, 1));
+    setTimeout(() => idle(() => {
+        primeGallery();
+        if (!primed && tries > 0) schedulePrime(tries - 1);   // the catalogue hasn't arrived yet (a cold server)
+    }, { timeout: 3000 }), 2500);
+})(8);
 
 // --- OPEN / CLOSE: the card on the stage becomes the INSPECT card (plan 1β) ---
 // The INSPECT card starts exactly over the card that was tapped — same position and size — and grows
@@ -484,18 +507,38 @@ function flipFrom(from, to) {
     return `translate(${dx}px, ${dy}px) scale(${from.width / to.width}, ${from.height / to.height})`;
 }
 
+// While INSPECT is open the page under it is switched off (body.inspect-solo, tcg-card.css): hidden and
+// its animations paused, the background video stopped. The overlay covers the whole screen anyway, but
+// what is under it was still drawn on every frame (video, stage card, glows) — on a slow machine that
+// took the flip from ~70 frames to ~6. It comes back just before the close animation starts, so the card
+// still shrinks into a page that is there.
+let videoWasPlaying = false;
+function setSolo(on) {
+    const had = document.body.classList.contains('inspect-solo');
+    if (on === had) return;
+    const overlay = document.getElementById('gallery-overlay');
+    if (on && (!overlay || overlay.style.display !== 'flex' || closing)) return;   // closed again in the meantime
+    document.body.classList.toggle('inspect-solo', on);
+    const video = document.querySelector('.bg-video');
+    if (!video) return;
+    if (on) { videoWasPlaying = !video.paused; video.pause(); }
+    else if (videoWasPlaying) { videoWasPlaying = false; video.play().catch(() => {}); }
+}
+
 function playOpen() {
-    if (MOTION_OFF.matches) return;
+    if (MOTION_OFF.matches) { setSolo(true); return; }
     const morph = document.getElementById('yg-morph');
     const overlay = document.getElementById('gallery-overlay');
-    if (!morph || !overlay || !morph.animate) return;
+    if (!morph || !overlay || !morph.animate) { setSolo(true); return; }
     morph.getAnimations().forEach(a => a.cancel());   // a leftover from a quick close-and-reopen
     overlay.getAnimations().forEach(a => a.cancel());
     const to = morph.getBoundingClientRect();
-    if (!to.width || !to.height) return;
+    if (!to.width || !to.height) { setSolo(true); return; }
     const from = originRect();
     const start = from ? { transform: flipFrom(from, to), opacity: 0.7 } : { transform: 'translateY(24px) scale(0.94)', opacity: 0 };
-    morph.animate([start, { transform: 'none', opacity: 1 }], { duration: from ? 460 : 320, easing: 'cubic-bezier(0.2, 0.8, 0.3, 1)' });
+    const grow = morph.animate([start, { transform: 'none', opacity: 1 }], { duration: from ? 460 : 320, easing: 'cubic-bezier(0.2, 0.8, 0.3, 1)' });
+    // The page under the card is only needed while the card grows out of it
+    grow.onfinish = () => setSolo(true);
     overlay.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 280, easing: 'ease-out' });
     const card = document.getElementById('yg-card');
     if (card) {
@@ -509,6 +552,7 @@ function playOpen() {
 // Called by closeModal('gallery-overlay') (modals.js). Returns true when it takes care of hiding the
 // overlay itself — after the shrink — and false when the caller should hide it now.
 export function animateGalleryClose(hide) {
+    setSolo(false);   // every close comes through here (modals.js closeModal): the page is back first
     if (closing) { finishClose(); return true; }
     const morph = document.getElementById('yg-morph');
     const overlay = document.getElementById('gallery-overlay');

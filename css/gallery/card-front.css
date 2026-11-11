@@ -12,7 +12,11 @@
 }
 
 .yg-card { width: 100% !important; height: 100% !important; position: relative !important; transform-style: preserve-3d !important; -webkit-transform-style: preserve-3d !important; transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important; background: rgba(15, 15, 20, 0.98) !important; }
-.yg-card.flipped { transform: rotateY(180deg) !important; }
+/* No !important here: Chrome refuses to run a transition on the compositor when the property it animates is
+   declared !important ("affects important property"), and the whole flip then ran on the main thread —
+   style and layout every frame, which is what made it stutter on a slow machine. Nothing else sets a
+   transform on .yg-card, so the plain declaration wins anyway. */
+.yg-card.flipped { transform: rotateY(180deg); }
 
 .yg-card-front, .yg-card-back { position: absolute !important; top: 0 !important; left: 0 !important; width: 100% !important; height: 100% !important; backface-visibility: hidden !important; -webkit-backface-visibility: hidden !important; border-radius: 16px !important; border: 2px solid #333 !important; background: #0a0a0c !important; overflow: hidden !important; }
 .yg-card-front { z-index: 2 !important; transform: rotateY(0deg) translateZ(1px) !important; display: flex !important; flex-direction: column !important; padding: 0 !important; }
