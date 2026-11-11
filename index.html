@@ -790,6 +790,7 @@ Type 'help' for a list of commands.
                 <input type="password" id="login-pass" class="auth-input" placeholder="PASSWORD" data-i18n-placeholder="passwordPlaceholder">
                 <button class="btn-inspect" onclick="handleLogin()" data-i18n="loginBtn">AUTHENTICATE</button>
                 <div style="text-align:center; margin-top:15px; font-size:0.8rem; color:#666; cursor:pointer;" onclick="openRecovery()" data-i18n="lostAccessLink">[ LOST ACCESS? ]</div>
+                <p class="auth-switch"><span data-i18n="authNoAccount">No account yet?</span> <button type="button" class="auth-switch-btn" onclick="playClick(); closeModal('login-modal'); openModal('signup-modal')" data-i18n="authSignupLink">Sign up</button></p>
             </div>
         </div>
     </div>
@@ -938,6 +939,7 @@ Type 'help' for a list of commands.
                     <span data-i18n="regSubscribeLabel">🔔 ΘΕΛΩ ΕΙΔΟΠΟΙΗΣΕΙΣ ΓΙΑ ΝΕΑ DROPS</span>
                 </label>
                 <button class="btn-inspect" onclick="handleSignup()" data-i18n="signupBtn">REGISTER</button>
+                <p class="auth-switch"><span data-i18n="authHaveAccount">Already an agent?</span> <button type="button" class="auth-switch-btn" onclick="playClick(); closeModal('signup-modal'); openModal('login-modal')" data-i18n="authLoginLink">Sign in</button></p>
             </div>
         </div>
     </div>

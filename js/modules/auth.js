@@ -162,6 +162,8 @@ export async function handleLogin() {
             }
         }
         if(window.closeModal) window.closeModal('login-modal');
+        // Whatever asked for the sign-in (the wheel) can pick up where the visitor was
+        document.dispatchEvent(new CustomEvent('codex:login'));
         // 'recruited' is granted by the API itself now, so there's nothing to report here — but
         // the profile does have to be pulled in, otherwise rank and XP stay at their logged-out
         // defaults until the next page load.
