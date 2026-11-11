@@ -74,7 +74,8 @@ const translations = {
         rankInfoColors: "Κάποια επίπεδα ξεκλειδώνουν ένα χρώμα τονισμού — Ultraviolet, Arctic, Phantom — που το παίρνεις μόνο έτσι, ποτέ από τον τροχό.",
         rankInfoBadge: "Το επίπεδό σου φαίνεται ως σήμα στο προφίλ σου και δίπλα στο όνομά σου στις κριτικές που γράφεις συνδεδεμένος.",
         rankInfoOnce: "Κάθε ανταμοιβή δίνεται μία φορά — την πρώτη φορά που φτάνεις σε εκείνο το επίπεδο.", rankUpSpins: "+{n} περιστροφές στον τροχό", rankUpColor: "χρώμα {name}",
-        rewardUltraviolet: "Skin Ultraviolet", rewardArctic: "Skin Arctic", rewardPhantom: "Skin Phantom",
+        rewardUltraviolet: "Skin Ultraviolet", rewardArctic: "Skin Arctic", rewardPhantom: "Skin Phantom", rewardCheatCode: "Skin Cheat Code",
+        konamiFound: "↑↑↓↓←→←→BA — ΚΡΥΦΟ ΧΡΩΜΑ: CHEAT CODE",
         colorLime: "Lime", colorCyan: "Cyan", colorRed: "Κόκκινο", colorPurple: "Μωβ",
         closeLabel: "Κλείσιμο",
 
@@ -381,7 +382,8 @@ const translations = {
         rankInfoColors: "Some ranks unlock an accent colour — Ultraviolet, Arctic, Phantom — that you can only get this way, never on the wheel.",
         rankInfoBadge: "Your rank shows as a badge on your profile and next to your name on the reviews you write while signed in.",
         rankInfoOnce: "Each reward is given once — the first time you reach that rank.", rankUpSpins: "+{n} wheel spins", rankUpColor: "{name} colour",
-        rewardUltraviolet: "ULTRAVIOLET SKIN", rewardArctic: "ARCTIC SKIN", rewardPhantom: "PHANTOM SKIN",
+        rewardUltraviolet: "ULTRAVIOLET SKIN", rewardArctic: "ARCTIC SKIN", rewardPhantom: "PHANTOM SKIN", rewardCheatCode: "CHEAT CODE SKIN",
+        konamiFound: "↑↑↓↓←→←→BA — SECRET COLOUR: CHEAT CODE",
         colorLime: "Lime", colorCyan: "Cyan", colorRed: "Red", colorPurple: "Purple",
         closeLabel: "Close",
 
