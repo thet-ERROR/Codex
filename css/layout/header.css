@@ -39,6 +39,23 @@ body.night-mode header { background: linear-gradient(to bottom, rgba(5,5,15,0.95
     width: calc(var(--bot-h) * 0.75); height: var(--bot-h); pointer-events: none; user-select: none; z-index: 2;
 }
 .vote-bot img { display: block; width: 100%; height: 100%; }
+/* With the mouse on the tab the robot hides behind it and peeks over the edge (the owner's reference: a robot
+   that ducks behind its VOTE button). Two moves on two properties, so each has its own timing and both reverse
+   cleanly if the mouse leaves half way:
+     translate  the drop: a small lift first (the curve starts negative), then it falls faster and faster;
+     transform  the peek: after it has gone, the head comes back up over the edge with a little overshoot.
+   The tab is see-through, so "behind" is a clip at the tab's top edge (80% of the robot's box).
+   Only where there is a real mouse, and not for visitors who asked for less motion. */
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+    .vote-bot { clip-path: inset(-60% -60% -60% -60%); transition: clip-path 0s linear 0.5s; }
+    /* climbing back: the head ducks, then it jumps up onto the tab and settles */
+    .vote-bot img { transition: transform 0.14s ease-in, translate 0.36s cubic-bezier(0.34, 1.5, 0.5, 1) 0.12s; }
+    #tab-vote:hover .vote-bot, #tab-vote:focus-visible .vote-bot { clip-path: inset(-60% -60% 20% -60%); transition: clip-path 0s linear 0.08s; }
+    #tab-vote:hover .vote-bot img, #tab-vote:focus-visible .vote-bot img {
+        translate: 0 85%; transform: translateY(-40%);
+        transition: translate 0.32s cubic-bezier(0.5, -0.35, 0.9, 0.4), transform 0.28s cubic-bezier(0.2, 0.9, 0.3, 1.35) 0.52s;
+    }
+}
 /* A window covers the header; no point animating under it */
 body:has(.modal-overlay.active) .vote-bot { visibility: hidden; }
 .nav-btn.active-live { background: var(--neon-green); color: #000; box-shadow: 0 0 15px var(--neon-green); }

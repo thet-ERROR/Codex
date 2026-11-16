@@ -99,3 +99,65 @@ describe('the robot on the VOTE tab: on the page', () => {
         assert.equal(await page.evaluate(() => getComputedStyle(document.querySelector('#tab-vote .vote-bot')).display), 'none');
     }));
 });
+
+// With the mouse on the tab the robot hides behind it and peeks over the edge; it climbs back when the mouse leaves.
+describe('the robot on the VOTE tab: hiding from the mouse', () => {
+    const state = (page) => page.evaluate(() => {
+        const pic = document.querySelector('#tab-vote .vote-bot'), img = pic.querySelector('img'), r = img.getBoundingClientRect(), t = document.getElementById('tab-vote').getBoundingClientRect();
+        return { top: r.top, bottom: r.bottom, h: r.height, tabTop: t.top, clip: getComputedStyle(pic).clipPath };
+    });
+    const overTab = async (page) => { const b = await page.locator('#tab-vote').boundingBox(); await page.mouse.move(b.x + b.width / 2, b.y + b.height / 2, { steps: 4 }); };
+
+    it('hover: it drops behind the tab and its head peeks over the edge; leaving brings it back exactly', () => withPage({ width: 1440, height: 900, mobile: false }, async (page) => {
+        await place(page);
+        const rest = await state(page);
+        await overTab(page);
+        await page.waitForTimeout(1300);
+        const hid = await state(page);
+        const moved = hid.top - rest.top;
+        assert.ok(Math.abs(moved - rest.h * 0.45) <= 2, `it settles 45% of its height lower (moved ${moved.toFixed(1)}px of ${rest.h}px)`);
+        const peeking = hid.tabTop - hid.top;
+        assert.ok(peeking >= rest.h * 0.25 && peeking <= rest.h * 0.45, `only the head is above the edge (${peeking.toFixed(1)}px)`);
+        assert.match(hid.clip, /20%/, 'what is below the tab edge is cut away, since the tab is see-through');
+        await page.mouse.move(700, 500, { steps: 4 });
+        await page.waitForTimeout(1100);
+        const back = await state(page);
+        assert.ok(Math.abs(back.top - rest.top) < 0.6, 'back where it sat');
+        assert.doesNotMatch(back.clip, / 20%/, 'and whole again, feet over the tab');
+        assert.deepEqual(page.problems, []);
+    }));
+
+    it('half way through, leaving still brings it back', () => withPage({ width: 1440, height: 900, mobile: false }, async (page) => {
+        await place(page);
+        const rest = await state(page);
+        await overTab(page);
+        await page.waitForTimeout(220);
+        await page.mouse.move(700, 500, { steps: 2 });
+        await page.waitForTimeout(1100);
+        assert.ok(Math.abs((await state(page)).top - rest.top) < 0.6);
+    }));
+
+    it('the tab still works while it hides', () => withPage({ width: 1440, height: 900, mobile: false }, async (page) => {
+        await overTab(page);
+        await page.locator('#tab-vote').click();
+        // (the lit tab carries the class "active-live", whichever tab it is)
+        await page.waitForFunction(() => document.getElementById('tab-vote').classList.contains('active-live'));
+    }));
+
+    it('on a phone nothing hides (there is no hover, and a tap changes tab)', () => withPage({ width: 390, height: 844 }, async (page) => {
+        const rules = await page.evaluate(() => matchMedia('(hover: hover) and (pointer: fine)').matches);
+        assert.equal(rules, false);
+        assert.equal(await page.evaluate(() => getComputedStyle(document.querySelector('#tab-vote .vote-bot')).clipPath), 'none');
+    }));
+
+    it('it stays put for a visitor who asked for less motion', async () => {
+        const ctx = await browser.newContext({ viewport: { width: 1440, height: 900 }, reducedMotion: 'reduce', locale: 'el-GR' });
+        const p2 = await ctx.newPage();
+        try {
+            await p2.route(u => !u.href.startsWith(site.url) && /^https?:/.test(u.href), r => r.abort());
+            await p2.goto(site.url);
+            await p2.waitForSelector('#tab-vote .vote-bot img');
+            assert.equal(await p2.evaluate(() => getComputedStyle(document.querySelector('#tab-vote .vote-bot')).clipPath), 'none');
+        } finally { await ctx.close(); }
+    });
+});
