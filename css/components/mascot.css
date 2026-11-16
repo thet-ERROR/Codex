@@ -1,7 +1,7 @@
-/* ===== The mascot: a robot phoenix, the site's guardian =====
+/* ===== The mascot: the robot, the site's assistant (it also sits on the VOTE tab) =====
    Today it is the help button (index.html .mascot-btn → toggleChat): the head in a round frame,
    breathing slowly. Quiet on purpose — it never moves on its own beyond that and never pops up;
-   it only answers when pressed. Art: assets/mascot/ (cut from the user's sticker sheet). */
+   it only answers when pressed. Art: assets/mascot/robot-*.webp, cut from the owner's robot animation. */
 .side-btn.mascot-btn {
     width: 54px; height: 54px; padding: 0; border-radius: 50%; overflow: hidden;
     border: 2px solid var(--neon-green);
@@ -13,7 +13,7 @@
     .side-btn.mascot-btn { box-shadow: 0 0 12px color-mix(in srgb, var(--neon-green) 30%, transparent), inset 0 0 10px rgba(0, 0, 0, 0.6); }
 }
 .mascot-head {
-    width: 112%; height: 112%; margin-top: 8%; object-fit: cover; display: block; pointer-events: none;
+    width: 100%; height: 100%; margin-top: 10%; object-fit: cover; display: block; pointer-events: none;
     transform-origin: 50% 80%; animation: mascotBreathe 3.6s ease-in-out infinite;
 }
 @keyframes mascotBreathe { 0%, 100% { transform: translateY(0) scale(1); } 50% { transform: translateY(-2%) scale(1.04); } }
@@ -37,24 +37,24 @@
     .side-btn.mascot-btn, .mascot-head { animation: none; }
 }
 
-/* ===== The tour (js/modules/tutorial.js): the phoenix greets on the first step and points at its own
+/* ===== The tour (js/modules/tutorial.js): the robot greets on the first step and points at its own
    button on the last. It stands on top of the popover, half out of it, like a character speaking. */
 .driver-popover.tour-mascot { overflow: visible !important; padding-top: 10px !important; border-color: var(--neon-green) !important; box-shadow: 0 0 24px rgba(204, 255, 0, 0.2) !important; }
 .tour-mascot-img {
     /* aspect-ratio holds its height before the image has loaded — without it the negative margin
        pulled the title up out of the popover until the picture arrived */
-    display: block; width: 120px; height: auto; aspect-ratio: 246 / 300; margin: -96px auto 4px; pointer-events: none;
+    display: block; width: 116px; height: auto; aspect-ratio: 300 / 396; margin: -112px auto 4px; pointer-events: none;
     filter: drop-shadow(0 0 14px rgba(176, 38, 255, 0.55));
     transform-origin: 50% 90%; animation: mascotBreathe 3.6s ease-in-out infinite;
 }
 .driver-popover.tour-mascot .driver-popover-title { text-align: center; }
 .driver-popover.tour-mascot .driver-popover-description { text-align: center; }
-/* The last step sits next to the small button — a smaller phoenix, so the popover still fits */
-.tour-mascot-sm .tour-mascot-img { width: 84px; margin-top: -70px; }
+/* The last step sits next to the small button — a smaller robot, so the popover still fits */
+.tour-mascot-sm .tour-mascot-img { width: 80px; margin-top: -80px; }
 @media (prefers-reduced-motion: reduce) { .tour-mascot-img { animation: none; } }
 
 /* ===== Talk to the admin (js/modules/mascot.js) =====
-   The head leaves the button while the whole bird flies, and pops back when the bubble appears. */
+   The head leaves the button while the whole robot flies, and pops back when the bubble appears. */
 .side-btn.mascot-btn.mascot-away .mascot-head { animation: none; opacity: 0; transform: scale(0.3); transition: opacity 0.2s, transform 0.2s; }
 .side-btn.mascot-btn.mascot-back .mascot-head { animation: mascotPop 0.5s cubic-bezier(0.2, 0.8, 0.3, 1.3); }
 @keyframes mascotPop { 0% { transform: scale(0.3); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
@@ -72,7 +72,7 @@
     background: #fff; box-shadow: 0 0 6px 2px var(--neon-green), 0 0 12px 4px rgba(176, 38, 255, 0.6);
 }
 
-/* The speech bubble: the window shell's look (modals.css .info-box), a tail pointing at the phoenix */
+/* The speech bubble: the window shell's look (modals.css .info-box), a tail pointing at the robot */
 .mascot-bubble {
     position: fixed; z-index: 10001; width: min(280px, calc(100vw - 24px)); box-sizing: border-box;
     padding: 16px 16px 14px; border-radius: 14px; border: 1px solid var(--neon-green);

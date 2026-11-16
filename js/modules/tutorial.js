@@ -10,7 +10,7 @@
 //   desktop   logo | centred tabs with CART | terminal, profile; sidebar is a left rail.
 //
 // Seven steps, in the order they appear on screen for that layout, so the tour reads top to bottom
-// instead of jumping around: welcome, LIVE DROPS, VOTE, terminal and cart, the card, the phoenix.
+// instead of jumping around: welcome, LIVE DROPS, VOTE, terminal and cart, the card, the robot.
 // (It used to be fourteen; the logo, profile, settings, info, wheel, language and review buttons
 // explain themselves and are left to be found.) Keep this in sync with any change to those areas.
 const isPhone = () => window.matchMedia('(max-width: 768px)').matches;
@@ -69,7 +69,7 @@ function buildSteps(lang) {
     // On the bottom bar a popover has to open upwards; on the desktop rail, to the right
     const sideSide = bar ? 'top' : 'right';
 
-    // The phoenix opens the tour (it greets you) and closes it on its own button — the help button
+    // The robot opens the tour (it greets you) and closes it on its own button — the help button
     // (css/components/mascot.css), at the end of the bottom bar / foot of the desktop rail.
     return [
         step(null, 'welcome', 'over', 'center', 'tour-mascot'),
@@ -81,7 +81,7 @@ function buildSteps(lang) {
     ];
 }
 
-// The phoenix stands on top of its steps' popovers. driver.js reuses one popover element for every
+// The robot stands on top of its steps' popovers. driver.js reuses one popover element for every
 // step, so the picture is taken out again on the others.
 function mascotOnPopover(popover) {
     const wrap = popover && popover.wrapper;
@@ -90,7 +90,7 @@ function mascotOnPopover(popover) {
     if (!wrap.classList.contains('tour-mascot')) return;
     const img = document.createElement('img');
     img.className = 'tour-mascot-img';
-    img.src = 'assets/mascot/phoenix-full.png';
+    img.src = 'assets/mascot/robot-full.webp';
     img.alt = '';
     img.setAttribute('aria-hidden', 'true');
     wrap.prepend(img);
@@ -113,7 +113,7 @@ export function startTutorialTour(lang) {
     if (window.setLanguage) window.setLanguage(lang === 'el' ? 'el' : 'en');
 
     const driver = window.driver.js.driver;
-    if (window.preloadMascot) window.preloadMascot(); // the phoenix greets on the first step
+    if (window.preloadMascot) window.preloadMascot(); // the robot greets on the first step
     const isEl = lang === 'el';
 
     const tour = driver({
