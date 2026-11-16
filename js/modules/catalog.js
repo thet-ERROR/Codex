@@ -178,28 +178,6 @@ export function cardWish(id) {
     finally { wishJustToggled = null; }
 }
 
-// --- the stock lamp ---
-// Pressing the light shows its words under it; pressing it again, pressing anywhere else, Escape, or a few
-// seconds closes them. The card is rebuilt on every swipe, so a new card always starts closed.
-const LAMP_OPEN_MS = 4000;
-let lampTimer = 0;
-function closeLamps() {
-    clearTimeout(lampTimer);
-    document.querySelectorAll('.tc-lamp-wrap.open').forEach(w => { w.classList.remove('open'); w.querySelector('.tc-lamp')?.setAttribute('aria-expanded', 'false'); });
-}
-export function toggleStockLamp(btn) {
-    const wrap = btn.closest('.tc-lamp-wrap');
-    if (!wrap) return;
-    const wasOpen = wrap.classList.contains('open');
-    closeLamps();
-    if (wasOpen) return;
-    wrap.classList.add('open');
-    btn.setAttribute('aria-expanded', 'true');
-    lampTimer = setTimeout(closeLamps, LAMP_OPEN_MS);
-}
-document.addEventListener('click', (e) => { if (!e.target.closest('.tc-lamp-wrap')) closeLamps(); });
-document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeLamps(); });
-
 // Rebuilding the card must never move the page. On an iPhone scrolled to the bottom, Safari moved it up
 // by exactly 110 px while the card was rebuilt after a swipe — inside this function, with no script
 // scrolling and no height changing (measured with ?debug=scroll), and only when the page had changes
@@ -239,11 +217,12 @@ function buildCard() {
 
     const pc = state.filtered[state.index];
     const inCompare = state.compareList.find(p => p._id === pc._id); 
-    // The stock is a lamp on the photo (green / red / orange, with its words when pressed). Only a sold-out
-    // system, which has no lamp, keeps the pill under the photo.
+    // The stock is a label on the photo: a light (green, pulsing / red / orange) and its words, always in
+    // view, so nobody has to press anything or read a colour to know. Only a sold-out system, which has no
+    // label, keeps the pill under the photo.
     const lamp = lampInfo(pc);
     const stockHTML = lamp ? '' : `<div class="stock-badge ${stockState(pc)}">${esc(stockLabel(pc))}</div>`;
-    const lampHTML = lamp ? `<span class="tc-lamp-wrap"><button type="button" class="tc-lamp ${lamp.state}" aria-label="${esc(lamp.text)}" aria-expanded="false" onclick="event.stopPropagation(); toggleStockLamp(this)"><span class="tc-lamp-dot" aria-hidden="true"></span></button><span class="tc-lamp-tip ${lamp.state}" aria-hidden="true">${esc(lamp.text)}</span></span>` : '';
+    const lampHTML = lamp ? `<span class="tc-lamp ${lamp.state}"><span class="tc-lamp-dot" aria-hidden="true"></span><span class="tc-lamp-text">${esc(lamp.text)}</span></span>` : '';
     // (FPS bars used to be built here too, but were never placed in the card — FPS lives in INSPECT.)
 
     const isGreek = getLang() === 'el';
@@ -268,7 +247,7 @@ function buildCard() {
     document.querySelectorAll('.nav-arrow').forEach(b => b.classList.toggle('hidden', nPcs < 2));
     const dots = nPcs > 1 ? `<div class="tc-dots" aria-hidden="true">${Array.from({ length: nPcs }, (_, i) => `<span class="tc-dot${i === state.index ? ' active' : ''}"></span>`).join('')}</div>` : '';
     c.innerHTML = `
-        <div class="tc-face${extrasRows ? '' : ' no-tabs'}">
+        <div class="tc-face">
             <div class="tc-title">
                 <span class="tc-name">${esc(pc.name)}</span>
                 <span class="tc-attr"><i class="ph-fill ${PACK_ICONS[pc.category] || PACK_ICONS.drop}"></i></span>
@@ -284,10 +263,10 @@ function buildCard() {
             <div class="tc-type">
                 <div class="tc-row"><div class="tc-price">${formatPrice(priceCentsOf(pc))}</div>${stockHTML}</div>
             </div>
-            ${extrasRows ? `<div class="tc-tabs" role="tablist">
+            <div class="tc-tabs" role="tablist">
                 <button type="button" class="tc-tab active" role="tab" aria-selected="true" data-tc-tab="lore" onclick="cardTab('lore', this)"><i class="ph-fill ph-scroll"></i><span>${esc(tr('inspectTabLore', 'UNIT DATA'))}</span></button>
                 <button type="button" class="tc-tab" role="tab" aria-selected="false" data-tc-tab="extras" onclick="cardTab('extras', this)"><i class="ph-fill ph-gear-six"></i><span>${esc(tr('extrasLabel', 'EXTRAS'))}</span></button>
-            </div>` : ''}
+            </div>
             <div class="tc-panels">
                 <div class="tc-panel tc-brief active" data-tc-panel="lore">
                     <div class="tc-brief-row">
@@ -296,7 +275,7 @@ function buildCard() {
                     </div>
                     <button type="button" class="tc-brief-more hidden">${esc(window.t ? window.t('briefMore') : 'more')}</button>
                 </div>
-                ${extrasRows ? `<div class="tc-panel tc-extras" data-tc-panel="extras">${extrasRows}</div>` : ''}
+                <div class="tc-panel tc-extras" data-tc-panel="extras">${extrasRows}</div>
             </div>
             <!-- The VS strip: inside the card, between the brief and the buttons, so it can never cover them.
                  Its contents (the two PCs' thumbnails, or one and an empty "+") are filled by compare.js
@@ -342,19 +321,26 @@ function cardExtrasRows(pc) {
             <b>${esc(price)}</b>
             <i class="ph-bold ph-caret-right tc-ex-go" aria-hidden="true"></i>
         </button>`;
+    // An extra the admin hasn't ticked for this PC: listed all the same, locked, so the tab is always full
+    // (three rows on every card) and a visitor sees what exists. Not a button: there is nothing to open.
+    const locked = (title) => `
+        <div class="tc-ex-row locked">
+            <i class="ph-bold ph-lock-simple" aria-hidden="true"></i>
+            <span class="tc-ex-txt"><span class="tc-ex-name">${esc(title)}</span><small class="tc-ex-why">${esc(t('extraLocked'))}</small></span>
+        </div>`;
     const rows = [];
     const st = o.storage;
     if (st.enabled && (st.hdd > 0 || st.ssd > 0)) {
         const lowest = Math.min(...[st.hdd, st.ssd].filter(v => v > 0));
         rows.push(row('ph-hard-drives', t('storageLabel'), t('cardExtraFrom', { price: formatPrice(cents(lowest)) })));
-    }
-    if (o.proConfig.enabled) rows.push(row('ph-sliders-horizontal', t('proConfigTitle'), '+' + formatPrice(cents(state.proConfigPrice))));
+    } else rows.push(locked(t('storageLabel')));
+    rows.push(o.proConfig.enabled ? row('ph-sliders-horizontal', t('proConfigTitle'), '+' + formatPrice(cents(state.proConfigPrice))) : locked(t('proConfigTitle')));
     if (o.paint.enabled) {
         const isGreek = getLang() === 'el';
         const name = (isGreek && o.paint.colorNameEl) ? o.paint.colorNameEl : (o.paint.colorName || '');
         const swatch = `<i class="tc-ex-swatch" style="background:${esc(o.paint.colorHex || '#1a1a1a')}" aria-hidden="true"></i>`;
         rows.push(row('', name ? `${t('paintTitle')} — ${name}` : t('paintTitle'), '+' + formatPrice(cents(o.paint.price)), swatch));
-    }
+    } else rows.push(locked(t('paintTitle')));
     return rows.join('');
 }
 
@@ -665,4 +651,3 @@ window.setPriceFilter = setPriceFilter;
 window.clearPriceFilter = clearPriceFilter;
 window.swipeCard = swipeCard;
 window.cardWish = cardWish;
-window.toggleStockLamp = toggleStockLamp;

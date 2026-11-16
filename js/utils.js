@@ -74,9 +74,9 @@ export function stockLabel(pc) {
     return t(key, { n: Number(pc && pc.stock) || 0 });
 }
 
-// The stock lamp on a card (the light on the photo): its colour class and what it says when pressed.
-// many = green, pulsing (2 or more, with the real number); last = red, steady (one left); soon = orange,
-// steady (coming soon). Sold out has no lamp, the pill under the photo says so: returns null.
+// The stock label on a card's photo: its colour class and its words. many = green, pulsing (2 or more, with
+// the real number); last = red, steady (one left); soon = orange, steady (coming soon). Sold out has no
+// label, the pill under the photo says so: returns null.
 export function lampInfo(pc) {
     const t = window.t || (k => k);
     const s = stockState(pc), n = Number(pc && pc.stock) || 0;
