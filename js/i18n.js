@@ -241,7 +241,7 @@ const translations = {
         alertAllFieldsRecruit: "Προσοχή: Όλα τα πεδία είναι υποχρεωτικά", alertRegistrationFailed: "Η εγγραφή απέτυχε",
         alertSoldOut: "Εξαντλήθηκε!", alertCartEmpty: "Το καλάθι είναι άδειο!", alertMaxCompare: "Μέγιστο 2 συστήματα στη σύγκριση",
         // Badges αποθέματος — κάρτα (renderCard) και inspect (gallery.js)
-        lampMany: "{n} τεμάχια διαθέσιμα", lampLast: "1 τεμάχιο διαθέσιμο", lampSoon: "Αναμένεται σύντομα",
+        lampMany: "{n} διαθέσιμα", lampLast: "Τελευταίο τεμάχιο", lampSoon: "Έρχεται σύντομα",
         stockIn: "ΔΙΑΘΕΣΙΜΟ", stockLow: "ΛΙΓΑ ΚΟΜΜΑΤΙΑ: {n}", stockLast: "ΜΟΝΟ 1 ΤΕΜΑΧΙΟ", stockOut: "ΕΞΑΝΤΛΗΘΗΚΕ", stockSoon: "ΣΥΝΤΟΜΑ",
         cartEmpty: "ΤΟ ΚΑΛΑΘΙ ΕΙΝΑΙ ΑΔΕΙΟ", cartRemove: "Αφαίρεση",
         addToCartBtn: "Στο καλάθι", flipToSpecs: "Δες τα specs", flipToFront: "Πίσω στην κάρτα",
@@ -545,7 +545,7 @@ const translations = {
         alertAllFieldsRecruit: "SYSTEM ALERT: ALL FIELDS REQUIRED FOR RECRUITMENT", alertRegistrationFailed: "REGISTRATION FAILED",
         alertSoldOut: "SOLD OUT!", alertCartEmpty: "Cart is empty!", alertMaxCompare: "MAX 2 ITEMS ALLOWED IN VS MODE",
         // Stock badges — card (renderCard) and inspect view (gallery.js)
-        lampMany: "{n} units available", lampLast: "1 unit available", lampSoon: "Coming soon",
+        lampMany: "{n} available", lampLast: "Last one", lampSoon: "Coming soon",
         stockIn: "IN STOCK", stockLow: "LOW STOCK: {n} UNITS", stockLast: "ONLY 1 UNIT LEFT", stockOut: "SOLD OUT", stockSoon: "COMING SOON",
         cartEmpty: "CART IS EMPTY", cartRemove: "Remove",
         addToCartBtn: "Add to Cart", flipToSpecs: "Flip to Specs", flipToFront: "Flip to Front",
