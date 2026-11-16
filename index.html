@@ -176,7 +176,9 @@ Type 'help' for a list of commands.
         <div class="nav-bar">
             <button class="nav-btn active-live" id="tab-live" onclick="playClick(); switchTab('live')">LIVE DROPS</button>
             <button class="nav-btn" id="tab-starter" onclick="playClick(); switchTab('starter')">STARTER PACKS</button>
-            <button class="nav-btn" id="tab-vote" onclick="playClick(); switchTab('vote')">VOTE</button>
+            <button class="nav-btn" id="tab-vote" onclick="playClick(); switchTab('vote')">VOTE<!-- The robot sitting on the tab (css/layout/header.css). Decoration: no name, can't be tapped, low priority so it never
+                 competes with the page; a still picture when the visitor asked for less motion. 24 frames, 41 KB. -->
+                <picture class="vote-bot" aria-hidden="true"><source media="(prefers-reduced-motion: reduce)" srcset="assets/images/vote-bot-still.webp"><img src="assets/images/vote-bot.webp" alt="" width="75" height="100" decoding="async" fetchpriority="low"></picture></button>
             
             <button class="nav-btn cart-btn" onclick="toggleCartDropdown()">
                 <i class="ph-bold ph-shopping-cart"></i> <span data-i18n="cartLabel">CART</span> <span class="cart-count" id="cart-count">0</span>

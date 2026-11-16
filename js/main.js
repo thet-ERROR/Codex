@@ -49,6 +49,13 @@ bgMusic.loop = true;
 // "Reduce motion": the background stays on its first frame
 const bgVideo = document.querySelector('.bg-video');
 if (bgVideo && window.matchMedia('(prefers-reduced-motion: reduce)').matches) { bgVideo.removeAttribute('autoplay'); bgVideo.pause(); }
+else if (bgVideo) {
+    // A phone may refuse to autoplay (iOS Low Power Mode, data saver) and leaves the Earth standing still;
+    // the first touch or key is allowed to start it. Coming back to the tab restarts it if it was paused.
+    const startBackground = () => { if (bgVideo.paused) bgVideo.play().catch(() => {}); };
+    ['pointerdown', 'touchstart', 'keydown'].forEach(ev => window.addEventListener(ev, startBackground, { once: true, passive: true }));
+    document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') startBackground(); });
+}
 bgMusic.volume = state.bgVolume;
 
 // Leaving the site stops the sound, like any site: switching tab or app, locking the phone, closing the

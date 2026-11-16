@@ -18,7 +18,8 @@
     .bg-layer { background-size: cover !important; background-position: center center !important; background-attachment: scroll !important; }
     header { position: relative; height: auto; flex-direction: column; padding: 10px; gap: 10px; }
     .right-header-group { width: 100%; justify-content: center; }
-    .nav-bar { position: relative; left: 0; transform: none; width: 100%; overflow-x: auto; justify-content: flex-start; padding-bottom: 5px; }
+    .nav-bar { position: relative; left: 0; transform: none; width: 100%; overflow-x: auto; justify-content: flex-start; padding-bottom: 5px; padding-top: 32px; }
+    .vote-bot { --bot-h: 36px; bottom: calc(100% - var(--bot-h) * 0.2); }
     .stage { position: relative; inset: auto; display: flex; flex-direction: column; padding: 10px 0 90px 0; margin-top: 0; }
     .carousel-wrapper { width: 100%; position: relative; padding: 0 10px; justify-content: center; gap: 5px; }
     .holo-card { width: 95%; max-width: 400px; padding: 15px; margin: 0 auto; }

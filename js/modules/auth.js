@@ -266,7 +266,7 @@ export async function resendVerification() {
     const remaining = resendCooldownRemainingMs();
     if (remaining > 0) {
         const s = Math.ceil(remaining / 1000);
-        if (window.showToast) window.showToast(window.t ? window.t('toastResendCooldown', { s }) : `WAIT ${s}s BEFORE RESENDING`, 'error');
+        if (window.showToast) window.showToast(window.t ? window.t('toastResendCooldown', { s }) : `WAIT ${s}s BEFORE RESENDING`, 'error', { key: 'resend-cooldown' });
         return;
     }
     try {

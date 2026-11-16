@@ -218,6 +218,103 @@ describe('the PC card header and hover', () => {
     });
 });
 
+// The background is a spinning Earth (a 3:2 video, the planet 59% of its width with its glow). With
+// object-fit: cover a phone blew it up to 160% of the screen: a blurry strip, no round planet, no moon.
+describe('the background Earth', () => {
+    // What is really drawn: the video's picture inside its box, as object-fit places it
+    const earth = (page) => page.evaluate(() => {
+        const v = document.querySelector('.bg-video'), r = v.getBoundingClientRect(), cs = getComputedStyle(v), L = getComputedStyle(document.querySelector('.bg-layer'));
+        const sx = r.width / 600, sy = r.height / 400;
+        const s = cs.objectFit === 'cover' ? Math.max(sx, sy) : cs.objectFit === 'contain' ? Math.min(sx, sy) : null;
+        const w = s ? 600 * s : r.width, h = s ? 400 * s : r.height;
+        return {
+            vw: innerWidth, vh: innerHeight, fit: cs.objectFit, image: L.backgroundImage, color: L.backgroundColor,
+            earthW: w * 0.593, cx: r.left + r.width / 2, top: r.top + (r.height - h) / 2, bottom: r.top + (r.height + h) / 2, contentW: w
+        };
+    });
+
+    for (const [label, size] of [['phone 390x844', { width: 390, height: 844 }], ['small phone 360x640', { width: 360, height: 640 }], ['tablet 820x1180', { width: 820, height: 1180 }]]) {
+        it(`the whole planet fits on a portrait screen — ${label}`, () => withPage(size, async (page) => {
+            const e = await earth(page);
+            assert.ok(e.earthW <= e.vw * 0.95, `the planet is ${Math.round(e.earthW)}px on a ${e.vw}px screen`);
+            assert.ok(e.earthW >= e.vw * 0.6, 'and not a speck');
+            assert.ok(Math.abs(e.cx - e.vw / 2) < 2, 'centred sideways');
+            assert.ok(e.top >= 0 && e.bottom <= e.vh, `the whole height of the picture is on screen (${Math.round(e.top)} to ${Math.round(e.bottom)} of ${e.vh})`);
+            assert.equal(e.image, 'none', 'no second, cropped copy of the planet behind it');
+            assert.notEqual(e.color, 'rgba(0, 0, 0, 0)', 'the video\'s own deep blue behind it');
+        }));
+    }
+
+    it('a desktop keeps the full-screen picture', () => withPage({ width: 1440, height: 900, mobile: false }, async (page) => {
+        const e = await earth(page);
+        assert.equal(e.fit, 'cover');
+        assert.ok(e.contentW >= e.vw, 'the picture still fills the screen');
+        assert.notEqual(e.image, 'none');
+    }));
+
+    it('a phone on its side shows the whole planet too', () => withPage({ width: 844, height: 390 }, async (page) => {
+        const e = await page.evaluate(() => { const v = document.querySelector('.bg-video'); return { fit: getComputedStyle(v).objectFit, h: v.getBoundingClientRect().height, vh: innerHeight }; });
+        assert.equal(e.fit, 'contain');
+    }));
+
+    it('it is playing, and a tap starts it if the phone refused to autoplay it', () => withPage({ width: 390, height: 844 }, async (page) => {
+        await page.waitForFunction(() => !document.querySelector('.bg-video').paused);
+        // What Low Power Mode does: the video is paused when the page loads
+        await page.evaluate(() => document.querySelector('.bg-video').pause());
+        assert.equal(await page.evaluate(() => document.querySelector('.bg-video').paused), true);
+        await page.touchscreen.tap(195, 500);
+        await page.waitForFunction(() => !document.querySelector('.bg-video').paused, null, { timeout: 3000 });
+    }));
+});
+
+describe('toasts do not pile up', () => {
+    const show = (page, msg, type, opts) => page.evaluate(([m, t, o]) => window.showToast(m, t, o), [msg, type || 'normal', opts]);
+    const toasts = (page) => page.evaluate(() => [...document.querySelectorAll('#toast-container .toast')].map(t => t.textContent));
+
+    it('pressing the same thing again does not add another one', () => withPage({ width: 390, height: 844 }, async (page) => {
+        for (let i = 0; i < 12; i++) await show(page, 'Stock limit reached', 'error');
+        assert.deepEqual(await toasts(page), ['Stock limit reached']);
+    }));
+
+    it('the same text with a different type is a different message', () => withPage({ width: 390, height: 844 }, async (page) => {
+        await show(page, 'Saved', 'normal'); await show(page, 'Saved', 'error');
+        assert.equal((await toasts(page)).length, 2);
+    }));
+
+    it('another press keeps the toast on screen for a full time again', () => withPage({ width: 390, height: 844 }, async (page) => {
+        await show(page, 'Link copied');
+        await page.waitForTimeout(2200);
+        await show(page, 'Link copied');            // pressed again just before it would go
+        await page.waitForTimeout(1500);            // 3.7s after the first press
+        assert.deepEqual(await toasts(page), ['Link copied']);
+        await page.waitForTimeout(2000);
+        assert.deepEqual(await toasts(page), [], 'and it does go in the end');
+    }));
+
+    it('a message that carries a changing number (a countdown) replaces itself', () => withPage({ width: 390, height: 844 }, async (page) => {
+        for (const s of [30, 29, 28, 27]) await show(page, `Wait ${s}s before resending`, 'error', { key: 'resend' });
+        assert.deepEqual(await toasts(page), ['Wait 27s before resending']);
+    }));
+
+    it('at most three different toasts at once, the newest kept', () => withPage({ width: 390, height: 844 }, async (page) => {
+        for (const m of ['one', 'two', 'three', 'four', 'five']) await show(page, m);
+        assert.deepEqual(await toasts(page), ['three', 'four', 'five']);
+    }));
+
+    it('after it has gone, the same message can show again', () => withPage({ width: 390, height: 844 }, async (page) => {
+        await show(page, 'Again'); await page.waitForTimeout(3300);
+        assert.deepEqual(await toasts(page), []);
+        await show(page, 'Again');
+        assert.deepEqual(await toasts(page), ['Again']);
+    }));
+
+    it('a toast is text, never markup', () => withPage({ width: 390, height: 844 }, async (page) => {
+        await show(page, '<img src=x onerror="window.__xss=1">');
+        assert.equal(await page.locator('#toast-container img').count(), 0);
+        assert.equal(await page.evaluate(() => window.__xss), undefined);
+    }));
+});
+
 describe('the full achievements window (UI brief 02)', () => {
     for (const [label, width, height] of [['phone 390', 390, 844], ['desktop 1440', 1440, 900]]) {
         it(`every achievement is a filled card with a body, and nothing is cut off — ${label}`, () => withPage({ width, height, member: true, locale: 'el-GR' }, async (page) => {
@@ -476,7 +573,7 @@ describe('the empty stage (changes doc, step 4)', () => {
             await page.evaluate(() => window.toggleChat());
             // ...and the quiet link clears the filter and brings the systems back
             await page.locator('#main-card .card-empty-link').click();
-            await page.locator('#main-card .stock-badge').waitFor();
+            await page.locator('#main-card .tc-name').waitFor();
             assert.equal(await page.locator('#main-card .card-empty').count(), 0);
         }));
         it(`with no systems at all, even a budget filter does not invite a custom build — ${lang}`, () => withPage({ width: 390, height: 844, locale }, async (page) => {
