@@ -8,7 +8,6 @@
     --text-main: #ffffff;
     --font-ui: 'Rajdhani', 'Exo 2', sans-serif;
     --font-body: 'Space Grotesk', 'Exo 2', sans-serif;
-    --card-font-primary: 'Chakra Petch', 'Exo 2', sans-serif;
     --card-font-secondary: 'Orbitron', 'Exo 2', sans-serif;
     --card-bg-night: rgba(6, 8, 14, 0.97);
     --card-border-night: rgba(140, 170, 255, 0.35);
@@ -42,10 +41,12 @@ body {
 html, button, a, label, select, img, [onclick], [role="button"] { touch-action: manipulation; }
 
 .hidden { display: none !important; }
+/* Present for screen readers and search engines, invisible on screen (the page's h1) */
+.sr-only { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0; }
 
 input, textarea, select { font-size: 16px; }
 
-/* Rajdhani/Orbitron/Chakra Petch/Space Grotesk have no Greek glyphs (falls back to Exo 2 — see --font-* above),
+/* Rajdhani/Orbitron/Space Grotesk have no Greek glyphs (falls back to Exo 2 — see --font-* above),
    which renders visually larger than the Latin display faces at the same declared size. Scale translated
    Greek text down to match. */
 body.lang-el [data-i18n], body.lang-el [data-i18n-placeholder] { font-size: 0.85em; }

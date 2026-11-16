@@ -202,6 +202,15 @@ function buildCard() {
     if (!state.filtered.length) {
         // An empty list says so in the visitor's language, inside the card frame
         const t = window.t || (k => k);
+        // Two different empties: a budget filter that matched nothing while systems exist (an invitation —
+        // "want something stronger? I build custom"), and no systems at all (they are on the way)
+        const filteredOut = !!priceFilter && state.inventory.some(p => p.category === 'drop' || !p.category);
+        if (filteredOut) {
+            c.innerHTML = `<div class="tc-face"><div class="card-empty"><i class="ph-duotone ph-wrench"></i><div>${esc(t('stageEmptyFilter'))}</div>
+                <button type="button" class="card-empty-btn" onclick="openChat()">${esc(t('stageCustomBtn'))}</button>
+                <button type="button" class="card-empty-link" onclick="clearPriceFilter()">${esc(t('budgetClear'))}</button></div></div>`;
+            return;
+        }
         c.innerHTML = `<div class="tc-face"><div class="card-empty"><i class="ph-duotone ph-cpu"></i><div>${esc(t('stageEmpty'))}</div>${priceFilter ? `<button type="button" class="card-empty-btn" onclick="clearPriceFilter()">${esc(t('budgetClear'))}</button>` : ''}</div></div>`;
         return;
     }

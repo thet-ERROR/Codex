@@ -3,21 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="PHOENIX CODEX - Secure your ultimate custom gaming rig.">
+    <meta name="description" content="PHOENIX CODEX: custom gaming PC χειροποίητα στη Θεσσαλονίκη. Διάλεξε έτοιμο σύστημα ή ψήφισε το επόμενο drop. Gaming, streaming και coding rigs με εγγύηση.">
     <meta name="theme-color" content="#b026ff">
     <!-- Share previews (Instagram, WhatsApp, Facebook, Discord). og:image MUST be absolute: crawlers
          fetch it without knowing the page's URL, so a relative path resolves to nothing and every
          share showed up with no picture. Update the domain here when the site moves to its own. -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://codex-iota-nine.vercel.app/">
-    <meta property="og:title" content="PHOENIX CODEX | TERMINAL v52.0">
-    <meta property="og:description" content="Secure your ultimate custom gaming rig.">
+    <meta property="og:title" content="PHOENIX CODEX | Custom Gaming PCs Θεσσαλονίκη">
+    <meta property="og:locale" content="el_GR">
+    <meta property="og:site_name" content="PHOENIX CODEX">
+    <meta property="og:description" content="Custom gaming PC φτιαγμένα στο χέρι στη Θεσσαλονίκη. Διάλεξε έτοιμο σύστημα ή ψήφισε το επόμενο drop.">
     <meta property="og:image" content="https://codex-iota-nine.vercel.app/assets/images/og-image.jpg">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
     <meta name="twitter:card" content="summary_large_image">
 
-    <title>PHOENIX CODEX | TERMINAL v52.0</title>
+    <title>PHOENIX CODEX | Custom Gaming PCs Θεσσαλονίκη</title>
 
     <!-- favicon.ico was referenced here but never existed in the repo. PNG favicons are supported by
          every current browser; apple-touch-icon is what iOS uses for "Add to Home Screen". -->
@@ -27,18 +29,64 @@
     <!-- One request for all five families (was three), and the font host's connection opened early -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700;800&family=Space+Grotesk:wght@300;700&family=Chakra+Petch:wght@400;600;700&family=Orbitron:wght@400;700;900&family=Exo+2:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700;800&family=Space+Grotesk:wght@300;700&family=Orbitron:wght@400;700;900&family=Exo+2:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     
     <!-- Version-pinned on purpose: an unpinned CDN URL always serves "latest", so a compromised
          or simply broken release would execute on this page with full access to the DOM and to
          the login token, with no change on our side. crossorigin is required for the browser to
          report errors from these scripts. -->
-    <script src="https://unpkg.com/@phosphor-icons/web@2.1.2" crossorigin="anonymous" defer></script>
+    <!-- Phosphor icons: only the three weights the site uses (ph-bold, ph-fill, ph-duotone). The package's
+         script used to add all six stylesheets (regular, thin and light too, ~250 KB of CSS for nothing),
+         and only after the script itself had loaded — so the icons appeared late. Same version, same files. -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.2/src/bold/style.css" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.2/src/fill/style.css" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.2/src/duotone/style.css" crossorigin="anonymous">
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/driver.js@1.0.1/dist/driver.css" crossorigin="anonymous"/>
     <script src="https://cdn.jsdelivr.net/npm/driver.js@1.0.1/dist/driver.js.iife.js" crossorigin="anonymous" defer></script>
 
-    <link rel="stylesheet" href="css/style.css">
+    <!-- The stylesheets, in cascade order (later wins). They used to be @imports inside css/style.css, which
+         the browser could only discover after style.css itself had arrived: one round trip more before
+         anything could be drawn. Listed here, they are all requested at once. A new stylesheet goes in
+         this list, in the right place (tcg-card.css and the *-hud.css files must stay after the older rules). -->
+    <link rel="stylesheet" href="css/base/variables.css">
+    <link rel="stylesheet" href="css/base/tokens.css">
+    <link rel="stylesheet" href="css/base/animations.css">
+    <link rel="stylesheet" href="css/layout/backgrounds.css">
+    <link rel="stylesheet" href="css/layout/header.css">
+    <link rel="stylesheet" href="css/layout/sidebars.css">
+    <link rel="stylesheet" href="css/layout/stage.css">
+    <link rel="stylesheet" href="css/components/modals.css">
+    <link rel="stylesheet" href="css/components/cart.css">
+    <link rel="stylesheet" href="css/components/chat-terminal.css">
+    <link rel="stylesheet" href="css/components/compare.css">
+    <link rel="stylesheet" href="css/components/dossier.css">
+    <link rel="stylesheet" href="css/components/vote.css">
+    <link rel="stylesheet" href="css/components/wheel.css">
+    <link rel="stylesheet" href="css/components/mission.css">
+    <link rel="stylesheet" href="css/gallery/card-front.css">
+    <link rel="stylesheet" href="css/gallery/card-back.css">
+    <link rel="stylesheet" href="css/gallery/ui-lock.css">
+    <link rel="stylesheet" href="css/components/texture.css">
+    <link rel="stylesheet" href="css/components/card-body.css">
+    <link rel="stylesheet" href="css/responsive/tablet.css">
+    <link rel="stylesheet" href="css/responsive/mobile.css">
+    <link rel="stylesheet" href="css/components/tcg-card.css">
+    <link rel="stylesheet" href="css/components/card-hud.css">
+    <link rel="stylesheet" href="css/components/inspect-hud.css">
+    <link rel="stylesheet" href="css/components/vote-hud.css">
+    <link rel="stylesheet" href="css/components/packs-hud.css">
+    <link rel="stylesheet" href="css/components/mascot.css">
+    <link rel="stylesheet" href="css/components/dossier-hud.css">
+    <link rel="stylesheet" href="css/components/settings-hud.css">
+    <link rel="stylesheet" href="css/components/cart-hud.css">
+    <link rel="stylesheet" href="css/components/auth-hud.css">
+    <link rel="stylesheet" href="css/components/checkout.css">
+    <link rel="stylesheet" href="css/components/order-page.css">
+    <link rel="stylesheet" href="css/components/menus-hud.css">
+    <link rel="stylesheet" href="css/components/compare-hud.css">
+    <link rel="stylesheet" href="css/components/qr-hud.css">
+    <link rel="stylesheet" href="css/responsive/phone-compact.css">
 </head>
 <body id="main-body">
 
@@ -77,19 +125,19 @@ Type 'help' for a list of commands.
 
     <nav class="left-sidebar">
         <div class="side-group">
-            <button class="side-btn" onclick="playClick(); openModal('settings')" title="System Settings" data-i18n-title="sideSettings"><img class="side-ico" src="assets/icons/bar/gear.png" alt="" aria-hidden="true"></button>
+            <button class="side-btn" onclick="playClick(); openModal('settings')" title="System Settings" data-i18n-title="sideSettings" data-i18n-aria="sideSettings" aria-label="System Settings"><img class="side-ico" src="assets/icons/bar/gear.png" alt="" aria-hidden="true"></button>
             <div class="side-divider"></div>
             <!-- Warranty & Returns / Terms / Support used to be three icons here (a shield, a book and a
                  headset — nothing on a phone said which was which). One button, three tabs inside. -->
             <button class="side-btn side-btn-info" onclick="playClick(); openInfo()" title="Information: warranty, terms, support" data-i18n-title="sideInfo" data-i18n-aria="sideInfo" aria-label="Information"><img class="side-ico" src="assets/icons/bar/info.png" alt="" aria-hidden="true"><span class="side-label">INFO</span></button>
-            <button class="side-btn" onclick="playClick(); openWheelFromSettings()" title="Daily Spin" data-i18n-title="sideWheel"><img class="side-ico" src="assets/icons/bar/gift.png" alt="" aria-hidden="true"></button>
-            <button class="side-btn" id="lang-toggle-btn" onclick="playClick(); toggleLanguage()" title="Toggle Language" data-i18n-title="sideLang"><img class="side-ico" src="assets/icons/bar/flag-gr.png" alt="" aria-hidden="true"></button>
+            <button class="side-btn" onclick="playClick(); openWheelFromSettings()" title="Daily Spin" data-i18n-title="sideWheel" data-i18n-aria="sideWheel" aria-label="Daily Spin"><img class="side-ico" src="assets/icons/bar/gift.png" alt="" aria-hidden="true"></button>
+            <button class="side-btn" id="lang-toggle-btn" onclick="playClick(); toggleLanguage()" title="Toggle Language" data-i18n-title="sideLang" data-i18n-aria="sideLang" aria-label="Toggle Language"><img class="side-ico" src="assets/icons/bar/flag-gr.png" alt="" aria-hidden="true"></button>
             <div class="side-divider"></div>
 
             <!-- #social-menu itself lives at the end of this sidebar, outside .side-group — see there -->
-            <button class="side-btn" id="social-toggle-btn" onclick="playClick(); toggleSocials()" title="Social Networks" data-i18n-title="sideSocial"><img class="side-ico" src="assets/icons/bar/share.png" alt="" aria-hidden="true"></button>
+            <button class="side-btn" id="social-toggle-btn" onclick="playClick(); toggleSocials()" title="Social Networks" data-i18n-title="sideSocial" data-i18n-aria="sideSocial" aria-label="Social Networks"><img class="side-ico" src="assets/icons/bar/share.png" alt="" aria-hidden="true"></button>
 
-            <button class="side-btn mobile-reviews-btn" onclick="playClick(); toggleMobileReviews()" title="Reviews" data-i18n-title="sideReviews"><img class="side-ico" src="assets/icons/bar/star.png" alt="" aria-hidden="true"></button>
+            <button class="side-btn mobile-reviews-btn" onclick="playClick(); toggleMobileReviews()" title="Reviews" data-i18n-title="sideReviews" data-i18n-aria="sideReviews" aria-label="Reviews"><img class="side-ico" src="assets/icons/bar/star.png" alt="" aria-hidden="true"></button>
         </div>
 
         <!-- The help button is the mascot: the phoenix's head in a round frame (mascot.css) -->
@@ -102,10 +150,10 @@ Type 'help' for a list of commands.
          painted inside the 60px bar and never seen. At body level nothing can clip it; toggleSocials()
          in js/ui/modals.js places it next to #social-toggle-btn instead. -->
     <div class="social-menu" id="social-menu">
-        <button class="side-btn" onclick="playClick(); showToast('DISCORD SERVER: COMING SOON', 'normal')" title="Discord" data-i18n-title="sideDiscord"><i class="ph-duotone ph-discord-logo"></i></button>
-        <button class="side-btn" onclick="playClick(); window.open('https://instagram.com/codex_rigs', '_blank')" title="Instagram" data-i18n-title="sideInstagram"><i class="ph-duotone ph-instagram-logo"></i></button>
-        <button class="side-btn" onclick="playClick(); openModal('newsletter')" title="Drop Alerts" data-i18n-title="sideDropAlerts"><i class="ph-duotone ph-envelope-simple"></i></button>
-        <button class="side-btn" onclick="playClick(); openQr()" title="QR" data-i18n-title="sideQr"><i class="ph-duotone ph-qr-code"></i></button>
+        <button class="side-btn" onclick="playClick(); showToast('DISCORD SERVER: COMING SOON', 'normal')" title="Discord" data-i18n-title="sideDiscord" data-i18n-aria="sideDiscord" aria-label="Discord"><i class="ph-duotone ph-discord-logo"></i></button>
+        <button class="side-btn" onclick="playClick(); window.open('https://instagram.com/codex_rigs', '_blank')" title="Instagram" data-i18n-title="sideInstagram" data-i18n-aria="sideInstagram" aria-label="Instagram"><i class="ph-duotone ph-instagram-logo"></i></button>
+        <button class="side-btn" onclick="playClick(); openModal('newsletter')" title="Drop Alerts" data-i18n-title="sideDropAlerts" data-i18n-aria="sideDropAlerts" aria-label="Drop Alerts"><i class="ph-duotone ph-envelope-simple"></i></button>
+        <button class="side-btn" onclick="playClick(); openQr()" title="QR" data-i18n-title="sideQr" data-i18n-aria="sideQr" aria-label="QR"><i class="ph-duotone ph-qr-code"></i></button>
     </div>
 
     <aside class="right-sidebar">
@@ -119,7 +167,11 @@ Type 'help' for a list of commands.
     </aside>
     
     <header>
-        <img src="assets/images/logo.webp" alt="PHOENIX CODEX" class="logo" onclick="playClick(); openWhoAmI();">
+        <!-- The page's one h1: for screen readers and search engines (the logo's own name is its alt) -->
+        <h1 class="sr-only">PHOENIX CODEX: Custom Gaming PCs Θεσσαλονίκη</h1>
+        <!-- .logo-aura is the same picture behind the logo with the warm glow on it; only its opacity moves
+             (css/layout/header.css) — see there for why the glow isn't an animated filter any more -->
+        <span class="logo-wrap"><img src="assets/images/logo.webp" alt="" aria-hidden="true" class="logo-aura"><img src="assets/images/logo.webp" alt="PHOENIX CODEX" class="logo" onclick="playClick(); openWhoAmI();"></span>
         
         <div class="nav-bar">
             <button class="nav-btn active-live" id="tab-live" onclick="playClick(); switchTab('live')">LIVE DROPS</button>
@@ -132,7 +184,7 @@ Type 'help' for a list of commands.
         </div>
 
         <div class="right-header-group">
-            <button class="cli-btn" onclick="toggleCLI()" title="Terminal" data-i18n-title="sideTerminal">
+            <button class="cli-btn" onclick="toggleCLI()" title="Terminal" data-i18n-title="sideTerminal" data-i18n-aria="sideTerminal" aria-label="Terminal">
                 <i class="ph-bold ph-terminal-window"></i>
             </button>
             <span id="user-display" class="hidden"></span>
@@ -278,6 +330,11 @@ Type 'help' for a list of commands.
                 <button type="button" class="btn-card-inspect vote-inspect" onclick="playClick(); openVoteGallery()">
                     <span data-i18n="inspectSystemBtn">INSPECT SYSTEM</span>
                 </button>
+
+                <!-- Decoration (UI brief 06): a small heartbeat monitor -->
+                <div class="vote-tube" aria-hidden="true">
+                    <span class="vt-monitor"><svg viewBox="0 0 60 20" focusable="false"><polyline points="0,10 16,10 20,5 24,15 28,2 32,18 36,10 44,10 47,7 50,10 60,10"/></svg></span>
+                </div>
             </div>
         </div>
     </main>
@@ -385,7 +442,7 @@ Type 'help' for a list of commands.
     <!-- MODALS -->
     <div class="modal-overlay" id="tutorial-lang-modal">
         <div class="modal-content" style="width:380px; text-align:center;">
-            <span class="close-modal" onclick="playClick(); skipTutorial()">X</span>
+            <button type="button" class="close-modal" onclick="playClick(); skipTutorial()" data-i18n-aria="closeLabel" aria-label="Close">X</button>
             <!-- Shown before any language has been chosen, so it says it in both -->
             <h2 class="modal-title" style="font-size:1.3rem;">ΓΛΩΣΣΑ ΞΕΝΑΓΗΣΗΣ · TOUR LANGUAGE</h2>
             <div class="tutorial-lang-opts">
@@ -404,7 +461,7 @@ Type 'help' for a list of commands.
 
     <div class="modal-overlay" id="whoami-modal">
         <div class="modal-content whoami-content" role="dialog" aria-modal="true" aria-labelledby="whoami-title">
-            <span class="close-modal" onclick="closeModal('whoami-modal')">X</span>
+            <button type="button" class="close-modal" onclick="closeModal('whoami-modal')" data-i18n-aria="closeLabel" aria-label="Close">X</button>
             <div class="whoami-title" id="whoami-title"><span class="cli-prompt">&gt;</span> whoami</div>
             <div class="whoami-body"><span id="whoami-text"></span><span class="whoami-cursor">_</span></div>
         </div>
@@ -412,7 +469,7 @@ Type 'help' for a list of commands.
 
     <div class="modal-overlay" id="wheel-modal">
         <div class="modal-content wheel-content" role="dialog" aria-modal="true" aria-labelledby="wheel-title">
-            <span class="close-modal" onclick="closeModal('wheel-modal')">X</span>
+            <button type="button" class="close-modal" onclick="closeModal('wheel-modal')" data-i18n-aria="closeLabel" aria-label="Close">X</button>
             <h2 class="modal-title" id="wheel-title" style="font-size:1.4rem;" data-i18n="wheelTitle">SPIN THE WHEEL</h2>
             <div class="wheel-grid">
                 <div class="wheel-col-left">
@@ -510,7 +567,7 @@ Type 'help' for a list of commands.
 
     <div class="modal-overlay" id="spec-info-modal">
         <div class="modal-content" style="width:400px; text-align:center; border-color: var(--neon-purple);">
-            <span class="close-modal" onclick="closeModal('spec-info-modal')">X</span>
+            <button type="button" class="close-modal" onclick="closeModal('spec-info-modal')" data-i18n-aria="closeLabel" aria-label="Close">X</button>
             <div style="font-size: 3rem; color: var(--neon-purple); margin-bottom: 10px;">
                 <i class="ph-duotone ph-cpu"></i>
             </div>
@@ -559,6 +616,8 @@ Type 'help' for a list of commands.
                         <button type="button" class="color-btn locked rank-color" data-id="ultraviolet" style="background:#7c4dff;" data-color="#7c4dff" onclick="setTheme('#7c4dff','ultraviolet')" data-i18n-aria="rewardUltraviolet" aria-label="Ultraviolet"><i class="ph-fill ph-medal color-lock-icon"></i></button>
                         <button type="button" class="color-btn locked rank-color" data-id="arctic" style="background:#8fe8ff;" data-color="#8fe8ff" onclick="setTheme('#8fe8ff','arctic')" data-i18n-aria="rewardArctic" aria-label="Arctic"><i class="ph-fill ph-medal color-lock-icon"></i></button>
                         <button type="button" class="color-btn locked rank-color" data-id="phantom" style="background:#e9e4ff;" data-color="#e9e4ff" onclick="setTheme('#e9e4ff','phantom')" data-i18n-aria="rewardPhantom" aria-label="Phantom"><i class="ph-fill ph-crown color-lock-icon"></i></button>
+                        <!-- Secret: shown only to whoever found it (refreshColorLocks in wheel.js, js/modules/konami.js) -->
+                        <button type="button" class="color-btn secret-color" data-id="cheatCode" data-secret hidden style="background:#ff0a54;" data-color="#ff0a54" onclick="setTheme('#ff0a54','cheatCode')" data-i18n-aria="rewardCheatCode" aria-label="Cheat Code"></button>
                     </div>
                     <p class="set-note"><i class="ph-bold ph-lock-simple"></i> <span data-i18n="colorsLockedNote">The bottom 4 unlock on the Daily Spin.</span></p>
                     <button type="button" class="info-btn set-spin" onclick="playClick(); closeModal('settings-modal'); openWheelFromSettings()"><i class="ph-fill ph-gift"></i> <span data-i18n="colorsSpinBtn">Spin the wheel</span><i class="ph-bold ph-caret-right set-caret" aria-hidden="true"></i></button>
@@ -572,10 +631,23 @@ Type 'help' for a list of commands.
     <!-- Share menu → QR of this page (js/modules/qr.js); moved into the window shell by modals.js -->
     <div class="modal-overlay" id="qr-modal">
         <div class="modal-content" style="width:420px;">
-            <span class="close-modal" onclick="closeModal('qr-modal')">X</span>
+            <button type="button" class="close-modal" onclick="closeModal('qr-modal')" data-i18n-aria="closeLabel" aria-label="Close">X</button>
             <h2 class="modal-title" data-i18n="qrTitle">QR LINK</h2>
             <p class="qr-text" data-i18n="qrText">Scan it with your phone's camera to open the site there.</p>
-            <div class="qr-tile" id="qr-tile"></div>
+            <!-- UI brief 03: the neon loop, two canisters and two icon chips around the QR (css/components/qr-hud.css).
+                 Decoration only, and never over the white tile: the tile and its quiet zone sit in an opaque socket. -->
+            <div class="qr-stage">
+                <span class="qr-loop" aria-hidden="true"></span>
+                <div class="qr-side qr-side-l" aria-hidden="true">
+                    <span class="qr-chip"><i class="ph-bold ph-scan"></i></span>
+                    <span class="qr-can"><span class="qr-can-liquid"></span></span>
+                </div>
+                <div class="qr-socket"><div class="qr-tile" id="qr-tile"></div></div>
+                <div class="qr-side qr-side-r" aria-hidden="true">
+                    <span class="qr-chip"><i class="ph-bold ph-link-simple"></i></span>
+                    <span class="qr-can"><span class="qr-can-liquid"></span></span>
+                </div>
+            </div>
             <div class="qr-url" id="qr-url"></div>
             <div class="info-actions qr-actions">
                 <button type="button" class="info-btn primary" onclick="playClick(); copyQrLink()"><i class="ph-bold ph-copy"></i> <span data-i18n="qrCopy">Copy link</span></button>
@@ -588,7 +660,7 @@ Type 'help' for a list of commands.
          are attached in checkout.js, not inline. -->
     <div class="modal-overlay" id="checkout-modal">
         <div class="modal-content" style="width:560px;">
-            <span class="close-modal" onclick="closeModal('checkout-modal')">X</span>
+            <button type="button" class="close-modal" onclick="closeModal('checkout-modal')" data-i18n-aria="closeLabel" aria-label="Close">X</button>
             <h2 class="modal-title" data-i18n="coTitle">CHECKOUT</h2>
             <div class="co-demo hidden" id="co-demo" role="note"><i class="ph-fill ph-flask" aria-hidden="true"></i><span data-i18n="coDemoNotice">Demo mode: orders are a demo.</span></div>
 
@@ -659,7 +731,7 @@ Type 'help' for a list of commands.
     <!-- "My order" (js/modules/order-page.js fills #op-body). The window shell is built by modals.js. -->
     <div class="modal-overlay" id="order-modal">
         <div class="modal-content" style="width:560px;">
-            <span class="close-modal" onclick="closeModal('order-modal')">X</span>
+            <button type="button" class="close-modal" onclick="closeModal('order-modal')" data-i18n-aria="closeLabel" aria-label="Close">X</button>
             <h2 class="modal-title" data-i18n="ordTitle">MY ORDER</h2>
             <div class="op-body" id="op-body"></div>
         </div>
@@ -667,7 +739,7 @@ Type 'help' for a list of commands.
 
     <div class="modal-overlay" id="newsletter-modal">
         <div class="modal-content" style="width:450px;">
-            <span class="close-modal" onclick="closeModal('newsletter-modal')">X</span>
+            <button type="button" class="close-modal" onclick="closeModal('newsletter-modal')" data-i18n-aria="closeLabel" aria-label="Close">X</button>
             <h2 class="modal-title" data-i18n="newsletterTitle">DROP ALERTS</h2>
             <p style="color:#888; font-size:0.8rem; text-align:center; margin-top:-10px; margin-bottom:15px;" data-i18n="newsletterDesc">Ειδοποιήσου μόλις βγει νέο PC ή ξεκινήσει ψηφοφορία.</p>
             <div class="auth-form">
@@ -679,7 +751,7 @@ Type 'help' for a list of commands.
 
     <div class="modal-overlay" id="review-code-modal">
         <div class="modal-content" style="width:450px;">
-            <span class="close-modal" onclick="closeModal('review-code-modal')">X</span>
+            <button type="button" class="close-modal" onclick="closeModal('review-code-modal')" data-i18n-aria="closeLabel" aria-label="Close">X</button>
             <h2 class="modal-title" data-i18n="reviewCodeTitle">VERIFIED REVIEW</h2>
             <div class="auth-form">
                 <input type="text" id="rc-code" class="auth-input" placeholder="CDX-XXXXXX">
@@ -695,7 +767,7 @@ Type 'help' for a list of commands.
          modules/reviews.js). Was the browser's prompt() box; a wrong code is said here, under the field. -->
     <div class="modal-overlay" id="mission-code-modal">
         <div class="modal-content" style="width:400px;" role="dialog" aria-modal="true" aria-labelledby="mission-code-title">
-            <span class="close-modal" onclick="closeModal('mission-code-modal')">X</span>
+            <button type="button" class="close-modal" onclick="closeModal('mission-code-modal')" data-i18n-aria="closeLabel" aria-label="Close">X</button>
             <h2 class="modal-title" id="mission-code-title" data-i18n="missionCodeTitle">WRITE A REVIEW</h2>
             <form class="auth-form" onsubmit="event.preventDefault(); submitMissionCode()">
                 <label for="mc-code" class="mc-label" data-i18n="missionPromptCode">Enter the code you'll find inside your PC's box.</label>
@@ -713,7 +785,7 @@ Type 'help' for a list of commands.
          .auth-form, which is why "keep & review" rendered as a flat unstyled strip. -->
     <div class="modal-overlay" id="mission-modal">
         <div class="modal-content mission-box" role="dialog" aria-modal="true" aria-labelledby="mission-kicker">
-            <span class="close-modal" onclick="closeModal('mission-modal')">X</span>
+            <button type="button" class="close-modal" onclick="closeModal('mission-modal')" data-i18n-aria="closeLabel" aria-label="Close">X</button>
 
             <div class="mission-kicker" id="mission-kicker" data-i18n="missionTitle">HOW'S YOUR NEW RIG?</div>
             <div class="mission-pc" id="mission-pc-name">PROJECT X</div>
@@ -761,20 +833,21 @@ Type 'help' for a list of commands.
 
     <div class="modal-overlay" id="login-modal">
         <div class="modal-content" style="width:400px;">
-            <span class="close-modal" onclick="closeModal('login-modal')">X</span>
+            <button type="button" class="close-modal" onclick="closeModal('login-modal')" data-i18n-aria="closeLabel" aria-label="Close">X</button>
             <h2 class="modal-title" data-i18n="loginTitle">AGENT LOGIN</h2>
             <div class="auth-form">
                 <input type="text" id="login-user" class="auth-input" placeholder="USERNAME" data-i18n-placeholder="usernamePlaceholder">
                 <input type="password" id="login-pass" class="auth-input" placeholder="PASSWORD" data-i18n-placeholder="passwordPlaceholder">
                 <button class="btn-inspect" onclick="handleLogin()" data-i18n="loginBtn">AUTHENTICATE</button>
                 <div style="text-align:center; margin-top:15px; font-size:0.8rem; color:#666; cursor:pointer;" onclick="openRecovery()" data-i18n="lostAccessLink">[ LOST ACCESS? ]</div>
+                <p class="auth-switch"><span data-i18n="authNoAccount">No account yet?</span> <button type="button" class="auth-switch-btn" onclick="playClick(); closeModal('login-modal'); openModal('signup-modal')" data-i18n="authSignupLink">Sign up</button></p>
             </div>
         </div>
     </div>
 
     <div class="modal-overlay" id="agent-dashboard-modal">
         <div class="dossier-box" role="dialog" aria-modal="true" aria-label="Profile" data-i18n-aria="profileBtnAria">
-            <button class="modal-close" onclick="closeModal('agent-dashboard-modal')">X</button>
+            <button class="modal-close" onclick="closeModal('agent-dashboard-modal')" data-i18n-aria="closeLabel" aria-label="Close">X</button>
             
             <!-- Styled by css/components/dossier-hud.css: a HUD panel with cut corners, the rank emblem
                  on the left and the phoenix crest as a watermark on the right -->
@@ -802,47 +875,48 @@ Type 'help' for a list of commands.
                          active (js/modules/auth.js) — "RESEND EMAIL" here is only the idle state. -->
                     <button id="dossier-resend-btn" onclick="playClick(); resendVerification();">RESEND EMAIL</button>
                 </div>
-                <div class="dossier-stats" id="dossier-stats"></div>
             </div>
 
-            <div class="dossier-grid">
-                <div class="dossier-col dossier-left">
-                    <div>
-                        <h3 class="dossier-heading"><i class="ph-bold ph-caret-double-right" aria-hidden="true"></i> <span data-i18n="dossierOrdersHeading">MY ORDERS</span></h3>
-                        <div class="dossier-list" id="dossier-orders">
-                            <div class="dossier-empty dossier-empty-rich">
-                                <i class="ph-duotone ph-package" aria-hidden="true"></i>
-                                <div><strong data-i18n="dossierNoOrders">No orders yet.</strong><small data-i18n="dossierNoOrdersSub">Start shopping and your orders will show up here.</small></div>
-                            </div>
+            <!-- One section at a time (laptops and tablets had five panels squeezed side by side): the tabs carry
+                 the counts the old chips showed, and the open section gets the whole height. Switching and
+                 the counts: selectDossierTab / refreshProgressionUI in js/modules/achievements.js. -->
+            <div class="dossier-tabs" role="tablist" data-i18n-aria="profileBtnAria" aria-label="Profile">
+                <button type="button" role="tab" class="dossier-tab" id="dtab-orders" data-dtab="orders" aria-controls="dpanel-orders" aria-selected="false" tabindex="-1"><i class="ph-bold ph-package" aria-hidden="true"></i><span class="dtab-label" data-i18n="dtabOrders">Orders</span><b class="dtab-count" id="dtab-count-orders"></b></button>
+                <button type="button" role="tab" class="dossier-tab" id="dtab-wishlist" data-dtab="wishlist" aria-controls="dpanel-wishlist" aria-selected="false" tabindex="-1"><i class="ph-bold ph-crosshair" aria-hidden="true"></i><span class="dtab-label" data-i18n="dtabWishlist">Wishlist</span><b class="dtab-count" id="dtab-count-wishlist"></b></button>
+                <button type="button" role="tab" class="dossier-tab" id="dtab-achievements" data-dtab="achievements" aria-controls="dpanel-achievements" aria-selected="false" tabindex="-1"><i class="ph-bold ph-medal" aria-hidden="true"></i><span class="dtab-label" data-i18n="dtabAchievements">Achievements</span><b class="dtab-count" id="dtab-count-achievements"></b></button>
+                <button type="button" role="tab" class="dossier-tab" id="dtab-ranks" data-dtab="ranks" aria-controls="dpanel-ranks" aria-selected="false" tabindex="-1"><i class="ph-bold ph-trend-up" aria-hidden="true"></i><span class="dtab-label" data-i18n="dtabRanks">Ranks</span><b class="dtab-count" id="dtab-count-ranks"></b></button>
+            </div>
+
+            <div class="dossier-panels">
+                <section class="dossier-panel" role="tabpanel" id="dpanel-orders" aria-labelledby="dtab-orders" tabindex="0">
+                    <div class="dossier-list" id="dossier-orders">
+                        <div class="dossier-empty dossier-empty-rich">
+                            <i class="ph-duotone ph-package" aria-hidden="true"></i>
+                            <div><strong data-i18n="dossierNoOrders">No orders yet.</strong><small data-i18n="dossierNoOrdersSub">Start shopping and your orders will show up here.</small></div>
                         </div>
                     </div>
-
                     <!-- Coupons won on the daily wheel — filled by renderDossierCoupons() (achievements.js) -->
-                    <div>
-                        <h3 class="dossier-heading coupon-heading"><i class="ph-bold ph-ticket" aria-hidden="true"></i> <span data-i18n="dossierCouponsHeading">COUPONS</span></h3>
-                        <div class="dossier-list coupon-list" id="dossier-coupons"></div>
-                    </div>
+                    <h3 class="dossier-heading coupon-heading"><i class="ph-bold ph-ticket" aria-hidden="true"></i> <span data-i18n="dossierCouponsHeading">COUPONS</span></h3>
+                    <div class="dossier-list coupon-list" id="dossier-coupons"></div>
+                </section>
 
-                    <div>
-                        <h3 class="dossier-heading"><i class="ph-bold ph-crosshair" aria-hidden="true"></i> <span data-i18n="dossierWishlistHeading">WISHLIST</span> <span class="dossier-heading-sub" data-i18n="dossierWishlistSub">(SAVED SYSTEMS)</span></h3>
-                        <div class="wishlist-grid" id="dossier-wishlist">
-                             <div class="dossier-empty">> NO SAVED SYSTEMS.</div>
-                        </div>
+                <section class="dossier-panel" role="tabpanel" id="dpanel-wishlist" aria-labelledby="dtab-wishlist" tabindex="0" hidden>
+                    <div class="wishlist-grid" id="dossier-wishlist">
+                        <div class="dossier-empty">> NO SAVED SYSTEMS.</div>
                     </div>
-                </div>
+                </section>
 
-                <div class="dossier-col dossier-right">
-                    <h3 class="dossier-heading purple-heading"><i class="ph-fill ph-chart-bar" aria-hidden="true"></i> <span data-i18n="dossierAchievementsHeading">ACHIEVEMENTS</span></h3>
-                    <div class="dossier-list" id="dossier-achievements" tabindex="0" aria-label="Achievements" data-i18n-aria="achievementsTitle">
+                <!-- Every badge, locked ones and secrets included: the panel is the full list now, so the old
+                     "view all records" button isn't needed here (#achievements-modal stays for the menus) -->
+                <section class="dossier-panel" role="tabpanel" id="dpanel-achievements" aria-labelledby="dtab-achievements" tabindex="0" hidden>
+                    <div class="dossier-list" id="dossier-achievements">
                         <div class="dossier-empty">> NO ACHIEVEMENTS UNLOCKED.</div>
                     </div>
-                    <!-- #achievements-modal already existed but nothing ever opened it. With
-                         nineteen badges the 200px column above is a keyhole, so this is the way in
-                         to the full-size grid. -->
-                    <button class="ach-viewall-btn" onclick="playClick(); openAchievements();"><span data-i18n="achViewAll">VIEW ALL RECORDS</span> <i class="ph-bold ph-caret-right" aria-hidden="true"></i></button>
-                    <!-- The rank ladder (renderRankLadder in modules/achievements.js, from the server's
-                         ladder in state.ranks). Offline or on an old backend there is no ladder: the
-                         crest and a line stay instead. -->
+                </section>
+
+                <!-- The rank ladder (renderRankLadder in modules/achievements.js, from the server's ladder in
+                     state.ranks). Offline or on an old backend there is no ladder: the crest and a line stay. -->
+                <section class="dossier-panel" role="tabpanel" id="dpanel-ranks" aria-labelledby="dtab-ranks" tabindex="0" hidden>
                     <div class="dossier-ladder" id="dossier-ladder">
                         <div class="dossier-ladder-head">
                             <span class="dossier-ladder-title"><i class="ph-bold ph-trend-up" aria-hidden="true"></i> <span data-i18n="rankLadderTitle">RANKS</span></span>
@@ -854,9 +928,12 @@ Type 'help' for a list of commands.
                             <div class="dossier-ladder-line" data-i18n="dossierJourney">Your journey begins here</div>
                         </div>
                     </div>
-                </div>
+                </section>
             </div>
-            
+
+            <!-- Footer: always at the bottom of the window (sticky while it scrolls), the purple tube under it.
+                 Styled in css/components/dossier-hud.css -->
+            <div class="dossier-footer">
             <div class="dossier-auth-actions">
                 <button id="dossier-signin-btn" class="yg-btn yg-btn-specs" onclick="playClick(); closeModal('agent-dashboard-modal'); openModal('login-modal')" data-i18n="dossierSignIn">
                     > SIGN IN
@@ -868,6 +945,14 @@ Type 'help' for a list of commands.
                     > SIGN OUT
                 </button>
             </div>
+            <div class="dossier-tube" aria-hidden="true">
+                <span class="tube-cap"></span>
+                <span class="tube-glass"><span class="tube-liquid"></span></span>
+                <span class="tube-monitor"><svg viewBox="0 0 60 20" focusable="false"><polyline points="0,10 16,10 20,5 24,15 28,2 32,18 36,10 44,10 47,7 50,10 60,10"/></svg></span>
+                <span class="tube-glass"><span class="tube-liquid"></span></span>
+                <span class="tube-cap"></span>
+            </div>
+            </div>
         </div>
     </div>
 
@@ -875,7 +960,7 @@ Type 'help' for a list of commands.
          after the profile in the page so it opens on top of it. -->
     <div class="modal-overlay" id="rank-info-modal">
         <div class="modal-content" style="width:460px;">
-            <span class="close-modal" onclick="closeModal('rank-info-modal')">X</span>
+            <button type="button" class="close-modal" onclick="closeModal('rank-info-modal')" data-i18n-aria="closeLabel" aria-label="Close">X</button>
             <h2 class="modal-title" data-i18n="rankInfoTitle">How ranks work</h2>
             <p class="rank-info-lead" data-i18n="rankInfoIntro">Every achievement you unlock gives XP, and XP raises your rank.</p>
             <ol class="rank-info-list">
@@ -894,7 +979,7 @@ Type 'help' for a list of commands.
 
     <div class="modal-overlay" id="signup-modal">
         <div class="modal-content" style="width:400px;">
-            <span class="close-modal" onclick="closeModal('signup-modal')">X</span>
+            <button type="button" class="close-modal" onclick="closeModal('signup-modal')" data-i18n-aria="closeLabel" aria-label="Close">X</button>
             <h2 class="modal-title" data-i18n="signupTitle">NEW RECRUIT</h2>
             <div class="auth-form">
                 <input type="text" id="reg-user" class="auth-input" placeholder="USERNAME" data-i18n-placeholder="usernamePlaceholder">
@@ -905,13 +990,14 @@ Type 'help' for a list of commands.
                     <span data-i18n="regSubscribeLabel">🔔 ΘΕΛΩ ΕΙΔΟΠΟΙΗΣΕΙΣ ΓΙΑ ΝΕΑ DROPS</span>
                 </label>
                 <button class="btn-inspect" onclick="handleSignup()" data-i18n="signupBtn">REGISTER</button>
+                <p class="auth-switch"><span data-i18n="authHaveAccount">Already an agent?</span> <button type="button" class="auth-switch-btn" onclick="playClick(); closeModal('signup-modal'); openModal('login-modal')" data-i18n="authLoginLink">Sign in</button></p>
             </div>
         </div>
     </div>
 
     <div class="modal-overlay" id="forgot-modal">
         <div class="modal-content" style="width:400px;">
-            <span class="close-modal" onclick="closeModal('forgot-modal')">X</span>
+            <button type="button" class="close-modal" onclick="closeModal('forgot-modal')" data-i18n-aria="closeLabel" aria-label="Close">X</button>
             <h2 class="modal-title" data-i18n="forgotTitle">RECOVERY PROTOCOL</h2>
             <div class="auth-form">
                 <input type="email" id="forgot-email" class="auth-input" placeholder="agent@codex.com">
@@ -922,7 +1008,7 @@ Type 'help' for a list of commands.
 
     <div class="modal-overlay" id="reset-modal">
         <div class="modal-content" style="width:400px;">
-            <span class="close-modal" onclick="closeModal('reset-modal')">X</span>
+            <button type="button" class="close-modal" onclick="closeModal('reset-modal')" data-i18n-aria="closeLabel" aria-label="Close">X</button>
             <h2 class="modal-title" data-i18n="resetTitle">NEW CREDENTIALS</h2>
             <div class="auth-form">
                 <input type="text" id="reset-token" class="auth-input" placeholder="Token" data-i18n-placeholder="resetTokenPlaceholder">
@@ -934,7 +1020,7 @@ Type 'help' for a list of commands.
 
     <div class="modal-overlay" id="achievements-modal">
         <div class="modal-content">
-            <span class="close-modal" onclick="closeModal('achievements-modal')">X</span>
+            <button type="button" class="close-modal" onclick="closeModal('achievements-modal')" data-i18n-aria="closeLabel" aria-label="Close">X</button>
             <h2 class="modal-title" data-i18n="achievementsTitle">AGENT RECORD</h2>
             <div class="ach-grid" id="ach-list"></div>
         </div>
@@ -979,7 +1065,7 @@ Type 'help' for a list of commands.
 
     <div class="modal-overlay" id="proconfig-info-modal">
         <div class="modal-content">
-            <span class="close-modal" onclick="closeModal('proconfig-info-modal')">X</span>
+            <button type="button" class="close-modal" onclick="closeModal('proconfig-info-modal')" data-i18n-aria="closeLabel" aria-label="Close">X</button>
             <h2 style="color:var(--neon-green); margin-bottom:15px;" data-i18n="proConfigInfoTitle">What Pro Configuration includes</h2>
             <p style="color:#ccc; font-size:0.9rem; line-height:1.7; text-align:left;" data-i18n-html="proConfigInfoText"></p>
         </div>
@@ -990,7 +1076,7 @@ Type 'help' for a list of commands.
          the checkbox. Nothing about custom paint takes effect until one of those runs. -->
     <div class="modal-overlay" id="paint-consent-modal">
         <div class="modal-content" style="width:520px;">
-            <span class="close-modal" onclick="declinePaintConsent()">X</span>
+            <button type="button" class="close-modal" onclick="declinePaintConsent()" data-i18n-aria="closeLabel" aria-label="Close">X</button>
             <h2 style="color:#ffaa00; margin-bottom:15px;" data-i18n="paintTitle">Custom Paint</h2>
             <p id="paint-consent-lead" style="color:#ccc; font-size:0.85rem; margin-bottom:15px;"></p>
             <p class="yg-paint-legal" id="paint-consent-legal"></p>

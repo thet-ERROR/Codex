@@ -106,6 +106,9 @@
     flex: none; display: grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; margin-left: 4px;
     border: 1px solid rgba(255, 255, 255, 0.12); color: #6f6a80; font-size: 0.85rem;
 }
+/* The card is its containing block: without it the hidden text escaped the scrolling achievement
+   lists and stretched the profile window's scroll height (empty space under SIGN OUT) */
+.ach-card { position: relative; }
 .ach-status-text { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 .ach-card.unlocked .ach-status { border-color: rgba(176, 38, 255, 0.6); background: rgba(176, 38, 255, 0.18); color: #e2c2ff; }
 /* The profile's own column keeps the calmer look */

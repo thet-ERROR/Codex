@@ -1,0 +1,7 @@
+# PHOENIX CODEX — the storefront may be indexed; the admin panel may not.
+# When the site moves to its own domain, update the Sitemap line (and the one in sitemap.xml and index.html).
+User-agent: *
+Allow: /
+Disallow: /admin.html
+
+Sitemap: https://codex-iota-nine.vercel.app/sitemap.xml

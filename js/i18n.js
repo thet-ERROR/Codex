@@ -20,6 +20,11 @@ const translations = {
         termVoteCount: "{votes} / {target} ψήφοι", termVoteTime: "Κλείνει σε {time}", termVoteVoted: "Έχεις ήδη ψηφίσει.",
         termCartEmpty: "Το καλάθι είναι άδειο.", termCartTotal: "ΣΥΝΟΛΟ: {total}", termTour: "Ξεκινά η ξενάγηση...",
         termUnknown: "Άγνωστη εντολή: {cmd}. Γράψε 'help'.", termDidYouMean: "Εννοούσες '{cmd}';",
+        termWhoami: "Ταυτότητα: CODEX.",
+        termSudo: "Nice try, agent. Δεν είσαι στη λίστα των sudoers. Το περιστατικό θα αναφερθεί. (Αστειεύομαι.)",
+        termLsHead: "projects/", termLsEmpty: "(άδειο — τα συστήματα φορτώνουν ακόμα)",
+        termRm1: "Διαγραφή του / ...", termRm2: "Διαγράφηκε το /boot ... /usr ... /home ... /opt/codex ...", termRm3: "Πλάκα κάνω. Τίποτα δεν χάθηκε. Το Codex δεν σβήνεται τόσο εύκολα.", termRmNope: "rm: δεν έχεις δικαίωμα.",
+        termMatrixOn: ">> ΞΥΠΝΑ, ΠΡΑΚΤΟΡΑ.", termMatrixOff: ">> ΕΠΑΝΑΦΟΡΑ ΣΤΗΝ ΠΡΑΓΜΑΤΙΚΟΤΗΤΑ.",
 
         reviewsLabel: "Κριτικές", writeReviewBtn: "[+] Γράψε κριτική",
         profileBtnAria: "Προφίλ", rcRatingLabel: "Βαθμολογία (1 έως 5)", missionReasonLabel: "Τι δεν πάει καλά",
@@ -69,7 +74,8 @@ const translations = {
         rankInfoColors: "Κάποια επίπεδα ξεκλειδώνουν ένα χρώμα τονισμού — Ultraviolet, Arctic, Phantom — που το παίρνεις μόνο έτσι, ποτέ από τον τροχό.",
         rankInfoBadge: "Το επίπεδό σου φαίνεται ως σήμα στο προφίλ σου και δίπλα στο όνομά σου στις κριτικές που γράφεις συνδεδεμένος.",
         rankInfoOnce: "Κάθε ανταμοιβή δίνεται μία φορά — την πρώτη φορά που φτάνεις σε εκείνο το επίπεδο.", rankUpSpins: "+{n} περιστροφές στον τροχό", rankUpColor: "χρώμα {name}",
-        rewardUltraviolet: "Skin Ultraviolet", rewardArctic: "Skin Arctic", rewardPhantom: "Skin Phantom",
+        rewardUltraviolet: "Skin Ultraviolet", rewardArctic: "Skin Arctic", rewardPhantom: "Skin Phantom", rewardCheatCode: "Skin Cheat Code",
+        konamiFound: "↑↑↓↓←→←→BA — ΚΡΥΦΟ ΧΡΩΜΑ: CHEAT CODE",
         colorLime: "Lime", colorCyan: "Cyan", colorRed: "Κόκκινο", colorPurple: "Μωβ",
         closeLabel: "Κλείσιμο",
 
@@ -101,7 +107,7 @@ const translations = {
         loginBtn: "Σύνδεση", lostAccessLink: "[ Ξέχασες τον κωδικό; ]",
 
         dossierProfileLabel: "[Προφίλ]", dossierOrdersHeading: "Οι παραγγελίες μου", dossierNoOrders: "Δεν υπάρχουν παραγγελίες ακόμα.", dossierNoOrdersSub: "Ξεκίνησε τις αγορές σου και θα βλέπεις εδώ τις παραγγελίες σου.", dossierJourney: "Το ταξίδι σου ξεκινά εδώ",
-        dossierWishlistHeading: "Λίστα επιθυμιών", dossierWishlistSub: "(Αποθηκευμένα συστήματα)",
+        dossierWishlistHeading: "Λίστα επιθυμιών", dossierWishlistSub: "(Αποθηκευμένα συστήματα)", dtabOrders: "Παραγγελίες", dtabWishlist: "Wishlist", dtabAchievements: "Επιτεύγματα", dtabRanks: "Επίπεδα",
         dossierAchievementsHeading: "Επιτεύγματα", dossierSignIn: "> Σύνδεση", dossierRegister: "> Εγγραφή", dossierSignOut: "Αποσύνδεση",
         dossierNoTargets: "> Κανένας στόχος κλειδωμένος.", dossierRemoveTarget: "Αφαίρεση από τη λίστα",
 
@@ -148,6 +154,8 @@ const translations = {
         communityDropBadge: "ΚΟΙΝΟΤΙΚΟ DROP",
         // Τροχός + κουπόνια (wheel.js, dashboard, καλάθι)
         wheelSpinsLeft: "ΠΡΟΣΠΑΘΕΙΕΣ: {n}/{max}", wheelBonusSpins: " · +{n} ΜΠΟΝΟΥΣ", wheelLoginRequired: "Συνδέσου για να γυρίσεις τον τροχό.",
+        wheelGuestLine: "ΣΥΝΔΕΣΟΥ ΓΙΑ ΝΑ ΓΥΡΙΣΕΙΣ · 3 ΠΡΟΣΠΑΘΕΙΕΣ ΤΗ ΜΕΡΑ", wheelVerifyLine: "ΕΠΙΒΕΒΑΙΩΣΕ ΤΟ EMAIL ΣΟΥ ΓΙΑ ΝΑ ΓΥΡΙΣΕΙΣ",
+        authNoAccount: "Δεν έχεις λογαριασμό;", authSignupLink: "Εγγραφή", authHaveAccount: "Έχεις ήδη λογαριασμό;", authLoginLink: "Σύνδεση",
         wheelError: "Ο τροχός δεν απάντησε — δοκίμασε ξανά σε λίγο.", wheelNoSpins: "Τελείωσαν οι προσπάθειες — ξανά σε {time}.",
         wheelSkinNew: "> ΞΕΚΛΕΙΔΩΣΕΣ ΤΟ SKIN {name} — ΕΦΑΡΜΟΣΤΗΚΕ ΣΤΟ SITE.", wheelSkinAgain: "> ΤΟ SKIN {name} ΤΟ ΕΙΧΕΣ ΗΔΗ — ΕΦΑΡΜΟΣΤΗΚΕ ΞΑΝΑ.",
         wheelCouponWon: "> ΚΕΡΔΙΣΕΣ ΚΟΥΠΟΝΙ -{p}%: {code} — ισχύει έως {until}. Το βρίσκεις στο προφίλ σου και στο καλάθι.",
@@ -160,6 +168,7 @@ const translations = {
         packGamingDesc: "Esports και βαριά AAA παιχνίδια", packStreamingDesc: "Παίζεις και κάνεις stream μαζί", packCodingDesc: "Development, πολλά παράθυρα, αθόρυβο",
         packSoon: "Έρχονται σύντομα",
         stageCountOne: "1 σύστημα", stageCountMany: "{n} συστήματα", stageEmpty: "Δεν υπάρχουν συστήματα εδώ ακόμα — έρχονται σύντομα.",
+        stageEmptyFilter: "Κανένα έτοιμο σύστημα σε αυτό το budget. Θες κάτι πιο δυνατό; Το φτιάχνω custom — μίλα μου.", stageCustomBtn: "Μίλα μου",
         membersOnlyBadge: "ΠΡΟΤΕΡΑΙΟΤΗΤΑ ΜΕΛΩΝ ΕΩΣ {until}", membersOnlyBtn: "Σύνδεση για πρόσβαση μελών",
         membersOnlyAlert: "Μέχρι {until} το παραγγέλνουν μόνο τα μέλη — συνδέσου για να το πάρεις πρώτος.",
         voteHelpUnlockedMembers: "Προτεραιότητα για τα μέλη έως {until}, μετά για όλους · 1 τεμάχιο.",
@@ -319,6 +328,11 @@ const translations = {
         termVoteCount: "{votes} / {target} votes", termVoteTime: "Closes in {time}", termVoteVoted: "You have already voted.",
         termCartEmpty: "The cart is empty.", termCartTotal: "TOTAL: {total}", termTour: "Starting the tour...",
         termUnknown: "Unknown command: {cmd}. Type 'help'.", termDidYouMean: "Did you mean '{cmd}'?",
+        termWhoami: "Identity: CODEX.",
+        termSudo: "Nice try, agent. You are not in the sudoers file. This incident will be reported. (Kidding.)",
+        termLsHead: "projects/", termLsEmpty: "(empty — the systems are still loading)",
+        termRm1: "Deleting / ...", termRm2: "Removed /boot ... /usr ... /home ... /opt/codex ...", termRm3: "Just kidding. Nothing was lost. The Codex is not that easy to delete.", termRmNope: "rm: permission denied.",
+        termMatrixOn: ">> WAKE UP, AGENT.", termMatrixOff: ">> BACK TO REALITY.",
 
         reviewsLabel: "REVIEWS", writeReviewBtn: "[+] WRITE REVIEW",
         profileBtnAria: "Profile", rcRatingLabel: "Rating (1 to 5)", missionReasonLabel: "What is wrong",
@@ -368,7 +382,8 @@ const translations = {
         rankInfoColors: "Some ranks unlock an accent colour — Ultraviolet, Arctic, Phantom — that you can only get this way, never on the wheel.",
         rankInfoBadge: "Your rank shows as a badge on your profile and next to your name on the reviews you write while signed in.",
         rankInfoOnce: "Each reward is given once — the first time you reach that rank.", rankUpSpins: "+{n} wheel spins", rankUpColor: "{name} colour",
-        rewardUltraviolet: "ULTRAVIOLET SKIN", rewardArctic: "ARCTIC SKIN", rewardPhantom: "PHANTOM SKIN",
+        rewardUltraviolet: "ULTRAVIOLET SKIN", rewardArctic: "ARCTIC SKIN", rewardPhantom: "PHANTOM SKIN", rewardCheatCode: "CHEAT CODE SKIN",
+        konamiFound: "↑↑↓↓←→←→BA — SECRET COLOUR: CHEAT CODE",
         colorLime: "Lime", colorCyan: "Cyan", colorRed: "Red", colorPurple: "Purple",
         closeLabel: "Close",
 
@@ -400,7 +415,7 @@ const translations = {
         loginBtn: "AUTHENTICATE", lostAccessLink: "[ LOST ACCESS? ]",
 
         dossierProfileLabel: "[AGENT PROFILE]", dossierOrdersHeading: "My orders", dossierNoOrders: "No orders yet.", dossierNoOrdersSub: "Start shopping and your orders will show up here.", dossierJourney: "Your journey begins here",
-        dossierWishlistHeading: "Wishlist", dossierWishlistSub: "(SAVED SYSTEMS)",
+        dossierWishlistHeading: "Wishlist", dossierWishlistSub: "(SAVED SYSTEMS)", dtabOrders: "Orders", dtabWishlist: "Wishlist", dtabAchievements: "Achievements", dtabRanks: "Ranks",
         dossierAchievementsHeading: "Achievements", dossierSignIn: "> SIGN IN", dossierRegister: "> REGISTER", dossierSignOut: "SIGN OUT",
         dossierNoTargets: "> NO TARGETS LOCKED.", dossierRemoveTarget: "Remove from wishlist",
 
@@ -447,6 +462,8 @@ const translations = {
         communityDropBadge: "COMMUNITY DROP",
         // Wheel + coupons (wheel.js, dashboard, cart)
         wheelSpinsLeft: "SPINS LEFT: {n}/{max}", wheelBonusSpins: " · +{n} BONUS", wheelLoginRequired: "Sign in to spin the wheel.",
+        wheelGuestLine: "SIGN IN TO SPIN · 3 SPINS A DAY", wheelVerifyLine: "VERIFY YOUR EMAIL TO SPIN",
+        authNoAccount: "No account yet?", authSignupLink: "Sign up", authHaveAccount: "Already an agent?", authLoginLink: "Sign in",
         wheelError: "The wheel didn't respond — try again in a moment.", wheelNoSpins: "No spins left — next in {time}.",
         wheelSkinNew: "> SKIN {name} UNLOCKED — APPLIED TO THE SITE.", wheelSkinAgain: "> YOU ALREADY HAD SKIN {name} — RE-APPLIED.",
         wheelCouponWon: "> YOU WON A -{p}% COUPON: {code} — valid until {until}. It's in your profile and your cart.",
@@ -459,6 +476,7 @@ const translations = {
         packGamingDesc: "Esports and heavy AAA games", packStreamingDesc: "Play and stream at the same time", packCodingDesc: "Development, many windows, quiet",
         packSoon: "Coming soon",
         stageCountOne: "1 system", stageCountMany: "{n} systems", stageEmpty: "No systems here yet — more are on the way.",
+        stageEmptyFilter: "No ready-made system in this budget. Want something stronger? I build custom — talk to me.", stageCustomBtn: "Talk to me",
         membersOnlyBadge: "MEMBERS FIRST UNTIL {until}", membersOnlyBtn: "Sign in for member access",
         membersOnlyAlert: "Until {until} only members can order this — sign in to get it first.",
         voteHelpUnlockedMembers: "Members first until {until}, then everyone · 1 unit.",

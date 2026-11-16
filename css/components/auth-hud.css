@@ -55,6 +55,18 @@
 /* "Lost access?" under the login button: a quiet link in the window's purple */
 #login-modal .auth-form > div[onclick] { margin-top: 6px !important; color: #9b93b5 !important; font-family: var(--font-ui); font-weight: 700; letter-spacing: 1px; transition: color 0.2s; }
 #login-modal .auth-form > div[onclick]:hover { color: #fff !important; }
+/* "No account yet? Sign up" / "Already an agent? Sign in": the way between the two windows */
+:is(#login-modal, #signup-modal) .auth-switch {
+    margin: 4px 0 0; padding-top: 12px; border-top: 1px solid rgba(176, 38, 255, 0.2);
+    text-align: center; font-size: 0.85rem; color: #9b93b5;
+}
+:is(#login-modal, #signup-modal) .auth-switch-btn {
+    min-height: 40px; padding: 0 10px; border: none; background: none; cursor: pointer;
+    font: inherit; font-family: var(--font-ui); font-weight: 800; letter-spacing: 1px; text-transform: uppercase;
+    color: var(--neon-green); text-decoration: underline; text-underline-offset: 3px;
+}
+:is(#login-modal, #signup-modal) .auth-switch-btn:hover { color: #fff; }
+:is(#login-modal, #signup-modal) .auth-switch-btn:focus-visible { outline: 2px solid var(--s-purple); outline-offset: 2px; border-radius: 6px; }
 
 @media (max-width: 768px) {
     :is(#login-modal, #signup-modal, #forgot-modal, #reset-modal, #achievements-modal, #checkout-modal, #order-modal) .info-box { border-radius: 22px 22px 0 0; border-bottom: 0; }

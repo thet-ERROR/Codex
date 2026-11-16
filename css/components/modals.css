@@ -15,7 +15,8 @@
    sheet at the bottom): the toasts come down from the top instead */
 body:has(.modal-overlay.active) #toast-container { top: max(16px, env(safe-area-inset-top)); bottom: auto; }
 
-.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 6000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(15px); }
+/* No backdrop-filter: behind 95% black a blur can't be seen, and it re-renders the whole screen (ui-lock.css) */
+.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 6000; display: none; align-items: center; justify-content: center; }
 .modal-overlay.active { display: flex; animation: fadeInUp 0.3s forwards; z-index: 99999 !important; pointer-events: auto !important; }
 /* .gallery-overlay sits at z-index 999999 (css/gallery/card-front.css) so any modal opened from
    inside the gallery card (spec info, Pro Config info, paint consent) must render above it. */
@@ -26,6 +27,8 @@ body:has(.modal-overlay.active) #toast-container { top: max(16px, env(safe-area-
 .modal-content { width: 600px; background: #0a0a0c; border: 1px solid #333; padding: 40px; border-radius: 20px; position: relative; max-height: 80vh; overflow-y: auto; box-shadow: 0 0 50px rgba(0,0,0,0.8); }
 /* 44px target (the bare "X" glyph was ~15×30) — centred so the letter stays where it was */
 .close-modal, .close-btn { position: absolute; top: 12px; right: 12px; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; border-radius: 50%; font-size: 1.5rem; cursor: pointer; color: #666; z-index: 100; transition: 0.2s; }
+/* These are real <button>s now (keyboard and screen readers); the reset keeps them looking like the bare X they were */
+button.close-modal { padding: 0; border: 0; background: none; font-family: inherit; line-height: 1; }
 .close-modal:hover, .close-btn:hover { color: #fff; }
 .modal-title { font-family: var(--font-ui); font-size: 2rem; color: #fff; margin-bottom: 20px; border-bottom: 1px solid #333; padding-bottom: 10px; }
 
@@ -50,7 +53,7 @@ body:has(.modal-overlay.active) #toast-container { top: max(16px, env(safe-area-
 .whoami-cursor { display: inline-block; color: #0f0; font-weight: bold; animation: cursorBlink 1s step-end infinite; }
 
 /* Driver.js Overrides */
-.driver-popover { background-color: rgba(10, 5, 20, 0.95) !important; border: 1px solid var(--neon-purple, #b026ff) !important; color: #fff !important; border-radius: 12px !important; box-shadow: 0 0 20px rgba(176, 38, 255, 0.3) !important; backdrop-filter: blur(10px) !important; }
+.driver-popover { background-color: rgba(10, 5, 20, 0.95) !important; border: 1px solid var(--neon-purple, #b026ff) !important; color: #fff !important; border-radius: 12px !important; box-shadow: 0 0 20px rgba(176, 38, 255, 0.3) !important; }
 .driver-popover-title { color: var(--neon-green, #ccff00) !important; font-family: 'Orbitron', sans-serif !important; font-size: 1.2rem !important; margin-bottom: 5px !important; }
 .driver-popover-description { color: #ccc !important; font-family: 'Space Grotesk', sans-serif !important; font-size: 0.95rem !important; }
 .driver-popover-footer button { background-color: transparent !important; border: 1px solid var(--neon-purple, #b026ff) !important; color: #fff !important; text-shadow: 0 0 5px var(--neon-purple, #b026ff) !important; transition: 0.3s ease !important; font-family: 'Chakra Petch', sans-serif !important; border-radius: 4px !important; }
@@ -135,6 +138,10 @@ body.lang-el .info-terms li { font-size: 0.85rem; }
 /* Four across, two rows — free colours on top, wheel rewards below. 44px circles that never squash:
    they were 30px flex items that shrank into ovals on a phone. */
 .color-opts { display: grid; grid-template-columns: repeat(4, 44px); gap: 14px; justify-content: center; }
+/* A secret colour (data-secret) stays out of sight until it is unlocked — whatever display a skin gives the buttons */
+.color-btn[hidden] { display: none !important; }
+/* Once found: a glowing ring of its own colour says "you found a secret" */
+.color-btn.secret-color { border-color: transparent; box-shadow: 0 0 0 2px #ff0a54, 0 0 12px rgba(255, 10, 84, 0.6); }
 .color-btn { flex: none; width: 44px; height: 44px; padding: 0; border-radius: 50%; border: 2px solid rgba(255, 255, 255, 0.18); cursor: pointer; position: relative; transition: transform 0.15s, border-color 0.2s, box-shadow 0.2s; }
 @media (hover: hover) { .color-btn:hover { transform: scale(1.1); } }
 .color-btn:active { transform: scale(0.94); }
@@ -231,19 +238,7 @@ body.lang-el .info-terms li { font-size: 0.85rem; }
     .info-box::after { bottom: calc(8px + env(safe-area-inset-bottom)); }
 }
 
-/* QR window (js/modules/qr.js): a white tile so any phone camera reads it, framed in the accent */
-.qr-text { margin: 0 0 16px; line-height: 1.5; color: #b4b4bb; text-align: center; }
-.qr-tile {
-    width: min(240px, 70vw); aspect-ratio: 1 / 1; margin: 0 auto; padding: 10px; display: grid; place-items: center;
-    background: #fff; border-radius: 12px; border: 2px solid var(--neon-green);
-    box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.6), 0 0 22px rgba(204, 255, 0, 0.25);
-}
-.qr-tile svg { width: 100%; height: 100%; display: block; }
-.qr-tile.is-loading { background: #111; }
-.qr-wait { padding: 12px; color: #9a9aa2; font-size: 0.85rem; text-align: center; line-height: 1.4; }
-.qr-url { margin: 12px 0 16px; text-align: center; font-family: 'Courier New', monospace; font-size: 0.8rem; color: var(--neon-green); overflow-wrap: anywhere; }
-.qr-actions { justify-content: center; }
-.qr-actions .info-btn[hidden] { display: none; }
+/* QR window (js/modules/qr.js): styled in css/components/qr-hud.css */
 
 /* ===== Older windows moved into the shell (upgradeModalShells in js/ui/modals.js) ===== */
 .info-box--sm { width: min(440px, calc(100vw - 32px)); }

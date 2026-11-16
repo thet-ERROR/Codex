@@ -2,11 +2,15 @@ body.ui-locked { overflow: hidden !important; }
 /* On phones/tablets the document scrolls now, not body (see tablet.css), so locking the page
    behind an open modal has to happen on <html> too — body's overflow alone no longer stops it. */
 html:has(> body.ui-locked) { overflow: hidden !important; }
-body.ui-locked header, body.ui-locked .stage, body.ui-locked .left-sidebar, body.ui-locked .right-sidebar:not(.mobile-active) { pointer-events: none !important; filter: blur(3px) !important; opacity: 0.5 !important; transition: all 0.3s ease !important; }
-/* Blurring the whole page behind every modal is the heaviest thing the site does on a phone GPU, and the
-   overlay is 95% opaque so it's barely visible anyway — on touch layouts just dim, no blur. */
-@media (max-width: 1024px) {
-    body.ui-locked header, body.ui-locked .stage, body.ui-locked .left-sidebar, body.ui-locked .right-sidebar:not(.mobile-active) { filter: none !important; transition: opacity 0.2s ease !important; }
-    .modal-overlay { backdrop-filter: none !important; -webkit-backdrop-filter: none !important; }
+
+/* Behind anything open (a window, INSPECT, the terminal, the phone's reviews) the page can't be pressed
+   and steps back: dimmed. Only that — measured 2026-11-12: the windows' backdrop is 95% black, yet the
+   page under it was also blurred (four full-screen layers) and the backdrop itself blurred it again, all
+   for 5% of visibility. Opacity alone runs on the compositor, and only because nothing here is
+   !important: Chrome won't composite an animation of an !important property. */
+body.ui-locked header, body.ui-locked .stage, body.ui-locked .left-sidebar, body.ui-locked .right-sidebar:not(.mobile-active) {
+    pointer-events: none !important;
+    opacity: 0.5;
+    transition: opacity 0.25s ease;
 }
 .right-sidebar.mobile-active, #cli-overlay, .gallery-overlay, .modal { pointer-events: auto !important; }

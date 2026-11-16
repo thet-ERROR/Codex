@@ -19,6 +19,7 @@ export function toggleCLI() {
 export function toggleHackMode() {
     state.isHacked = !state.isHacked;
     state.matrixEnabled = state.isHacked;
+    if (state.matrixEnabled) startMatrix(); else stopMatrix();
 
     const canvas = document.getElementById('matrix-canvas');
     if (state.isHacked) {
@@ -32,37 +33,62 @@ export function toggleHackMode() {
     }
 }
 
-export function initMatrix() {
-    const canvas = document.getElementById('matrix-canvas');
-    if(!canvas) return;
+// The matrix rain (hack / matrix): it runs only while it's switched on. It used to tick 30 times a second
+// from page load to page close, drawing nothing, on a full-screen canvas sized before anyone asked for
+// it. Now the canvas is sized when the rain starts (and on resize while it runs), each frame comes from
+// requestAnimationFrame — which also stops in a background tab — and switching it off stops the loop and
+// gives the canvas's memory back.
+const MATRIX_CHARS = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZｱｲｳｴｵｶｷｸｹｺｻｼｽｾｿ';
+const MATRIX_FONT = 16;
+const MATRIX_STEP_MS = 33;        // the rain's own pace (about 30 rows a second), whatever the screen's rate
+let matrixRaf = 0, matrixDrops = [], matrixLast = 0;
 
-    const ctx = canvas.getContext('2d');
+function sizeMatrix() {
+    const canvas = document.getElementById('matrix-canvas');
+    if (!canvas) return;
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
-
-    const chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZｱｲｳｴｵｶｷｸｹｺｻｼｽｾｿ';
-    const fontSize = 16;
-    const columns = canvas.width / fontSize;
-    const drops = Array(Math.floor(columns)).fill(1);
-
-    const draw = () => {
-        if (!state.matrixEnabled) return;
-
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        ctx.fillStyle = '#0f0';
-        ctx.font = fontSize + 'px monospace';
-
-        drops.forEach((y, i) => {
-            const text = chars[Math.floor(Math.random() * chars.length)];
-            ctx.fillText(text, i * fontSize, y * fontSize);
-            if (y * fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
-            drops[i]++;
-        });
-    };
-    setInterval(draw, 33);
+    matrixDrops = Array(Math.floor(canvas.width / MATRIX_FONT)).fill(1);
 }
 
+function matrixFrame(now) {
+    matrixRaf = requestAnimationFrame(matrixFrame);
+    if (now - matrixLast < MATRIX_STEP_MS) return;
+    matrixLast = now;
+    const canvas = document.getElementById('matrix-canvas');
+    const ctx = canvas && canvas.getContext('2d');
+    if (!ctx) return;
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = '#0f0';
+    ctx.font = MATRIX_FONT + 'px monospace';
+    matrixDrops.forEach((y, i) => {
+        ctx.fillText(MATRIX_CHARS[Math.floor(Math.random() * MATRIX_CHARS.length)], i * MATRIX_FONT, y * MATRIX_FONT);
+        if (y * MATRIX_FONT > canvas.height && Math.random() > 0.975) matrixDrops[i] = 0;
+        matrixDrops[i]++;
+    });
+}
+
+function startMatrix() {
+    if (matrixRaf) return;
+    sizeMatrix();
+    window.addEventListener('resize', sizeMatrix);
+    matrixRaf = requestAnimationFrame(matrixFrame);
+}
+
+function stopMatrix() {
+    if (!matrixRaf) return;
+    cancelAnimationFrame(matrixRaf);
+    matrixRaf = 0;
+    window.removeEventListener('resize', sizeMatrix);
+    const canvas = document.getElementById('matrix-canvas');
+    if (canvas) { canvas.width = 0; canvas.height = 0; }
+}
+
+// Kept for main.js: the rain starts on its own if the page opens with it already on
+export function initMatrix() {
+    if (state.matrixEnabled) startMatrix();
+}
 // --- COMMANDS ---------------------------------------------------------------------------------------
 // Every command is also a tappable chip (buildChips), so on a phone nothing has to be typed — the
 // keyboard stays down and the terminal keeps its room. Output is written in the site's language.
@@ -81,9 +107,13 @@ const COLORS = {
     // Rank colours (config.js RANK_COLORS) — unlocked by levelling up, not on the wheel
     ultraviolet: { hex: '#7c4dff', id: 'ultraviolet' },
     arctic:      { hex: '#8fe8ff', id: 'arctic' },
-    phantom:     { hex: '#e9e4ff', id: 'phantom' }
+    phantom:     { hex: '#e9e4ff', id: 'phantom' },
+    // Secret (the Konami code): not listed, not even as locked, until it's yours
+    cheatcode:   { hex: '#ff0a54', id: 'cheatCode', secret: true }
 };
 const colorUnlocked = (c) => !c.id || (state.unlockedColors || []).includes(c.id);
+// The names this visitor may see: every colour, minus secrets they haven't found
+const visibleColors = () => Object.keys(COLORS).filter(n => !COLORS[n].secret || colorUnlocked(COLORS[n]));
 
 const CHIPS = ['help', 'theme', 'color', 'sound', 'lang', 'vote', 'cart', 'tour', 'clear'];
 const HISTORY = [];
@@ -144,13 +174,14 @@ const COMMANDS = {
         print('>> ' + T('termThemeSet', { mode: T('termMode_' + next) }) + '\n');
     },
     color(arg) {
-        const names = Object.keys(COLORS);
+        const names = visibleColors();
         if (!arg) {
             print(T('termColorList') + '\n');
             printChips(names.map(n => ({ label: n + (colorUnlocked(COLORS[n]) ? '' : ' 🔒'), run: 'color ' + n, color: COLORS[n].hex, locked: !colorUnlocked(COLORS[n]) })));
             return;
         }
-        const c = COLORS[arg];
+        // A secret someone guessed the name of answers exactly like a colour that doesn't exist
+        const c = names.includes(arg) ? COLORS[arg] : null;
         if (!c) { print(T('termColorUnknown', { list: names.join(', ') }) + '\n'); return; }
         if (!colorUnlocked(c)) { print('>> ' + (window.colorLockMessage ? window.colorLockMessage(c.id) : T('toastColorLocked')) + '\n'); return; }
         if (window.setTheme) window.setTheme(c.hex, c.id);
@@ -207,8 +238,47 @@ const COMMANDS = {
     },
     codex() {
         print(">> ACCESSING MAINFRAME...\n>> WAKE UP, AGENT.\n>> THE MATRIX HAS YOU.\n");
+    },
+    // The curious visitor's commands (also not listed in help). Each is a small joke; sudo and rm -rf /
+    // earn a secret achievement of their own, and finding ls + whoami + matrix earns a third.
+    sudo() {
+        print('>> ' + T('termSudo') + '\n');
+        if (window.checkAchievement) window.checkAchievement('nice_try');
+    },
+    ls() {
+        print(T('termLsHead') + '\n');
+        const names = (state.inventory || []).map(p => p && p.name).filter(Boolean);
+        if (!names.length) print('  ' + T('termLsEmpty') + '\n');
+        names.forEach(n => print('  ' + String(n).replace(/\s+/g, '_') + '\n'));
+        found('ls');
+    },
+    whoami() {
+        print('>> ' + T('termWhoami') + '\n');
+        found('whoami');
+        toggleCLI();
+        if (window.openWhoAmI) window.openWhoAmI();
+    },
+    matrix() {
+        COMMANDS.hack();
+        found('matrix');
+    },
+    async rm(arg) {
+        // Only the famous one; anything else is just refused
+        if (!/^-(rf|fr|r|f)\s+\/\*?$/.test(arg)) { print('>> ' + T('termRmNope') + '\n'); return; }
+        for (const k of ['termRm1', 'termRm2']) { print('>> ' + T(k) + '\n'); await pause(450); }
+        print('>> ' + T('termRm3') + '\n');
+        if (window.checkAchievement) window.checkAchievement('scorched_earth');
     }
 };
+
+const pause = (ms) => new Promise(r => setTimeout(r, ms));
+// ls, whoami and matrix together earn "curious agent". Which of them were found is kept in this browser.
+function found(cmd) {
+    let set = [];
+    try { set = JSON.parse(localStorage.getItem('codex_term_found')) || []; } catch (e) { set = []; }
+    if (!set.includes(cmd)) { set.push(cmd); try { localStorage.setItem('codex_term_found', JSON.stringify(set)); } catch (e) {} }
+    if (['ls', 'whoami', 'matrix'].every(c => set.includes(c)) && window.checkAchievement) window.checkAchievement('curious_agent');
+}
 
 export async function runCommand(raw) {
     const line = String(raw || '').trim().toLowerCase();
