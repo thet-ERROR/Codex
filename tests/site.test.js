@@ -573,7 +573,7 @@ describe('the empty stage (changes doc, step 4)', () => {
             await page.evaluate(() => window.toggleChat());
             // ...and the quiet link clears the filter and brings the systems back
             await page.locator('#main-card .card-empty-link').click();
-            await page.locator('#main-card .stock-badge').waitFor();
+            await page.locator('#main-card .tc-name').waitFor();
             assert.equal(await page.locator('#main-card .card-empty').count(), 0);
         }));
         it(`with no systems at all, even a budget filter does not invite a custom build — ${lang}`, () => withPage({ width: 390, height: 844, locale }, async (page) => {

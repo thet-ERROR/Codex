@@ -1,6 +1,6 @@
 // js/modules/catalog.js
 import { state } from '../state.js';
-import { esc, escUrl, formatPrice, priceCentsOf, stockState, stockLabel, membersOnlyActive, formatShortDateTime, PACK_ICONS } from '../utils.js';
+import { esc, escUrl, formatPrice, priceCentsOf, stockState, stockLabel, lampInfo, membersOnlyActive, formatShortDateTime, PACK_ICONS } from '../utils.js';
 import { getOptions } from './gallery.js';
 import { getLang } from '../i18n.js';
 
@@ -178,6 +178,28 @@ export function cardWish(id) {
     finally { wishJustToggled = null; }
 }
 
+// --- the stock lamp ---
+// Pressing the light shows its words under it; pressing it again, pressing anywhere else, Escape, or a few
+// seconds closes them. The card is rebuilt on every swipe, so a new card always starts closed.
+const LAMP_OPEN_MS = 4000;
+let lampTimer = 0;
+function closeLamps() {
+    clearTimeout(lampTimer);
+    document.querySelectorAll('.tc-lamp-wrap.open').forEach(w => { w.classList.remove('open'); w.querySelector('.tc-lamp')?.setAttribute('aria-expanded', 'false'); });
+}
+export function toggleStockLamp(btn) {
+    const wrap = btn.closest('.tc-lamp-wrap');
+    if (!wrap) return;
+    const wasOpen = wrap.classList.contains('open');
+    closeLamps();
+    if (wasOpen) return;
+    wrap.classList.add('open');
+    btn.setAttribute('aria-expanded', 'true');
+    lampTimer = setTimeout(closeLamps, LAMP_OPEN_MS);
+}
+document.addEventListener('click', (e) => { if (!e.target.closest('.tc-lamp-wrap')) closeLamps(); });
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeLamps(); });
+
 // Rebuilding the card must never move the page. On an iPhone scrolled to the bottom, Safari moved it up
 // by exactly 110 px while the card was rebuilt after a swipe — inside this function, with no script
 // scrolling and no height changing (measured with ?debug=scroll), and only when the page had changes
@@ -217,8 +239,11 @@ function buildCard() {
 
     const pc = state.filtered[state.index];
     const inCompare = state.compareList.find(p => p._id === pc._id); 
-    // 'last' (exactly one unit) blinks red — see .stock-badge.last in stage.css
-    const stockHTML = `<div class="stock-badge ${stockState(pc)}">${esc(stockLabel(pc))}</div>`;
+    // The stock is a lamp on the photo (green / red / orange, with its words when pressed). Only a sold-out
+    // system, which has no lamp, keeps the pill under the photo.
+    const lamp = lampInfo(pc);
+    const stockHTML = lamp ? '' : `<div class="stock-badge ${stockState(pc)}">${esc(stockLabel(pc))}</div>`;
+    const lampHTML = lamp ? `<span class="tc-lamp-wrap"><button type="button" class="tc-lamp ${lamp.state}" aria-label="${esc(lamp.text)}" aria-expanded="false" onclick="event.stopPropagation(); toggleStockLamp(this)"><span class="tc-lamp-dot" aria-hidden="true"></span></button><span class="tc-lamp-tip ${lamp.state}" aria-hidden="true">${esc(lamp.text)}</span></span>` : '';
     // (FPS bars used to be built here too, but were never placed in the card — FPS lives in INSPECT.)
 
     const isGreek = getLang() === 'el';
@@ -250,6 +275,7 @@ function buildCard() {
             </div>
             <div class="tc-art" onclick="openGallery()">
                 <img src="${escUrl(pc.images && pc.images[0]) || 'assets/images/bg.jpg'}" class="tc-img" alt="">
+                ${lampHTML}
                 ${nPhotos > 1 ? `<span class="hero-photos" aria-hidden="true"><i class="ph-bold ph-images"></i> ${nPhotos}</span>` : ''}
                 <button type="button" class="card-wish${inWishlist ? ' on' : ''}${wishSpin}" aria-pressed="${inWishlist}" aria-label="Wishlist" onclick="event.stopPropagation(); cardWish('${pcId}')"><i class="ph-bold ph-crosshair"></i></button>
                 ${dots}
@@ -639,3 +665,4 @@ window.setPriceFilter = setPriceFilter;
 window.clearPriceFilter = clearPriceFilter;
 window.swipeCard = swipeCard;
 window.cardWish = cardWish;
+window.toggleStockLamp = toggleStockLamp;
