@@ -88,6 +88,49 @@ describe('admin: orders', () => {
     }));
 });
 
+describe("admin: a PC's strong points", () => {
+    const editPc1 = async (page) => { await page.locator('[data-action="edit"][data-id="pc1"]').click(); await page.waitForFunction(() => document.getElementById('submit-btn').innerText === 'UPDATE SYSTEM'); };
+    const saved = (page) => page.apiLog.filter(c => c.method === 'PUT' && c.path === '/drops/pc1').at(-1);
+
+    it('saved one per line, blank lines dropped, in both languages', () => withAdmin(async (page) => {
+        await editPc1(page);
+        await page.fill('#highlightsEl', 'Έξι πυρήνες: παίζει άνετα σε υψηλά γραφικά\n\n  Αναβαθμίζεται εύκολα  ');
+        await page.fill('#highlightsEn', 'Six cores: plays smoothly on high settings');
+        page.once('dialog', d => d.accept());
+        await page.click('#submit-btn');
+        await page.waitForFunction(() => document.getElementById('submit-btn').innerText === 'UPLOAD SYSTEM');
+        assert.deepEqual(saved(page).body.highlights, { el: ['Έξι πυρήνες: παίζει άνετα σε υψηλά γραφικά', 'Αναβαθμίζεται εύκολα'], en: ['Six cores: plays smoothly on high settings'] });
+    }));
+
+    it('more than three lines: says so and sends nothing', () => withAdmin(async (page) => {
+        await editPc1(page);
+        await page.fill('#highlightsEl', 'ένα\nδύο\nτρία\nτέσσερα');
+        let msg = '';
+        page.once('dialog', d => { msg = d.message(); d.accept(); });
+        await page.click('#submit-btn');
+        await page.waitForTimeout(300);
+        assert.match(msg, /έως 3/);
+        assert.equal(saved(page), undefined);
+    }));
+
+    it('a line over 90 characters: says so and sends nothing', () => withAdmin(async (page) => {
+        await editPc1(page);
+        await page.fill('#highlightsEn', 'x'.repeat(91));
+        let msg = '';
+        page.once('dialog', d => { msg = d.message(); d.accept(); });
+        await page.click('#submit-btn');
+        await page.waitForTimeout(300);
+        assert.match(msg, /90/);
+        assert.equal(saved(page), undefined);
+    }));
+
+    it('a PC with none leaves the fields empty', () => withAdmin(async (page) => {
+        await editPc1(page);
+        assert.equal(await page.inputValue('#highlightsEl'), '');
+        assert.equal(await page.inputValue('#highlightsEn'), '');
+    }));
+});
+
 describe('admin: order settings', () => {
     it('loads the settings and saves them as the API expects', () => withAdmin(async (page) => {
         await page.waitForFunction(() => document.getElementById('os-areas').value.includes('Καλαμαριά'));
