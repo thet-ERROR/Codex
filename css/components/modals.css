@@ -4,6 +4,10 @@
 .toast { background: rgba(0, 0, 0, 0.95); border: 1px solid var(--neon-green); color: #fff; padding: 15px 30px; border-radius: 8px; font-family: var(--font-ui); font-weight: bold; box-shadow: 0 0 20px rgba(204, 255, 0, 0.2); display: flex; align-items: center; gap: 10px; animation: slideUpFade 0.5s ease-out; pointer-events: auto; }
 .toast.achievement { border-color: var(--legendary-orange); color: var(--legendary-orange); }
 .toast.error { border-color: var(--retro-red); color: var(--retro-red); }
+/* Pressed again while it is still up (toast.js): a small bump instead of a second copy */
+@keyframes toastBump { 0% { transform: scale(1); } 40% { transform: scale(1.06); } 100% { transform: scale(1); } }
+.toast.bump { animation: toastBump 0.25s ease-out; }
+@media (prefers-reduced-motion: reduce) { .toast.bump { animation: none; } }
 /* Wide enough to read in two lines rather than six */
 .toast { max-width: min(92vw, 460px); box-sizing: border-box; }
 #toast-container { width: max-content; max-width: 92vw; }
