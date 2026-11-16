@@ -143,11 +143,10 @@ body.pointer-input .tc-tab:focus-visible { outline: none; }
 
 /* --- the panels under the tabs share one cell, so a card never changes height when you switch ---
    Every card is the same height, too: the panels have a set height (3 lines of brief and its "more"),
-   and a PC without extras gives the space of the missing tabs to them. A card that changed height
+   and every card has both tabs (an extra that isn't offered is listed locked). A card that changed height
    from one PC to the next made the whole page jump on a phone, where the page scrolls.
    Only "more" opened by hand lets the card grow. */
 .tc-panels { display: grid; height: max(112px, 34cqw); }
-.tc-face.no-tabs .tc-panels { height: calc(max(112px, 34cqw) + 52px); } /* + the tabs (44) and their gap (8) */
 .tc-panels:has(.tc-brief.expanded) { height: auto; min-height: 34cqw; }
 .tc-panel { overflow: hidden; }
 .tc-brief-more.hidden { display: block !important; visibility: hidden; }
@@ -171,6 +170,14 @@ body.pointer-input .tc-tab:focus-visible { outline: none; }
 .tc-ex-go { flex: none; font-size: max(12px, 3.4cqw); color: #77739a; }
 .tc-ex-swatch { flex: none; width: 4.4cqw; height: 4.4cqw; border-radius: 4px; border: 1px solid rgba(255, 255, 255, 0.4); }
 @media (hover: hover) { .tc-ex-row:hover { border-color: var(--hc-line); background: var(--hc-soft); } }
+/* An extra this PC doesn't offer: the same row, locked. Dashed and dim, a padlock where the icon was, and under
+   its name why (two short lines in the height of one row, so three rows always fit the box). */
+.tc-ex-row.locked { cursor: default; border: 1px dashed rgba(255, 255, 255, 0.14); background: rgba(255, 255, 255, 0.012); color: #a7a2bd; padding-top: 2px; padding-bottom: 2px; }
+.tc-ex-row.locked > i:first-child { color: #8d88a6; }
+.tc-ex-row.locked .tc-ex-txt { flex: 1; min-width: 0; display: flex; flex-direction: column; justify-content: center; overflow: visible; white-space: normal; line-height: 1.08; }
+.tc-ex-row.locked .tc-ex-name { flex: none; font-size: max(11.5px, 3cqw); font-weight: 700; }
+.tc-ex-row.locked .tc-ex-why { flex: none; font-size: max(11px, 2.5cqw); font-weight: 500; color: #9a95b2; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+@media (hover: hover) { .tc-ex-row.locked:hover { border-color: rgba(255, 255, 255, 0.14); background: rgba(255, 255, 255, 0.012); } }
 
 /* --- the buttons --- */
 .tc-actions { gap: 8px; }

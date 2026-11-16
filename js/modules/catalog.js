@@ -268,7 +268,7 @@ function buildCard() {
     document.querySelectorAll('.nav-arrow').forEach(b => b.classList.toggle('hidden', nPcs < 2));
     const dots = nPcs > 1 ? `<div class="tc-dots" aria-hidden="true">${Array.from({ length: nPcs }, (_, i) => `<span class="tc-dot${i === state.index ? ' active' : ''}"></span>`).join('')}</div>` : '';
     c.innerHTML = `
-        <div class="tc-face${extrasRows ? '' : ' no-tabs'}">
+        <div class="tc-face">
             <div class="tc-title">
                 <span class="tc-name">${esc(pc.name)}</span>
                 <span class="tc-attr"><i class="ph-fill ${PACK_ICONS[pc.category] || PACK_ICONS.drop}"></i></span>
@@ -284,10 +284,10 @@ function buildCard() {
             <div class="tc-type">
                 <div class="tc-row"><div class="tc-price">${formatPrice(priceCentsOf(pc))}</div>${stockHTML}</div>
             </div>
-            ${extrasRows ? `<div class="tc-tabs" role="tablist">
+            <div class="tc-tabs" role="tablist">
                 <button type="button" class="tc-tab active" role="tab" aria-selected="true" data-tc-tab="lore" onclick="cardTab('lore', this)"><i class="ph-fill ph-scroll"></i><span>${esc(tr('inspectTabLore', 'UNIT DATA'))}</span></button>
                 <button type="button" class="tc-tab" role="tab" aria-selected="false" data-tc-tab="extras" onclick="cardTab('extras', this)"><i class="ph-fill ph-gear-six"></i><span>${esc(tr('extrasLabel', 'EXTRAS'))}</span></button>
-            </div>` : ''}
+            </div>
             <div class="tc-panels">
                 <div class="tc-panel tc-brief active" data-tc-panel="lore">
                     <div class="tc-brief-row">
@@ -296,7 +296,7 @@ function buildCard() {
                     </div>
                     <button type="button" class="tc-brief-more hidden">${esc(window.t ? window.t('briefMore') : 'more')}</button>
                 </div>
-                ${extrasRows ? `<div class="tc-panel tc-extras" data-tc-panel="extras">${extrasRows}</div>` : ''}
+                <div class="tc-panel tc-extras" data-tc-panel="extras">${extrasRows}</div>
             </div>
             <!-- The VS strip: inside the card, between the brief and the buttons, so it can never cover them.
                  Its contents (the two PCs' thumbnails, or one and an empty "+") are filled by compare.js
@@ -342,19 +342,26 @@ function cardExtrasRows(pc) {
             <b>${esc(price)}</b>
             <i class="ph-bold ph-caret-right tc-ex-go" aria-hidden="true"></i>
         </button>`;
+    // An extra the admin hasn't ticked for this PC: listed all the same, locked, so the tab is always full
+    // (three rows on every card) and a visitor sees what exists. Not a button: there is nothing to open.
+    const locked = (title) => `
+        <div class="tc-ex-row locked">
+            <i class="ph-bold ph-lock-simple" aria-hidden="true"></i>
+            <span class="tc-ex-txt"><span class="tc-ex-name">${esc(title)}</span><small class="tc-ex-why">${esc(t('extraLocked'))}</small></span>
+        </div>`;
     const rows = [];
     const st = o.storage;
     if (st.enabled && (st.hdd > 0 || st.ssd > 0)) {
         const lowest = Math.min(...[st.hdd, st.ssd].filter(v => v > 0));
         rows.push(row('ph-hard-drives', t('storageLabel'), t('cardExtraFrom', { price: formatPrice(cents(lowest)) })));
-    }
-    if (o.proConfig.enabled) rows.push(row('ph-sliders-horizontal', t('proConfigTitle'), '+' + formatPrice(cents(state.proConfigPrice))));
+    } else rows.push(locked(t('storageLabel')));
+    rows.push(o.proConfig.enabled ? row('ph-sliders-horizontal', t('proConfigTitle'), '+' + formatPrice(cents(state.proConfigPrice))) : locked(t('proConfigTitle')));
     if (o.paint.enabled) {
         const isGreek = getLang() === 'el';
         const name = (isGreek && o.paint.colorNameEl) ? o.paint.colorNameEl : (o.paint.colorName || '');
         const swatch = `<i class="tc-ex-swatch" style="background:${esc(o.paint.colorHex || '#1a1a1a')}" aria-hidden="true"></i>`;
         rows.push(row('', name ? `${t('paintTitle')} — ${name}` : t('paintTitle'), '+' + formatPrice(cents(o.paint.price)), swatch));
-    }
+    } else rows.push(locked(t('paintTitle')));
     return rows.join('');
 }
 
