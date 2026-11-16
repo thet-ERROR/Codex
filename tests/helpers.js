@@ -145,7 +145,12 @@ async function answer(route, log, adminOrders, sec, store, opts) {
 
     // --- the storefront ---
     if (p === '/status') return json({ ...STATUS, ...opts.status });
-    if (p === '/drops') return json(opts.reviews ? PCS.map((pc, i) => (i === 0 ? { ...pc, reviews: opts.reviews } : pc)) : PCS);
+    if (p === '/drops') {
+        let list = opts.reviews ? PCS.map((pc, i) => (i === 0 ? { ...pc, reviews: opts.reviews } : pc)) : PCS;
+        // pcPatch: { 0: { status: 'coming' }, … } changes the PC at that position, for tests that need another state
+        if (opts.pcPatch) list = list.map((pc, i) => (opts.pcPatch[i] ? { ...pc, ...opts.pcPatch[i] } : pc));
+        return json(list);
+    }
     if (p === '/vote-event') return json({});
     if (p === '/orders' && method === 'POST') {
         // Priced the way the real server does it: from its own data, base prices only here
@@ -246,7 +251,7 @@ export async function launch() {
 
 // page: '' for the storefront, 'admin.html' for the panel (logged in, dashboard showing; with
 // twoFactor the sign-in takes the code step too, unless login: false leaves it at the login screen)
-export async function newPage(browser, site, { width = 390, height = 844, locale = 'en-US', storage = {}, mobile = width < 700, tourDone = true, page: which = '', twoFactor = false, login = true, member = false, query = '', status = {}, reviews = null, initScript = '' } = {}) {
+export async function newPage(browser, site, { width = 390, height = 844, locale = 'en-US', storage = {}, mobile = width < 700, tourDone = true, page: which = '', twoFactor = false, login = true, member = false, query = '', status = {}, reviews = null, initScript = '', pcPatch = null } = {}) {
     const context = await browser.newContext({
         viewport: { width, height }, locale, deviceScaleFactor: 2, isMobile: mobile, hasTouch: mobile,
         // Fixed, so the mascot / tour / "night mode" never depend on the time the suite is run at
@@ -267,7 +272,7 @@ export async function newPage(browser, site, { width = 390, height = 844, locale
     const adminOrders = ADMIN_ORDERS();
     const sec = { enabled: twoFactor };
     const store = storeOrders();
-    await context.route(url => url.href.startsWith(API), route => answer(route, log, adminOrders, sec, store, { status, reviews }));
+    await context.route(url => url.href.startsWith(API), route => answer(route, log, adminOrders, sec, store, { status, reviews, pcPatch }));
     // Everything that is neither the site nor the API stays offline
     await context.route(url => !url.href.startsWith(site.url) && !url.href.startsWith(API) && /^https?:/.test(url.href), r => r.abort());
 

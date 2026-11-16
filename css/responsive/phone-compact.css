@@ -9,6 +9,11 @@
 
     /* --- header: a little lower, so the card starts higher --- */
     .nav-bar .nav-btn { padding: 8px 16px !important; font-size: 0.8rem !important; }
+    /* The room above the tabs for the robot (32px) costs the card its size; on a short screen it isn't worth it */
+    @media (max-height: 700px) {
+        .vote-bot { display: none; }
+        .nav-bar { padding-top: 5px !important; }
+    }
     header { row-gap: 2px !important; padding-top: 8px !important; column-gap: 14px !important; }
     header .logo { height: 50px !important; }
     header .cli-btn, header .profile-btn, header .cart-btn-mobile { width: 42px; height: 42px; font-size: 1.15rem; }

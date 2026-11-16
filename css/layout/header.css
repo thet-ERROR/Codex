@@ -28,6 +28,19 @@ body.night-mode header { background: linear-gradient(to bottom, rgba(5,5,15,0.95
 .nav-bar { display: flex; gap: 10px; background: rgba(255,255,255,0.05); padding: 8px; border-radius: 40px; border: 1px solid var(--glass-border); backdrop-filter: blur(10px); position: absolute; left: 50%; transform: translateX(-50%); }
 .nav-btn { background: transparent; border: none; color: #aaa; padding: 8px 20px; border-radius: 30px; font-family: var(--font-ui); font-size: 0.9rem; font-weight: 700; cursor: pointer; transition: 0.3s; letter-spacing: 1px; display: flex; align-items: center; gap: 6px; white-space: nowrap; }
 .nav-btn:hover { color: #fff; background: rgba(255,255,255,0.1); }
+
+/* The robot on the VOTE tab (assets/images/vote-bot.webp, a 75x100 animation with a transparent background).
+   Its seat is at 78% of its height, so it sits with the seat on the tab's top edge and its feet hanging down the
+   tab's face (20% of its height). It is a picture: it takes no clicks and no space. */
+#tab-vote { position: relative; }
+.vote-bot {
+    --bot-h: 38px;
+    position: absolute; left: 50%; bottom: calc(100% - var(--bot-h) * 0.2); transform: translateX(-50%);
+    width: calc(var(--bot-h) * 0.75); height: var(--bot-h); pointer-events: none; user-select: none; z-index: 2;
+}
+.vote-bot img { display: block; width: 100%; height: 100%; }
+/* A window covers the header; no point animating under it */
+body:has(.modal-overlay.active) .vote-bot { visibility: hidden; }
 .nav-btn.active-live { background: var(--neon-green); color: #000; box-shadow: 0 0 15px var(--neon-green); }
 .nav-btn.active-starter { background: var(--retro-red); color: #fff; box-shadow: 0 0 15px var(--retro-red); }
 .nav-btn.active-vote { background: var(--neon-purple); color: #fff; box-shadow: 0 0 20px var(--neon-purple); }
