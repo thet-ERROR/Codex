@@ -88,3 +88,21 @@
 .cli-chip[style*="--chip"] { color: var(--chip); border-color: var(--chip); background: rgba(255, 255, 255, 0.04); }
 .cli-chip.locked { opacity: 0.5; }
 @media (max-width: 768px) { .cli-chip { min-height: 38px; font-size: 0.9rem; } }
+
+/* ===== "Find me a PC" (chat.js finder) =====
+   A short question, then one card per PC: its photo, name and price, the strong points the admin wrote for
+   it as ticked lines, and "See it". Built for the 300px window (90vw on a phone). */
+.fr-ask { margin: 2px 0 8px; font-size: 0.82rem; color: #cfcfd6; }
+.fr-pc { display: flex; gap: 10px; padding: 9px; margin-bottom: 8px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.035); }
+.fr-img { flex: none; width: 58px; height: 58px; border-radius: 8px; object-fit: cover; background: #111; }
+.fr-body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 5px; }
+.fr-top { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+.fr-name { min-width: 0; font-family: var(--font-ui); font-weight: 800; font-size: 0.9rem; color: #fff; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.fr-price { flex: none; font-family: var(--font-ui); font-weight: 800; font-size: 0.85rem; color: var(--neon-green); }
+.fr-points { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 3px; }
+.fr-points li { position: relative; padding-left: 17px; font-size: 0.76rem; line-height: 1.35; color: #e4e4ea; overflow-wrap: anywhere; }
+.fr-points li::before { content: '✓'; position: absolute; left: 0; top: 0; font-weight: 800; color: var(--neon-green); }
+.fr-see { align-self: flex-start; display: inline-flex; align-items: center; gap: 6px; min-height: 32px; padding: 4px 12px; border-radius: 8px; border: 1px solid var(--neon-green); background: transparent; color: var(--neon-green); font-family: var(--font-ui); font-weight: 800; font-size: 0.78rem; cursor: pointer; }
+.fr-see:hover { background: var(--neon-green); color: #000; }
+.fr-more { width: 100%; min-height: 40px; border-radius: 8px; border: 1px dashed rgba(255, 255, 255, 0.25); background: transparent; color: #cfcfd6; font-family: var(--font-ui); font-weight: 700; cursor: pointer; }
+.fr-more:hover { border-color: var(--neon-green); color: #fff; }
