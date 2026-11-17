@@ -210,3 +210,14 @@ describe('the assistant on a phone: the page behind stays still', () => {
         assert.ok(await scrollY(page) > before);
     }));
 });
+
+describe('the assistant: the budget question fits without scrolling', () => {
+    for (const [label, size] of [['desktop 1440', { width: 1440, height: 900, mobile: false }], ['laptop 1280', { width: 1280, height: 720, mobile: false }], ['phone 390', { width: 390, height: 844, mobile: true }], ['phone 360', { width: 360, height: 640, mobile: true }]]) {
+        it(`nothing to scroll on the budget screen — ${label}`, () => withPage(size, async (page) => {
+            await sixPcs(page);
+            await openFinder(page);
+            const over = await page.evaluate(() => { const s = document.getElementById('chat-menu-sub'); return s.scrollHeight - s.clientHeight; });
+            assert.ok(over <= 0, `the screen is ${over}px taller than its window`);
+        }));
+    }
+});
