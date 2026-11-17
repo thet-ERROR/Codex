@@ -164,3 +164,49 @@ describe('the assistant: what fits', () => {
         }));
     }
 });
+
+// On a phone the assistant sits over the page. While it is open the page behind must not move: a finger on the
+// page, or one that reaches the end of the assistant's list, used to scroll the whole site underneath.
+describe('the assistant on a phone: the page behind stays still', () => {
+    const drag = async (page, x, y0, y1) => {
+        const cdp = await page.context().newCDPSession(page);
+        const touch = (type, y) => cdp.send('Input.dispatchTouchEvent', { type, touchPoints: type === 'touchEnd' ? [] : [{ x, y }] });
+        await touch('touchStart', y0);
+        for (let i = 1; i <= 10; i++) { await touch('touchMove', y0 + (y1 - y0) * i / 10); await page.waitForTimeout(16); }
+        await touch('touchEnd', y1);
+        await page.waitForTimeout(400);
+    };
+    const scrollY = (page) => page.evaluate(() => Math.round(window.scrollY));
+    const PHONE = { width: 390, height: 600, mobile: true };
+
+    it('a finger on the page does not scroll it while the assistant is open', () => withPage(PHONE, async (page) => {
+        await openFinder(page);
+        const before = await scrollY(page);
+        await drag(page, 30, 560, 120);                       // on the page, left of the assistant
+        assert.equal(await scrollY(page), before);
+    }));
+
+    it('the assistant\'s own list still scrolls, and its end does not carry on into the page', () => withPage({ ...PHONE, pcPatch: { 0: { stock: 5 }, 2: { stock: 2 } } }, async (page) => {
+        await sixPcs(page);
+        await openFinder(page);
+        await page.locator('#chat-menu-sub [data-find-max=""]').click();
+        await page.locator('#chat-menu-sub [data-find-more]').click();
+        const box = await page.locator('#chat-menu-sub').boundingBox();
+        const before = await scrollY(page);
+        await drag(page, box.x + box.width / 2, box.y + box.height - 20, box.y + 20);   // scroll the list down
+        const list = await page.evaluate(() => document.getElementById('chat-menu-sub').scrollTop);
+        assert.ok(list > 0, 'the list moved');
+        await drag(page, box.x + box.width / 2, box.y + box.height - 20, box.y + 20);   // and again, past its end
+        await drag(page, box.x + box.width / 2, box.y + box.height - 20, box.y + 20);
+        assert.equal(await scrollY(page), before, 'the page did not');
+    }));
+
+    it('once the assistant is closed the page scrolls again', () => withPage(PHONE, async (page) => {
+        await openFinder(page);
+        await page.evaluate(() => window.toggleChat());
+        await page.waitForTimeout(400);
+        const before = await scrollY(page);
+        await drag(page, 30, 560, 120);
+        assert.ok(await scrollY(page) > before);
+    }));
+});

@@ -96,9 +96,30 @@ function finderHtml() {
     return `<p class="fr-ask">${esc(t(fits.length === 1 ? 'findFitsOne' : 'findFits', { n: fits.length }))}</p>${cards}${more}`;
 }
 
+// While the assistant is open on a touch screen the page behind it stays still. The assistant is a small window
+// over the page, not a full-screen one, so a finger on the page, or one that reached the end of the assistant's
+// list, scrolled the whole site underneath. A finger moving inside the list scrolls the list; any other is held.
+// (Not position: fixed on the body: that is what made an iPhone jump the page before.) The listener is only
+// there while the assistant is open, because a non-passive touchmove listener makes every scroll wait for it.
+function holdPage(e) {
+    const list = e.target.closest && e.target.closest('#chat-widget .chat-menu-screen');
+    if (!list || list.scrollHeight <= list.clientHeight + 1) { e.preventDefault(); return; }
+    // inside the list: at its top or bottom end, a move on would carry on into the page
+    const t = e.touches[0], dy = t.clientY - (holdPage.lastY ?? t.clientY);
+    holdPage.lastY = t.clientY;
+    if ((dy > 0 && list.scrollTop <= 0) || (dy < 0 && list.scrollTop + list.clientHeight >= list.scrollHeight - 1)) e.preventDefault();
+}
+function holdStart(e) { holdPage.lastY = e.touches[0]?.clientY; }
+function syncPageHold() {
+    const open = !!document.getElementById('chat-widget')?.classList.contains('open');
+    if (open) { document.addEventListener('touchstart', holdStart, { passive: true }); document.addEventListener('touchmove', holdPage, { passive: false }); }
+    else { document.removeEventListener('touchstart', holdStart); document.removeEventListener('touchmove', holdPage); }
+}
+
 export function toggleChat() {
     const c = document.getElementById('chat-widget');
     if (c) c.classList.toggle('open');
+    syncPageHold();
     if (window.playClick) window.playClick();
     // The admin choice plays the phoenix's flight (mascot.js) — have its image ready by then
     if (c && c.classList.contains('open') && window.preloadMascot) window.preloadMascot();
@@ -114,6 +135,7 @@ export function openChat() {
 function closeChat() {
     const c = document.getElementById('chat-widget');
     if (c) c.classList.remove('open');
+    syncPageHold();
 }
 
 const row = (label, hint, attrs, caret = true) => `
