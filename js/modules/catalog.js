@@ -103,6 +103,19 @@ export function selectPack(cat) {
     renderCard();
 }
 
+// Puts one PC on the stage, from anywhere: LIVE DROPS for a drop, its pack for a starter build. Any budget
+// filter is cleared, since it could hide the very PC asked for. Used by the help assistant's "See it".
+export function showPcById(id) {
+    const pc = state.inventory.find(p => (p._id || p.id) === id);
+    if (!pc) return;
+    priceFilter = null;
+    if (pc.category && pc.category !== 'drop') { switchTab('starter'); selectPack(pc.category); }
+    else switchTab('live');
+    const i = state.filtered.findIndex(p => (p._id || p.id) === id);
+    if (i > 0) { state.index = i; renderCard(); }
+    renderStageHeading();
+}
+
 export function backToPacks() {
     document.getElementById('carousel-wrapper').classList.add('hidden');
     document.getElementById('starter-menu').classList.remove('hidden');
@@ -648,6 +661,7 @@ window.prevPC = prevPC;
 window.renderCard = renderCard;
 window.renderStageHeading = renderStageHeading;
 window.setPriceFilter = setPriceFilter;
+window.showPcById = showPcById;
 window.clearPriceFilter = clearPriceFilter;
 window.swipeCard = swipeCard;
 window.cardWish = cardWish;
