@@ -15,6 +15,7 @@ const WINDOWS = [
     { id: 'newsletter-modal', open: () => window.openModal('newsletter-modal'), main: true },
     { id: 'review-code-modal', open: () => window.openModal('review-code-modal'), main: true },
     { id: 'vote-info-modal', open: () => window.openModal('vote-info-modal'), main: false },
+    { id: 'mission-code-modal', open: () => window.openModal('mission-code-modal'), main: true },
     { id: 'qr-modal', open: () => window.openQr(), main: true }
 ];
 
@@ -63,3 +64,39 @@ for (const [name, opts] of [['desktop', { width: 1440, height: 900, mobile: fals
         }
     });
 }
+
+// The windows that keep their own inside: the same frame and close button, and their green follows the theme
+describe('windows with their own inside', () => {
+    async function look(page, open, ready, sel) {
+        await page.evaluate(open);
+        await page.locator(ready).waitFor();
+        await page.waitForTimeout(450);
+        return page.evaluate((s) => {
+            const el = document.querySelector(s.frame), x = document.querySelector(s.close), r = x.getBoundingClientRect();
+            const cs = getComputedStyle(el);
+            return { radius: cs.borderTopLeftRadius, rim: cs.backgroundImage.includes('linear-gradient'), closeW: Math.round(r.width), closeH: Math.round(r.height), closeRadius: getComputedStyle(x).borderTopLeftRadius,
+                body: s.text && getComputedStyle(document.querySelector(s.text)).color, accent: getComputedStyle(document.body).getPropertyValue('--neon-green').trim() };
+        }, sel);
+    }
+    it('wheel and the rig window: slab and square close', async () => {
+        for (const [open, ready, frame] of [[() => window.openModal('wheel-modal'), '#wheel-modal.active', '#wheel-modal .modal-content'], [() => window.openModal('mission-modal'), '#mission-modal.active', '#mission-modal .modal-content']]) {
+            const page = await newPage(browser, site, { locale: 'el-GR', width: 1440, height: 900, mobile: false });
+            try {
+                const m = await look(page, open, ready, { frame, close: frame + ' .close-modal' });
+                assert.deepEqual([m.radius, m.rim, m.closeW, m.closeH, m.closeRadius], ['24px', true, 44, 44, '12px'], frame);
+            } finally { await page.context().close(); }
+        }
+    });
+    it('whoami and the terminal: the square close, and the text is the theme accent (not a fixed #0f0)', async () => {
+        const page = await newPage(browser, site, { locale: 'el-GR', width: 1440, height: 900, mobile: false, storage: { codex_color: 'ultraviolet' } });
+        try {
+            const w = await look(page, () => window.openModal('whoami-modal'), '#whoami-modal.active', { frame: '#whoami-modal .modal-content', close: '#whoami-modal .close-modal', text: '#whoami-modal .whoami-body' });
+            assert.deepEqual([w.closeW, w.closeH, w.closeRadius], [44, 44, '12px']);
+            assert.notEqual(w.body, 'rgb(0, 255, 0)', 'not the fixed green');
+            await page.evaluate(() => window.closeModal('whoami-modal'));
+            const t = await look(page, () => window.toggleCLI(), '#cli-overlay.active', { frame: '#cli-overlay', close: '#cli-overlay .cli-close' });
+            assert.deepEqual([t.closeW, t.closeH, t.closeRadius], [44, 44, '12px']);
+            assert.deepEqual(page.problems, []);
+        } finally { await page.context().close(); }
+    });
+});

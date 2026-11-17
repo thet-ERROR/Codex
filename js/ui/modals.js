@@ -142,17 +142,17 @@ document.addEventListener('keydown', (e) => {
 // handlers are untouched — elements are moved, not rebuilt.
 const SHELL_KICKERS = {
     'login-modal': 'AUTH', 'signup-modal': 'NEW_RECRUIT', 'forgot-modal': 'RECOVERY', 'reset-modal': 'RECOVERY',
-    'achievements-modal': 'AGENT_RECORD', 'newsletter-modal': 'DROP_ALERTS', 'review-code-modal': 'FIELD_REPORT',
+    'achievements-modal': 'AGENT_RECORD', 'newsletter-modal': 'DROP_ALERTS', 'review-code-modal': 'FIELD_REPORT', 'mission-code-modal': 'REVIEW_CODE',
     'spec-info-modal': 'COMPONENT', 'proconfig-info-modal': 'PRO_CONFIG', 'paint-consent-modal': 'CUSTOM_PAINT',
     'tutorial-lang-modal': 'TOUR', 'qr-modal': 'SCAN_LINK', 'rank-info-modal': 'RANK_INFO', 'checkout-modal': 'CHECKOUT', 'order-modal': 'ORDER'
 };
 // The sign-in windows get the settings window's icon chip in the header (auth-hud.css)
 const SHELL_ICONS = {
     'login-modal': 'ph-user-circle', 'signup-modal': 'ph-user-plus', 'forgot-modal': 'ph-key', 'reset-modal': 'ph-lock-key', 'achievements-modal': 'ph-trophy', 'checkout-modal': 'ph-package', 'order-modal': 'ph-package',
-    'newsletter-modal': 'ph-bell-ringing', 'review-code-modal': 'ph-seal-check', 'qr-modal': 'ph-qr-code'
+    'newsletter-modal': 'ph-bell-ringing', 'review-code-modal': 'ph-seal-check', 'qr-modal': 'ph-qr-code', 'mission-code-modal': 'ph-key'
 };
 const READ_ONLY_SHELLS = ['achievements-modal', 'rank-info-modal', 'spec-info-modal', 'proconfig-info-modal'];
-const SHELL_SMALL = ['login-modal', 'signup-modal', 'forgot-modal', 'reset-modal', 'newsletter-modal', 'review-code-modal', 'spec-info-modal', 'tutorial-lang-modal', 'qr-modal', 'rank-info-modal'];
+const SHELL_SMALL = ['mission-code-modal', 'login-modal', 'signup-modal', 'forgot-modal', 'reset-modal', 'newsletter-modal', 'review-code-modal', 'spec-info-modal', 'tutorial-lang-modal', 'qr-modal', 'rank-info-modal'];
 
 function upgradeModalShells() {
     Object.keys(SHELL_KICKERS).forEach(id => {

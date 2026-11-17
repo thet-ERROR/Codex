@@ -47,10 +47,10 @@ button.close-modal { padding: 0; border: 0; background: none; font-family: inher
 .tutorial-skip-link { margin-top: 18px; font-size: 0.8rem; color: #666; cursor: pointer; text-decoration: underline; }
 .tutorial-skip-link:hover { color: #999; }
 
-.whoami-content { width: 90%; max-width: 650px; background: #050806; border: 1px solid #0f0; box-shadow: 0 0 40px rgba(0, 255, 0, 0.15); font-family: monospace; }
-.whoami-title { color: #0f0; font-size: 1.1rem; letter-spacing: 1px; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px solid rgba(0, 255, 0, 0.2); }
-.whoami-body { color: #0f0; font-size: 0.95rem; line-height: 1.7; white-space: pre-wrap; min-height: 260px; text-align: left; }
-.whoami-cursor { display: inline-block; color: #0f0; font-weight: bold; animation: cursorBlink 1s step-end infinite; }
+.whoami-content { width: 90%; max-width: 650px; background: #050806; border: 1px solid var(--neon-green); box-shadow: 0 0 40px color-mix(in srgb, var(--neon-green) 15%, transparent); font-family: monospace; }
+.whoami-title { color: var(--neon-green); font-size: 1.1rem; letter-spacing: 1px; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px solid color-mix(in srgb, var(--neon-green) 20%, transparent); }
+.whoami-body { color: var(--neon-green); font-size: 0.95rem; line-height: 1.7; white-space: pre-wrap; min-height: 260px; text-align: left; }
+.whoami-cursor { display: inline-block; color: var(--neon-green); font-weight: bold; animation: cursorBlink 1s step-end infinite; }
 
 /* Driver.js Overrides */
 .driver-popover { background-color: rgba(10, 5, 20, 0.95) !important; border: 1px solid var(--neon-purple, #b026ff) !important; color: #fff !important; border-radius: 12px !important; box-shadow: 0 0 20px rgba(176, 38, 255, 0.3) !important; }

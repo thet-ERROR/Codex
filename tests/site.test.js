@@ -613,11 +613,12 @@ describe('title, share preview, headings and names (changes doc, step 5)', () =>
             assert.equal(wheel, lang === 'el-GR' ? 'Καθημερινή περιστροφή' : 'Daily Spin', 'the name follows the language');
         }));
     }
-    it('an X works from the keyboard and still looks like a bare X', () => withPage({ width: 1440, height: 900 }, async (page) => {
+    it('an X works from the keyboard and wears the HUD square close, not the grey browser button', () => withPage({ width: 1440, height: 900 }, async (page) => {
         await page.evaluate(() => window.openModal('wheel-modal'));
         await page.locator('#wheel-modal.active').waitFor();
-        const style = await page.evaluate(() => { const s = getComputedStyle(document.querySelector('#wheel-modal .close-modal')); return [s.backgroundColor, s.borderTopWidth]; });
-        assert.deepEqual(style, ['rgba(0, 0, 0, 0)', '0px']);
+        // a real button must not show the default grey browser face; the wheel close is the HUD one (1px purple line)
+        const style = await page.evaluate(() => { const s = getComputedStyle(document.querySelector('#wheel-modal .close-modal')); return [s.backgroundColor, s.borderTopWidth, s.borderTopColor]; });
+        assert.deepEqual(style, ['rgba(0, 0, 0, 0)', '1px', 'rgba(176, 38, 255, 0.45)']);
         await page.locator('#wheel-modal .close-modal').focus();
         await page.keyboard.press('Enter');
         await page.waitForFunction(() => !document.getElementById('wheel-modal').classList.contains('active'));

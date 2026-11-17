@@ -56,8 +56,8 @@
 /* Terminal: CRT scanlines, a green glow from the top, and the phoenix as a faint watermark */
 #cli-overlay {
     background:
-        repeating-linear-gradient(0deg, rgba(0, 255, 0, 0.025) 0 1px, transparent 1px 3px),
-        radial-gradient(100% 50% at 50% 0%, rgba(0, 255, 0, 0.06), transparent 70%),
+        repeating-linear-gradient(0deg, color-mix(in srgb, var(--neon-green) 2.5%, transparent) 0 1px, transparent 1px 3px),
+        radial-gradient(100% 50% at 50% 0%, color-mix(in srgb, var(--neon-green) 6%, transparent), transparent 70%),
         rgba(5, 5, 10, 0.98);
 }
 #cli-overlay::after {
