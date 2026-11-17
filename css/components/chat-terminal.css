@@ -7,7 +7,7 @@
 .chat-close:focus-visible { outline: 2px solid var(--neon-green); outline-offset: 1px; }
 
 .chat-menu { flex: 1; position: relative; overflow: hidden; }
-.chat-menu-screen { position: absolute; inset: 0; padding: 15px; overflow-y: auto; transition: transform 0.35s cubic-bezier(0.25, 0.8, 0.25, 1), opacity 0.3s; }
+.chat-menu-screen { position: absolute; inset: 0; padding: 15px; overflow-y: auto; overscroll-behavior: contain; transition: transform 0.35s cubic-bezier(0.25, 0.8, 0.25, 1), opacity 0.3s; }
 .chat-menu-home { transform: translateX(0); opacity: 1; }
 .chat-menu-home.hidden-screen { transform: translateX(-100%); opacity: 0; pointer-events: none; }
 .chat-menu-sub { transform: translateX(100%); opacity: 0; pointer-events: none; }
