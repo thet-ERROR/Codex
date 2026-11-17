@@ -148,7 +148,8 @@ const SHELL_KICKERS = {
 };
 // The sign-in windows get the settings window's icon chip in the header (auth-hud.css)
 const SHELL_ICONS = {
-    'login-modal': 'ph-user-circle', 'signup-modal': 'ph-user-plus', 'forgot-modal': 'ph-key', 'reset-modal': 'ph-lock-key', 'achievements-modal': 'ph-trophy', 'checkout-modal': 'ph-package', 'order-modal': 'ph-package'
+    'login-modal': 'ph-user-circle', 'signup-modal': 'ph-user-plus', 'forgot-modal': 'ph-key', 'reset-modal': 'ph-lock-key', 'achievements-modal': 'ph-trophy', 'checkout-modal': 'ph-package', 'order-modal': 'ph-package',
+    'newsletter-modal': 'ph-bell-ringing', 'review-code-modal': 'ph-seal-check'
 };
 const READ_ONLY_SHELLS = ['achievements-modal', 'rank-info-modal', 'spec-info-modal', 'proconfig-info-modal'];
 const SHELL_SMALL = ['login-modal', 'signup-modal', 'forgot-modal', 'reset-modal', 'newsletter-modal', 'review-code-modal', 'spec-info-modal', 'tutorial-lang-modal', 'qr-modal', 'rank-info-modal'];
