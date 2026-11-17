@@ -53,8 +53,8 @@ function updateCompareFloat() {
     if (!n) { b.innerHTML = ''; return; }
     const thumb = (p, side) => `<span class="cf-thumb ${side}"><img src="${escUrl((p.images || [])[0])}" alt=""></span>`;
     const [a, c] = state.compareList;
-    b.setAttribute('aria-label', n === 2 ? t('vsGo') : t('vsPickSecond'));
     b.innerHTML = `
+        <button type="button" class="cf-open" onclick="playClick(); openCompareModal()" aria-label="${esc(n === 2 ? t('vsGo') : t('vsPickSecond'))}">
         <span class="cf-duo">
             ${thumb(a, 'a')}
             <i class="ph-fill ph-sword cf-swords" aria-hidden="true"></i>
@@ -64,7 +64,18 @@ function updateCompareFloat() {
             <strong>${esc(n === 2 ? t('vsGo') : t('vsPickSecond'))}</strong>
             <small>${esc(n === 2 ? `${a.name} vs ${c.name}` : t('vsPickSecondHint'))}</small>
         </span>
-        ${n === 2 ? '<i class="ph-bold ph-caret-right cf-go" aria-hidden="true"></i>' : ''}`;
+        ${n === 2 ? '<i class="ph-bold ph-caret-right cf-go" aria-hidden="true"></i>' : ''}
+        </button>
+        <button type="button" class="cf-clear" onclick="event.stopPropagation(); clearCompare()" aria-label="${esc(t('vsClear'))}" title="${esc(t('vsClear'))}"><i class="ph-bold ph-x" aria-hidden="true"></i></button>`;
+}
+
+// ✕ on the VS strip: empties the comparison, so nobody has to find each PC again to take it out. The card is
+// redrawn so its COMPARE button reads "compare" again.
+export function clearCompare() {
+    if (window.playClick) window.playClick();
+    state.compareList = [];
+    updateCompareFloat();
+    if (window.renderCard) window.renderCard();
 }
 
 export function openCompareModal() {
@@ -331,3 +342,4 @@ window.toggleCompare = toggleCompare;
 window.compareBtnHTML = compareBtnHTML;
 window.updateCompareFloat = updateCompareFloat;
 window.openCompareModal = openCompareModal;
+window.clearCompare = clearCompare;

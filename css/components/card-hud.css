@@ -88,7 +88,7 @@
     border: 1px solid currentColor;
 }
 /* With no pill beside it (the stock is the lamp on the photo now) the price has the whole row */
-.tc-row > .tc-price:only-child { flex: 1; }
+.tc-row > .tc-price:only-child { flex: 1; justify-content: center; padding-left: 14px; }
 
 /* --- the stock label: a light and its words at the photo's top left, always in view ---
    It is not a control: taps go through to the photo (which opens INSPECT). */

@@ -296,7 +296,7 @@ function buildCard() {
             <!-- The VS strip: inside the card, between the brief and the buttons, so it can never cover them.
                  Its contents (the two PCs' thumbnails, or one and an empty "+") are filled by compare.js
                  updateCompareFloat() — right below, and whenever a PC joins or leaves the duel. -->
-            <div class="compare-float" id="compare-float" role="button" tabindex="0" onclick="playClick(); openCompareModal()"></div>
+            <div class="compare-float" id="compare-float"></div>
             <div class="tc-actions">
                 <button class="btn-card-inspect" onclick="openGallery()">${esc(window.t ? window.t('inspectSystemBtn') : 'INSPECT SYSTEM')}</button>
                 <button class="btn-card-compare ${inCompare ? 'selected' : ''}" onclick="toggleCompare('${pcId}', this)">${window.compareBtnHTML ? window.compareBtnHTML(!!inCompare) : esc(window.t ? window.t('compareBtn') : 'COMPARE')}</button>
