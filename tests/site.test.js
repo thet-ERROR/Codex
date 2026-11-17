@@ -267,21 +267,23 @@ describe('the background Earth', () => {
     }));
 });
 
+// The site greets a visitor after midnight with the Night Owl toast (main.js); these tests count toasts, so the hour is fixed at noon
+const NOON = 'Date.prototype.getHours = () => 12;';
 describe('toasts do not pile up', () => {
     const show = (page, msg, type, opts) => page.evaluate(([m, t, o]) => window.showToast(m, t, o), [msg, type || 'normal', opts]);
     const toasts = (page) => page.evaluate(() => [...document.querySelectorAll('#toast-container .toast')].map(t => t.textContent));
 
-    it('pressing the same thing again does not add another one', () => withPage({ width: 390, height: 844 }, async (page) => {
+    it('pressing the same thing again does not add another one', () => withPage({ width: 390, height: 844, initScript: NOON }, async (page) => {
         for (let i = 0; i < 12; i++) await show(page, 'Stock limit reached', 'error');
         assert.deepEqual(await toasts(page), ['Stock limit reached']);
     }));
 
-    it('the same text with a different type is a different message', () => withPage({ width: 390, height: 844 }, async (page) => {
+    it('the same text with a different type is a different message', () => withPage({ width: 390, height: 844, initScript: NOON }, async (page) => {
         await show(page, 'Saved', 'normal'); await show(page, 'Saved', 'error');
         assert.equal((await toasts(page)).length, 2);
     }));
 
-    it('another press keeps the toast on screen for a full time again', () => withPage({ width: 390, height: 844 }, async (page) => {
+    it('another press keeps the toast on screen for a full time again', () => withPage({ width: 390, height: 844, initScript: NOON }, async (page) => {
         await show(page, 'Link copied');
         await page.waitForTimeout(2200);
         await show(page, 'Link copied');            // pressed again just before it would go
@@ -291,24 +293,24 @@ describe('toasts do not pile up', () => {
         assert.deepEqual(await toasts(page), [], 'and it does go in the end');
     }));
 
-    it('a message that carries a changing number (a countdown) replaces itself', () => withPage({ width: 390, height: 844 }, async (page) => {
+    it('a message that carries a changing number (a countdown) replaces itself', () => withPage({ width: 390, height: 844, initScript: NOON }, async (page) => {
         for (const s of [30, 29, 28, 27]) await show(page, `Wait ${s}s before resending`, 'error', { key: 'resend' });
         assert.deepEqual(await toasts(page), ['Wait 27s before resending']);
     }));
 
-    it('at most three different toasts at once, the newest kept', () => withPage({ width: 390, height: 844 }, async (page) => {
+    it('at most three different toasts at once, the newest kept', () => withPage({ width: 390, height: 844, initScript: NOON }, async (page) => {
         for (const m of ['one', 'two', 'three', 'four', 'five']) await show(page, m);
         assert.deepEqual(await toasts(page), ['three', 'four', 'five']);
     }));
 
-    it('after it has gone, the same message can show again', () => withPage({ width: 390, height: 844 }, async (page) => {
+    it('after it has gone, the same message can show again', () => withPage({ width: 390, height: 844, initScript: NOON }, async (page) => {
         await show(page, 'Again'); await page.waitForTimeout(3300);
         assert.deepEqual(await toasts(page), []);
         await show(page, 'Again');
         assert.deepEqual(await toasts(page), ['Again']);
     }));
 
-    it('a toast is text, never markup', () => withPage({ width: 390, height: 844 }, async (page) => {
+    it('a toast is text, never markup', () => withPage({ width: 390, height: 844, initScript: NOON }, async (page) => {
         await show(page, '<img src=x onerror="window.__xss=1">');
         assert.equal(await page.locator('#toast-container img').count(), 0);
         assert.equal(await page.evaluate(() => window.__xss), undefined);
