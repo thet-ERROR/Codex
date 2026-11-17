@@ -67,7 +67,7 @@
 .yg-titlebar .yg-project-name { font-size: max(16px, 5.8cqw) !important; text-shadow: 0 0 14px var(--hc-glow); }
 .yg-card.vote-mode .yg-titlebar .yg-project-name { text-shadow: none; }
 .yg-titlebar .tc-attr { width: 10cqw; height: 10cqw; font-size: 5.4cqw; color: #08060f; box-shadow: 0 0 0 2px var(--hc-line), 0 0 14px var(--hc-glow); }
-.yg-titlebar .yg-close-btn { width: 8cqw; height: 8cqw; min-width: 28px; min-height: 28px; border: 1px solid var(--hc-line); background: rgba(8, 6, 16, 0.74); color: #fff; }
+.yg-titlebar .yg-close-btn { width: 8cqw; height: 8cqw; min-width: 28px; min-height: 28px; border-radius: 28%; border: 1px solid var(--hc-line); background: rgba(8, 6, 16, 0.74); color: #fff; }
 @media (hover: hover) { .yg-titlebar .yg-close-btn:hover { background: var(--hc); border-color: var(--hc); color: #000; } }
 
 /* --- the photo: rectangular arrows on it, the dots as a pill over its bottom edge --- */

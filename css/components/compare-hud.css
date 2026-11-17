@@ -37,10 +37,10 @@
 .vs-chip { padding: 2px 8px; border-radius: 5px; border: 1px solid rgba(168, 85, 247, 0.4); background: rgba(46, 16, 101, 0.8); color: #e879f9; font-family: var(--vs-font); font-size: 0.66rem; font-weight: 700; letter-spacing: 1px; }
 .vs-sub { margin: 3px 0 0; font-family: var(--vs-font); font-size: 0.74rem; color: #a3a3a3; }
 .vs-close {
-    flex: none; display: grid; place-items: center; width: 40px; height: 40px; padding: 0; border-radius: 11px; cursor: pointer; font-size: 1.1rem;
-    border: 1px solid #404040; background: rgba(23, 23, 23, 0.8); color: #a3a3a3; transition: color 0.2s, border-color 0.2s, background-color 0.2s;
+    flex: none; display: grid; place-items: center; width: 44px; height: 44px; padding: 0; border-radius: 12px; cursor: pointer; font-size: 1.1rem;
+    border: 1px solid var(--s-line); background: transparent; color: #fff; transition: color 0.2s, border-color 0.2s, background-color 0.2s;
 }
-.vs-close:hover { color: #fca5a5; border-color: rgba(239, 68, 68, 0.6); background: rgba(69, 10, 10, 0.8); }
+.vs-close:hover { border-color: var(--s-purple); background: var(--s-soft); }
 
 /* --- the scrolling arena --- */
 #compare-modal .compare-grid { flex: 1 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding: 16px 4px 8px; }
@@ -167,7 +167,6 @@
     #compare-modal .vs-title { font-size: 1rem; letter-spacing: 1px; }
     .vs-chip { display: none; }
     .vs-sub { font-size: 0.68rem; }
-    .vs-close { width: 36px; height: 36px; }
     #compare-modal .compare-grid { padding: 12px 0 6px; }
     #compare-modal .vs-heads { gap: 6px; }
     .vs-fighter { padding: 8px; }

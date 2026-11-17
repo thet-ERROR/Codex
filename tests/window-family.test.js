@@ -100,3 +100,28 @@ describe('windows with their own inside', () => {
         } finally { await page.context().close(); }
     });
 });
+
+// The compare window and the profile are their own designs, but their close is the family's 44px rounded square
+describe('compare and profile: the shared close', () => {
+    const close = (page, sel) => page.evaluate((s) => { const x = document.querySelector(s), r = x.getBoundingClientRect(); return [Math.round(r.width), Math.round(r.height), getComputedStyle(x).borderTopLeftRadius, getComputedStyle(x).borderTopColor]; }, sel);
+    for (const [name, opts] of [['desktop', { width: 1440, height: 900, mobile: false }], ['phone', { width: 390, height: 844, mobile: true }]]) {
+        it(`compare close on a ${name}`, async () => {
+            const page = await newPage(browser, site, { locale: 'el-GR', ...opts });
+            try {
+                await page.evaluate(() => import('./js/state.js').then(m => { m.state.compareList = m.state.inventory.slice(0, 2); window.openCompareModal(); }));
+                await page.locator('#compare-modal.active').waitFor();
+                await page.waitForTimeout(450);
+                assert.deepEqual(await close(page, '#compare-modal .vs-close'), [44, 44, '12px', 'rgba(176, 38, 255, 0.45)']);
+            } finally { await page.context().close(); }
+        });
+        it(`profile close on a ${name}`, async () => {
+            const page = await newPage(browser, site, { locale: 'el-GR', member: true, ...opts });
+            try {
+                await page.evaluate(() => window.openAgentDashboard());
+                await page.locator('#agent-dashboard-modal.active').waitFor();
+                await page.waitForTimeout(450);
+                assert.deepEqual(await close(page, '#agent-dashboard-modal .dossier-box .modal-close'), [44, 44, '12px', 'rgba(176, 38, 255, 0.45)']);
+            } finally { await page.context().close(); }
+        });
+    }
+});
