@@ -1,9 +1,9 @@
 // js/modules/mascot.js
 //
-// The phoenix, the site's guardian. At rest it is the help button (its head, css/components/mascot.css).
-// When someone asks for the admin (help → "Talk to the admin", chat.js) it comes out of the button
-// whole, wings open, takes a glowing letter and flies off with it; then its speech bubble holds the
-// link to the WhatsApp chat.
+// The robot, the site's assistant (the same one that sits on the VOTE tab). At rest it is the help button
+// (head and shoulders, css/components/mascot.css). When someone asks for the admin (help → "Talk to the
+// admin", chat.js) it comes out of the button whole, takes a glowing letter and flies off with it; then its
+// speech bubble holds the link to the WhatsApp chat.
 //
 // Why a link in a bubble instead of opening WhatsApp at the end of the flight: browsers — iOS Safari
 // above all — block a window opened after a delay, outside the tap that asked for it. An <a> the
@@ -11,8 +11,8 @@
 import { CONFIG } from '../config.js';
 import { t } from '../i18n.js';
 
-const FULL = 'assets/mascot/phoenix-full.png';
-const FULL_RATIO = 246 / 300;               // width / height of that image
+const FULL = 'assets/mascot/robot-full.webp';
+const FULL_RATIO = 300 / 396;               // width / height of that image
 const REDUCED = window.matchMedia('(prefers-reduced-motion: reduce)');
 
 const esc = (s) => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -139,7 +139,7 @@ function showBubble(url, btn) {
         <a class="mascot-bubble-go" href="${esc(url)}" target="_blank" rel="noopener">${esc(t('mascotAdminGo'))} <i class="ph-bold ph-arrow-right"></i></a>`;
     document.body.appendChild(bubble);
 
-    // Above the phoenix button, its tail pointing at it, kept inside the screen
+    // Above the robot button, its tail pointing at it, kept inside the screen
     const r = btn ? btn.getBoundingClientRect() : { left: window.innerWidth - 60, top: window.innerHeight - 100, width: 48 };
     const cx = r.left + r.width / 2;
     const bw = bubble.offsetWidth;

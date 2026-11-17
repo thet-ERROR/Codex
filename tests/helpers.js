@@ -151,6 +151,9 @@ async function answer(route, log, adminOrders, sec, store, opts) {
         if (opts.pcPatch) list = list.map((pc, i) => (opts.pcPatch[i] ? { ...pc, ...opts.pcPatch[i] } : pc));
         return json(list);
     }
+    // The admin saving a PC: answered like the server, with what was sent
+    const pcEdit = p.match(/^\/drops\/([^/]+)$/);
+    if (pcEdit && method === 'PUT') return json({ ...(PCS.find(x => x._id === pcEdit[1]) || {}), ...body });
     if (p === '/vote-event') return json({});
     if (p === '/orders' && method === 'POST') {
         // Priced the way the real server does it: from its own data, base prices only here

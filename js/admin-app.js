@@ -360,6 +360,8 @@
 });
         $('price').value = centsToInput(pc.priceCents, pc.price);
         ['cpu','gpu','ram','ssd','mobo','psu','case'].forEach(k => document.getElementById(k).value = pc.specs[k]||'');
+        $('highlightsEl').value = (pc.highlights?.el || []).join('\n');
+        $('highlightsEn').value = (pc.highlights?.en || []).join('\n');
         $('benchCpu').value = pc.benchScores?.cpu ?? '';
         $('benchGpu').value = pc.benchScores?.gpu ?? '';
         ['cpu','gpu','ram','ssd','mobo','psu','case'].forEach(k => {
@@ -393,6 +395,17 @@
         const imgInput = document.getElementById('imageUrl').value.trim();
         const imgs = imgInput.split(/[\r\n]+/).map(s => s.trim()).filter(Boolean);
 
+        // Strong points: one per line, blank lines dropped; the API refuses more than 3 or over 90 characters,
+        // so the same limits are checked here first, with a message that says which one
+        const lines = (id) => $(id).value.split(/[\r\n]+/).map(l => l.trim()).filter(Boolean);
+        const highlights = { el: lines('highlightsEl'), en: lines('highlightsEn') };
+        for (const [lang, list] of Object.entries(highlights)) {
+            if (list.length > 3) return alert(`ΔΥΝΑΤΑ ΣΗΜΕΙΑ (${lang.toUpperCase()}): έως 3 γραμμές — έχεις ${list.length}.`);
+            const long = list.find(l => l.length > 90);
+            if (long) return alert(`ΔΥΝΑΤΑ ΣΗΜΕΙΑ (${lang.toUpperCase()}): έως 90 χαρακτήρες η γραμμή — «${long.slice(0, 40)}…» έχει ${long.length}.`);
+            if (list.some(l => /[<>]/.test(l))) return alert(`ΔΥΝΑΤΑ ΣΗΜΕΙΑ (${lang.toUpperCase()}): χωρίς < ή >.`);
+        }
+
         const priceCents = inputToCents($('price').value);
         if (priceCents === undefined || Number.isNaN(priceCents)) {
             return alert("ΤΙΜΗ: βάλε έγκυρο ποσό σε ευρώ (π.χ. 449 ή 449,99).");
@@ -408,6 +421,7 @@ const data = {
             lore: document.getElementById('lore') ? document.getElementById('lore').value : "", // Προσθήκη Lore
             loreEl: document.getElementById('loreEl') ? document.getElementById('loreEl').value : "",
             multitasking: document.getElementById('multitasking').value,
+            highlights,
             images: imgs,
             specs: {
                 cpu:document.getElementById('cpu').value,
@@ -453,7 +467,8 @@ const data = {
                 alert("SYSTEM SAVED!");
                 resetForm(); loadInv();
             } else {
-                alert("ERROR SAVING SYSTEM");
+                const why = await res.json().catch(() => null);
+                alert("ERROR SAVING SYSTEM" + (why && why.error ? "\n" + why.error : ""));
             }
         } catch(e) {
             console.error(e);
