@@ -1,4 +1,4 @@
-// One window language: the purple HUD shell (login, checkout, settings...) is also what Information, drop alerts,
+// One window language: the purple HUD shell (login, checkout, settings...) is also what Information, drop alerts, the QR window,
 // the review code window and "How the vote works" wear. Same corners, same close button, same kicker colour, same
 // main button, on a phone and on a desktop. Run from this folder: npm test
 
@@ -14,7 +14,8 @@ const WINDOWS = [
     { id: 'info-modal', open: () => window.openInfo(), main: false },
     { id: 'newsletter-modal', open: () => window.openModal('newsletter-modal'), main: true },
     { id: 'review-code-modal', open: () => window.openModal('review-code-modal'), main: true },
-    { id: 'vote-info-modal', open: () => window.openModal('vote-info-modal'), main: false }
+    { id: 'vote-info-modal', open: () => window.openModal('vote-info-modal'), main: false },
+    { id: 'qr-modal', open: () => window.openQr(), main: true }
 ];
 
 async function measure(page, w) {
@@ -23,7 +24,7 @@ async function measure(page, w) {
     await page.waitForTimeout(450);
     return page.evaluate((id) => {
         const q = (s) => document.querySelector(`#${id} ${s}`);
-        const box = q('.info-box'), x = q('.modal-x'), k = q('.info-kicker'), b = q('.auth-form .btn-inspect');
+        const box = q('.info-box'), x = q('.modal-x'), k = q('.info-kicker'), b = q('.auth-form .btn-inspect') || q('.qr-actions .info-btn.primary');
         const bs = getComputedStyle(box), xr = x.getBoundingClientRect(), head = q('.info-head').getBoundingClientRect();
         const p = q('.info-body > p');
         return {
