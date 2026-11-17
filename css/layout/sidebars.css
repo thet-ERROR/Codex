@@ -57,7 +57,7 @@ body.pointer-input .side-btn:focus-visible { outline: none; }
 #lang-toggle-btn .lang-code { font-family: var(--font-ui); font-size: 0.55rem; font-weight: 800; letter-spacing: 1px; line-height: 1; color: #aaa; }
 
 @media (hover: hover) {
-    #lang-toggle-btn:hover { border-color: #0f0; color: #0f0; box-shadow: 0 4px 15px rgba(0,255,0,0.15); }
+    #lang-toggle-btn:hover { border-color: var(--neon-green); color: var(--neon-green); box-shadow: 0 4px 15px color-mix(in srgb, var(--neon-green) 15%, transparent); }
 }
 
 .feed-header { font-family: var(--font-ui); color: var(--neon-purple); font-weight: 800; font-size: 1rem; margin-bottom: 20px; letter-spacing: 2px; border-bottom: 1px solid var(--neon-purple); padding-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
