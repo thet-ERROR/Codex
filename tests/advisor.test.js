@@ -210,3 +210,58 @@ describe('the assistant on a phone: the page behind stays still', () => {
         assert.ok(await scrollY(page) > before);
     }));
 });
+
+describe('the assistant: the budget question fits without scrolling', () => {
+    for (const [label, size] of [['desktop 1440', { width: 1440, height: 900, mobile: false }], ['laptop 1280', { width: 1280, height: 720, mobile: false }], ['phone 390', { width: 390, height: 844, mobile: true }], ['phone 360', { width: 360, height: 640, mobile: true }]]) {
+        it(`nothing to scroll on the budget screen — ${label}`, () => withPage(size, async (page) => {
+            await sixPcs(page);
+            await openFinder(page);
+            const over = await page.evaluate(() => { const s = document.getElementById('chat-menu-sub'); return s.scrollHeight - s.clientHeight; });
+            assert.ok(over <= 0, `the screen is ${over}px taller than its window`);
+        }));
+    }
+});
+
+describe('Sniffy: the name, the face, and the extras of "Find me a PC"', () => {
+    it('the assistant is called Sniffy: in its header (with its face) and on its button', () => withPage({}, async (page) => {
+        await page.evaluate(() => window.toggleChat());
+        assert.match(await page.locator('#chat-widget .chat-top').innerText(), /SNIFFY/);
+        await page.waitForFunction(() => document.querySelector('#chat-widget .chat-face')?.naturalWidth > 0);
+        assert.match(await page.locator('.mascot-btn').getAttribute('aria-label'), /^Sniffy · Βοήθεια/);
+    }));
+
+    it('the tour introduces it by name', () => withPage({ tourDone: false }, async (page) => {
+        const fix = (f) => new URL(`./fixtures/${f}`, import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, '$1');
+        await page.route('https://cdn.jsdelivr.net/npm/driver.js@1.0.1/dist/driver.js.iife.js', r => r.fulfill({ path: fix('driver.js.iife.js'), contentType: 'application/javascript' }));
+        await page.route('https://cdn.jsdelivr.net/npm/driver.js@1.0.1/dist/driver.css', r => r.fulfill({ path: fix('driver.css'), contentType: 'text/css' }));
+        await page.reload();
+        await page.waitForSelector('#startup-overlay.hidden', { state: 'attached', timeout: 15000 });
+        await page.evaluate(() => window.startTutorialTour('el'));
+        await page.locator('.driver-popover').waitFor();
+        assert.match(await page.locator('.driver-popover').innerText(), /Είμαι ο Sniffy/);
+    }));
+
+    it('"Compare the top two" opens VS mode with the first two results', () => withPage({ pcPatch: HL }, async (page) => {
+        await openFinder(page);
+        await page.locator('#chat-menu-sub [data-find-vs]').click();
+        await page.locator('#compare-modal.active').waitFor();
+        assert.deepEqual(await page.evaluate(() => import('./js/state.js').then(m => m.state.compareList.map(p => p.name))), ['TEST RIG 2', 'TEST RIG 1']);
+        assert.equal(await page.evaluate(() => document.getElementById('chat-widget').classList.contains('open')), false);
+    }));
+
+    it('with one result there is nothing to compare', () => withPage({}, async (page) => {
+        await sixPcs(page);
+        await page.evaluate(() => import('./js/state.js').then(m => { m.state.inventory.forEach((p, i) => { if (i > 0) p.stock = 0; }); }));
+        await openFinder(page);
+        assert.equal(await page.locator('#chat-menu-sub .fr-pc').count(), 1);
+        assert.equal(await page.locator('#chat-menu-sub [data-find-vs]').count(), 0);
+    }));
+
+    it('"See it" lights the card up once', () => withPage({ pcPatch: HL }, async (page) => {
+        await openFinder(page);
+        await page.locator('#chat-menu-sub .fr-pc', { hasText: 'TEST RIG 2' }).locator('[data-find-see]').click();
+        await page.waitForFunction(() => document.getElementById('main-card').classList.contains('tc-found'));
+        assert.notEqual(await page.evaluate(() => getComputedStyle(document.getElementById('main-card')).animationName), 'none');
+        await page.waitForFunction(() => !document.getElementById('main-card').classList.contains('tc-found'), null, { timeout: 3000 });
+    }));
+});

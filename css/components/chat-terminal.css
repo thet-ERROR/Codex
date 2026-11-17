@@ -92,7 +92,9 @@
 /* ===== "Find me a PC" (chat.js finder) =====
    A short question, then one card per PC: its photo, name and price, the strong points the admin wrote for
    it as ticked lines, and "See it". Built for the 300px window (90vw on a phone). */
-.fr-ask { margin: 2px 0 8px; font-size: 0.82rem; color: #cfcfd6; }
+.fr-ask { margin: 0 0 2px; font-size: 0.82rem; color: #cfcfd6; }
+/* The budget question must fit the window without scrolling (it was 18px too tall on a desktop, so it moved a little for no reason) */
+#chat-menu-sub .chat-row[data-find-max] { min-height: 46px; padding-top: 6px; padding-bottom: 6px; }
 .fr-pc { display: flex; gap: 10px; padding: 9px; margin-bottom: 8px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.035); }
 .fr-img { flex: none; width: 58px; height: 58px; border-radius: 8px; object-fit: cover; background: #111; }
 .fr-body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 5px; }
@@ -106,3 +108,10 @@
 .fr-see:hover { background: var(--neon-green); color: #000; }
 .fr-more { width: 100%; min-height: 40px; border-radius: 8px; border: 1px dashed rgba(255, 255, 255, 0.25); background: transparent; color: #cfcfd6; font-family: var(--font-ui); font-weight: 700; cursor: pointer; }
 .fr-more:hover { border-color: var(--neon-green); color: #fff; }
+
+/* Sniffy's face in the assistant's header: the same picture as the help button, in a small round frame */
+.chat-face { flex: none; width: 40px; height: 40px; border-radius: 50%; object-fit: cover; object-position: 50% 20%; border: 1.5px solid var(--neon-green); background: radial-gradient(circle at 50% 40%, #3a1460 0%, #170826 70%); }
+.chat-top:has(.chat-face) { justify-content: flex-start; gap: 10px; }
+.chat-top:has(.chat-face) .chat-close { margin-left: auto; }
+.fr-vs { width: 100%; min-height: 40px; margin-bottom: 8px; display: flex; align-items: center; justify-content: center; gap: 8px; border-radius: 8px; border: 1px solid var(--neon-purple); background: rgba(176, 38, 255, 0.12); color: #fff; font-family: var(--font-ui); font-weight: 800; font-size: 0.82rem; cursor: pointer; }
+.fr-vs:hover { background: rgba(176, 38, 255, 0.3); }

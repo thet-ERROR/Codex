@@ -267,3 +267,14 @@ describe('admin: customer requests on an order', () => {
         assert.equal(await page.locator('.ord-row[data-number="DEMO-0003"] .ord-flag.req').count(), 0, 'the flag is gone from the list');
     }));
 });
+
+describe('admin: which PCs have no strong points', () => {
+    it('a PC without any is marked in the list; one with both languages is not; one language missing says which', async () => {
+        const page = await newPage(browser, site, { width: 1600, height: 1000, mobile: false, page: 'admin.html', pcPatch: { 1: { highlights: { el: ['Ένα'], en: ['One'] } }, 2: { highlights: { el: ['Ένα'], en: [] } } } });
+        try {
+            await page.locator('[data-action="edit"][data-id="pc1"]').waitFor();
+            const marks = await page.evaluate(() => [...document.querySelectorAll('#inventory-list .item')].map(i => i.querySelector('.hl-missing')?.textContent.trim() || ''));
+            assert.deepEqual(marks, ['⚠ Χωρίς δυνατά σημεία', '', '⚠ Χωρίς δυνατά σημεία στα αγγλικά']);
+        } finally { await page.context().close(); }
+    });
+});

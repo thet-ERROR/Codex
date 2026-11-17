@@ -92,8 +92,10 @@ function finderHtml() {
             </div>
         </div>`;
     }).join('');
+    // The two at the top, side by side in VS mode, one press away
+    const vs = fits.length >= 2 ? `<button type="button" class="fr-vs" data-find-vs="${esc(String(fits[0]._id || fits[0].id))}|${esc(String(fits[1]._id || fits[1].id))}"><i class="ph-bold ph-sword" aria-hidden="true"></i> ${esc(t('findVs'))}</button>` : '';
     const more = fits.length > shown.length ? `<button type="button" class="fr-more" data-find-more>${esc(t('findMore', { n: fits.length - shown.length }))}</button>` : '';
-    return `<p class="fr-ask">${esc(t(fits.length === 1 ? 'findFitsOne' : 'findFits', { n: fits.length }))}</p>${cards}${more}`;
+    return `<p class="fr-ask">${esc(t(fits.length === 1 ? 'findFitsOne' : 'findFits', { n: fits.length }))}</p>${vs}${cards}${more}`;
 }
 
 // While the assistant is open on a touch screen the page behind it stays still. The assistant is a small window
@@ -217,6 +219,18 @@ document.addEventListener('click', (e) => {
     if (e.target.closest('[data-find-more]')) { if (window.playClick) window.playClick(); finder.all = true; renderChat(); return; }
     const see = e.target.closest('[data-find-see]');
     if (see) { if (window.playClick) window.playClick(); const id = see.dataset.findSee; closeChat(); path = []; finder = { max: null, chosen: false, all: false }; renderChat(); window.showPcById(id); return; }
+    const vsBtn = e.target.closest('[data-find-vs]');
+    if (vsBtn) {
+        if (window.playClick) window.playClick();
+        const pcs = vsBtn.dataset.findVs.split('|').map(id => state.inventory.find(p => String(p._id || p.id) === id)).filter(Boolean);
+        if (pcs.length !== 2) return;
+        closeChat(); path = []; finder = { max: null, chosen: false, all: false }; renderChat();
+        state.compareList = pcs;
+        if (window.renderCard) window.renderCard();          // the card's VS button and strip show the pair
+        if (window.updateCompareFloat) window.updateCompareFloat();
+        if (window.openCompareModal) window.openCompareModal();
+        return;
+    }
     if (e.target.closest('[data-chat-act-go="live"]')) { if (window.playClick) window.playClick(); run({ live: true }); return; }
     if (open) {
         if (window.playClick) window.playClick();

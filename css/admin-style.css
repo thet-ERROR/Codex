@@ -156,3 +156,5 @@
 
 /* Under the strong points fields */
 .hl-hint { font-size: 0.78rem; color: #9a9a9a; margin: 4px 0 6px; line-height: 1.4; }
+/* In the PC list: a PC the help assistant can't say anything good about yet */
+.hl-missing { margin-top: 3px; font-size: 0.75rem; font-weight: bold; color: #ffc43d; }

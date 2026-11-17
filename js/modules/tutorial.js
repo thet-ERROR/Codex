@@ -18,8 +18,8 @@ const hasBottomBar = () => window.matchMedia('(max-width: 1024px)').matches;
 
 const COPY = {
     en: {
-        welcome: ['WELCOME TO PHOENIX!', "I'm the guardian of this place. Let me show you around — this is where we build your ultimate gaming PC."],
-        mascot: ["I'M RIGHT HERE", 'Whenever you need help, tap me: I take you to the right PC or the ones in your budget, or put you in touch with the admin.'],
+        welcome: ['WELCOME TO PHOENIX!', "I'm Sniffy, the guardian of this place. Let me show you around — this is where we build your ultimate gaming PC."],
+        mascot: ["SNIFFY IS RIGHT HERE", 'Whenever you need help, tap me: tell me your budget and I find the PCs that fit and what each one gives you, or I put you in touch with the admin.'],
         live: ['LIVE DROPS', 'Every custom-built rig, ready for deployment. A blinking red badge means only one unit is left; COMING SOON builds wait at the end of the list.'],
         vote: ['VOTE', "The community votes to unlock a mystery PC — one vote per signed-in agent with a verified email. Reach the target and it unlocks straight into Live Drops — members can order it first."],
         browsePhone: ['BROWSE SYSTEMS', 'Swipe the card left or right to see the next PC — the dots show where you are. The tabs switch between the unit data and the extras; INSPECT SYSTEM opens full specs, FPS and options.'],
@@ -28,8 +28,8 @@ const COPY = {
         cli: ['THE TERMINAL', 'Tap here (or press [`] on a keyboard) to open the command line. Tap a command inside it — try "theme" or "color".'],
     },
     el: {
-        welcome: ['ΚΑΛΩΣ ΗΡΘΕΣ ΣΤΗΝ PHOENIX!', 'Είμαι ο φύλακας του site. Έλα να σου δείξω γρήγορα πού είναι τι — εδώ φτιάχνουμε το δικό σου απόλυτο gaming PC.'],
-        mascot: ['ΕΓΩ ΕΙΜΑΙ ΕΔΩ', 'Όποτε χρειαστείς βοήθεια, πάτα με: σε πάω στο σωστό PC ή σε όσα χωράνε στο budget σου, ή σε φέρνω σε επαφή με τον admin.'],
+        welcome: ['ΚΑΛΩΣ ΗΡΘΕΣ ΣΤΗΝ PHOENIX!', 'Είμαι ο Sniffy, ο φύλακας του site. Έλα να σου δείξω γρήγορα πού είναι τι — εδώ φτιάχνουμε το δικό σου απόλυτο gaming PC.'],
+        mascot: ['Ο SNIFFY ΕΙΝΑΙ ΕΔΩ', 'Όποτε χρειαστείς βοήθεια, πάτα με: πες μου το budget σου και σου βρίσκω τα PC που ταιριάζουν και τι κερδίζεις με το καθένα, ή σε φέρνω σε επαφή με τον admin.'],
         live: ['LIVE DROPS', 'Όλα τα χειροποίητα gaming rigs, έτοιμα για παράδοση. Κόκκινο badge που αναβοσβήνει σημαίνει ότι έμεινε μόνο ένα τεμάχιο· όσα έρχονται ΣΥΝΤΟΜΑ είναι στο τέλος της λίστας.'],
         vote: ['VOTE', 'Η κοινότητα ψηφίζει για να ξεκλειδώσει ένα μυστηριώδες PC — μία ψήφος ανά συνδεδεμένο πράκτορα με επιβεβαιωμένο email. Μόλις μαζευτούν οι ψήφοι, ξεκλειδώνει και μπαίνει αμέσως στα Live Drops — με προτεραιότητα για τα μέλη.'],
         browsePhone: ['ΠΕΡΙΗΓΗΣΗ', 'Σύρε την κάρτα αριστερά ή δεξιά για να δεις το επόμενο PC — οι τελίτσες δείχνουν πού βρίσκεσαι. Οι καρτέλες αλλάζουν ανάμεσα στα στοιχεία και στις επιπλέον επιλογές· το ΕΠΙΘΕΩΡΗΣΗ ΣΥΣΤΗΜΑΤΟΣ δείχνει πλήρη specs, FPS και επιλογές.'],
