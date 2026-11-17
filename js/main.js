@@ -42,6 +42,15 @@ const audioStart = new Audio('assets/audio/startup.mp3');
 // Fetched only if it's actually played (sound on): most visits have the sound off
 audioStart.preload = 'none';
 const bgMusic = new Audio('assets/audio/bg.mp3');
+// At night the music is the night track (the owner's, assets/audio/night.mp3, made the same loudness as the day
+// one). Whichever is right is set just before it plays, so the other is never fetched.
+const TRACKS = { day: 'assets/audio/bg.mp3', night: 'assets/audio/night.mp3' };
+const wantedTrack = () => new URL(document.body.classList.contains('night-mode') ? TRACKS.night : TRACKS.day, location.href).href;
+function playMusic() {
+    if (bgMusic.src !== wantedTrack()) bgMusic.src = wantedTrack();
+    return bgMusic.play();
+}
+window.codexMusic = bgMusic; // read by the tests
 // Nothing is fetched until the music is switched on: most visits never play it, and it's the biggest file
 bgMusic.preload = 'none';
 bgMusic.loop = true;
@@ -67,7 +76,7 @@ function pauseForLeaving() {
     audioStart.pause();
 }
 function resumeAfterReturn() {
-    if (resumeMusicOnReturn && state.audioEnabled) bgMusic.play().catch(() => {});
+    if (resumeMusicOnReturn && state.audioEnabled) playMusic().catch(() => {});
     resumeMusicOnReturn = false;
 }
 document.addEventListener('visibilitychange', () => {
@@ -83,11 +92,31 @@ document.addEventListener('freeze', pauseForLeaving);
 window.addEventListener('blur', () => { if (!document.hasFocus()) pauseForLeaving(); });
 window.addEventListener('focus', () => { if (document.visibilityState === 'visible') resumeAfterReturn(); });
 
+// Night falls (or day breaks) while the music plays: a short fade to the other track. With the sound off
+// nothing happens; the next start picks the right one. (On an iPhone the volume can't be changed by a page,
+// so there it changes track straight away.)
+let musicFade = 0;
+document.addEventListener('codex:daynight', () => {
+    if (!state.audioEnabled || bgMusic.paused || bgMusic.src === wantedTrack()) return;
+    clearInterval(musicFade);
+    const target = state.bgVolume;
+    musicFade = setInterval(() => {
+        bgMusic.volume = Math.max(0, bgMusic.volume - target / 8);
+        if (bgMusic.volume > 0.001) return;
+        clearInterval(musicFade);
+        playMusic().catch(() => {});
+        musicFade = setInterval(() => {
+            bgMusic.volume = Math.min(target, bgMusic.volume + target / 8);
+            if (bgMusic.volume >= target - 0.001) { bgMusic.volume = target; clearInterval(musicFade); }
+        }, 50);
+    }, 50);
+});
+
 // --- GLOBAL SETTINGS FUNCTIONS ---
 window.toggleAudio = () => {
     state.audioEnabled = !state.audioEnabled;
     localStorage.setItem('codex_audio', state.audioEnabled);
-    if (state.audioEnabled) { bgMusic.play().catch(()=>{}); } else { bgMusic.pause(); }
+    if (state.audioEnabled) { playMusic().catch(()=>{}); } else { bgMusic.pause(); }
     
     syncSettingsUI();
 };
@@ -269,7 +298,7 @@ const initApp = async () => {
     // 3. Setup Audio Triggers
     if (state.audioEnabled) audioStart.play().catch(e => console.log("Audio autoplay blocked"));
     document.body.addEventListener('click', function() {
-        if (state.audioEnabled && bgMusic.paused) { bgMusic.play().catch(()=>{}); }
+        if (state.audioEnabled && bgMusic.paused) { playMusic().catch(()=>{}); }
     }, { once: true });
 
     // 4. Connect to Codex Database (Backend)

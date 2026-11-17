@@ -5,13 +5,6 @@
    — the settings are where the visitor PICKS their accent, so the window doesn't wear it.
    Scoped to the modal's id, so it beats the shared window shell (modals.css, tcg-card.css .info-box)
    without !important; the markup is the shared shell plus a gear chip and two chevrons. */
-#settings-modal {
-    --s-purple: #b026ff;
-    --s-line: rgba(176, 38, 255, 0.45);
-    --s-soft: rgba(176, 38, 255, 0.14);
-    --s-glow: rgba(176, 38, 255, 0.35);
-    --s-panel: #0d0a18;
-}
 
 /* --- the slab --- */
 #settings-modal .info-box {

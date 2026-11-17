@@ -3,13 +3,6 @@
    is the shared window shell modals.js builds at start-up (upgradeModalShells), which also adds the
    icon chip (.set-head-ico, SHELL_ICONS). Scoped to the four ids; the old green focus / purple outline
    button of modals.css .auth-form are restyled here. */
-#login-modal, #signup-modal, #forgot-modal, #reset-modal, #achievements-modal, #checkout-modal, #order-modal {
-    --s-purple: #b026ff;
-    --s-line: rgba(176, 38, 255, 0.45);
-    --s-soft: rgba(176, 38, 255, 0.14);
-    --s-glow: rgba(176, 38, 255, 0.35);
-    --s-panel: #0d0a18;
-}
 
 /* --- the slab --- */
 :is(#login-modal, #signup-modal, #forgot-modal, #reset-modal, #achievements-modal, #checkout-modal, #order-modal) .info-box {

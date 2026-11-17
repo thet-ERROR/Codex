@@ -1,6 +1,13 @@
 :root {
     --neon-green: #ccff00;
     --neon-purple: #b026ff;
+    /* The HUD window palette (login, checkout, settings, cart, profile menu, Sniffy...). Every window reads
+       these, so a theme changes them here once. Today: the purple of the Nebula style. */
+    --s-purple: #b026ff;
+    --s-line: rgba(176, 38, 255, 0.45);
+    --s-soft: rgba(176, 38, 255, 0.14);
+    --s-glow: rgba(176, 38, 255, 0.35);
+    --s-panel: #0d0a18;
     --legendary-orange: #ffaa00;
     --retro-red: #ff3333;
     --glass-dark: rgba(8, 8, 12, 0.95);

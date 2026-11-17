@@ -5,11 +5,6 @@
    Scoped to the dropdown's id so it beats cart.css without !important; position and size on phones
    stay with cart.js / mobile.css. */
 #cart-dropdown {
-    --s-purple: #b026ff;
-    --s-line: rgba(176, 38, 255, 0.45);
-    --s-soft: rgba(176, 38, 255, 0.14);
-    --s-glow: rgba(176, 38, 255, 0.35);
-    --s-panel: #0d0a18;
     width: 380px; padding: 14px; gap: 12px;
     border: 1.5px solid transparent; border-radius: 22px;
     background:
