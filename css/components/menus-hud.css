@@ -4,13 +4,6 @@
    Profile menu: header.css .profile-menu, items built by updateAuthUI in js/modules/auth.js.
    Help box: #chat-widget in index.html, rows built by js/modules/chat.js. */
 
-.profile-menu, #chat-widget {
-    --s-purple: #b026ff;
-    --s-line: rgba(176, 38, 255, 0.45);
-    --s-soft: rgba(176, 38, 255, 0.14);
-    --s-glow: rgba(176, 38, 255, 0.35);
-    --s-panel: #0d0a18;
-}
 
 /* --- profile menu --- */
 .profile-menu {
