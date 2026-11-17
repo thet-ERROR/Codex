@@ -15,7 +15,7 @@
     --text-main: #ffffff;
     --font-ui: 'Rajdhani', 'Exo 2', sans-serif;
     --font-body: 'Space Grotesk', 'Exo 2', sans-serif;
-    --card-font-secondary: 'Orbitron', 'Exo 2', sans-serif;
+    --card-font-secondary: var(--font-ui);
     --card-bg-night: rgba(6, 8, 14, 0.97);
     --card-border-night: rgba(140, 170, 255, 0.35);
     --night-glow: 0 0 30px rgba(120,150,255,0.15);

@@ -290,9 +290,8 @@
 }
 
 /* ===== The user's second mockup: an arena behind the duel, and a calmer, more professional type =====
-   Exo 2 for everything (it has real Greek letters — Orbitron didn't, so Greek fell back to another
-   face mid-word), with tabular numbers so FPS and prices line up. */
-#compare-modal { --vs-font: 'Exo 2', 'Rajdhani', system-ui, sans-serif; }
+   The site's title face for everything (Greek letters fall back to Exo 2 like everywhere else), with tabular numbers so FPS and prices line up. */
+#compare-modal { --vs-font: var(--font-ui); }
 #compare-modal .compare-box { font-family: var(--vs-font); font-variant-numeric: tabular-nums; }
 #compare-modal .vs-title { font-weight: 800; letter-spacing: 1px; }
 #compare-modal .vs-name { font-weight: 800; letter-spacing: 0.5px; }

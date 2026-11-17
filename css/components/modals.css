@@ -54,7 +54,7 @@ button.close-modal { padding: 0; border: 0; background: none; font-family: inher
 
 /* Driver.js Overrides */
 .driver-popover { background-color: rgba(10, 5, 20, 0.95) !important; border: 1px solid var(--neon-purple, #b026ff) !important; color: #fff !important; border-radius: 12px !important; box-shadow: 0 0 20px rgba(176, 38, 255, 0.3) !important; }
-.driver-popover-title { color: var(--neon-green, #ccff00) !important; font-family: 'Orbitron', sans-serif !important; font-size: 1.2rem !important; margin-bottom: 5px !important; }
+.driver-popover-title { color: var(--neon-green, #ccff00) !important; font-family: var(--font-ui) !important; font-size: 1.2rem !important; margin-bottom: 5px !important; }
 .driver-popover-description { color: #ccc !important; font-family: 'Space Grotesk', sans-serif !important; font-size: 0.95rem !important; }
 .driver-popover-footer button { background-color: transparent !important; border: 1px solid var(--neon-purple, #b026ff) !important; color: #fff !important; text-shadow: 0 0 5px var(--neon-purple, #b026ff) !important; transition: 0.3s ease !important; font-family: 'Chakra Petch', sans-serif !important; border-radius: 4px !important; }
 .driver-popover-footer button:hover { background-color: var(--neon-purple, #b026ff) !important; color: #000 !important; text-shadow: none !important; }
