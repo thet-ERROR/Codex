@@ -117,6 +117,7 @@
                         <span style="color:${statusColor}; font-weight:bold;">${statusText}</span> |
                         Stock: ${esc(pc.stock)}
                     </div>
+                    ${(() => { const h = pc.highlights || {}, el = (h.el || []).length, en = (h.en || []).length; return el && en ? '' : `<div class="hl-missing">⚠ ${!el && !en ? 'Χωρίς δυνατά σημεία' : `Χωρίς δυνατά σημεία στα ${!el ? 'ελληνικά' : 'αγγλικά'}`}</div>`; })()}
                 </div>
                 <div class="item-actions">
                     <button class="btn-sm edit-btn" data-action="edit" data-id="${esc(pc._id)}">EDIT</button>

@@ -114,6 +114,9 @@ export function showPcById(id) {
     const i = state.filtered.findIndex(p => (p._id || p.id) === id);
     if (i > 0) { state.index = i; renderCard(); }
     renderStageHeading();
+    // The card lights up once, so it is plain which PC the assistant brought (css/components/card-hud.css)
+    const card = document.getElementById('main-card');
+    if (card) { card.classList.remove('tc-found'); void card.offsetWidth; card.classList.add('tc-found'); setTimeout(() => card.classList.remove('tc-found'), 1700); }
 }
 
 export function backToPacks() {

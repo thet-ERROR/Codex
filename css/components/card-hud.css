@@ -257,3 +257,8 @@ body.pointer-input .tc-tab:focus-visible { outline: none; }
     .tc-tab { font-size: 3.1cqw; }
     .tc-actions .btn-card-inspect, .tc-actions .btn-card-compare { font-size: 3cqw !important; }
 }
+
+/* The card the help assistant just brought (catalog.js showPcById): a ring of light that swells and fades once */
+#main-card.tc-found { animation: tcFound 1.6s ease-out 1; }
+@keyframes tcFound { 0% { outline: 3px solid var(--hc); outline-offset: 0; } 60% { outline: 3px solid var(--hc); outline-offset: 10px; } 100% { outline: 3px solid transparent; outline-offset: 14px; } }
+@media (prefers-reduced-motion: reduce) { #main-card.tc-found { animation: none; outline: 3px solid var(--hc); outline-offset: 4px; } }
