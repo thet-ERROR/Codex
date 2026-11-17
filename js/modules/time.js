@@ -15,9 +15,15 @@ export function getDayNightMode() {
     } catch (e) { return 'auto'; }
 }
 
+// Tells the rest of the site when it turns from day to night or back (the music changes track, main.js),
+// whether the clock did it or the visitor. Not on the first look at load: nothing has changed then.
+let lastNight = null;
 function applyDayNightMode() {
     const mode = getDayNightMode();
-    document.body.classList.toggle('night-mode', mode === 'auto' ? isNightTime() : mode === 'night');
+    const night = mode === 'auto' ? isNightTime() : mode === 'night';
+    document.body.classList.toggle('night-mode', night);
+    if (lastNight !== null && night !== lastNight) document.dispatchEvent(new CustomEvent('codex:daynight', { detail: { night } }));
+    lastNight = night;
 }
 
 // mode: 'night' | 'day' | 'auto'
