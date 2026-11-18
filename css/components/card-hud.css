@@ -12,9 +12,9 @@
 
 .card-col {
     --hc: var(--neon-green);
-    --hc-line: rgba(204, 255, 0, 0.5);
-    --hc-soft: rgba(204, 255, 0, 0.12);
-    --hc-glow: rgba(204, 255, 0, 0.3);
+    --hc-line: rgb(var(--a-rgb) / 0.5);
+    --hc-soft: rgb(var(--a-rgb) / 0.12);
+    --hc-glow: rgb(var(--a-rgb) / 0.3);
     --hc-bg: #09071a;
     --hc-panel: #0b0916;
 }
@@ -57,7 +57,7 @@
 .tc-title::after { content: ''; position: absolute; left: 14px; bottom: -1px; width: 26%; height: 2px; border-radius: 2px; background: var(--hc); box-shadow: 0 0 8px var(--hc); }
 .tc-name { font-size: max(17px, 6.5cqw); font-weight: 900; letter-spacing: 0.8px; color: #fff; text-shadow: 0 0 16px var(--hc-glow), 0 1px 0 rgba(0, 0, 0, 0.9); }
 .tc-attr {
-    width: 10cqw; height: 10cqw; font-size: 5.4cqw; color: #08060f;
+    width: 10cqw; height: 10cqw; font-size: 5.4cqw; color: var(--s-bg2);
     box-shadow: 0 0 0 2px var(--hc-line), 0 0 14px var(--hc-glow);
 }
 
@@ -207,11 +207,11 @@ body.pointer-input .tc-tab:focus-visible { outline: none; }
 .nav-arrow {
     position: static; transform: none; /* tablet.css used to pin them over the card's edges */
     flex: none; width: 46px; height: 92px; padding: 0; clip-path: none; border-radius: 14px; cursor: pointer;
-    border: 1px solid var(--hc-line, rgba(204, 255, 0, 0.5)); background: rgba(8, 6, 16, 0.74); color: #fff; font-size: 1.4rem;
-    box-shadow: 0 0 14px var(--hc-soft, rgba(204, 255, 0, 0.12)), inset 0 0 12px var(--hc-soft, rgba(204, 255, 0, 0.12));
+    border: 1px solid var(--hc-line, rgb(var(--a-rgb) / 0.5)); background: rgba(8, 6, 16, 0.74); color: #fff; font-size: 1.4rem;
+    box-shadow: 0 0 14px var(--hc-soft, rgb(var(--a-rgb) / 0.12)), inset 0 0 12px var(--hc-soft, rgb(var(--a-rgb) / 0.12));
     transition: background-color 0.2s, color 0.2s, border-color 0.2s, box-shadow 0.2s, transform 0.1s;
 }
-.nav-arrow:hover { background: var(--neon-green); border-color: var(--neon-green); color: #000; box-shadow: 0 0 20px var(--hc-glow, rgba(204, 255, 0, 0.3)); }
+.nav-arrow:hover { background: var(--neon-green); border-color: var(--neon-green); color: #000; box-shadow: 0 0 20px var(--hc-glow, rgb(var(--a-rgb) / 0.3)); }
 .nav-arrow:active { transform: scale(0.94); }
 @supports (color: color-mix(in srgb, red, blue)) {
     .nav-arrow { --hc-line: color-mix(in srgb, var(--neon-green) 55%, transparent); --hc-soft: color-mix(in srgb, var(--neon-green) 14%, transparent); --hc-glow: color-mix(in srgb, var(--neon-green) 32%, transparent); }
@@ -232,7 +232,7 @@ body.pointer-input .tc-tab:focus-visible { outline: none; }
 
 /* --- the title over the card, in the same voice: a glowing title, a bordered count --- */
 .sh-count { border-radius: 999px; }
-#stage-label { text-shadow: 0 0 22px var(--hc-glow, rgba(204, 255, 0, 0.3)); }
+#stage-label { text-shadow: 0 0 22px var(--hc-glow, rgb(var(--a-rgb) / 0.3)); }
 
 /* --- touch screens: the same look, lighter to draw, so the swipe stays smooth ---
    Each swipe builds a new card and snapshots the old one, and every soft shadow, filter and blend in

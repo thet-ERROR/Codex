@@ -20,7 +20,7 @@
 .cf-wait, .compare-float.half .cf-ready { display: none; }
 .compare-float.half .cf-wait { display: block; }
 .compare-float.half { border-style: dashed; background: linear-gradient(90deg, #1a2200 0 50%, #000 50%); }
-.compare-float.active { background: linear-gradient(180deg, rgba(204, 255, 0, 0.2), #000); }
+.compare-float.active { background: linear-gradient(180deg, rgb(var(--a-rgb) / 0.2), #000); }
 @supports (color: color-mix(in srgb, red, blue)) {
     .compare-float.half { background: linear-gradient(90deg, color-mix(in srgb, var(--neon-green) 22%, #000) 0 50%, #000 50%); }
     .compare-float.active { background: linear-gradient(180deg, color-mix(in srgb, var(--neon-green) 24%, #000), #000); }
@@ -35,7 +35,7 @@
 .compare-box {
     width: min(760px, 94vw); padding: 26px 22px 22px; border-radius: 18px;
     border: 2px solid var(--neon-green) !important; max-height: 88vh;
-    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.85), 0 0 25px rgba(204, 255, 0, 0.12);
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.85), 0 0 25px rgb(var(--a-rgb) / 0.12);
 }
 .vs-title { text-align: center; font-family: var(--font-ui); font-weight: 800; letter-spacing: 3px; font-size: 1.4rem; margin: 0 0 18px; color: #fff; }
 
@@ -51,14 +51,14 @@
     align-self: center; margin-top: 30px; width: 40px; height: 40px; border-radius: 50%;
     display: flex; align-items: center; justify-content: center;
     font-family: var(--font-ui); font-weight: 900; font-size: 0.85rem; color: #000;
-    background: var(--neon-green); box-shadow: 0 0 18px rgba(204, 255, 0, 0.45);
+    background: var(--neon-green); box-shadow: 0 0 18px rgb(var(--a-rgb) / 0.45);
 }
 
 .vs-section-title {
     display: flex; align-items: center; gap: 10px; margin: 18px 0 6px;
     font-family: var(--font-ui); font-weight: 800; font-size: 0.75rem; letter-spacing: 2px; color: var(--neon-purple); text-transform: uppercase;
 }
-.vs-section-title::before, .vs-section-title::after { content: ""; flex: 1; height: 1px; background: rgba(176, 38, 255, 0.3); }
+.vs-section-title::before, .vs-section-title::after { content: ""; flex: 1; height: 1px; background: rgb(var(--v-main) / 0.3); }
 
 .vs-row { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 12px; padding: 9px 0; border-bottom: 1px solid #1f1f1f; }
 .vs-label { font-family: var(--font-ui); font-weight: 800; font-size: 0.68rem; letter-spacing: 1px; color: var(--neon-purple); text-align: center; min-width: 52px; }
@@ -73,10 +73,10 @@
 .vs-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 18px; }
 .vs-view-btn {
     padding: 12px; border-radius: 8px; cursor: pointer; transition: 0.2s ease;
-    background: rgba(176, 38, 255, 0.1); border: 1px solid var(--neon-purple); color: #fff;
+    background: rgb(var(--v-main) / 0.1); border: 1px solid var(--neon-purple); color: #fff;
     font-family: var(--font-ui); font-weight: 800; font-size: 0.85rem; letter-spacing: 1px; text-transform: uppercase;
 }
-.vs-view-btn:hover { background: var(--neon-purple); box-shadow: 0 0 16px rgba(176, 38, 255, 0.5); }
+.vs-view-btn:hover { background: var(--neon-purple); box-shadow: 0 0 16px rgb(var(--v-main) / 0.5); }
 
 @media (max-width: 768px) {
     .compare-box { padding: 20px 14px 16px; }

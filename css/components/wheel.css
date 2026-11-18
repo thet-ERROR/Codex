@@ -1,7 +1,3 @@
-.color-btn { position: relative; }
-.color-lock-icon { display: none; position: absolute; inset: 0; align-items: center; justify-content: center; background: rgba(0, 0, 0, 0.55); border-radius: 50%; color: #fff; font-size: 0.9rem; }
-.color-btn.locked .color-lock-icon { display: flex; }
-
 .wheel-content { width: 600px; max-width: 90vw; text-align: center; }
 .wheel-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; align-items: center; text-align: left; }
 .wheel-col-left { text-align: center; }

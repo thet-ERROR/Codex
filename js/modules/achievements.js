@@ -38,23 +38,23 @@ export function applyProfile(profile) {
     state.rankProgress = profile.progress ?? 0;
     if (Array.isArray(profile.ranks)) state.ranks = profile.ranks;
     if (typeof profile.bonusSpins === 'number' && window.applyWheelData) window.applyWheelData({ bonusSpins: profile.bonusSpins });
-    // A colour a badge paid (the Konami code's) comes with the profile — usable at once
-    if (Array.isArray(profile.unlockedColors) && window.applyWheelData) window.applyWheelData({ unlockedColors: profile.unlockedColors });
+    // A theme a badge paid (the Konami code's) comes with the profile — usable at once
+    if (Array.isArray(profile.unlockedThemes) && window.applyWheelData) window.applyWheelData({ unlockedThemes: profile.unlockedThemes });
     localStorage.setItem('codex_achievements', JSON.stringify(state.achievements));
-    // Rewards the server paid out on this very request — shown once, and a colour is usable at once
+    // Rewards the server paid out on this very request — shown once, and a theme is usable at once
     if (Array.isArray(profile.rankRewards) && profile.rankRewards.length) announceRankRewards(profile.rankRewards);
     refreshProgressionUI();
 }
 
-// One notice for whatever the rank-up brought: the new (highest) rank, the spins, the colours. An
+// One notice for whatever the rank-up brought: the new (highest) rank, the spins, the themes. An
 // account paid for several ranks at once (it was past them before rewards existed) gets one, not five.
 function announceRankRewards(granted) {
-    const colors = granted.map(g => g.color).filter(Boolean);
+    const themes = granted.map(g => g.theme).filter(Boolean);
     const spins = granted.reduce((n, g) => n + (g.spins || 0), 0);
-    if (colors.length && window.applyWheelData) window.applyWheelData({ unlockedColors: colors });
+    if (themes.length && window.applyWheelData) window.applyWheelData({ unlockedThemes: themes });
     const parts = [];
     if (spins) parts.push(t('rankUpSpins', { n: spins }));
-    colors.forEach(id => parts.push(t('rankUpColor', { name: (CONFIG.RANK_COLORS[id] || {}).name || id })));
+    themes.forEach(id => parts.push(t('rankUpColor', { name: (CONFIG.THEMES[id] || {}).name || id })));
     const top = granted[granted.length - 1].rank;
     if (window.showToast) window.showToast(t('rankUpToast', { rank: rankName(top) }) + (parts.length ? ' — ' + parts.join(' · ') : ''), 'achievement');
 }
@@ -131,9 +131,9 @@ function renderRankLadder() {
         const rw = r.rewards || {};
         const chips = [];
         if (rw.spins) chips.push(`<span class="rk-chip"><i class="ph-fill ph-arrows-clockwise" aria-hidden="true"></i>${esc(t('rankStepSpins', { n: rw.spins }))}</span>`);
-        if (rw.color) {
-            const c = CONFIG.RANK_COLORS[rw.color];
-            chips.push(`<span class="rk-chip"><i class="rk-dot" style="background:${esc(c ? c.hex : '#888')}" aria-hidden="true"></i>${esc(c ? c.name : rw.color)}</span>`);
+        if (rw.theme) {
+            const th = CONFIG.THEMES[rw.theme];
+            chips.push(`<span class="rk-chip"><i class="rk-dot" style="background:${esc(th ? th.colors[0] : '#888')}" aria-hidden="true"></i>${esc(th ? th.name : rw.theme)}</span>`);
         }
         const sub = next ? t('rankStepLeft', { n: Math.max(0, r.minXp - state.xp) }) : `${r.minXp} XP`;
         const mark = current ? esc(t('rankStepNow')) : reached ? '<i class="ph-bold ph-check" aria-hidden="true"></i>' : '<i class="ph-bold ph-lock-simple" aria-hidden="true"></i>';

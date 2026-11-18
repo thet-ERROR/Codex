@@ -42,7 +42,7 @@ body.night-mode #main-card {
 
 /* INSPECT: raised, lit from above; pressing sinks it */
 .btn-card-inspect {
-    background: linear-gradient(180deg, rgba(176, 38, 255, 0.24), rgba(176, 38, 255, 0.08));
+    background: linear-gradient(180deg, rgb(var(--v-main) / 0.24), rgb(var(--v-main) / 0.08));
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12), 0 3px 0 #1a0f24, 0 5px 0 #0e0814, 0 8px 14px rgba(0, 0, 0, 0.5);
 }
 .btn-card-inspect:hover { box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.15), 0 3px 0 #1a0f24, 0 5px 0 #0e0814, 0 0 20px var(--neon-purple); }

@@ -9,7 +9,7 @@
    quiet zone (qr.js) inside it, and nothing decorative ever over the tile — it sits in an opaque
    socket above the loop. The liquid moves gently and stops for reduced motion. */
 
-#qr-modal { --q-purple: #b026ff; --q-pink: #ff3da6; }
+#qr-modal { --q-purple: rgb(var(--v-main)); --q-pink: rgb(var(--v-pink)); }
 
 /* The frame, header chip, close button and main buttons are the shared window shell (auth-hud.css).
    What is left here is the artwork: the socket, the loop, the canisters. */
@@ -18,7 +18,7 @@
 /* --- the line of text, in its own panel --- */
 #qr-modal .qr-text {
     margin: 0 0 14px; padding: 10px 14px; border-radius: 12px; text-align: center; line-height: 1.5; font-size: 0.88rem; color: #d9d0ea;
-    border: 1px solid rgba(176, 38, 255, 0.4); background: rgba(176, 38, 255, 0.06);
+    border: 1px solid rgb(var(--v-main) / 0.4); background: rgb(var(--v-main) / 0.06);
 }
 
 /* --- the stage: side | socket | side, with the loop behind --- */
@@ -42,9 +42,9 @@
 #qr-modal .qr-chip {
     width: 44px; height: 44px; display: grid; place-items: center; border-radius: 11px; font-size: 1.35rem;
     color: var(--neon-green); filter: drop-shadow(0 0 6px color-mix(in srgb, var(--neon-green) 60%, transparent));
-    border: 1.5px solid rgba(192, 77, 255, 0.85);
+    border: 1.5px solid rgb(var(--v-bright) / 0.85);
     background: linear-gradient(160deg, rgba(60, 22, 110, 0.95), rgba(20, 10, 40, 0.95));
-    box-shadow: 0 0 12px rgba(176, 38, 255, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+    box-shadow: 0 0 12px rgb(var(--v-main) / 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.12);
 }
 #qr-modal .qr-side-l .qr-chip { transform: rotate(-10deg); }
 #qr-modal .qr-side-r .qr-chip { transform: rotate(10deg); }
@@ -59,7 +59,7 @@
 #qr-modal .qr-can::before, #qr-modal .qr-can::after {
     content: ''; position: absolute; left: -4px; right: -4px; height: 9px; border-radius: 3px;
     background: linear-gradient(90deg, #3d3152, #d4c8ea 40%, #7a6a99 60%, #2b2140);
-    box-shadow: 0 0 6px rgba(176, 38, 255, 0.5);
+    box-shadow: 0 0 6px rgb(var(--v-main) / 0.5);
 }
 #qr-modal .qr-can::before { top: -7px; }
 #qr-modal .qr-can::after { bottom: -7px; }
@@ -81,9 +81,9 @@
 /* The socket: an opaque dark frame for the white tile, so no glow ever reaches the code */
 #qr-modal .qr-socket {
     position: relative; z-index: 1; justify-self: center; width: min(232px, 100%); padding: 10px; box-sizing: border-box;
-    border-radius: 18px; border: 1.5px solid rgba(192, 77, 255, 0.75);
+    border-radius: 18px; border: 1.5px solid rgb(var(--v-bright) / 0.75);
     background: linear-gradient(180deg, #1c1030, #0d0819);
-    box-shadow: 0 0 16px rgba(176, 38, 255, 0.45), inset 0 0 12px rgba(0, 0, 0, 0.6);
+    box-shadow: 0 0 16px rgb(var(--v-main) / 0.45), inset 0 0 12px rgba(0, 0, 0, 0.6);
 }
 #qr-modal .qr-tile {
     width: 100%; aspect-ratio: 1 / 1; padding: 0; box-sizing: border-box; display: grid; place-items: center; overflow: hidden;
@@ -105,10 +105,10 @@
 #qr-modal .qr-actions .info-btn { width: min(300px, 100%); min-height: 54px; border-radius: 14px; font-family: var(--font-ui); letter-spacing: 1.5px; }
 #qr-modal .qr-actions .info-btn[hidden] { display: none; }
 #qr-modal .qr-actions .info-btn.primary {
-    border: 1px solid var(--s-purple); color: #fff; background: linear-gradient(135deg, rgba(176, 38, 255, 0.6), rgba(109, 40, 217, 0.35));
-    box-shadow: 0 0 18px rgba(176, 38, 255, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+    border: 1px solid var(--s-purple); color: #fff; background: linear-gradient(135deg, rgb(var(--v-main) / 0.6), rgb(var(--v-deep) / 0.35));
+    box-shadow: 0 0 18px rgb(var(--v-main) / 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.12);
 }
-#qr-modal .qr-actions .info-btn.primary:hover { box-shadow: 0 0 26px rgba(176, 38, 255, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.15); }
+#qr-modal .qr-actions .info-btn.primary:hover { box-shadow: 0 0 26px rgb(var(--v-main) / 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.15); }
 #qr-modal .qr-actions .info-btn:not(.primary) { border: 1px solid var(--s-line); background: var(--s-soft); }
 #qr-modal .qr-actions .info-btn:not(.primary):hover { border-color: var(--s-purple); }
 

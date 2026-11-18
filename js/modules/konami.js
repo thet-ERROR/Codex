@@ -1,14 +1,14 @@
 // js/modules/konami.js
 //
 // ↑ ↑ ↓ ↓ ← → ← → B A, anywhere on the site (not while typing in a field): the CHEAT CODE badge and its
-// secret accent colour, which appears in the settings and in the terminal's `color` only from then on.
-// The badge is client-reported like the other UI badges; the server grants the colour along with it
+// secret Phantom theme, which appears in the settings and in the terminal's `color` only from then on.
+// The badge is client-reported like the other UI badges; the server grants the theme along with it
 // (codex-backend lib/achievements.js), so a signed-in agent keeps it on every device. A visitor
 // without an account keeps it in this browser, and it is reported once they sign in.
 import { state } from '../state.js';
 
 const SEQUENCE = ['arrowup', 'arrowup', 'arrowdown', 'arrowdown', 'arrowleft', 'arrowright', 'arrowleft', 'arrowright', 'b', 'a'];
-const COLOR = { id: 'cheatCode', hex: '#ff0a54' };
+const THEME = 'phantom';
 let recent = [];
 
 function isTyping(el) {
@@ -17,14 +17,9 @@ function isTyping(el) {
 
 export function unlockCheatCode() {
     if (window.checkAchievement) window.checkAchievement('cheat_code');
-    const already = (state.unlockedColors || []).includes(COLOR.id);
-    if (!already) {
-        state.unlockedColors = [...(state.unlockedColors || []), COLOR.id];
-        try { localStorage.setItem('codex_unlocked_colors', JSON.stringify(state.unlockedColors)); } catch (e) {}
-        if (window.refreshColorLocks) window.refreshColorLocks();
-    }
-    // Put it on straight away: the reward is seeing it
-    if (window.setTheme) window.setTheme(COLOR.hex, COLOR.id);
+    // Kept in this browser straight away (a visitor without an account keeps it), and put on: the reward is seeing it
+    if (window.unlockTheme) window.unlockTheme(THEME);
+    if (window.setTheme) window.setTheme(THEME, { quiet: true });
     if (window.showToast && window.t) window.showToast(window.t('konamiFound'), 'achievement');
 }
 

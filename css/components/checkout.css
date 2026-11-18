@@ -15,7 +15,7 @@
 /* --- section labels and rows --- */
 :is(#checkout-modal, #order-modal) .co-label {
     margin-top: 8px; font-family: var(--font-ui); font-size: 0.72rem; font-weight: 800; letter-spacing: 2px;
-    text-transform: uppercase; color: var(--s-purple-text, #c77dff);
+    text-transform: uppercase; color: var(--s-purple-text, rgb(var(--v-pale)));
 }
 :is(#checkout-modal, #order-modal) .co-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 :is(#checkout-modal, #order-modal) .co-row > * { min-width: 0; }
@@ -23,14 +23,14 @@
 :is(#checkout-modal, #order-modal) .co-note { margin: 0; font-size: 0.8rem; line-height: 1.4; color: #9b93b5; }
 :is(#checkout-modal, #order-modal) .co-notes { min-height: 64px; resize: vertical; font-family: inherit; }
 :is(#checkout-modal, #order-modal) select.auth-input { color: #fff; }
-:is(#checkout-modal, #order-modal) select.auth-input option { background: #0d0a18; color: #fff; }
+:is(#checkout-modal, #order-modal) select.auth-input option { background: var(--s-panel); color: #fff; }
 
 /* --- delivery / receipt: cards with a radio inside, the picked one lit --- */
 :is(#checkout-modal, #order-modal) .co-methods { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
 :is(#checkout-modal, #order-modal) .co-methods-2 { grid-template-columns: repeat(2, 1fr); }
 :is(#checkout-modal, #order-modal) .co-method {
     position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px;
-    min-height: 74px; padding: 10px 6px; border-radius: 14px; border: 1px solid rgba(176, 38, 255, 0.3);
+    min-height: 74px; padding: 10px 6px; border-radius: 14px; border: 1px solid rgb(var(--v-main) / 0.3);
     background: var(--s-panel); color: #c9c3d9; text-align: center; cursor: pointer;
     font-family: var(--font-ui); font-weight: 700; font-size: 0.82rem;
     transition: border-color 0.2s, box-shadow 0.2s, color 0.2s;
@@ -40,8 +40,8 @@
 :is(#checkout-modal, #order-modal) .co-method small { font-size: 0.68rem; font-weight: 600; color: #8f88a8; }
 :is(#checkout-modal, #order-modal) .co-method:has(input:checked) {
     border-color: var(--s-purple); color: #fff;
-    background: linear-gradient(180deg, rgba(176, 38, 255, 0.2), rgba(176, 38, 255, 0.05)), var(--s-panel);
-    box-shadow: 0 0 0 3px rgba(176, 38, 255, 0.18), 0 0 16px rgba(176, 38, 255, 0.25);
+    background: linear-gradient(180deg, rgb(var(--v-main) / 0.2), rgb(var(--v-main) / 0.05)), var(--s-panel);
+    box-shadow: 0 0 0 3px rgb(var(--v-main) / 0.18), 0 0 16px rgb(var(--v-main) / 0.25);
 }
 :is(#checkout-modal, #order-modal) .co-method:has(input:checked) small { color: #d8c9f2; }
 :is(#checkout-modal, #order-modal) .co-method:has(input:focus-visible) { outline: 2px solid #fff; outline-offset: 2px; }
@@ -49,21 +49,21 @@
 /* --- the in-person areas, as chips --- */
 :is(#checkout-modal, #order-modal) .co-areas { display: flex; flex-wrap: wrap; gap: 6px; }
 :is(#checkout-modal, #order-modal) .co-area-chip {
-    padding: 4px 10px; border-radius: 999px; border: 1px solid rgba(176, 38, 255, 0.3);
+    padding: 4px 10px; border-radius: 999px; border: 1px solid rgb(var(--v-main) / 0.3);
     background: var(--s-panel); color: #c9c3d9; font-size: 0.74rem;
 }
 
 /* --- summary --- */
 :is(#checkout-modal, #order-modal) .co-summary {
     display: flex; flex-direction: column; gap: 8px; padding: 12px 14px;
-    border-radius: 14px; border: 1px solid rgba(176, 38, 255, 0.25); background: var(--s-panel);
+    border-radius: 14px; border: 1px solid rgb(var(--v-main) / 0.25); background: var(--s-panel);
 }
 :is(#checkout-modal, #order-modal) .co-line { display: flex; justify-content: space-between; gap: 12px; font-size: 0.88rem; color: #e7e3f1; }
 :is(#checkout-modal, #order-modal) .co-line-name { display: flex; flex-direction: column; min-width: 0; }
 :is(#checkout-modal, #order-modal) .co-line-name small { font-size: 0.74rem; color: #9b93b5; }
 :is(#checkout-modal, #order-modal) .co-line b { white-space: nowrap; font-family: var(--font-ui); }
 :is(#checkout-modal, #order-modal) .co-line-discount { color: var(--legendary-orange, #ffb800); }
-:is(#checkout-modal, #order-modal) .co-line-total { padding-top: 8px; border-top: 1px solid rgba(176, 38, 255, 0.25); font-size: 1rem; font-weight: 800; color: #fff; }
+:is(#checkout-modal, #order-modal) .co-line-total { padding-top: 8px; border-top: 1px solid rgb(var(--v-main) / 0.25); font-size: 1rem; font-weight: 800; color: #fff; }
 
 /* --- terms link, errors, sending --- */
 :is(#checkout-modal, #order-modal) .co-link { padding: 0; border: 0; background: none; color: #c9b6f5; font: inherit; font-weight: 700; text-decoration: underline; cursor: pointer; }
@@ -85,7 +85,7 @@
 }
 :is(#checkout-modal, #order-modal) .co-done-title { margin: 0; font-family: var(--font-ui); font-size: 1.2rem; color: #fff; }
 :is(#checkout-modal, #order-modal) .co-done-label { font-size: 0.72rem; letter-spacing: 2px; text-transform: uppercase; color: #9b93b5; }
-:is(#checkout-modal, #order-modal) .co-done-number { font-family: var(--font-ui); font-size: 2rem; font-weight: 800; letter-spacing: 3px; color: #fff; text-shadow: 0 0 16px rgba(176, 38, 255, 0.6); }
+:is(#checkout-modal, #order-modal) .co-done-number { font-family: var(--font-ui); font-size: 2rem; font-weight: 800; letter-spacing: 3px; color: #fff; text-shadow: 0 0 16px rgb(var(--v-main) / 0.6); }
 :is(#checkout-modal, #order-modal) .co-done-total { color: #e7e3f1; }
 :is(#checkout-modal, #order-modal) .co-done-text { max-width: 40ch; margin: 0; font-size: 0.88rem; line-height: 1.45; color: #c9c3d9; }
 :is(#checkout-modal, #order-modal) .co-done-demo-text { color: #ffd56b; }

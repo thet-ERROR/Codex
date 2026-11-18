@@ -100,8 +100,7 @@
     #settings-modal .seg-btn { min-height: 34px; min-width: 48px; }
     #settings-modal .set-section { padding: 12px; }
     #settings-modal .set-heading { margin-bottom: 12px; font-size: 0.95rem; }
-    #settings-modal .color-btn { width: 38px; height: 38px; }
-    #settings-modal .color-opts { gap: 10px 4px; }
+    #settings-modal .theme-card { min-height: 48px; padding: 6px 10px; }
     #settings-modal .set-note { margin: 12px 0 10px; font-size: 0.78rem; }
     #settings-modal .set-spin { min-height: 46px; font-size: 0.85rem; }
     #settings-modal .set-link { min-height: 48px; padding: 8px 14px; }

@@ -359,7 +359,7 @@ async function openProfile(page, wishCount) {
     const wishlist = Array.from({ length: wishCount }, (_, i) => ({ _id: `w${i}`, name: `PROJECT ${i}`, priceCents: 34000 + i * 1000, images: ['assets/images/icon-512.png'] }));
     const me = { username: 'Tester', emailVerified: true, wishlist, achievements: ['recruited'], xp: 25, rank: 'recruit', rankMinXp: 0, nextRank: 'operative', nextRankXp: 100, progress: 25,
         ranks: [{ id: 'recruit', minXp: 0, rewards: {} }, { id: 'operative', minXp: 100, rewards: { spins: 1 } }, { id: 'fieldAgent', minXp: 250, rewards: { color: 'ultraviolet' } }],
-        bonusSpins: 0, rankRewards: [], coupons: [], unlockedColors: [] };
+        bonusSpins: 0, rankRewards: [], coupons: [], unlockedThemes: [] };
     await page.route(u => u.href === `${API}/me`, r => r.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(me) }));
     await page.reload();
     await page.waitForSelector('#startup-overlay.hidden', { state: 'attached', timeout: 15000 });
@@ -494,7 +494,7 @@ describe('the hidden terminal commands (changes doc, step 1)', () => {
         assert.ok(!(await mine(page)).includes('curious_agent'), 'two are not enough');
         await run(page, 'matrix');
         assert.match(await out(page), /visitor@codex:~\$ matrix/);
-        assert.equal(await page.evaluate(() => getComputedStyle(document.documentElement).getPropertyValue('--neon-green').trim()), '#00ff00', 'matrix does what hack does');
+        assert.equal(await page.evaluate(() => getComputedStyle(document.documentElement).getPropertyValue('--neon-green').trim()), 'rgb(0 255 0)', 'matrix does what hack does');
         assert.ok((await mine(page)).includes('curious_agent'));
     }));
     it('a secret stays a riddle in the list until it is found', () => withPage({ width: 1440, height: 900, locale: 'en-US' }, async (page) => {
@@ -512,7 +512,7 @@ describe('the hidden terminal commands (changes doc, step 1)', () => {
 });
 
 describe('the wheel for everyone, and the way between sign-in and sign-up (changes doc, step 2)', () => {
-    const wheelStatus = { attemptsLeft: 3, maxAttempts: 3, nextAvailableAt: null, bonusSpins: 0, unlockedColors: [], coupons: [] };
+    const wheelStatus = { attemptsLeft: 3, maxAttempts: 3, nextAvailableAt: null, bonusSpins: 0, unlockedThemes: [], coupons: [] };
     it('a guest sees the wheel; INITIATE asks for the sign-in; signing in brings the wheel back', () => withPage({ width: 1440, height: 900, locale: 'en-US' }, async (page) => {
         await page.route(u => u.href === `${API}/user-login`, r => r.fulfill({ status: 200, contentType: 'application/json',
             body: JSON.stringify({ success: true, username: 'Tester', token: 'member-token', emailVerified: true }) }));
@@ -637,35 +637,37 @@ describe('title, share preview, headings and names (changes doc, step 5)', () =>
     }));
 });
 
-describe('the Konami code and its hidden colour (changes doc, step 6)', () => {
+describe('the Konami code and its hidden theme (changes doc, step 6)', () => {
     const KONAMI = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
     const type = async (page, keys) => { for (const k of keys) await page.keyboard.press(k); };
-    const secretShown = (page) => page.evaluate(() => !document.querySelector('.color-btn[data-id="cheatCode"]').hidden);
-    const terminalColors = async (page) => {
+    const secretShown = (page) => page.evaluate(() => !document.querySelector('.theme-card[data-theme-id="phantom"]').hidden);
+    const themeOn = (page) => page.evaluate(() => document.documentElement.dataset.theme);
+    const terminalThemes = async (page) => {
         await page.evaluate(() => window.runTerminalCommand('color'));
         return page.evaluate(() => [...document.querySelectorAll('#cli-output .cli-chip')].map(c => c.textContent));
     };
-    it('the colour is nowhere until the code is entered — not in the settings, not in the terminal, not by name', () => withPage({ width: 1440, height: 900, locale: 'en-US' }, async (page) => {
+    it('the theme is nowhere until the code is entered — not in the settings, not in the terminal, not by name', () => withPage({ width: 1440, height: 900, locale: 'en-US' }, async (page) => {
         assert.equal(await secretShown(page), false);
-        assert.ok(!(await terminalColors(page)).some(c => /cheat/i.test(c)), 'not even locked in the list');
-        await page.evaluate(() => window.runTerminalCommand('color cheatcode'));
-        assert.match(await page.evaluate(() => document.getElementById('cli-output').textContent), /cheatcode[\s\S]*(Unknown|Άγνωστ|[Cc]olou?rs?)/);
-        assert.notEqual(await page.evaluate(() => getComputedStyle(document.documentElement).getPropertyValue('--neon-green').trim()), '#ff0a54');
+        assert.ok(!(await terminalThemes(page)).some(c => /phantom/i.test(c)), 'not even locked in the list');
+        await page.evaluate(() => window.runTerminalCommand('color phantom'));
+        assert.match(await page.evaluate(() => document.getElementById('cli-output').textContent), /color phantom[\s\S]*(Unknown|Άγνωστ)/);
+        assert.notEqual(await themeOn(page), 'phantom');
     }));
-    it('↑↑↓↓←→←→BA unlocks the badge and the colour, puts it on, and shows it in the settings and the terminal', () => withPage({ width: 1440, height: 900, locale: 'en-US' }, async (page) => {
+    it('↑↑↓↓←→←→BA unlocks the badge and the theme, puts it on, and shows it in the settings and the terminal', () => withPage({ width: 1440, height: 900, locale: 'en-US' }, async (page) => {
         await type(page, ['ArrowUp', ...KONAMI]);     // a stray extra ↑ first does not spoil it
-        assert.equal(await page.evaluate(() => getComputedStyle(document.documentElement).getPropertyValue('--neon-green').trim()), '#ff0a54');
-        const mine = await page.evaluate(() => ({ ach: JSON.parse(localStorage.getItem('codex_achievements') || '[]'), colors: JSON.parse(localStorage.getItem('codex_unlocked_colors') || '[]') }));
+        assert.equal(await themeOn(page), 'phantom');
+        const mine = await page.evaluate(() => ({ ach: JSON.parse(localStorage.getItem('codex_achievements') || '[]'), themes: JSON.parse(localStorage.getItem('codex_unlocked_themes') || '[]') }));
         assert.ok(mine.ach.includes('cheat_code'));
-        assert.ok(mine.colors.includes('cheatCode'));
+        assert.ok(mine.themes.includes('phantom'));
         assert.equal(await secretShown(page), true);
-        assert.ok((await terminalColors(page)).some(c => c === 'cheatcode'));
-        // ...and it survives a reload
+        assert.ok((await terminalThemes(page)).some(c => c === 'phantom'));
+        // ...and it survives a reload, still on
         await page.reload();
         await page.waitForSelector('#startup-overlay.hidden', { state: 'attached', timeout: 15000 });
         assert.equal(await secretShown(page), true);
+        assert.equal(await themeOn(page), 'phantom');
     }));
-    it('a signed-in agent reports the badge to the account (the server grants the colour with it)', () => withPage({ width: 1440, height: 900, locale: 'en-US', member: true }, async (page) => {
+    it('a signed-in agent reports the badge to the account (the server grants the theme with it)', () => withPage({ width: 1440, height: 900, locale: 'en-US', member: true }, async (page) => {
         await page.evaluate(() => import('./js/state.js').then(m => { m.state.emailVerified = true; }));
         await type(page, KONAMI);
         await page.waitForTimeout(300);

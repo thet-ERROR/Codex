@@ -5,7 +5,26 @@ export const CONFIG = {
     // Returns and support questions go here — the Return button in the Information window opens a
     // prefilled email to this address.
     SUPPORT_EMAIL: 'd.codexphoenix@gmail.com',
-    DEFAULT_THEME: '#ccff00',
+    DEFAULT_THEME: 'phoenix',
+    // The five themes (css/base/themes.css). colors = [accent, window colour], for the swatches and the
+    // browser bar. source says where it comes from: free for everyone, the wheel, a rank, or secret (the
+    // Konami code). Who has what is the server's call (codex-backend src/lib/themes.js).
+    THEMES: {
+        phoenix: { name: 'Phoenix', colors: ['#ccff00', '#b026ff'], source: 'free' },
+        nebula:  { name: 'Nebula',  colors: ['#c084fc', '#b026ff'], source: 'free' },
+        inferno: { name: 'Inferno', colors: ['#ffaa00', '#ff5e00'], source: 'wheel' },
+        arctic:  { name: 'Arctic',  colors: ['#8fe8ff', '#38bdf8'], source: 'rank' },
+        phantom: { name: 'Phantom', colors: ['#e9e4ff', '#e879f9'], source: 'secret' }
+    },
+    // The thirteen accent colours of before the themes, and the theme each became: what a browser already
+    // holds (codex_theme, codex_unlocked_colors) is read through this once. Same table as the server's.
+    LEGACY_COLOR_THEME: {
+        '#ccff00': 'phoenix', '#00f0ff': 'phoenix', '#ff3333': 'phoenix', '#b026ff': 'nebula',
+        cyberGold: 'inferno', toxicOrange: 'inferno', neonPink: 'inferno', matrixGreen: 'inferno',
+        '#ffd700': 'inferno', '#ff5e00': 'inferno', '#ff2bd6': 'inferno', '#00ff41': 'inferno',
+        ultraviolet: 'arctic', arctic: 'arctic', phantom: 'arctic', '#7c4dff': 'arctic', '#8fe8ff': 'arctic', '#e9e4ff': 'arctic',
+        cheatCode: 'phantom', '#ff0a54': 'phantom'
+    },
     // Fallback only — the live price comes from /api/status (admin-editable). Used when the
     // status call fails and we boot in offline/fail-open mode.
     DEFAULT_PRO_CONFIG_PRICE: 30,
@@ -117,13 +136,6 @@ export const CONFIG = {
     RANK_ICONS: {
         recruit: 'ph-user-circle', operative: 'ph-shield-check', fieldAgent: 'ph-crosshair',
         specialist: 'ph-identification-card', eliteAgent: 'ph-star-four', phantom: 'ph-crown'
-    },
-    // The accent colours only a rank unlocks (never on the wheel). Which rank gives which comes from
-    // the server's ladder (state.ranks); the hex and the name are the frontend's to show.
-    RANK_COLORS: {
-        ultraviolet: { hex: '#7c4dff', name: 'Ultraviolet' },
-        arctic:      { hex: '#8fe8ff', name: 'Arctic' },
-        phantom:     { hex: '#e9e4ff', name: 'Phantom' }
     }
 };
 

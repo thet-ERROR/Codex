@@ -282,7 +282,7 @@ body.night-mode #main-card { box-shadow: inset 1px 1px 0 rgba(255, 255, 255, 0.5
    The plain accent line on top becomes a strip of the foil, and the box gets the cards' thickness:
    lit top-left edge, a few stacked dark sides, then its shadow. */
 .info-box {
-    border-top: 1px solid rgba(176, 38, 255, 0.28);
+    border-top: 1px solid rgb(var(--v-main) / 0.28);
     background: var(--foil) top / 100% 3px no-repeat, linear-gradient(180deg, #0e0e14 0%, #09090c 60%);
     box-shadow: inset 1px 1px 0 rgba(255, 255, 255, 0.06), 0 2px 0 #0d0d10, 0 4px 0 #0a0a0d, 0 6px 0 #08080a, 0 30px 80px rgba(0, 0, 0, 0.85);
 }

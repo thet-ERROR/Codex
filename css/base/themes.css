@@ -1,0 +1,72 @@
+/* ===== The five themes =====
+   A theme is a set of colour tokens on <html data-theme="...">; every window, card and panel reads them, so
+   switching is one attribute (setTheme, js/main.js). Nothing else changes between themes: layout, type and
+   motion are the same.
+
+   The tokens (channels as "r g b", so rgb(var(--v-main) / .4) can set the opacity):
+     --a-rgb      the accent: titles, prices, the lit edges (was --neon-green, the one colour the old
+                  accent picker changed)
+     --v-main     the window colour: frames, kickers, glow (was the violet of every purple window)
+     --v-bright / --v-pale / --v-soft / --v-mid / --v-deep   its lighter and deeper shades
+     --v-pink     the second colour, the hot end of the gradients
+     --s-bg1 / --s-bg2 / --s-panel   the dark surfaces of a window, tinted toward the theme
+     --v-cyan / --v-cyan-pale / --v-cyan-deep   the second side of the compare window (a cyan, in Phoenix and Nebula)
+     --ico-hue    how far the violet neon icons (assets/icons/bar: gear, gift, share, star) are turned to match
+   Phoenix is what the site always looked like (lime on violet), so it is the default and uses the original
+   values exactly. Free: Phoenix, Nebula. Inferno comes from the wheel, Arctic from a rank, Phantom from the
+   Konami code (the server decides who has what: codex-backend src/lib/themes.js). */
+
+:root, :root[data-theme="phoenix"] {
+    --a-rgb: 204 255 0;
+    --v-main: 176 38 255; --v-bright: 192 77 255; --v-pale: 214 140 255; --v-soft: 168 85 247;
+    --v-mid: 124 58 237; --v-deep: 109 40 217; --v-pink: 255 61 166;
+    --s-bg1: #0f0a1c; --s-bg2: #08060f; --s-panel: #0d0a18;
+    --ico-hue: 0deg;
+    --v-cyan: 34 211 238; --v-cyan-pale: 103 232 249; --v-cyan-deep: 6 182 212;
+}
+/* Nebula: the violet of the sign-in and checkout windows everywhere, the accent too */
+:root[data-theme="nebula"] {
+    --a-rgb: 192 132 252;
+    --v-main: 176 38 255; --v-bright: 192 77 255; --v-pale: 214 140 255; --v-soft: 168 85 247;
+    --v-mid: 124 58 237; --v-deep: 109 40 217; --v-pink: 255 61 166;
+    --s-bg1: #0f0a1c; --s-bg2: #08060f; --s-panel: #0d0a18;
+    --ico-hue: 0deg;
+    --v-cyan: 34 211 238; --v-cyan-pale: 103 232 249; --v-cyan-deep: 6 182 212;
+}
+/* Inferno: ember orange and gold */
+:root[data-theme="inferno"] {
+    --a-rgb: 255 170 0;
+    --v-main: 255 94 0; --v-bright: 255 140 40; --v-pale: 255 196 140; --v-soft: 255 120 40;
+    --v-mid: 217 70 20; --v-deep: 150 40 10; --v-pink: 255 200 40;
+    --s-bg1: #1a0d06; --s-bg2: #0d0603; --s-panel: #170b06;
+    --ico-hue: 105deg;
+    --v-cyan: 255 200 40; --v-cyan-pale: 255 224 130; --v-cyan-deep: 217 150 10;
+}
+/* Arctic: ice blue and white */
+:root[data-theme="arctic"] {
+    --a-rgb: 143 232 255;
+    --v-main: 56 189 248; --v-bright: 125 211 252; --v-pale: 186 230 253; --v-soft: 96 165 250;
+    --v-mid: 14 116 144; --v-deep: 12 74 110; --v-pink: 233 245 255;
+    --s-bg1: #07121d; --s-bg2: #040a12; --s-panel: #08121c;
+    --ico-hue: -75deg;
+    --v-cyan: 186 230 253; --v-cyan-pale: 224 242 254; --v-cyan-deep: 125 211 252;
+}
+/* Phantom: silver and magenta, the secret one */
+:root[data-theme="phantom"] {
+    --a-rgb: 233 228 255;
+    --v-main: 232 121 249; --v-bright: 240 171 252; --v-pale: 245 208 254; --v-soft: 217 70 239;
+    --v-mid: 162 28 175; --v-deep: 112 26 117; --v-pink: 255 61 166;
+    --s-bg1: #150a1a; --s-bg2: #0a050d; --s-panel: #12081a;
+    --ico-hue: 25deg;
+    --v-cyan: 214 207 245; --v-cyan-pale: 233 228 255; --v-cyan-deep: 160 150 210;
+}
+
+/* What the rest of the CSS has always called these */
+:root {
+    --neon-green: rgb(var(--a-rgb));
+    --neon-purple: rgb(var(--v-main));
+    --s-purple: rgb(var(--v-main));
+    --s-line: rgb(var(--v-main) / 0.45);
+    --s-soft: rgb(var(--v-main) / 0.14);
+    --s-glow: rgb(var(--v-main) / 0.35);
+}
