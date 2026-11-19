@@ -16,7 +16,7 @@
 #main-card, .card-ghost > .holo-card {
     background:
         radial-gradient(120% 55% at 50% 0%, color-mix(in srgb, var(--neon-green) 7%, transparent), transparent 70%),
-        radial-gradient(90% 40% at 50% 100%, rgba(176, 38, 255, 0.07), transparent 70%),
+        radial-gradient(90% 40% at 50% 100%, rgb(var(--v-main) / 0.07), transparent 70%),
         var(--tex-grid-a) 0 0 / 22px 22px,
         var(--tex-grid-b) 0 0 / 22px 22px,
         #111 !important;
@@ -26,7 +26,7 @@
 .vote-container {
     background:
         radial-gradient(120% 50% at 50% 0%, rgba(255, 196, 61, 0.08), transparent 70%),
-        radial-gradient(90% 40% at 50% 100%, rgba(176, 38, 255, 0.08), transparent 70%),
+        radial-gradient(90% 40% at 50% 100%, rgb(var(--v-main) / 0.08), transparent 70%),
         var(--tex-grid-a) 0 0 / 22px 22px,
         var(--tex-grid-b) 0 0 / 22px 22px,
         #111;

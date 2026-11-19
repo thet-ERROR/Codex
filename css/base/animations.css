@@ -13,6 +13,6 @@
 @keyframes wheelPulse { 0%, 100% { transform: translate(-50%, -50%) scale(1); box-shadow: 0 0 15px color-mix(in srgb, var(--neon-green) 50%, transparent); } 50% { transform: translate(-50%, -50%) scale(1.08); box-shadow: 0 0 25px color-mix(in srgb, var(--neon-green) 80%, transparent); } }
 @keyframes logoAura { 0%, 100% { opacity: 0; } 50% { opacity: 1; } }
 @keyframes chromeBreathe {
-    0%, 100% { box-shadow: 0 0 14px rgba(204, 255, 0, 0.12), 0 0 22px rgba(176, 38, 255, 0.08); border-color: rgba(204, 255, 0, 0.22); }
-    50% { box-shadow: 0 0 20px rgba(176, 38, 255, 0.2), 0 0 30px rgba(204, 255, 0, 0.12); border-color: rgba(176, 38, 255, 0.32); }
+    0%, 100% { box-shadow: 0 0 14px rgb(var(--a-rgb) / 0.12), 0 0 22px rgb(var(--v-main) / 0.08); border-color: rgb(var(--a-rgb) / 0.22); }
+    50% { box-shadow: 0 0 20px rgb(var(--v-main) / 0.2), 0 0 30px rgb(var(--a-rgb) / 0.12); border-color: rgb(var(--v-main) / 0.32); }
 }

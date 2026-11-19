@@ -23,6 +23,7 @@ import './modules/achievements.js';
 import './modules/whoami.js';
 import './modules/konami.js';
 import './modules/wheel.js';
+import { initThemes } from './modules/themes.js';
 import './modules/info.js';
 import './modules/qr.js';
 import './modules/mascot.js';
@@ -135,32 +136,9 @@ function syncSettingsUI() {
         b.classList.toggle('active', on);
         b.setAttribute('aria-pressed', String(on));
     });
-    document.querySelectorAll('.color-btn[data-color]').forEach(b => {
-        const on = b.dataset.color.toLowerCase() === String(state.currentTheme).toLowerCase();
-        b.classList.toggle('current', on);
-        b.setAttribute('aria-pressed', String(on));
-    });
+    if (window.refreshThemeLocks) window.refreshThemeLocks();
 }
 window.syncSettingsUI = syncSettingsUI;
-
-// Why a colour is locked: wheel colours are won on the wheel, rank colours come with a rank (the
-// server's ladder says which — shown by name once the profile has loaded it)
-window.colorLockMessage = (id) => {
-    if (!CONFIG.RANK_COLORS[id]) return t('toastColorLocked');
-    const rank = (state.ranks || []).find(r => r.rewards && r.rewards.color === id);
-    return rank ? t('toastColorRankLocked', { rank: window.rankName ? window.rankName(rank.id) : rank.id }) : t('toastColorRankLockedAny');
-};
-
-window.setTheme = (color, id) => {
-    if (id && !state.unlockedColors.includes(id)) {
-        if (window.showToast) window.showToast(window.colorLockMessage(id), 'error');
-        return;
-    }
-    state.currentTheme = color;
-    localStorage.setItem('codex_theme', color);
-    document.documentElement.style.setProperty('--neon-green', color);
-    syncSettingsUI();
-};
 
 // --- BOOT BUDGET ---
 // The splash used to wait on six API calls made one after another, with no timeout on any of them.
@@ -291,8 +269,7 @@ const initApp = async () => {
     initDayNightCycle();
 
     // 2. Apply Saved Settings
-    document.documentElement.style.setProperty('--neon-green', state.currentTheme);
-    if (window.refreshColorLocks) window.refreshColorLocks();
+    initThemes();
     applyLanguage(getLang());
 
     // 3. Setup Audio Triggers

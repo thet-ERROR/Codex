@@ -17,7 +17,7 @@
 .chat-menu-back { display: flex; align-items: center; gap: 6px; min-height: 36px; padding: 0; background: none; border: none; color: var(--neon-green); font-family: var(--font-ui); font-size: 0.75rem; font-weight: 700; cursor: pointer; margin-bottom: 12px; }
 .chat-menu-back:hover { color: #fff; }
 
-.chat-response { background: rgba(204,255,0,0.08); border: 1px solid rgba(204,255,0,0.2); border-radius: 8px; padding: 12px; font-size: 0.82rem; color: #ddd; line-height: 1.5; }
+.chat-response { background: rgb(var(--a-rgb) / 0.08); border: 1px solid rgb(var(--a-rgb) / 0.2); border-radius: 8px; padding: 12px; font-size: 0.82rem; color: #ddd; line-height: 1.5; }
 .chat-admin-btn { width: 100%; margin-top: 10px; background: transparent; border: 1px solid var(--neon-purple); color: var(--neon-purple); padding: 10px; border-radius: 6px; font-family: var(--font-ui); font-weight: bold; font-size: 0.75rem; letter-spacing: 0.5px; cursor: pointer; transition: 0.2s; }
 .chat-admin-btn:hover { background: var(--neon-purple); color: #fff; }
 
@@ -50,7 +50,7 @@
 
 /* ===== Help box — same vocabulary as the Information window: >// kicker, HUD corners, slab rows ===== */
 .chat-widget { width: 330px; }
-.chat-body { position: relative; border-radius: 16px; border: 1px solid rgba(176, 38, 255, 0.3); border-top: 2px solid var(--neon-green); background: linear-gradient(180deg, #0e0e14, #09090c); box-shadow: 0 24px 60px rgba(0, 0, 0, 0.8); }
+.chat-body { position: relative; border-radius: 16px; border: 1px solid rgb(var(--v-main) / 0.3); border-top: 2px solid var(--neon-green); background: linear-gradient(180deg, #0e0e14, #09090c); box-shadow: 0 24px 60px rgba(0, 0, 0, 0.8); }
 .chat-body::before, .chat-body::after { content: ''; position: absolute; width: 14px; height: 14px; pointer-events: none; z-index: 2; }
 .chat-body::before { top: 7px; left: 7px; border-top: 2px solid var(--neon-green); border-left: 2px solid var(--neon-green); }
 .chat-body::after { bottom: 7px; right: 7px; border-bottom: 2px solid var(--neon-purple); border-right: 2px solid var(--neon-purple); }
@@ -113,5 +113,5 @@
 .chat-face { flex: none; width: 40px; height: 40px; border-radius: 50%; object-fit: cover; object-position: 50% 20%; border: 1.5px solid var(--neon-green); background: radial-gradient(circle at 50% 40%, #3a1460 0%, #170826 70%); }
 .chat-top:has(.chat-face) { justify-content: flex-start; gap: 10px; }
 .chat-top:has(.chat-face) .chat-close { margin-left: auto; }
-.fr-vs { width: 100%; min-height: 40px; margin-bottom: 8px; display: flex; align-items: center; justify-content: center; gap: 8px; border-radius: 8px; border: 1px solid var(--neon-purple); background: rgba(176, 38, 255, 0.12); color: #fff; font-family: var(--font-ui); font-weight: 800; font-size: 0.82rem; cursor: pointer; }
-.fr-vs:hover { background: rgba(176, 38, 255, 0.3); }
+.fr-vs { width: 100%; min-height: 40px; margin-bottom: 8px; display: flex; align-items: center; justify-content: center; gap: 8px; border-radius: 8px; border: 1px solid var(--neon-purple); background: rgb(var(--v-main) / 0.12); color: #fff; font-family: var(--font-ui); font-weight: 800; font-size: 0.82rem; cursor: pointer; }
+.fr-vs:hover { background: rgb(var(--v-main) / 0.3); }

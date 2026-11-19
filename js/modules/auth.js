@@ -80,8 +80,8 @@ export async function hydrateProfile() {
     // erase them. Whatever comes back last is the authoritative profile.
     const merged = await pushLocalAchievements(me.achievements);
     applyProfile(merged || me);
-    // Coupons and wheel colours live on the account now (wheel.js)
-    if (window.applyWheelData) window.applyWheelData({ coupons: me.coupons || [], unlockedColors: me.unlockedColors || [] });
+    // Coupons and themes live on the account now (wheel.js, themes.js)
+    if (window.applyWheelData) window.applyWheelData({ coupons: me.coupons || [], unlockedThemes: me.unlockedThemes || [] });
     return me;
 }
 
@@ -107,7 +107,7 @@ export async function checkSavedSession() {
         // Reaching here at all means requireVerified passed on the backend
         state.emailVerified = true;
         updateAuthUI(savedUser);
-        if (window.refreshColorLocks) window.refreshColorLocks();
+        if (window.refreshThemeLocks) window.refreshThemeLocks();
     } catch (e) {
         if (e && e.status === 401) {
             // Expired/invalid token: fall back to logged-out rather than trust stale local data as an account session.

@@ -14,12 +14,12 @@
 .vote-container {
     --v-steel: #8e9cc2;
     --v-steel-dk: #3c4563;
-    --v-purple: #b026ff;
-    --v-pink: #ff3da6;
+    --v-purple: rgb(var(--v-main));
+    --v-pink: rgb(var(--v-pink));
     --v-slime: var(--neon-green);
     --v-slime-soft: color-mix(in srgb, var(--neon-green) 14%, transparent);
     --v-slime-glow: color-mix(in srgb, var(--neon-green) 45%, transparent);
-    --v-rim: linear-gradient(160deg, #c9d3ee, var(--v-steel-dk) 18%, rgba(176, 38, 255, 0.9) 50%, var(--v-steel-dk) 82%, #c9d3ee);
+    --v-rim: linear-gradient(160deg, #c9d3ee, var(--v-steel-dk) 18%, rgb(var(--v-main) / 0.9) 50%, var(--v-steel-dk) 82%, #c9d3ee);
     --v-panel: linear-gradient(180deg, rgba(40, 26, 74, 0.55), rgba(16, 10, 32, 0.75));
 }
 
@@ -27,20 +27,20 @@
 .vote-container {
     padding: 14px 14px 10px !important; border: 3px solid transparent !important; border-radius: 22px !important;
     background:
-        radial-gradient(120% 38% at 50% 0%, rgba(176, 38, 255, 0.2), transparent 70%) padding-box,
-        linear-gradient(rgba(176, 38, 255, 0.05) 1px, transparent 1px) 0 0 / 22px 22px padding-box,
-        linear-gradient(90deg, rgba(176, 38, 255, 0.05) 1px, transparent 1px) 0 0 / 22px 22px padding-box,
-        linear-gradient(180deg, #110b22, #08060f) padding-box,
+        radial-gradient(120% 38% at 50% 0%, rgb(var(--v-main) / 0.2), transparent 70%) padding-box,
+        linear-gradient(rgb(var(--v-main) / 0.05) 1px, transparent 1px) 0 0 / 22px 22px padding-box,
+        linear-gradient(90deg, rgb(var(--v-main) / 0.05) 1px, transparent 1px) 0 0 / 22px 22px padding-box,
+        linear-gradient(180deg, #110b22, var(--s-bg2)) padding-box,
         var(--v-rim) border-box !important;
-    box-shadow: inset 0 0 0 1px rgba(255, 61, 166, 0.3), inset 0 0 40px rgba(176, 38, 255, 0.12),
-        0 0 24px rgba(176, 38, 255, 0.45), 0 30px 70px rgba(0, 0, 0, 0.75) !important;
+    box-shadow: inset 0 0 0 1px rgb(var(--v-pink) / 0.3), inset 0 0 40px rgb(var(--v-main) / 0.12),
+        0 0 24px rgb(var(--v-main) / 0.45), 0 30px 70px rgba(0, 0, 0, 0.75) !important;
     display: flex; flex-direction: column; gap: 9px;
 }
 
 /* The four corner ornaments become magenta pipe elbows hugging the rim */
 .vote-container > .tc-orn {
     display: block; z-index: 4; width: 26px; height: 26px; background: none; transform: none; pointer-events: none;
-    border: 4px solid var(--v-pink); box-shadow: none; filter: drop-shadow(0 0 4px rgba(255, 61, 166, 0.8));
+    border: 4px solid var(--v-pink); box-shadow: none; filter: drop-shadow(0 0 4px rgb(var(--v-pink) / 0.8));
 }
 .vote-container > .tc-o1 { left: -6px; top: -6px; border-right: none; border-bottom: none; border-top-left-radius: 18px; }
 .vote-container > .tc-o2 { right: -6px; top: -6px; left: auto; border-left: none; border-bottom: none; border-top-right-radius: 18px; }
@@ -56,12 +56,12 @@
 /* --- status and "how it works" --- */
 .vote-top { padding: 0 2px; }
 .vote-container .vote-status { color: var(--v-slime); background: var(--v-slime-soft); border-color: var(--v-slime); box-shadow: 0 0 10px var(--v-slime-glow); }
-.vote-container[data-phase="upcoming"] .vote-status { color: #e0b8ff; background: rgba(176, 38, 255, 0.12); border-color: rgba(192, 77, 255, 0.8); box-shadow: none; }
+.vote-container[data-phase="upcoming"] .vote-status { color: rgb(var(--v-pale)); background: rgb(var(--v-main) / 0.12); border-color: rgb(var(--v-bright) / 0.8); box-shadow: none; }
 .vote-container[data-phase="closed"] .vote-status,
 .vote-container[data-phase="none"] .vote-status,
 .vote-container[data-phase="loading"] .vote-status { color: #9a9aa2; background: rgba(255, 255, 255, 0.05); border-color: #3a3a42; box-shadow: none; }
-.vote-container .vote-info-btn { color: #ece4ff; border-color: rgba(192, 77, 255, 0.7); background: rgba(176, 38, 255, 0.12); }
-.vote-container .vote-info-btn:hover { color: #fff; background: rgba(255, 61, 166, 0.2); border-color: var(--v-pink); box-shadow: 0 0 10px rgba(255, 61, 166, 0.45); }
+.vote-container .vote-info-btn { color: #ece4ff; border-color: rgb(var(--v-bright) / 0.7); background: rgb(var(--v-main) / 0.12); }
+.vote-container .vote-info-btn:hover { color: #fff; background: rgb(var(--v-pink) / 0.2); border-color: var(--v-pink); box-shadow: 0 0 10px rgb(var(--v-pink) / 0.45); }
 .vote-container .vote-info-btn:focus-visible { outline-color: var(--v-pink); }
 @media (max-width: 768px) {
     .vote-container .vote-info-btn { width: auto; padding: 0 10px; gap: 5px; font-size: 0.68rem; }
@@ -71,13 +71,13 @@
 /* --- the title plate: hazard stripes at both ends, the cube, the name --- */
 .vote-container .vote-title {
     position: relative; display: flex; align-items: center; justify-content: center; gap: 10px; margin: 0; padding: 9px 30px;
-    text-align: center; font-size: 1.35rem; text-shadow: 0 0 12px rgba(176, 38, 255, 0.7);
+    text-align: center; font-size: 1.35rem; text-shadow: 0 0 12px rgb(var(--v-main) / 0.7);
     background:
         repeating-linear-gradient(-45deg, #ffc43d 0 5px, #15101f 5px 10px) left / 18px 100% no-repeat padding-box,
         repeating-linear-gradient(-45deg, #ffc43d 0 5px, #15101f 5px 10px) right / 18px 100% no-repeat padding-box,
         linear-gradient(180deg, rgba(70, 52, 120, 0.7), rgba(26, 18, 50, 0.9)) padding-box,
         var(--v-rim) border-box;
-    box-shadow: 0 0 14px rgba(176, 38, 255, 0.35);
+    box-shadow: 0 0 14px rgb(var(--v-main) / 0.35);
 }
 .vote-container .vote-title::before {
     content: ''; flex: none; width: 1.2em; height: 1.2em; background: var(--v-slime); filter: drop-shadow(0 0 5px var(--v-slime-glow));
@@ -132,10 +132,10 @@
     animation: voteStripes 1.2s linear infinite;
 }
 @keyframes voteStripes { to { background-position: 19.8px 0; } }
-.vote-container .vote-remaining-chip:not(.hot) { color: #e0b8ff; background: rgba(176, 38, 255, 0.12); border-color: rgba(192, 77, 255, 0.6); }
+.vote-container .vote-remaining-chip:not(.hot) { color: rgb(var(--v-pale)); background: rgb(var(--v-main) / 0.12); border-color: rgb(var(--v-bright) / 0.6); }
 /* The countdown is a pill on desktop; on tablets and phones vote.css makes it plain text beside the count */
 @media (min-width: 1025px) {
-    .vote-container .vote-timer { border-radius: 999px; border-color: rgba(192, 77, 255, 0.55); background: rgba(176, 38, 255, 0.1); color: #ece4ff; }
+    .vote-container .vote-timer { border-radius: 999px; border-color: rgb(var(--v-bright) / 0.55); background: rgb(var(--v-main) / 0.1); color: #ece4ff; }
 }
 .vote-container .vote-timer i { color: var(--v-slime); }
 
@@ -143,15 +143,15 @@
 
 /* --- the main button: a glowing pill; slime for "go to it", purple for "vote" --- */
 .vote-container .vote-btn {
-    overflow: hidden; min-height: 52px; border-radius: 999px; border: 1px solid rgba(220, 150, 255, 0.8);
-    background: linear-gradient(90deg, #7c3aed, var(--v-purple) 55%, #d6249f);
-    box-shadow: 0 0 16px rgba(176, 38, 255, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.22);
+    overflow: hidden; min-height: 52px; border-radius: 999px; border: 1px solid rgb(var(--v-pale) / 0.8);
+    background: linear-gradient(90deg, rgb(var(--v-mid)), var(--v-purple) 55%, rgb(var(--v-pink)));
+    box-shadow: 0 0 16px rgb(var(--v-main) / 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.22);
 }
-.vote-container .vote-btn:hover:not(:disabled) { box-shadow: 0 0 24px rgba(255, 61, 166, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.22); }
+.vote-container .vote-btn:hover:not(:disabled) { box-shadow: 0 0 24px rgb(var(--v-pink) / 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.22); }
 .vote-container .vote-btn[data-action="login"], .vote-container .vote-btn[data-action="notify"] {
-    border-color: rgba(192, 77, 255, 0.8); background: rgba(176, 38, 255, 0.12); box-shadow: inset 0 0 14px rgba(176, 38, 255, 0.2);
+    border-color: rgb(var(--v-bright) / 0.8); background: rgb(var(--v-main) / 0.12); box-shadow: inset 0 0 14px rgb(var(--v-main) / 0.2);
 }
-.vote-container .vote-btn[data-action="login"]:hover, .vote-container .vote-btn[data-action="notify"]:hover { background: rgba(176, 38, 255, 0.25); }
+.vote-container .vote-btn[data-action="login"]:hover, .vote-container .vote-btn[data-action="notify"]:hover { background: rgb(var(--v-main) / 0.25); }
 .vote-container .vote-btn[data-action="verify"] { background: rgba(255, 170, 0, 0.06); box-shadow: none; }
 .vote-container .vote-btn[data-action="golive"] {
     border: 1px solid color-mix(in srgb, var(--neon-green) 60%, #fff); color: #0a0f00;
@@ -159,7 +159,7 @@
     box-shadow: 0 0 18px var(--v-slime-glow), 0 0 4px var(--v-slime), inset 0 1px 0 rgba(255, 255, 255, 0.55), inset 0 -3px 0 rgba(0, 0, 0, 0.18);
 }
 .vote-container .vote-btn[data-action="golive"] { margin: 7px 7px 5px; width: calc(100% - 14px); }
-.vote-container .vote-btn[data-action="golive"], .vote-container .vote-btn[data-action="golive"]:hover { outline: 1.5px solid rgba(192, 77, 255, 0.85); outline-offset: 6px; }
+.vote-container .vote-btn[data-action="golive"], .vote-container .vote-btn[data-action="golive"]:hover { outline: 1.5px solid rgb(var(--v-bright) / 0.85); outline-offset: 6px; }
 .vote-container .vote-btn[data-action="golive"]:hover { box-shadow: 0 0 28px var(--v-slime), inset 0 1px 0 rgba(255, 255, 255, 0.55), inset 0 -3px 0 rgba(0, 0, 0, 0.18); }
 /* A light sweeping across "go to it" now and then */
 .vote-container .vote-btn[data-action="golive"]::after {
@@ -182,12 +182,12 @@
 .vote-container .vote-inspect {
     display: flex; align-items: center; justify-content: center;
     width: 100%; min-height: 46px; margin: 0 !important; padding: 8px 16px !important; border-radius: 999px !important;
-    border: 1.5px solid rgba(192, 77, 255, 0.85) !important; color: #fff !important; text-decoration: none !important;
+    border: 1.5px solid rgb(var(--v-bright) / 0.85) !important; color: #fff !important; text-decoration: none !important;
     font-size: 0.85rem !important; letter-spacing: 1.5px;
-    background: linear-gradient(90deg, rgba(60, 22, 110, 0.95), rgba(110, 30, 170, 0.9) 50%, rgba(60, 22, 110, 0.95)) !important;
-    box-shadow: 0 0 14px rgba(176, 38, 255, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.15) !important;
+    background: linear-gradient(90deg, rgba(60, 22, 110, 0.95), rgb(var(--v-deep) / 0.9) 50%, rgba(60, 22, 110, 0.95)) !important;
+    box-shadow: 0 0 14px rgb(var(--v-main) / 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.15) !important;
 }
-.vote-container .vote-inspect:hover { border-color: var(--v-pink) !important; box-shadow: 0 0 20px rgba(255, 61, 166, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.15) !important; }
+.vote-container .vote-inspect:hover { border-color: var(--v-pink) !important; box-shadow: 0 0 20px rgb(var(--v-pink) / 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.15) !important; }
 
 /* --- along the bottom: a small heartbeat monitor, centred --- */
 .vote-tube { display: flex; align-items: center; justify-content: center; height: 32px; margin-top: 2px; pointer-events: none; }
@@ -195,7 +195,7 @@
     flex: none; position: relative; width: 84px; height: 28px; display: grid; place-items: center;
     border-radius: 9px; border: 1.5px solid var(--v-pink);
     background: radial-gradient(80% 90% at 50% 50%, #0c2a33, #070b14 80%);
-    box-shadow: 0 0 12px rgba(255, 61, 166, 0.55), inset 0 0 10px rgba(62, 240, 255, 0.25);
+    box-shadow: 0 0 12px rgb(var(--v-pink) / 0.55), inset 0 0 10px rgba(62, 240, 255, 0.25);
 }
 .vote-tube .vt-monitor svg { width: 64px; height: 18px; overflow: visible; }
 .vote-tube .vt-monitor polyline {
@@ -208,7 +208,7 @@
 
 /* --- tablets and phones: the compact layout from vote.css, one glow, no inner blurs --- */
 @media (hover: none), (pointer: coarse), (max-width: 1024px) {
-    .vote-container { box-shadow: inset 0 0 0 1px rgba(255, 61, 166, 0.3), 0 0 18px rgba(176, 38, 255, 0.45) !important; }
+    .vote-container { box-shadow: inset 0 0 0 1px rgb(var(--v-pink) / 0.3), 0 0 18px rgb(var(--v-main) / 0.45) !important; }
     .vote-container .vote-title, .vote-container .vote-btn:not([data-action="golive"]), .vote-container .vote-inspect { box-shadow: none !important; }
     .vote-container .vote-title::before { filter: none; }
     .vote-container > .tc-orn { filter: none; }

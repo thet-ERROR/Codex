@@ -88,15 +88,40 @@ describe('windows with their own inside', () => {
         }
     });
     it('whoami and the terminal: the square close, and the text is the theme accent (not a fixed #0f0)', async () => {
-        const page = await newPage(browser, site, { locale: 'el-GR', width: 1440, height: 900, mobile: false, storage: { codex_color: 'ultraviolet' } });
+        const page = await newPage(browser, site, { locale: 'el-GR', width: 1440, height: 900, mobile: false, storage: { codex_theme_id: 'nebula' } });
         try {
             const w = await look(page, () => window.openModal('whoami-modal'), '#whoami-modal.active', { frame: '#whoami-modal .modal-content', close: '#whoami-modal .close-modal', text: '#whoami-modal .whoami-body' });
             assert.deepEqual([w.closeW, w.closeH, w.closeRadius], [44, 44, '12px']);
-            assert.notEqual(w.body, 'rgb(0, 255, 0)', 'not the fixed green');
+            assert.equal(w.body, 'rgb(192, 132, 252)', "the text is the theme's accent (Nebula's), not a fixed green");
             await page.evaluate(() => window.closeModal('whoami-modal'));
             const t = await look(page, () => window.toggleCLI(), '#cli-overlay.active', { frame: '#cli-overlay', close: '#cli-overlay .cli-close' });
             assert.deepEqual([t.closeW, t.closeH, t.closeRadius], [44, 44, '12px']);
             assert.deepEqual(page.problems, []);
         } finally { await page.context().close(); }
     });
+});
+
+// The compare window and the profile are their own designs, but their close is the family's 44px rounded square
+describe('compare and profile: the shared close', () => {
+    const close = (page, sel) => page.evaluate((s) => { const x = document.querySelector(s), r = x.getBoundingClientRect(); return [Math.round(r.width), Math.round(r.height), getComputedStyle(x).borderTopLeftRadius, getComputedStyle(x).borderTopColor]; }, sel);
+    for (const [name, opts] of [['desktop', { width: 1440, height: 900, mobile: false }], ['phone', { width: 390, height: 844, mobile: true }]]) {
+        it(`compare close on a ${name}`, async () => {
+            const page = await newPage(browser, site, { locale: 'el-GR', ...opts });
+            try {
+                await page.evaluate(() => import('./js/state.js').then(m => { m.state.compareList = m.state.inventory.slice(0, 2); window.openCompareModal(); }));
+                await page.locator('#compare-modal.active').waitFor();
+                await page.waitForTimeout(450);
+                assert.deepEqual(await close(page, '#compare-modal .vs-close'), [44, 44, '12px', 'rgba(176, 38, 255, 0.45)']);
+            } finally { await page.context().close(); }
+        });
+        it(`profile close on a ${name}`, async () => {
+            const page = await newPage(browser, site, { locale: 'el-GR', member: true, ...opts });
+            try {
+                await page.evaluate(() => window.openAgentDashboard());
+                await page.locator('#agent-dashboard-modal.active').waitFor();
+                await page.waitForTimeout(450);
+                assert.deepEqual(await close(page, '#agent-dashboard-modal .dossier-box .modal-close'), [44, 44, '12px', 'rgba(176, 38, 255, 0.45)']);
+            } finally { await page.context().close(); }
+        });
+    }
 });

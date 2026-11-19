@@ -59,13 +59,16 @@ export const state = {
     nextRank: null,
     nextRankXp: null,
     rankProgress: 0,
-    // The server's rank ladder: [{ id, minXp, rewards: { color?, spins? } }] — never kept client-side
+    // The server's rank ladder: [{ id, minXp, rewards: { theme?, spins? } }] — never kept client-side
     ranks: [],
     wishlist: JSON.parse(localStorage.getItem('codex_wishlist')) || [],
     // Off until a visitor turns it on (Settings or the terminal) — music starting by itself is the
     // quickest way to lose someone browsing on a bus. A saved choice is kept either way.
     audioEnabled: localStorage.getItem('codex_audio') === 'true',
-    currentTheme: localStorage.getItem('codex_theme') || CONFIG.DEFAULT_THEME,
+    // The theme on (css/base/themes.css) and the ones this visitor has won, besides the two free ones.
+    // Both are set at start-up by modules/themes.js.
+    theme: CONFIG.DEFAULT_THEME,
+    unlockedThemes: [],
     matrixEnabled: false,
     isHacked: false,
     // Global price of the Pro Config extra, refreshed from /api/status at boot.
@@ -85,7 +88,6 @@ export const state = {
     // acceptPaintConsent), so it never needs a separate "did they ack it" flag.
     build: { storage: '', proConfig: false, paint: false },
     bgVolume: 0.1,
-    unlockedColors: JSON.parse(localStorage.getItem('codex_unlocked_colors')) || [],
     // Wheel coupons for the signed-in account, from /api/me and /api/wheel (never stored locally)
     coupons: []
 };

@@ -1,5 +1,6 @@
 // js/modules/terminal.js
 import { state } from '../state.js';
+import { CONFIG } from '../config.js';
 
 export function toggleCLI() {
     const cli = document.getElementById('cli-overlay');
@@ -24,12 +25,11 @@ export function toggleHackMode() {
     const canvas = document.getElementById('matrix-canvas');
     if (state.isHacked) {
         if (canvas) canvas.style.opacity = '0.3';
-        // Αλλάζει το βασικό πράσινο σε έντονο "Matrix" πράσινο
-        document.documentElement.style.setProperty('--neon-green', '#00ff00');
+        // The accent goes matrix green while the hack is on (the theme's own comes back when it ends)
+        document.documentElement.style.setProperty('--a-rgb', '0 255 0');
     } else {
         if (canvas) canvas.style.opacity = '0';
-        // Επαναφέρει το χρώμα στο επιλεγμένο θέμα του χρήστη
-        document.documentElement.style.setProperty('--neon-green', state.currentTheme);
+        document.documentElement.style.removeProperty('--a-rgb');
     }
 }
 
@@ -94,26 +94,13 @@ export function initMatrix() {
 // keyboard stays down and the terminal keeps its room. Output is written in the site's language.
 const T = (k, v) => (window.t ? window.t(k, v) : k);
 
-// Accent colours by the short names you type; `id` is the unlock id of the reward colours (wheel.js)
-const COLORS = {
-    lime:   { hex: '#ccff00' },
-    cyan:   { hex: '#00f0ff' },
-    red:    { hex: '#ff3333' },
-    purple: { hex: '#b026ff' },
-    gold:   { hex: '#ffd700', id: 'cyberGold' },
-    orange: { hex: '#ff5e00', id: 'toxicOrange' },
-    pink:   { hex: '#ff2bd6', id: 'neonPink' },
-    matrix: { hex: '#00ff41', id: 'matrixGreen' },
-    // Rank colours (config.js RANK_COLORS) — unlocked by levelling up, not on the wheel
-    ultraviolet: { hex: '#7c4dff', id: 'ultraviolet' },
-    arctic:      { hex: '#8fe8ff', id: 'arctic' },
-    phantom:     { hex: '#e9e4ff', id: 'phantom' },
-    // Secret (the Konami code): not listed, not even as locked, until it's yours
-    cheatcode:   { hex: '#ff0a54', id: 'cheatCode', secret: true }
-};
-const colorUnlocked = (c) => !c.id || (state.unlockedColors || []).includes(c.id);
-// The names this visitor may see: every colour, minus secrets they haven't found
-const visibleColors = () => Object.keys(COLORS).filter(n => !COLORS[n].secret || colorUnlocked(COLORS[n]));
+// The themes by the short names you type (the terminal's `color`). The old accent colour names still work and
+// land on the theme they became, so a habit or a note from before the themes keeps working.
+const THEME_NAMES = Object.keys(CONFIG.THEMES);
+const LEGACY_NAMES = { lime: 'phoenix', cyan: 'phoenix', red: 'phoenix', purple: 'nebula', gold: 'inferno', orange: 'inferno', pink: 'inferno', matrix: 'inferno', ultraviolet: 'arctic', cheatcode: 'phantom' };
+const themeUnlockedNow = (id) => !window.themeUnlocked || window.themeUnlocked(id);
+// The names this visitor may see: every theme, minus the secret one until it is theirs
+const visibleThemes = () => THEME_NAMES.filter(n => CONFIG.THEMES[n].source !== 'secret' || themeUnlockedNow(n));
 
 const CHIPS = ['help', 'theme', 'color', 'sound', 'lang', 'vote', 'cart', 'tour', 'clear'];
 const HISTORY = [];
@@ -174,18 +161,18 @@ const COMMANDS = {
         print('>> ' + T('termThemeSet', { mode: T('termMode_' + next) }) + '\n');
     },
     color(arg) {
-        const names = visibleColors();
+        const names = visibleThemes();
         if (!arg) {
             print(T('termColorList') + '\n');
-            printChips(names.map(n => ({ label: n + (colorUnlocked(COLORS[n]) ? '' : ' 🔒'), run: 'color ' + n, color: COLORS[n].hex, locked: !colorUnlocked(COLORS[n]) })));
+            printChips(names.map(n => ({ label: CONFIG.THEMES[n].name.toLowerCase() + (themeUnlockedNow(n) ? '' : ' 🔒'), run: 'color ' + n, color: CONFIG.THEMES[n].colors[0], locked: !themeUnlockedNow(n) })));
             return;
         }
-        // A secret someone guessed the name of answers exactly like a colour that doesn't exist
-        const c = names.includes(arg) ? COLORS[arg] : null;
-        if (!c) { print(T('termColorUnknown', { list: names.join(', ') }) + '\n'); return; }
-        if (!colorUnlocked(c)) { print('>> ' + (window.colorLockMessage ? window.colorLockMessage(c.id) : T('toastColorLocked')) + '\n'); return; }
-        if (window.setTheme) window.setTheme(c.hex, c.id);
-        print('>> ' + T('termColorSet', { name: arg }) + '\n');
+        // A secret someone guessed the name of answers exactly like a theme that doesn't exist
+        const id = names.includes(arg) ? arg : (LEGACY_NAMES[arg] && names.includes(LEGACY_NAMES[arg]) ? LEGACY_NAMES[arg] : null);
+        if (!id) { print(T('termColorUnknown', { list: names.join(', ') }) + '\n'); return; }
+        if (!themeUnlockedNow(id)) { print('>> ' + (window.themeLockMessage ? window.themeLockMessage(id) : T('toastThemeLocked')) + '\n'); return; }
+        if (window.setTheme) window.setTheme(id);
+        print('>> ' + T('termColorSet', { name: CONFIG.THEMES[id].name }) + '\n');
     },
     sound(arg) {
         const want = arg === 'on' ? true : arg === 'off' ? false : (arg ? null : !state.audioEnabled);

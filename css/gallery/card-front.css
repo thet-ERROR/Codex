@@ -25,7 +25,7 @@ body.night-mode .yg-card-front, body.night-mode .yg-card-back { background: var(
 .yg-card-front::after, .yg-card-back::after {
     content: '';
     position: absolute; inset: 0;
-    background: linear-gradient(115deg, transparent 20%, rgba(255,0,150,0.15) 35%, rgba(255,200,0,0.15) 45%, rgba(0,255,150,0.15) 55%, rgba(0,180,255,0.15) 65%, transparent 80%);
+    background: linear-gradient(115deg, transparent 20%, rgb(var(--v-pink) / 0.15) 35%, rgba(255,200,0,0.15) 45%, rgba(0,255,150,0.15) 55%, rgba(0,180,255,0.15) 65%, transparent 80%);
     background-size: 250% 250%;
     mix-blend-mode: overlay;
     animation: foilShimmer 6s ease-in-out infinite;
@@ -37,8 +37,8 @@ body.night-mode .yg-card-front, body.night-mode .yg-card-back { background: var(
     .yg-card-front::after, .yg-card-back::after { animation: none; }
 }
 
-.yg-target-lock { position: absolute; top: 60px; right: 15px; background: rgba(204, 255, 0, 0.05); border: 1px solid var(--neon-green); color: var(--neon-green); width: 35px; height: 35px; display: flex; align-items: center; justify-content: center; border-radius: 8px; cursor: pointer; z-index: 20; font-size: 1.2rem; transition: 0.3s; }
-.yg-target-lock:hover, .yg-target-lock.active { background: var(--neon-green); color: #000; box-shadow: 0 0 15px rgba(204, 255, 0, 0.5); }
+.yg-target-lock { position: absolute; top: 60px; right: 15px; background: rgb(var(--a-rgb) / 0.05); border: 1px solid var(--neon-green); color: var(--neon-green); width: 35px; height: 35px; display: flex; align-items: center; justify-content: center; border-radius: 8px; cursor: pointer; z-index: 20; font-size: 1.2rem; transition: 0.3s; }
+.yg-target-lock:hover, .yg-target-lock.active { background: var(--neon-green); color: #000; box-shadow: 0 0 15px rgb(var(--a-rgb) / 0.5); }
 
 .yg-close-btn { position: absolute; top: 15px; right: 15px; z-index: 20; color: #888; cursor: pointer; transition: 0.2s; font-size: 1.2rem; }
 .yg-close-btn:hover { color: #fff; }
@@ -86,7 +86,7 @@ body.night-mode .yg-card-front, body.night-mode .yg-card-back { background: var(
     align-items: center;
     justify-content: center;
     border-radius: 12px;
-    border: 1px solid rgba(204, 255, 0, 0.2);
+    border: 1px solid rgb(var(--a-rgb) / 0.2);
     animation: chromeBreathe 3.5s ease-in-out infinite;
     position: relative;
     overflow: hidden;
@@ -140,7 +140,7 @@ body.night-mode .yg-card-front, body.night-mode .yg-card-back { background: var(
     font-size: clamp(1.4rem, 6vw, 2rem);
     font-weight: 800;
     color: var(--neon-green);
-    text-shadow: 0 0 10px rgba(204,255,0,0.3);
+    text-shadow: 0 0 10px rgb(var(--a-rgb) / 0.3);
 }
 
 /* --- UNIT DATA / EXTRAS: two tabs under the price (renderExtras in js/modules/gallery.js) --- */
@@ -162,7 +162,7 @@ body.night-mode .yg-card-front, body.night-mode .yg-card-back { background: var(
 }
 .yg-tab i { flex: none; font-size: 0.95rem; }
 .yg-tab:hover { color: #fff; }
-.yg-tab.active { color: var(--neon-green); border-color: rgba(204, 255, 0, 0.35); background: rgba(204, 255, 0, 0.1); box-shadow: inset 0 -2px 0 var(--neon-green); }
+.yg-tab.active { color: var(--neon-green); border-color: rgb(var(--a-rgb) / 0.35); background: rgb(var(--a-rgb) / 0.1); box-shadow: inset 0 -2px 0 var(--neon-green); }
 @supports (color: color-mix(in srgb, red, blue)) {
     .yg-tab.active { border-color: color-mix(in srgb, var(--neon-green) 40%, transparent); background: color-mix(in srgb, var(--neon-green) 12%, transparent); }
 }
@@ -244,7 +244,7 @@ body.pointer-input .yg-tab:focus-visible { outline: none; }
 }
 .yg-extra-toggle:has(input:checked) {
     border-color: var(--neon-green);
-    background: rgba(204, 255, 0, 0.06);
+    background: rgb(var(--a-rgb) / 0.06);
 }
 
 .yg-extra-body { display: flex; flex-direction: column; gap: 2px; min-width: 0; flex: 1; }
@@ -378,6 +378,6 @@ body.pointer-input .yg-tab:focus-visible { outline: none; }
 /* Several photos: pills + counter under the picture (renderGalleryDots in gallery.js) */
 .yg-img-dots { display: flex; align-items: center; justify-content: center; gap: 6px; margin: 8px 0 2px; }
 .yg-dot { width: 14px; height: 4px; border-radius: 4px; background: rgba(255, 255, 255, 0.18); transition: width 0.25s ease, background-color 0.25s ease; }
-.yg-dot.active { width: 28px; background: var(--neon-green); box-shadow: 0 0 8px rgba(204, 255, 0, 0.5); }
+.yg-dot.active { width: 28px; background: var(--neon-green); box-shadow: 0 0 8px rgb(var(--a-rgb) / 0.5); }
 .yg-img-count { margin-left: 8px; font-family: var(--font-ui); font-weight: 700; font-size: 0.72rem; letter-spacing: 1px; color: #9a9aa2; }
 .yg-image-frame { overflow: hidden; }

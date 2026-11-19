@@ -29,7 +29,7 @@
     <!-- One request for all five families (was three), and the font host's connection opened early -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700;800&family=Space+Grotesk:wght@300;700&family=Orbitron:wght@400;700;900&family=Exo+2:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700;800&family=Space+Grotesk:wght@300;700&family=Exo+2:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     
     <!-- Version-pinned on purpose: an unpinned CDN URL always serves "latest", so a compromised
          or simply broken release would execute on this page with full access to the DOM and to
@@ -50,6 +50,7 @@
          anything could be drawn. Listed here, they are all requested at once. A new stylesheet goes in
          this list, in the right place (tcg-card.css and the *-hud.css files must stay after the older rules). -->
     <link rel="stylesheet" href="css/base/variables.css">
+    <link rel="stylesheet" href="css/base/themes.css">
     <link rel="stylesheet" href="css/base/tokens.css">
     <link rel="stylesheet" href="css/base/animations.css">
     <link rel="stylesheet" href="css/layout/backgrounds.css">
@@ -486,10 +487,7 @@ Type 'help' for a list of commands.
                 </div>
                 <div class="wheel-col-right">
                     <div class="wheel-legend-title" data-i18n="wheelLegendTitle">POSSIBLE REWARDS</div>
-                    <div class="wheel-legend-row"><span class="wheel-legend-swatch" style="background:#ffd700;"></span> <span data-i18n="rewardCyberGold">CYBER GOLD SKIN</span></div>
-                    <div class="wheel-legend-row"><span class="wheel-legend-swatch" style="background:#ff5e00;"></span> <span data-i18n="rewardToxicOrange">TOXIC ORANGE SKIN</span></div>
-                    <div class="wheel-legend-row"><span class="wheel-legend-swatch" style="background:#ff2bd6;"></span> <span data-i18n="rewardNeonPink">NEON PINK SKIN</span></div>
-                    <div class="wheel-legend-row"><span class="wheel-legend-swatch" style="background:#00ff41;"></span> <span data-i18n="rewardMatrixGreen">MATRIX GREEN SKIN</span></div>
+                    <div class="wheel-legend-row"><span class="wheel-legend-swatch" style="background:linear-gradient(135deg,#ffaa00,#ff5e00);"></span> <span data-i18n="rewardInferno">INFERNO THEME</span></div>
                     <div class="wheel-legend-row"><span class="wheel-legend-swatch wheel-legend-coupon"><i class="ph-fill ph-ticket"></i></span> <span data-i18n="rewardCoupon">5% COUPON</span></div>
                 </div>
             </div>
@@ -606,24 +604,41 @@ Type 'help' for a list of commands.
                 </div>
 
                 <div class="set-section">
-                    <div class="set-heading"><i class="ph-fill ph-palette" aria-hidden="true"></i><span data-i18n="accentColorLabel">ACCENT COLOR</span></div>
-                    <div class="color-opts" role="group" data-i18n-aria="accentColorLabel" aria-label="Accent colour">
-                        <button type="button" class="color-btn" style="background:#ccff00;" data-color="#ccff00" onclick="setTheme('#ccff00')" data-i18n-aria="colorLime" aria-label="Lime"></button>
-                        <button type="button" class="color-btn" style="background:#00f0ff;" data-color="#00f0ff" onclick="setTheme('#00f0ff')" data-i18n-aria="colorCyan" aria-label="Cyan"></button>
-                        <button type="button" class="color-btn" style="background:#ff3333;" data-color="#ff3333" onclick="setTheme('#ff3333')" data-i18n-aria="colorRed" aria-label="Red"></button>
-                        <button type="button" class="color-btn" style="background:#b026ff;" data-color="#b026ff" onclick="setTheme('#b026ff')" data-i18n-aria="colorPurple" aria-label="Purple"></button>
-                        <button type="button" class="color-btn locked" data-id="cyberGold" style="background:#ffd700;" data-color="#ffd700" onclick="setTheme('#ffd700','cyberGold')" data-i18n-aria="rewardCyberGold" aria-label="Cyber Gold"><i class="ph-fill ph-lock-simple color-lock-icon"></i></button>
-                        <button type="button" class="color-btn locked" data-id="toxicOrange" style="background:#ff5e00;" data-color="#ff5e00" onclick="setTheme('#ff5e00','toxicOrange')" data-i18n-aria="rewardToxicOrange" aria-label="Toxic Orange"><i class="ph-fill ph-lock-simple color-lock-icon"></i></button>
-                        <button type="button" class="color-btn locked" data-id="neonPink" style="background:#ff2bd6;" data-color="#ff2bd6" onclick="setTheme('#ff2bd6','neonPink')" data-i18n-aria="rewardNeonPink" aria-label="Neon Pink"><i class="ph-fill ph-lock-simple color-lock-icon"></i></button>
-                        <button type="button" class="color-btn locked" data-id="matrixGreen" style="background:#00ff41;" data-color="#00ff41" onclick="setTheme('#00ff41','matrixGreen')" data-i18n-aria="rewardMatrixGreen" aria-label="Matrix Green"><i class="ph-fill ph-lock-simple color-lock-icon"></i></button>
-                        <!-- Rank colours: unlocked by ranking up (server grantRankRewards), never on the wheel -->
-                        <button type="button" class="color-btn locked rank-color" data-id="ultraviolet" style="background:#7c4dff;" data-color="#7c4dff" onclick="setTheme('#7c4dff','ultraviolet')" data-i18n-aria="rewardUltraviolet" aria-label="Ultraviolet"><i class="ph-fill ph-medal color-lock-icon"></i></button>
-                        <button type="button" class="color-btn locked rank-color" data-id="arctic" style="background:#8fe8ff;" data-color="#8fe8ff" onclick="setTheme('#8fe8ff','arctic')" data-i18n-aria="rewardArctic" aria-label="Arctic"><i class="ph-fill ph-medal color-lock-icon"></i></button>
-                        <button type="button" class="color-btn locked rank-color" data-id="phantom" style="background:#e9e4ff;" data-color="#e9e4ff" onclick="setTheme('#e9e4ff','phantom')" data-i18n-aria="rewardPhantom" aria-label="Phantom"><i class="ph-fill ph-crown color-lock-icon"></i></button>
-                        <!-- Secret: shown only to whoever found it (refreshColorLocks in wheel.js, js/modules/konami.js) -->
-                        <button type="button" class="color-btn secret-color" data-id="cheatCode" data-secret hidden style="background:#ff0a54;" data-color="#ff0a54" onclick="setTheme('#ff0a54','cheatCode')" data-i18n-aria="rewardCheatCode" aria-label="Cheat Code"></button>
+                    <div class="set-heading"><i class="ph-fill ph-palette" aria-hidden="true"></i><span data-i18n="themeLabel">THEME</span></div>
+                    <div class="theme-opts" role="group" data-i18n-aria="themeLabel" aria-label="Theme">
+                        <button type="button" class="theme-card" data-theme-id="phoenix" onclick="playClick(); setTheme('phoenix')" aria-pressed="false">
+                            <span class="theme-swatch" style="--c1:#ccff00;--c2:#b026ff;" aria-hidden="true"></span>
+                            <span class="theme-text"><strong class="theme-name">Phoenix</strong><small class="theme-tag" data-i18n="themeFree">Free</small></span>
+                            <i class="ph-fill ph-lock-simple theme-lock" aria-hidden="true"></i>
+                            <i class="ph-bold ph-check theme-check" aria-hidden="true"></i>
+                        </button>
+                        <button type="button" class="theme-card" data-theme-id="nebula" onclick="playClick(); setTheme('nebula')" aria-pressed="false">
+                            <span class="theme-swatch" style="--c1:#c084fc;--c2:#b026ff;" aria-hidden="true"></span>
+                            <span class="theme-text"><strong class="theme-name">Nebula</strong><small class="theme-tag" data-i18n="themeFree">Free</small></span>
+                            <i class="ph-fill ph-lock-simple theme-lock" aria-hidden="true"></i>
+                            <i class="ph-bold ph-check theme-check" aria-hidden="true"></i>
+                        </button>
+                        <button type="button" class="theme-card locked" data-theme-id="inferno" onclick="playClick(); setTheme('inferno')" aria-pressed="false">
+                            <span class="theme-swatch" style="--c1:#ffaa00;--c2:#ff5e00;" aria-hidden="true"></span>
+                            <span class="theme-text"><strong class="theme-name">Inferno</strong><small class="theme-tag" data-i18n="themeWheel">Daily wheel</small></span>
+                            <i class="ph-fill ph-lock-simple theme-lock" aria-hidden="true"></i>
+                            <i class="ph-bold ph-check theme-check" aria-hidden="true"></i>
+                        </button>
+                        <button type="button" class="theme-card locked" data-theme-id="arctic" onclick="playClick(); setTheme('arctic')" aria-pressed="false">
+                            <span class="theme-swatch" style="--c1:#8fe8ff;--c2:#38bdf8;" aria-hidden="true"></span>
+                            <span class="theme-text"><strong class="theme-name">Arctic</strong><small class="theme-tag" data-i18n="themeRank">Rank</small></span>
+                            <i class="ph-fill ph-lock-simple theme-lock" aria-hidden="true"></i>
+                            <i class="ph-bold ph-check theme-check" aria-hidden="true"></i>
+                        </button>
+                        <!-- Secret: shown only to whoever found it (refreshThemeLocks in js/modules/themes.js, js/modules/konami.js) -->
+                        <button type="button" class="theme-card" data-theme-id="phantom" data-secret hidden onclick="playClick(); setTheme('phantom')" aria-pressed="false">
+                            <span class="theme-swatch" style="--c1:#e9e4ff;--c2:#e879f9;" aria-hidden="true"></span>
+                            <span class="theme-text"><strong class="theme-name">Phantom</strong><small class="theme-tag" data-i18n="themeSecret">Secret</small></span>
+                            <i class="ph-fill ph-lock-simple theme-lock" aria-hidden="true"></i>
+                            <i class="ph-bold ph-check theme-check" aria-hidden="true"></i>
+                        </button>
                     </div>
-                    <p class="set-note"><i class="ph-bold ph-lock-simple"></i> <span data-i18n="colorsLockedNote">The bottom 4 unlock on the Daily Spin.</span></p>
+                    <p class="set-note"><i class="ph-bold ph-lock-simple"></i> <span data-i18n="themesLockedNote">Inferno is won on the Daily Spin, Arctic by ranking up.</span></p>
                     <button type="button" class="info-btn set-spin" onclick="playClick(); closeModal('settings-modal'); openWheelFromSettings()"><i class="ph-fill ph-gift"></i> <span data-i18n="colorsSpinBtn">Spin the wheel</span><i class="ph-bold ph-caret-right set-caret" aria-hidden="true"></i></button>
                 </div>
 

@@ -38,14 +38,14 @@
 .dossier-verify-banner button:hover { filter: brightness(1.1); }
 
 .dossier-stats { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
-.dossier-stat-chip { font-family: var(--font-ui); font-size: 0.7rem; font-weight: bold; letter-spacing: 0.5px; padding: 4px 10px; border-radius: 6px; background: rgba(204, 255, 0, 0.1); color: var(--neon-green); border: 1px solid var(--neon-green); }
+.dossier-stat-chip { font-family: var(--font-ui); font-size: 0.7rem; font-weight: bold; letter-spacing: 0.5px; padding: 4px 10px; border-radius: 6px; background: rgb(var(--a-rgb) / 0.1); color: var(--neon-green); border: 1px solid var(--neon-green); }
 
 .dossier-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
 .dossier-col { display: flex; flex-direction: column; gap: 20px; }
 /* Bordered pill instead of a flat background tint — same bordered/tinted treatment as the card's
    own buttons (.btn-card-inspect, .ach-viewall-btn) rather than a plain label. */
 .dossier-heading { font-family: var(--font-ui); font-size: 0.8rem; color: var(--neon-green); background: rgba(0, 255, 0, 0.1); border: 1px solid rgba(0, 255, 0, 0.3); display: inline-block; padding: 4px 10px; border-radius: 6px; margin-bottom: 8px; letter-spacing: 1px; }
-.purple-heading { color: var(--neon-purple); background: rgba(176, 38, 255, 0.1); border-color: rgba(176, 38, 255, 0.35); }
+.purple-heading { color: var(--neon-purple); background: rgb(var(--v-main) / 0.1); border-color: rgb(var(--v-main) / 0.35); }
 /* Left-accent border instead of a uniform, barely-visible grey one — the same treatment
    .sys-brief uses on the product card for its lore block, so a dossier section reads as the same
    kind of "card section" rather than a generic settings-panel container. Colour matches whichever
@@ -54,7 +54,7 @@
 #dossier-achievements { border-left-color: var(--neon-purple); }
 .dossier-list:empty, .wishlist-grid:empty, .dossier-list:has(.dossier-empty), .wishlist-grid:has(.dossier-empty) { align-items: center; justify-content: center; }
 .dossier-list:hover, .wishlist-grid:hover { border-color: var(--neon-green); box-shadow: inset 0 0 10px rgba(0, 255, 0, 0.05); }
-#dossier-achievements:hover { border-color: var(--neon-purple); box-shadow: inset 0 0 10px rgba(176, 38, 255, 0.05); }
+#dossier-achievements:hover { border-color: var(--neon-purple); box-shadow: inset 0 0 10px rgb(var(--v-main) / 0.05); }
 .dossier-list::-webkit-scrollbar, .wishlist-grid::-webkit-scrollbar { width: 4px; }
 .dossier-list::-webkit-scrollbar-thumb, .wishlist-grid::-webkit-scrollbar-thumb { background: var(--neon-green); border-radius: 4px; }
 #dossier-achievements::-webkit-scrollbar-thumb { background: var(--neon-purple); }
@@ -83,7 +83,7 @@
 .ach-grid::-webkit-scrollbar-thumb { background: var(--neon-purple); border-radius: 4px; }
 
 .ach-viewall-btn { margin-top: 10px; width: 100%; background: transparent; border: 1px solid var(--neon-purple); color: var(--neon-purple); font-family: var(--font-ui); font-size: 0.7rem; font-weight: 800; letter-spacing: 1px; padding: 8px; border-radius: 8px; cursor: pointer; transition: 0.2s; }
-.ach-viewall-btn:hover { background: rgba(176, 38, 255, 0.15); box-shadow: 0 0 10px rgba(176, 38, 255, 0.3); }
+.ach-viewall-btn:hover { background: rgb(var(--v-main) / 0.15); box-shadow: 0 0 10px rgb(var(--v-main) / 0.3); }
 
 /* Was a stack of inline styles inside the JS template. Moved here so the wishlist rows can be
    restyled without touching openAgentDashboard(), and so the remove button can be a real element

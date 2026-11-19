@@ -1,13 +1,5 @@
 :root {
-    --neon-green: #ccff00;
-    --neon-purple: #b026ff;
-    /* The HUD window palette (login, checkout, settings, cart, profile menu, Sniffy...). Every window reads
-       these, so a theme changes them here once. Today: the purple of the Nebula style. */
-    --s-purple: #b026ff;
-    --s-line: rgba(176, 38, 255, 0.45);
-    --s-soft: rgba(176, 38, 255, 0.14);
-    --s-glow: rgba(176, 38, 255, 0.35);
-    --s-panel: #0d0a18;
+    /* --neon-green, --neon-purple and the window palette (--s-*) come from the theme: css/base/themes.css */
     --legendary-orange: #ffaa00;
     --retro-red: #ff3333;
     --glass-dark: rgba(8, 8, 12, 0.95);
@@ -15,7 +7,7 @@
     --text-main: #ffffff;
     --font-ui: 'Rajdhani', 'Exo 2', sans-serif;
     --font-body: 'Space Grotesk', 'Exo 2', sans-serif;
-    --card-font-secondary: 'Orbitron', 'Exo 2', sans-serif;
+    --card-font-secondary: var(--font-ui);
     --card-bg-night: rgba(6, 8, 14, 0.97);
     --card-border-night: rgba(140, 170, 255, 0.35);
     --night-glow: 0 0 30px rgba(120,150,255,0.15);
@@ -59,6 +51,6 @@ input, textarea, select { font-size: 16px; }
 body.lang-el [data-i18n], body.lang-el [data-i18n-placeholder] { font-size: 0.85em; }
 
 ::-webkit-scrollbar { width: 6px; height: 6px; }
-::-webkit-scrollbar-track { background: rgba(10, 5, 20, 0.8); border-left: 1px solid rgba(176, 38, 255, 0.2); }
+::-webkit-scrollbar-track { background: rgba(10, 5, 20, 0.8); border-left: 1px solid rgb(var(--v-main) / 0.2); }
 ::-webkit-scrollbar-thumb { background: var(--neon-purple); border-radius: 10px; }
-::-webkit-scrollbar-thumb:hover { background: #d47aff; }
+::-webkit-scrollbar-thumb:hover { background: rgb(var(--v-pale)); }

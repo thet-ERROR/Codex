@@ -1,7 +1,7 @@
 /* Above every layer — modals sit at 99999-1000000 and the inspect card at 999999, and a toast fired
    from inside one of them (stock limit, locked colour, newsletter error) used to be painted under it */
 #toast-container { position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%); z-index: 2147483000; display: flex; flex-direction: column; gap: 10px; pointer-events: none; }
-.toast { background: rgba(0, 0, 0, 0.95); border: 1px solid var(--neon-green); color: #fff; padding: 15px 30px; border-radius: 8px; font-family: var(--font-ui); font-weight: bold; box-shadow: 0 0 20px rgba(204, 255, 0, 0.2); display: flex; align-items: center; gap: 10px; animation: slideUpFade 0.5s ease-out; pointer-events: auto; }
+.toast { background: rgba(0, 0, 0, 0.95); border: 1px solid var(--neon-green); color: #fff; padding: 15px 30px; border-radius: 8px; font-family: var(--font-ui); font-weight: bold; box-shadow: 0 0 20px rgb(var(--a-rgb) / 0.2); display: flex; align-items: center; gap: 10px; animation: slideUpFade 0.5s ease-out; pointer-events: auto; }
 .toast.achievement { border-color: var(--legendary-orange); color: var(--legendary-orange); }
 .toast.error { border-color: var(--retro-red); color: var(--retro-red); }
 /* Pressed again while it is still up (toast.js): a small bump instead of a second copy */
@@ -38,12 +38,12 @@ button.close-modal { padding: 0; border: 0; background: none; font-family: inher
 .auth-input:focus { border-color: var(--neon-green); }
 .auth-checkbox { display: flex; align-items: center; gap: 10px; font-family: var(--font-ui); font-size: 0.8rem; color: #aaa; cursor: pointer; }
 .auth-checkbox input { width: 18px; height: 18px; accent-color: var(--neon-green); cursor: pointer; }
-.auth-form .btn-inspect { background: transparent !important; border: 2px solid var(--neon-purple, #b026ff) !important; color: #c77dff !important; padding: 12px !important; width: 100% !important; font-family: 'Orbitron', sans-serif !important; font-weight: bold !important; font-size: 1rem !important; text-transform: uppercase !important; cursor: pointer !important; transition: all 0.3s ease !important; border-radius: 6px !important; margin-top: 10px !important; }
-.auth-form .btn-inspect:hover { background: var(--neon-purple, #b026ff) !important; color: #000 !important; box-shadow: 0 0 15px var(--neon-purple, #b026ff) !important; }
+.auth-form .btn-inspect { background: transparent !important; border: 2px solid var(--neon-purple, rgb(var(--v-main))) !important; color: rgb(var(--v-pale)) !important; padding: 12px !important; width: 100% !important; font-family: 'Orbitron', sans-serif !important; font-weight: bold !important; font-size: 1rem !important; text-transform: uppercase !important; cursor: pointer !important; transition: all 0.3s ease !important; border-radius: 6px !important; margin-top: 10px !important; }
+.auth-form .btn-inspect:hover { background: var(--neon-purple, rgb(var(--v-main))) !important; color: #000 !important; box-shadow: 0 0 15px var(--neon-purple, rgb(var(--v-main))) !important; }
 
 .tutorial-lang-opts { display: flex; gap: 15px; justify-content: center; margin-top: 20px; }
 .tutorial-lang-btn { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 20px 10px; background: rgba(255,255,255,0.03); border: 1px solid #333; border-radius: 10px; color: #fff; font-family: var(--font-ui); font-weight: 700; cursor: pointer; transition: 0.3s; }
-.tutorial-lang-btn:hover { border-color: var(--neon-green); background: rgba(204,255,0,0.08); box-shadow: 0 0 15px rgba(204,255,0,0.15); }
+.tutorial-lang-btn:hover { border-color: var(--neon-green); background: rgb(var(--a-rgb) / 0.08); box-shadow: 0 0 15px rgb(var(--a-rgb) / 0.15); }
 .tutorial-skip-link { margin-top: 18px; font-size: 0.8rem; color: #666; cursor: pointer; text-decoration: underline; }
 .tutorial-skip-link:hover { color: #999; }
 
@@ -53,11 +53,11 @@ button.close-modal { padding: 0; border: 0; background: none; font-family: inher
 .whoami-cursor { display: inline-block; color: var(--neon-green); font-weight: bold; animation: cursorBlink 1s step-end infinite; }
 
 /* Driver.js Overrides */
-.driver-popover { background-color: rgba(10, 5, 20, 0.95) !important; border: 1px solid var(--neon-purple, #b026ff) !important; color: #fff !important; border-radius: 12px !important; box-shadow: 0 0 20px rgba(176, 38, 255, 0.3) !important; }
-.driver-popover-title { color: var(--neon-green, #ccff00) !important; font-family: 'Orbitron', sans-serif !important; font-size: 1.2rem !important; margin-bottom: 5px !important; }
+.driver-popover { background-color: rgba(10, 5, 20, 0.95) !important; border: 1px solid var(--neon-purple, rgb(var(--v-main))) !important; color: #fff !important; border-radius: 12px !important; box-shadow: 0 0 20px rgb(var(--v-main) / 0.3) !important; }
+.driver-popover-title { color: var(--neon-green, #ccff00) !important; font-family: var(--font-ui) !important; font-size: 1.2rem !important; margin-bottom: 5px !important; }
 .driver-popover-description { color: #ccc !important; font-family: 'Space Grotesk', sans-serif !important; font-size: 0.95rem !important; }
-.driver-popover-footer button { background-color: transparent !important; border: 1px solid var(--neon-purple, #b026ff) !important; color: #fff !important; text-shadow: 0 0 5px var(--neon-purple, #b026ff) !important; transition: 0.3s ease !important; font-family: 'Chakra Petch', sans-serif !important; border-radius: 4px !important; }
-.driver-popover-footer button:hover { background-color: var(--neon-purple, #b026ff) !important; color: #000 !important; text-shadow: none !important; }
+.driver-popover-footer button { background-color: transparent !important; border: 1px solid var(--neon-purple, rgb(var(--v-main))) !important; color: #fff !important; text-shadow: 0 0 5px var(--neon-purple, rgb(var(--v-main))) !important; transition: 0.3s ease !important; font-family: 'Chakra Petch', sans-serif !important; border-radius: 4px !important; }
+.driver-popover-footer button:hover { background-color: var(--neon-purple, rgb(var(--v-main))) !important; color: #000 !important; text-shadow: none !important; }
 .driver-popover-close-btn { color: #fff !important; }
 /* driver.css sets overflow: hidden on the parent of whatever the tour highlights. On a phone the profile
    button's parent is a cell of the header grid (mobile.css), and a grid item with overflow: hidden may
@@ -69,7 +69,7 @@ button.close-modal { padding: 0; border: 0; background: none; font-family: inher
    is the only part that scrolls. On phones it becomes a bottom sheet. */
 .modal-content:focus { outline: none; }
 .close-modal:focus-visible, .close-btn:focus-visible, .modal-x:focus-visible, .info-tab:focus-visible, .info-btn:focus-visible,
-.info-action:focus-visible, .seg-btn:focus-visible, .switch:focus-visible, .color-btn:focus-visible, .set-link:focus-visible { outline: 2px solid var(--neon-green); outline-offset: 2px; }
+.info-action:focus-visible, .seg-btn:focus-visible, .switch:focus-visible, .theme-card:focus-visible, .set-link:focus-visible { outline: 2px solid var(--neon-green); outline-offset: 2px; }
 
 .info-box { width: min(560px, calc(100vw - 32px)); max-width: none; padding: 0; display: flex; flex-direction: column; overflow: hidden; max-height: min(86vh, 86dvh); border: 1px solid #26262b; border-top: 2px solid var(--neon-green); border-radius: 18px; background: #0b0b0e; box-shadow: 0 30px 80px rgba(0, 0, 0, 0.85); }
 .info-head { flex: none; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 14px 12px 22px; }
@@ -94,19 +94,19 @@ button.close-modal { padding: 0; border: 0; background: none; font-family: inher
 .info-row h3 { margin: 0 0 4px; font-family: var(--font-ui); font-weight: 800; font-size: 0.95rem; letter-spacing: 0.5px; text-transform: uppercase; color: #fff; }
 .info-row p { margin: 0; line-height: 1.55; color: #b4b4bb; }
 
-.info-callout { margin-top: 18px; padding: 16px; border-radius: 12px; border: 1px solid rgba(176, 38, 255, 0.45); background: rgba(176, 38, 255, 0.07); }
+.info-callout { margin-top: 18px; padding: 16px; border-radius: 12px; border: 1px solid rgb(var(--v-main) / 0.45); background: rgb(var(--v-main) / 0.07); }
 .info-callout h3 { margin: 0 0 6px; font-family: var(--font-ui); font-weight: 800; font-size: 1.05rem; color: #fff; }
 .info-callout p { margin: 0 0 14px; line-height: 1.55; color: #c4c4cb; }
 .info-actions { display: flex; flex-wrap: wrap; gap: 10px; }
 .info-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 46px; padding: 10px 18px; border-radius: 10px; border: 1px solid #3a3a42; background: rgba(255, 255, 255, 0.04); color: #fff; text-decoration: none; font-family: var(--font-ui); font-weight: 800; font-size: 0.85rem; letter-spacing: 0.5px; text-transform: uppercase; cursor: pointer; transition: background-color 0.2s, border-color 0.2s, box-shadow 0.2s, transform 0.08s; }
 .info-btn:hover { border-color: #666; background: rgba(255, 255, 255, 0.09); }
 .info-btn.primary { background: var(--neon-purple); border-color: var(--neon-purple); }
-.info-btn.primary:hover { box-shadow: 0 0 18px rgba(176, 38, 255, 0.55); }
+.info-btn.primary:hover { box-shadow: 0 0 18px rgb(var(--v-main) / 0.55); }
 .info-btn:active { transform: scale(0.97); }
 
 .info-terms { list-style: none; counter-reset: term; margin: 0; padding: 0; display: grid; gap: 16px; }
 .info-terms li { counter-increment: term; position: relative; padding-left: 40px; line-height: 1.6; color: #c4c4cb; font-size: 0.95rem; }
-.info-terms li::before { content: counter(term); position: absolute; left: 0; top: 0; width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; border-radius: 50%; background: rgba(176, 38, 255, 0.15); border: 1px solid rgba(176, 38, 255, 0.5); color: var(--neon-purple); font-family: var(--font-ui); font-weight: 800; font-size: 0.8rem; }
+.info-terms li::before { content: counter(term); position: absolute; left: 0; top: 0; width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; border-radius: 50%; background: rgb(var(--v-main) / 0.15); border: 1px solid rgb(var(--v-main) / 0.5); color: var(--neon-purple); font-family: var(--font-ui); font-weight: 800; font-size: 0.8rem; }
 .info-terms strong { color: #fff; }
 .info-terms a { color: var(--neon-green); text-decoration: underline; cursor: pointer; }
 /* data-i18n-html text isn't caught by the site's Greek size scaling (variables.css), so match it here */
@@ -127,7 +127,7 @@ body.lang-el .info-terms li { font-size: 0.85rem; }
 .set-label i { color: var(--neon-green); font-size: 1.3rem; }
 .switch { flex: none; position: relative; width: 52px; height: 30px; padding: 0; border-radius: 15px; border: 1px solid #3a3a42; background: #1a1a1f; cursor: pointer; transition: background-color 0.2s, border-color 0.2s; }
 .switch-knob { position: absolute; top: 3px; left: 3px; width: 22px; height: 22px; border-radius: 50%; background: #888; transition: transform 0.2s ease, background-color 0.2s; }
-.switch[aria-checked="true"] { background: rgba(204, 255, 0, 0.18); border-color: var(--neon-green); }
+.switch[aria-checked="true"] { background: rgb(var(--a-rgb) / 0.18); border-color: var(--neon-green); }
 .switch[aria-checked="true"] .switch-knob { transform: translateX(22px); background: var(--neon-green); }
 .seg { display: inline-flex; border: 1px solid #3a3a42; border-radius: 10px; overflow: hidden; }
 .seg-btn { min-width: 56px; min-height: 40px; padding: 0 14px; background: transparent; border: none; color: #aaa; font-family: var(--font-ui); font-weight: 800; font-size: 0.95rem; cursor: pointer; transition: background-color 0.2s, color 0.2s; }
@@ -135,18 +135,6 @@ body.lang-el .info-terms li { font-size: 0.85rem; }
 
 .set-section { padding: 16px 0; border-bottom: 1px solid #1c1c20; }
 .set-heading { margin-bottom: 12px; font-family: var(--font-ui); font-weight: 800; font-size: 0.75rem; letter-spacing: 2px; text-transform: uppercase; color: var(--neon-purple); }
-/* Four across, two rows — free colours on top, wheel rewards below. 44px circles that never squash:
-   they were 30px flex items that shrank into ovals on a phone. */
-.color-opts { display: grid; grid-template-columns: repeat(4, 44px); gap: 14px; justify-content: center; }
-/* A secret colour (data-secret) stays out of sight until it is unlocked — whatever display a skin gives the buttons */
-.color-btn[hidden] { display: none !important; }
-/* Once found: a glowing ring of its own colour says "you found a secret" */
-.color-btn.secret-color { border-color: transparent; box-shadow: 0 0 0 2px #ff0a54, 0 0 12px rgba(255, 10, 84, 0.6); }
-.color-btn { flex: none; width: 44px; height: 44px; padding: 0; border-radius: 50%; border: 2px solid rgba(255, 255, 255, 0.18); cursor: pointer; position: relative; transition: transform 0.15s, border-color 0.2s, box-shadow 0.2s; }
-@media (hover: hover) { .color-btn:hover { transform: scale(1.1); } }
-.color-btn:active { transform: scale(0.94); }
-.color-btn.current { border-color: #fff; box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.25); }
-.color-btn.current::after { content: '✓'; position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; color: #000; font-weight: 900; font-size: 1.2rem; }
 .set-note { display: flex; align-items: flex-start; gap: 8px; margin: 14px 0 12px; line-height: 1.45; color: #9a9aa2; font-size: 0.85rem; }
 .set-link { display: flex; align-items: center; gap: 10px; width: 100%; min-height: 48px; margin-top: 14px; padding: 10px 4px; background: none; border: none; color: #b4b4bb; font-family: var(--font-ui); font-weight: 700; font-size: 0.95rem; text-align: left; cursor: pointer; transition: color 0.2s; }
 .set-link:hover { color: #fff; }
@@ -167,7 +155,7 @@ body.lang-el .info-terms li { font-size: 0.85rem; }
    The same vocabulary as the PC card and the terminal: a >// kicker over the title with a blinking
    cursor, HUD corner brackets, cut-corner tabs numbered 01/02/03, icon chips, and the card's
    ">// CLASSIFIED_BRIEF" treatment (purple left rule) for the panel that matters most. */
-.info-box { position: relative; background: linear-gradient(180deg, #0e0e14 0%, #09090c 60%); border-color: rgba(176, 38, 255, 0.28); border-top-color: var(--neon-green); }
+.info-box { position: relative; background: linear-gradient(180deg, #0e0e14 0%, #09090c 60%); border-color: rgb(var(--v-main) / 0.28); border-top-color: var(--neon-green); }
 .info-box::before, .info-box::after { content: ''; position: absolute; width: 16px; height: 16px; pointer-events: none; z-index: 2; }
 .info-box::before { top: 8px; left: 8px; border-top: 2px solid var(--neon-green); border-left: 2px solid var(--neon-green); }
 .info-box::after { bottom: 8px; right: 8px; border-bottom: 2px solid var(--neon-purple); border-right: 2px solid var(--neon-purple); }
@@ -187,7 +175,7 @@ body.lang-el .info-terms li { font-size: 0.85rem; }
 }
 .info-tab-no { font-family: 'Courier New', monospace; font-size: 0.7rem; font-weight: 700; opacity: 0.55; }
 .info-tab:hover { color: #fff; background: rgba(255, 255, 255, 0.06); }
-.info-tab.active { color: var(--neon-green); border-color: rgba(204, 255, 0, 0.35); background: rgba(255, 255, 255, 0.06); box-shadow: inset 0 -2px 0 var(--neon-green); }
+.info-tab.active { color: var(--neon-green); border-color: rgb(var(--a-rgb) / 0.35); background: rgba(255, 255, 255, 0.06); box-shadow: inset 0 -2px 0 var(--neon-green); }
 .info-tab.active .info-tab-no { opacity: 1; }
 
 /* Rows: the icon sits in a chip */

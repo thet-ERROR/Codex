@@ -12,13 +12,13 @@ import { formatShortDateTime } from '../utils.js';
 // Same order as WHEEL_SLICES in the backend — the server answers with an index into this list
 const SLICES = [
     { type: 'blank', label: 'BLANK' },
-    { type: 'color', id: 'cyberGold', hex: '#ffd700', label: 'CYBER GOLD' },
+    { type: 'theme', id: 'inferno', label: 'INFERNO' },
     { type: 'coupon', label: '5% COUPON' },
-    { type: 'color', id: 'toxicOrange', hex: '#ff5e00', label: 'TOXIC ORANGE' },
     { type: 'blank', label: 'BLANK' },
-    { type: 'color', id: 'neonPink', hex: '#ff2bd6', label: 'NEON PINK' },
     { type: 'coupon', label: '5% COUPON' },
-    { type: 'color', id: 'matrixGreen', hex: '#00ff41', label: 'MATRIX GREEN' }
+    { type: 'blank', label: 'BLANK' },
+    { type: 'coupon', label: '5% COUPON' },
+    { type: 'coupon', label: '5% COUPON' }
 ];
 const SLICE_DEG = 360 / SLICES.length;
 const SPIN_MS = 4600;
@@ -52,27 +52,11 @@ function buildWheel() {
     });
 }
 
-export function refreshColorLocks() {
-    document.querySelectorAll('.color-btn.locked').forEach(btn => {
-        const id = btn.dataset.id;
-        if (id && state.unlockedColors.includes(id)) btn.classList.remove('locked');
-    });
-    // A secret colour isn't shown locked — it isn't shown at all until it's yours
-    document.querySelectorAll('.color-btn[data-secret]').forEach(btn => {
-        btn.hidden = !state.unlockedColors.includes(btn.dataset.id);
-    });
-}
-
-// Colours and coupons the server holds for the account — merged with colours unlocked on this
-// browser before the wheel moved server-side, so nobody loses a skin
+// Themes and coupons the server holds for the account (the theme list is kept by themes.js, which also reads
+// the old colour wins of this browser, so nobody loses a skin)
 export function applyWheelData(data) {
     if (!data) return;
-    if (Array.isArray(data.unlockedColors)) {
-        const merged = Array.from(new Set([...(state.unlockedColors || []), ...data.unlockedColors]));
-        state.unlockedColors = merged;
-        try { localStorage.setItem('codex_unlocked_colors', JSON.stringify(merged)); } catch (e) {}
-        refreshColorLocks();
-    }
+    if (Array.isArray(data.unlockedThemes) && window.applyThemeData) window.applyThemeData(data.unlockedThemes);
     if (Array.isArray(data.coupons)) {
         state.coupons = data.coupons;
         if (window.updateCartUI) window.updateCartUI();
@@ -169,8 +153,8 @@ function resolveSpin(data) {
     updateAttemptsDisplay();
 
     let text;
-    if (reward.type === 'color') {
-        if (window.setTheme) window.setTheme(slice.hex, slice.id);
+    if (reward.type === 'theme') {
+        if (window.setTheme) window.setTheme(reward.id || slice.id, { quiet: true });
         text = t(reward.alreadyUnlocked ? 'wheelSkinAgain' : 'wheelSkinNew', { name: slice.label });
     } else if (reward.type === 'coupon' && reward.coupon) {
         text = t('wheelCouponWon', { p: reward.coupon.percent, code: reward.coupon.code, until: formatShortDateTime(reward.coupon.expiresAt) });
@@ -254,5 +238,4 @@ document.addEventListener('codex:login', () => {
 
 window.spinWheel = spinWheel;
 window.openWheelFromSettings = openWheelFromSettings;
-window.refreshColorLocks = refreshColorLocks;
 window.applyWheelData = applyWheelData;

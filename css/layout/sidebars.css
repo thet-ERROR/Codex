@@ -49,7 +49,9 @@ body.pointer-input .side-btn:focus-visible { outline: none; }
    bars, which shrink the button's font-size, shrink them too. */
 .side-ico { display: block; width: 1.3em; height: 1.3em; object-fit: contain; pointer-events: none; transition: transform 0.25s ease, filter 0.25s ease; }
 .side-btn-info .side-ico, #lang-toggle-btn .side-ico { width: 1.05em; height: 1.05em; }
-@media (hover: hover) { .side-btn:hover .side-ico { transform: scale(1.08); filter: brightness(1.2); } }
+/* The violet icons follow the theme; the flag and the info icon keep their own colours */
+.side-btn:not(.side-btn-info):not(#lang-toggle-btn) .side-ico { filter: hue-rotate(var(--ico-hue, 0deg)); }
+@media (hover: hover) { .side-btn:hover .side-ico { transform: scale(1.08); filter: brightness(1.2); } .side-btn:not(.side-btn-info):not(#lang-toggle-btn):hover .side-ico { filter: hue-rotate(var(--ico-hue, 0deg)) brightness(1.2); } }
 .side-btn:active .side-ico { transform: scale(0.92); }
 
 /* Flag with the target language's code under it — see applyLanguage() in js/i18n.js */
@@ -63,18 +65,18 @@ body.pointer-input .side-btn:focus-visible { outline: none; }
 .feed-header { font-family: var(--font-ui); color: var(--neon-purple); font-weight: 800; font-size: 1rem; margin-bottom: 20px; letter-spacing: 2px; border-bottom: 1px solid var(--neon-purple); padding-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
 .live-dot { width: 6px; height: 6px; background: var(--neon-green); border-radius: 50%; box-shadow: 0 0 5px var(--neon-green); animation: blink 2s infinite; }
 .review-list { overflow-y: auto; flex: 1; display: flex; flex-direction: column; gap: 15px; padding-right: 5px; }
-.review-card { background: rgba(20, 10, 30, 0.6); border: 1px solid rgba(176, 38, 255, 0.3); padding: 12px; border-radius: 8px; position: relative; }
+.review-card { background: rgba(20, 10, 30, 0.6); border: 1px solid rgb(var(--v-main) / 0.3); padding: 12px; border-radius: 8px; position: relative; }
 .r-user { font-family: var(--font-ui); font-weight: bold; color: #fff; font-size: 0.9rem; }
 .r-stars { color: var(--neon-green); font-size: 0.7rem; margin-left: 5px; }
 /* The reviewer's rank badge (reviews.js rankBadge) — purple like the profile; the top rank in gold */
-.r-rank { margin-left: 4px; font-size: 0.85rem; vertical-align: -1px; color: #c084fc; filter: drop-shadow(0 0 4px rgba(176, 38, 255, 0.6)); }
+.r-rank { margin-left: 4px; font-size: 0.85rem; vertical-align: -1px; color: rgb(var(--v-pale)); filter: drop-shadow(0 0 4px rgb(var(--v-main) / 0.6)); }
 .r-rank.r-rank-top { color: #ffc43d; filter: drop-shadow(0 0 4px rgba(255, 196, 61, 0.7)); }
 /* "✓ Verified purchase" — the review was written with the code from the box (reviews.js) */
 .r-verified { display: inline-flex; align-items: center; gap: 4px; margin-top: 4px; font-size: 0.68rem; font-weight: 700; color: var(--neon-green); letter-spacing: 0.3px; }
 /* Above the list: "N deliveries" and what the ✓ means */
 .reviews-meta { display: flex; flex-direction: column; gap: 6px; margin: -8px 0 14px; }
 .reviews-meta[hidden] { display: none; }
-.rm-deliveries { display: inline-flex; align-items: center; gap: 6px; align-self: flex-start; padding: 4px 10px; border-radius: 999px; border: 1px solid rgba(204, 255, 0, 0.35); background: rgba(204, 255, 0, 0.06); color: var(--neon-green); font-family: var(--font-ui); font-size: 0.75rem; font-weight: 800; letter-spacing: 1px; }
+.rm-deliveries { display: inline-flex; align-items: center; gap: 6px; align-self: flex-start; padding: 4px 10px; border-radius: 999px; border: 1px solid rgb(var(--a-rgb) / 0.35); background: rgb(var(--a-rgb) / 0.06); color: var(--neon-green); font-family: var(--font-ui); font-size: 0.75rem; font-weight: 800; letter-spacing: 1px; }
 .rm-note { font-size: 0.68rem; line-height: 1.4; color: #8f88a8; }
 .r-text { font-size: 0.8rem; color: #aaa; margin-top: 5px; line-height: 1.4; font-style: italic; }
 .r-date { font-size: 0.65rem; color: #666; position: absolute; top: 12px; right: 12px; font-family: monospace; }
