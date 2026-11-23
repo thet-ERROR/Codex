@@ -42,9 +42,9 @@
     <!-- Phosphor icons: only the three weights the site uses (ph-bold, ph-fill, ph-duotone). The package's
          script used to add all six stylesheets (regular, thin and light too, ~250 KB of CSS for nothing),
          and only after the script itself had loaded — so the icons appeared late. Same version, same files. -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.2/src/bold/style.css" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.2/src/fill/style.css" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.2/src/duotone/style.css" crossorigin="anonymous">
+    <!-- Now served from the site itself and cut down to the ~100 icons in use (tests/tools/build-icons.py):
+         66 KB instead of ~870 KB of fonts and stylesheets from the CDN. -->
+    <link rel="stylesheet" href="css/base/phosphor.css">
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/driver.js@1.0.1/dist/driver.css" crossorigin="anonymous"/>
     <script src="https://cdn.jsdelivr.net/npm/driver.js@1.0.1/dist/driver.js.iife.js" crossorigin="anonymous" defer></script>

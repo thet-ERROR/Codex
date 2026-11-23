@@ -38,6 +38,32 @@ describe('speed — index.html', () => {
         assert.match(tag, /poster="assets\/images\/bg\.jpg"/);
     });
 
+    it('every icon the site uses is in the cut-down Phosphor set (else: python tests/tools/build-icons.py)', () => {
+        const css = fs.readFileSync(path.join(ROOT, 'css/base/phosphor.css'), 'utf8');
+        const files = ['index.html'];
+        (function walk(dir) {
+            for (const f of fs.readdirSync(path.join(ROOT, dir))) {
+                const rel = `${dir}/${f}`;
+                if (fs.statSync(path.join(ROOT, rel)).isDirectory()) walk(rel);
+                else if (/\.(js|css)$/.test(f) && f !== 'phosphor.css') files.push(rel);
+            }
+        })('js');
+        (function walk(dir) {
+            for (const f of fs.readdirSync(path.join(ROOT, dir))) {
+                const rel = `${dir}/${f}`;
+                if (fs.statSync(path.join(ROOT, rel)).isDirectory()) walk(rel);
+                else if (f.endsWith('.css') && f !== 'phosphor.css') files.push(rel);
+            }
+        })('css');
+        const used = new Set();
+        for (const f of files) for (const m of fs.readFileSync(path.join(ROOT, f), 'utf8').matchAll(/\bph-[a-z0-9]+(?:-[a-z0-9]+)*/g)) used.add(m[0]);
+        for (const w of ['ph-bold', 'ph-fill', 'ph-duotone']) used.delete(w);
+        const missing = [...used].filter(n => !css.includes(`.${n}:`));
+        assert.deepEqual(missing, [], `icons used but not built: ${missing.join(', ')}`);
+        assert.doesNotMatch(HTML, /@phosphor-icons/, 'the icons no longer come from the CDN');
+        for (const w of ['bold', 'fill', 'duotone']) assert.ok(fs.statSync(path.join(ROOT, `assets/fonts/phosphor/${w}.woff2`)).size < 40000);
+    });
+
     it('opens the API connection early', () => {
         assert.match(HTML, /<link rel="preconnect" href="https:\/\/codex-backend-9kij\.onrender\.com" crossorigin>/);
     });
@@ -101,6 +127,19 @@ describe('speed — in the browser', () => {
         const t = await page.evaluate(() => window.__t);
         assert.ok(t.card > 2500, `the delay applied (card at ${Math.round(t.card)} ms)`);
         assert.ok(t.hide - t.card < 700, `intro hid ${Math.round(t.hide - t.card)} ms after the card`);
+    }));
+
+    it('the icons draw from the site\'s own fonts, in all three weights', () => withPage({}, async (page) => {
+        const out = await page.evaluate(async () => {
+            await document.fonts.ready;
+            const probe = (cls) => { const i = document.createElement('i'); i.className = cls; document.body.append(i); const w = i.getBoundingClientRect().width; const c = getComputedStyle(i, '::before').content; i.remove(); return { w, c }; };
+            return {
+                loaded: ['Phosphor-Bold', 'Phosphor-Fill', 'Phosphor-Duotone'].map(f => document.fonts.check(`16px "${f}"`)),
+                icons: ['ph-bold ph-x', 'ph-fill ph-x', 'ph-duotone ph-x'].map(probe)
+            };
+        });
+        assert.deepEqual(out.loaded, [true, true, true]);
+        for (const i of out.icons) { assert.ok(i.w > 8, `an icon has width (${i.w})`); assert.notEqual(i.c, 'none'); }
     }));
 
     it('the background video starts once the intro has gone', () => withPage({}, async (page) => {
