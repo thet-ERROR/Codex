@@ -77,7 +77,7 @@
 .vote-remaining-chip.hot { background: rgba(255, 120, 40, 0.15); border-color: #ff7a29; color: #ff9a5c; animation: votePulse 1.4s ease-in-out infinite; }
 .vote-progress-wrap { height: 12px; margin: 8px 0 12px; overflow: hidden; border-radius: 6px; background: #222; box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.6); }
 .vote-progress-fill { width: 0%; height: 100%; border-radius: 6px; background: linear-gradient(90deg, var(--neon-purple), var(--vote-gold)); box-shadow: 0 0 12px rgba(255, 196, 61, 0.5); transition: width 0.8s cubic-bezier(0.16, 1, 0.3, 1); }
-.vote-container[data-phase="unlocked"] .vote-progress-fill { background: var(--neon-green); box-shadow: 0 0 12px rgb(var(--a-rgb) / 0.5); }
+.vote-container[data-phase="unlocked"] .vote-progress-fill { background: var(--neon-green); box-shadow: 0 0 12px rgb(var(--a-rgb) / calc(0.5 * var(--glow))); }
 .vote-timer {
     display: inline-flex; align-items: center; gap: 7px; padding: 6px 14px; border-radius: 999px;
     border: 1px solid rgba(255, 196, 61, 0.35); background: rgba(255, 196, 61, 0.06);
@@ -94,14 +94,14 @@
     font-family: var(--font-ui); font-weight: 800; font-size: 1.05rem; letter-spacing: 1px; text-transform: uppercase;
     transition: box-shadow 0.2s, background-color 0.2s, transform 0.08s;
 }
-.vote-btn:hover:not(:disabled) { box-shadow: 0 0 20px rgb(var(--v-main) / 0.55); }
+.vote-btn:hover:not(:disabled) { box-shadow: 0 0 20px rgb(var(--v-main) / calc(0.55 * var(--glow))); }
 .vote-btn:active:not(:disabled) { transform: scale(0.97); }
 .vote-btn:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
 .vote-btn[data-action="login"], .vote-btn[data-action="notify"] { background: transparent; color: #fff; }
 .vote-btn[data-action="login"]:hover, .vote-btn[data-action="notify"]:hover { background: rgb(var(--v-main) / 0.18); }
 .vote-btn[data-action="verify"] { background: transparent; border-color: #ffaa00; color: #ffaa00; }
 .vote-btn[data-action="golive"] { background: var(--neon-green); border-color: var(--neon-green); color: #000; }
-.vote-btn[data-action="golive"]:hover { box-shadow: 0 0 20px var(--neon-green); }
+.vote-btn[data-action="golive"]:hover { box-shadow: 0 0 20px rgb(var(--a-rgb) / var(--glow)); }
 /* Already voted — reads as earned, not broken */
 .vote-btn[data-action="voted"], .vote-btn[data-action="voted"]:disabled { background: rgba(255, 196, 61, 0.12); border-color: var(--vote-gold); color: var(--vote-gold); cursor: default; }
 .vote-btn:disabled { cursor: default; }
@@ -148,7 +148,7 @@
 
 .vote-flyer {
     position: fixed; z-index: 9500; margin: 0; pointer-events: none; transform-origin: center center; will-change: transform, opacity;
-    border-color: var(--neon-green); box-shadow: 0 0 30px rgb(var(--a-rgb) / 0.6);
+    border-color: var(--neon-green); box-shadow: 0 0 30px rgb(var(--a-rgb) / calc(0.6 * var(--glow)));
 }
 .vote-flyer .lock-icon, .vote-flyer .vote-flash { display: none; }
 .vote-flyer .mystery-img { filter: none; transform: none; transition: none; }
@@ -194,7 +194,7 @@
 /* --- Inspect card in vote mode: same card, gold/purple dress, nothing configurable --- */
 .yg-card.vote-mode .yg-card-face {
     border-color: var(--vote-gold) !important;
-    box-shadow: 0 0 40px rgb(var(--v-main) / 0.35), 0 0 80px rgba(255,196,61,0.15) !important;
+    box-shadow: 0 0 40px rgb(var(--v-main) / calc(0.35 * var(--glow))), 0 0 80px rgba(255,196,61,0.15) !important;
 }
 .yg-card.vote-mode .yg-project-name,
 .yg-card.vote-mode .yg-back-title {

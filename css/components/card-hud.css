@@ -36,10 +36,10 @@
         radial-gradient(120% 40% at 50% 0%, var(--hc-soft), transparent 70%) padding-box,
         linear-gradient(180deg, var(--hc-bg), #06040c) padding-box,
         linear-gradient(145deg, var(--hc), var(--hc-line) 38%, var(--hc-glow) 62%, var(--hc)) border-box !important;
-    box-shadow: 0 0 26px var(--hc-glow), inset 0 0 38px var(--hc-soft), 0 30px 70px rgba(0, 0, 0, 0.75) !important;
+    box-shadow: 0 0 26px color-mix(in srgb, var(--hc-glow) calc(100% * var(--glow)), transparent), inset 0 0 38px color-mix(in srgb, var(--hc-soft) calc(100% * var(--glow)), transparent), 0 30px 70px rgba(0, 0, 0, 0.75) !important;
 }
 /* The swipe snapshot is the card's size and in the air for a moment: no cast shadow */
-.card-ghost > .holo-card, body.night-mode .card-ghost > .holo-card { width: 100% !important; height: 100% !important; box-shadow: 0 0 26px var(--hc-glow), inset 0 0 38px var(--hc-soft) !important; }
+.card-ghost > .holo-card, body.night-mode .card-ghost > .holo-card { width: 100% !important; height: 100% !important; box-shadow: 0 0 26px color-mix(in srgb, var(--hc-glow) calc(100% * var(--glow)), transparent), inset 0 0 38px color-mix(in srgb, var(--hc-soft) calc(100% * var(--glow)), transparent) !important; }
 
 .tc-face {
     padding: 0; gap: 8px; border-radius: 0; background: none; box-shadow: none;
@@ -49,22 +49,22 @@
 .tc-title, .tc-art, .tc-price, .tc-type .stock-badge, .tc-tabs, .tc-brief, .tc-extras {
     border: 1px solid var(--hc-line); border-radius: 13px;
     background: linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.008)), var(--hc-panel);
-    box-shadow: inset 0 0 16px var(--hc-soft);
+    box-shadow: inset 0 0 16px color-mix(in srgb, var(--hc-soft) calc(100% * var(--glow)), transparent);
 }
 
 /* --- title bar --- */
 .tc-title { position: relative; gap: 10px; padding: 7px 8px 7px 12px; }
-.tc-title::after { content: ''; position: absolute; left: 14px; bottom: -1px; width: 26%; height: 2px; border-radius: 2px; background: var(--hc); box-shadow: 0 0 8px var(--hc); }
-.tc-name { font-size: max(17px, 6.5cqw); font-weight: 900; letter-spacing: 0.8px; color: #fff; text-shadow: 0 0 16px var(--hc-glow), 0 1px 0 rgba(0, 0, 0, 0.9); }
+.tc-title::after { content: ''; position: absolute; left: 14px; bottom: -1px; width: 26%; height: 2px; border-radius: 2px; background: var(--hc); box-shadow: 0 0 8px color-mix(in srgb, var(--hc) calc(100% * var(--glow)), transparent); }
+.tc-name { font-size: max(17px, 6.5cqw); font-weight: 900; letter-spacing: 0.8px; color: #fff; text-shadow: 0 0 16px color-mix(in srgb, var(--hc-glow) calc(100% * var(--glow)), transparent), 0 1px 0 rgba(0, 0, 0, 0.9); }
 .tc-attr {
     width: 10cqw; height: 10cqw; font-size: 5.4cqw; color: var(--s-bg2);
-    box-shadow: 0 0 0 2px var(--hc-line), 0 0 14px var(--hc-glow);
+    box-shadow: 0 0 0 2px var(--hc-line), 0 0 14px color-mix(in srgb, var(--hc-glow) calc(100% * var(--glow)), transparent);
 }
 
 /* --- the photo window: the dots sit on it, and the Community / Members badges in its top-left corner
    (on the photo rather than under it, so a PC that has one is not taller than one that doesn't) --- */
 .tc-art { flex: none; aspect-ratio: 4 / 3; min-height: 0; overflow: hidden; border-radius: 14px; background: radial-gradient(70% 60% at 50% 40%, #15131f, #06050b); }
-.tc-art::after { box-shadow: inset 0 0 22px var(--hc-soft), inset 0 8px 14px rgba(0, 0, 0, 0.45); }
+.tc-art::after { box-shadow: inset 0 0 22px color-mix(in srgb, var(--hc-soft) calc(100% * var(--glow)), transparent), inset 0 8px 14px rgba(0, 0, 0, 0.45); }
 .card-wish { top: 9px; right: 9px; z-index: 5; }
 .tc-art .tc-flags { position: absolute; top: 9px; left: 9px; right: 54px; z-index: 5; display: flex; flex-wrap: wrap; gap: 5px; pointer-events: none; }
 .tc-art .community-badge, .tc-art .members-badge { margin: 0 !important; padding: 3px 8px !important; font-size: 0.66rem; line-height: 1.2; width: auto; background-color: rgba(8, 6, 16, 0.82); }
@@ -73,14 +73,14 @@
     padding: 5px 9px; border-radius: 999px; background: rgba(6, 4, 12, 0.6); pointer-events: none;
 }
 .tc-dot { flex: none; width: 16px; height: 4px; border-radius: 4px; background: rgba(255, 255, 255, 0.28); }
-.tc-dot.active { width: 28px; background: var(--hc); box-shadow: 0 0 9px var(--hc); }
+.tc-dot.active { width: 28px; background: var(--hc); box-shadow: 0 0 9px color-mix(in srgb, var(--hc) calc(100% * var(--glow)), transparent); }
 
 /* --- price and stock --- */
 .tc-type { gap: 6px; }
 .tc-row { align-items: stretch; gap: 8px; min-height: 0; }
 .tc-price {
     flex: none; display: flex; align-items: center; padding: 6px 14px 6px 12px; font-size: max(20px, 7.2cqw); letter-spacing: 0.5px;
-    color: #fff; text-shadow: 0 0 16px var(--hc), 0 0 4px var(--hc-glow);
+    color: #fff; text-shadow: 0 0 16px color-mix(in srgb, var(--hc) calc(100% * var(--glow)), transparent), 0 0 4px color-mix(in srgb, var(--hc-glow) calc(100% * var(--glow)), transparent);
 }
 .tc-type .stock-badge {
     flex: 1; min-width: 0; display: flex; align-items: center; justify-content: center; gap: 6px; margin: 0 !important; padding: 6px 8px !important;
@@ -146,7 +146,7 @@ body.pointer-input .tc-tab:focus-visible { outline: none; }
 .tc-panel.active { visibility: visible; }
 .tc-brief { padding: 10px 12px 8px; border-left: 1px solid var(--hc-line); }
 .tc-brief-row { display: flex; align-items: flex-start; gap: 9px; }
-.tc-chev { flex: none; margin-top: 0.5cqw; font-size: max(17px, 5cqw); color: var(--hc); filter: drop-shadow(0 0 5px var(--hc-glow)); }
+.tc-chev { flex: none; margin-top: 0.5cqw; font-size: max(17px, 5cqw); color: var(--hc); filter: drop-shadow(0 0 5px color-mix(in srgb, var(--hc-glow) calc(100% * var(--glow)), transparent)); }
 .tc-brief-text { flex: 1; min-width: 0; font-size: max(13px, 3.4cqw); line-height: 1.5; color: #c3bfdc; }
 .tc-brief-more { margin: 4px 0 0 7cqw; padding: 4px 0 0; font-size: max(11.5px, 3cqw); color: var(--hc); }
 
@@ -176,7 +176,7 @@ body.pointer-input .tc-tab:focus-visible { outline: none; }
 .tc-actions .btn-card-inspect {
     flex: 2 1 0; display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 50px; padding: 8px 10px !important;
     border-radius: 14px !important; border: 1px solid var(--hc-line) !important; color: #fff !important; text-shadow: 0 0 8px rgba(0, 0, 0, 0.5);
-    background: linear-gradient(135deg, var(--hc-line), var(--hc-soft)) !important; box-shadow: 0 0 16px var(--hc-soft), inset 0 1px 0 rgba(255, 255, 255, 0.12) !important;
+    background: linear-gradient(135deg, var(--hc-line), var(--hc-soft)) !important; box-shadow: 0 0 16px color-mix(in srgb, var(--hc-soft) calc(100% * var(--glow)), transparent), inset 0 1px 0 rgba(255, 255, 255, 0.12) !important;
     font-size: max(12px, 3cqw) !important; letter-spacing: 0.2px; white-space: normal; text-align: center; line-height: 1.15; overflow: hidden;
 }
 @supports (color: color-mix(in srgb, red, blue)) {
@@ -191,11 +191,11 @@ body.pointer-input .tc-tab:focus-visible { outline: none; }
 .tc-actions .btn-card-inspect::after { --ico: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Cpath d='m181.66 133.66-80 80a8 8 0 0 1-11.32-11.32L164.69 128 90.34 53.66a8 8 0 0 1 11.32-11.32l80 80a8 8 0 0 1 0 11.32Z' fill='black'/%3E%3C/svg%3E"); }
 .tc-actions .btn-card-compare {
     flex: 1 1 0; display: flex; align-items: center; justify-content: center; min-height: 50px; padding: 6px 6px !important;
-    border-radius: 14px !important; border: 1px solid var(--hc-line) !important; background: var(--hc-panel) !important; color: #fff !important; box-shadow: inset 0 0 14px var(--hc-soft) !important;
+    border-radius: 14px !important; border: 1px solid var(--hc-line) !important; background: var(--hc-panel) !important; color: #fff !important; box-shadow: inset 0 0 14px color-mix(in srgb, var(--hc-soft) calc(100% * var(--glow)), transparent) !important;
     font-size: max(12px, 3cqw) !important; letter-spacing: 0.4px; text-align: center; line-height: 1.15;
 }
 @media (hover: hover) { .tc-actions .btn-card-compare:hover { background: var(--hc-soft) !important; } }
-.tc-actions .btn-card-compare.selected { background: var(--hc) !important; color: #000 !important; box-shadow: 0 0 16px var(--hc-glow) !important; }
+.tc-actions .btn-card-compare.selected { background: var(--hc) !important; color: #000 !important; box-shadow: 0 0 16px color-mix(in srgb, var(--hc-glow) calc(100% * var(--glow)), transparent) !important; }
 .tc-actions .btn-card-inspect:active, .tc-actions .btn-card-compare:active { transform: scale(0.97); }
 
 /* The VS strip (compare.css) keeps its look; it just needs to match the new corners */
@@ -208,10 +208,10 @@ body.pointer-input .tc-tab:focus-visible { outline: none; }
     position: static; transform: none; /* tablet.css used to pin them over the card's edges */
     flex: none; width: 46px; height: 92px; padding: 0; clip-path: none; border-radius: 14px; cursor: pointer;
     border: 1px solid var(--hc-line, rgb(var(--a-rgb) / 0.5)); background: rgba(8, 6, 16, 0.74); color: #fff; font-size: 1.4rem;
-    box-shadow: 0 0 14px var(--hc-soft, rgb(var(--a-rgb) / 0.12)), inset 0 0 12px var(--hc-soft, rgb(var(--a-rgb) / 0.12));
+    box-shadow: 0 0 14px var(--hc-soft, rgb(var(--a-rgb) / calc(0.12 * var(--glow)))), inset 0 0 12px var(--hc-soft, rgb(var(--a-rgb) / calc(0.12 * var(--glow))));
     transition: background-color 0.2s, color 0.2s, border-color 0.2s, box-shadow 0.2s, transform 0.1s;
 }
-.nav-arrow:hover { background: var(--neon-green); border-color: var(--neon-green); color: #000; box-shadow: 0 0 20px var(--hc-glow, rgb(var(--a-rgb) / 0.3)); }
+.nav-arrow:hover { background: var(--neon-green); border-color: var(--neon-green); color: #000; box-shadow: 0 0 20px var(--hc-glow, rgb(var(--a-rgb) / calc(0.3 * var(--glow)))); }
 .nav-arrow:active { transform: scale(0.94); }
 @supports (color: color-mix(in srgb, red, blue)) {
     .nav-arrow { --hc-line: color-mix(in srgb, var(--neon-green) 55%, transparent); --hc-soft: color-mix(in srgb, var(--neon-green) 14%, transparent); --hc-glow: color-mix(in srgb, var(--neon-green) 32%, transparent); }
@@ -232,7 +232,7 @@ body.pointer-input .tc-tab:focus-visible { outline: none; }
 
 /* --- the title over the card, in the same voice: a glowing title, a bordered count --- */
 .sh-count { border-radius: 999px; }
-#stage-label { text-shadow: 0 0 22px var(--hc-glow, rgb(var(--a-rgb) / 0.3)); }
+#stage-label { text-shadow: 0 0 22px var(--hc-glow, rgb(var(--a-rgb) / calc(0.3 * var(--glow)))); }
 
 /* --- touch screens: the same look, lighter to draw, so the swipe stays smooth ---
    Each swipe builds a new card and snapshots the old one, and every soft shadow, filter and blend in
@@ -241,12 +241,12 @@ body.pointer-input .tc-tab:focus-visible { outline: none; }
    shadow at all (it fades out in a fraction of a second — tablet.css did the same for the old card).
    The holo sheen is for the mouse tilt, which touch screens don't have. */
 @media (hover: none), (pointer: coarse), (max-width: 1024px) {
-    #main-card, body.night-mode #main-card { box-shadow: 0 0 18px var(--hc-glow) !important; }
+    #main-card, body.night-mode #main-card { box-shadow: 0 0 18px color-mix(in srgb, var(--hc-glow) calc(100% * var(--glow)), transparent) !important; }
     .card-ghost > .holo-card, body.night-mode .card-ghost > .holo-card { box-shadow: none !important; }
     .tc-title, .tc-art, .tc-price, .tc-type .stock-badge, .tc-tabs, .tc-brief, .tc-extras { box-shadow: none; }
     .tc-art::after { box-shadow: inset 0 8px 14px rgba(0, 0, 0, 0.45); }
     .tc-chev { filter: none; }
-    .tc-name, .tc-price { text-shadow: 0 0 10px var(--hc-glow); }
+    .tc-name, .tc-price { text-shadow: 0 0 10px color-mix(in srgb, var(--hc-glow) calc(100% * var(--glow)), transparent); }
     .tc-actions .btn-card-inspect { box-shadow: none !important; }
     .tc-actions .btn-card-compare { box-shadow: none !important; }
 }

@@ -122,9 +122,9 @@ body.night-mode #main-card { box-shadow: inset 1px 1px 0 rgba(255, 255, 255, 0.5
 }
 .card-wish i { font-size: 1.15rem; display: block; }
 @media (hover: hover) { .card-wish:not(.on):hover { border-color: var(--neon-green); color: var(--neon-green); } }
-.card-wish.on { background: var(--neon-green); border-color: var(--neon-green); color: #0a0a0c; box-shadow: 0 0 12px var(--neon-green); }
+.card-wish.on { background: var(--neon-green); border-color: var(--neon-green); color: #0a0a0c; box-shadow: 0 0 12px rgb(var(--a-rgb) / var(--glow)); }
 @supports (color: color-mix(in srgb, red, blue)) {
-    .card-wish.on { box-shadow: 0 0 0 3px color-mix(in srgb, var(--neon-green) 25%, transparent), 0 0 14px color-mix(in srgb, var(--neon-green) 70%, transparent); }
+    .card-wish.on { box-shadow: 0 0 0 3px color-mix(in srgb, var(--neon-green) 25%, transparent), 0 0 14px color-mix(in srgb, rgb(var(--a-rgb) / var(--glow)) 70%, transparent); }
 }
 /* Just pressed: a full turn that overshoots a little and settles; switching on also sends out a ring */
 .card-wish.spin i { animation: wishSpinOn 0.6s cubic-bezier(0.2, 0.8, 0.3, 1.15); }
@@ -144,7 +144,7 @@ body.night-mode #main-card { box-shadow: inset 1px 1px 0 rgba(255, 255, 255, 0.5
 .tc-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 24px; }
 .tc-flags { display: flex; flex-wrap: wrap; gap: 5px; }
 .tc-type .stock-badge, .tc-type .community-badge, .tc-type .members-badge { margin: 0 !important; padding: 3px 8px !important; font-size: 0.66rem; line-height: 1.2; width: auto; }
-.tc-price { flex: none; font-family: var(--font-ui); font-weight: 800; font-size: 1.15rem; line-height: 1; color: var(--neon-green); text-shadow: 0 0 14px color-mix(in srgb, var(--neon-green) 35%, transparent); font-size: 5.4cqw; }
+.tc-price { flex: none; font-family: var(--font-ui); font-weight: 800; font-size: 1.15rem; line-height: 1; color: var(--neon-green); text-shadow: 0 0 14px color-mix(in srgb, rgb(var(--a-rgb) / var(--glow)) 35%, transparent); font-size: 5.4cqw; }
 
 /* --- text box ---------------------------------------------------------------------------------------- */
 .tc-brief { padding: 6px 9px 7px; border-radius: 3px; border-left: 2px solid var(--neon-purple); background: rgba(0, 0, 0, 0.55); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.05); }
@@ -236,9 +236,9 @@ body.night-mode #main-card { box-shadow: inset 1px 1px 0 rgba(255, 255, 255, 0.5
     transition: background-color 0.25s, border-color 0.25s, color 0.25s, box-shadow 0.25s;
 }
 @media (hover: hover) { .yg-image-frame .yg-target-lock:not(.locked):hover { background: rgba(0, 0, 0, 0.72); border-color: var(--neon-green); color: var(--neon-green); box-shadow: none; } }
-.yg-image-frame .yg-target-lock.locked { background: var(--neon-green); border-color: var(--neon-green); color: #0a0a0c; box-shadow: 0 0 12px var(--neon-green); }
+.yg-image-frame .yg-target-lock.locked { background: var(--neon-green); border-color: var(--neon-green); color: #0a0a0c; box-shadow: 0 0 12px rgb(var(--a-rgb) / var(--glow)); }
 @supports (color: color-mix(in srgb, red, blue)) {
-    .yg-image-frame .yg-target-lock.locked { box-shadow: 0 0 0 3px color-mix(in srgb, var(--neon-green) 25%, transparent), 0 0 14px color-mix(in srgb, var(--neon-green) 70%, transparent); }
+    .yg-image-frame .yg-target-lock.locked { box-shadow: 0 0 0 3px color-mix(in srgb, var(--neon-green) 25%, transparent), 0 0 14px color-mix(in srgb, rgb(var(--a-rgb) / var(--glow)) 70%, transparent); }
 }
 /* Pressed on: a turn and a ring (not when the card merely opens on a PC already on the list) */
 .yg-target-lock.locked:not(.still) i { animation: wishSpinOn 0.6s cubic-bezier(0.2, 0.8, 0.3, 1.15); }

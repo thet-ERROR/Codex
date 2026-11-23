@@ -12,9 +12,9 @@
 @keyframes cfIn { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
 .compare-float:focus-visible { outline: 2px solid var(--neon-green); outline-offset: 2px; }
 .cf-slot { flex: none; display: grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; font-size: 0.8rem; }
-.cf-a { background: var(--neon-green); color: #000; box-shadow: 0 0 8px var(--neon-green); }
+.cf-a { background: var(--neon-green); color: #000; box-shadow: 0 0 8px rgb(var(--a-rgb) / var(--glow)); }
 .cf-b { border: 1.5px dashed var(--neon-green); color: var(--neon-green); }
-.compare-float.active .cf-b { border-style: solid; background: var(--neon-green); color: #000; box-shadow: 0 0 8px var(--neon-green); }
+.compare-float.active .cf-b { border-style: solid; background: var(--neon-green); color: #000; box-shadow: 0 0 8px rgb(var(--a-rgb) / var(--glow)); }
 .compare-float.active .cf-b i { visibility: hidden; }
 .cf-label { flex: 1; min-width: 0; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .cf-wait, .compare-float.half .cf-ready { display: none; }
@@ -35,7 +35,7 @@
 .compare-box {
     width: min(760px, 94vw); padding: 26px 22px 22px; border-radius: 18px;
     border: 2px solid var(--neon-green) !important; max-height: 88vh;
-    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.85), 0 0 25px rgb(var(--a-rgb) / 0.12);
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.85), 0 0 25px rgb(var(--a-rgb) / calc(0.12 * var(--glow)));
 }
 .vs-title { text-align: center; font-family: var(--font-ui); font-weight: 800; letter-spacing: 3px; font-size: 1.4rem; margin: 0 0 18px; color: #fff; }
 
@@ -51,7 +51,7 @@
     align-self: center; margin-top: 30px; width: 40px; height: 40px; border-radius: 50%;
     display: flex; align-items: center; justify-content: center;
     font-family: var(--font-ui); font-weight: 900; font-size: 0.85rem; color: #000;
-    background: var(--neon-green); box-shadow: 0 0 18px rgb(var(--a-rgb) / 0.45);
+    background: var(--neon-green); box-shadow: 0 0 18px rgb(var(--a-rgb) / calc(0.45 * var(--glow)));
 }
 
 .vs-section-title {
@@ -76,7 +76,7 @@
     background: rgb(var(--v-main) / 0.1); border: 1px solid var(--neon-purple); color: #fff;
     font-family: var(--font-ui); font-weight: 800; font-size: 0.85rem; letter-spacing: 1px; text-transform: uppercase;
 }
-.vs-view-btn:hover { background: var(--neon-purple); box-shadow: 0 0 16px rgb(var(--v-main) / 0.5); }
+.vs-view-btn:hover { background: var(--neon-purple); box-shadow: 0 0 16px rgb(var(--v-main) / calc(0.5 * var(--glow))); }
 
 @media (max-width: 768px) {
     .compare-box { padding: 20px 14px 16px; }

@@ -8,7 +8,7 @@
 import { CONFIG } from '../config.js';
 import { getLang, t } from '../i18n.js';
 import { state } from '../state.js';
-import { escUrl, formatPrice, priceCentsOf } from '../utils.js';
+import { escUrl, formatPrice, priceCentsOf, photoAt } from '../utils.js';
 
 const L = (pair) => pair[getLang() === 'el' ? 'el' : 'en'];
 
@@ -84,7 +84,7 @@ function finderHtml() {
     const cards = shown.map(pc => {
         const id = String(pc._id || pc.id), points = ((pc.highlights || {})[el ? 'el' : 'en'] || []);
         return `<div class="fr-pc">
-            <img class="fr-img" src="${escUrl(pc.images && pc.images[0]) || 'assets/images/bg.jpg'}" alt="" loading="lazy">
+            <img class="fr-img" src="${escUrl(photoAt(pc.images && pc.images[0], 'l')) || 'assets/images/bg.jpg'}" alt="" loading="lazy">
             <div class="fr-body">
                 <div class="fr-top"><strong class="fr-name">${esc(pc.name)}</strong><span class="fr-price">${formatPrice(priceCentsOf(pc))}</span></div>
                 ${points.length ? `<ul class="fr-points">${points.map(p => `<li>${esc(p)}</li>`).join('')}</ul>` : ''}

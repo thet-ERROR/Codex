@@ -33,7 +33,7 @@
     left: calc(var(--side) / 2 - 1px); right: calc(var(--side) / 2 - 1px); top: 4px; bottom: 74px;
     border: 2px solid var(--neon-green); border-bottom: none; border-radius: 46px 46px 0 0;
     /* drop-shadow follows the drawn line only (a box-shadow would also light the open bottom edge) */
-    filter: drop-shadow(0 0 3px var(--neon-green)) drop-shadow(0 0 7px color-mix(in srgb, var(--neon-green) 60%, transparent));
+    filter: drop-shadow(0 0 3px rgb(var(--a-rgb) / var(--glow))) drop-shadow(0 0 7px color-mix(in srgb, rgb(var(--a-rgb) / var(--glow)) 60%, transparent));
     opacity: 0.9;
 }
 #qr-modal .qr-side { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; justify-content: space-between; padding: 26px 0 0; }
@@ -41,10 +41,10 @@
 /* Icon chips: small tilted glass cards sitting on the loop */
 #qr-modal .qr-chip {
     width: 44px; height: 44px; display: grid; place-items: center; border-radius: 11px; font-size: 1.35rem;
-    color: var(--neon-green); filter: drop-shadow(0 0 6px color-mix(in srgb, var(--neon-green) 60%, transparent));
+    color: var(--neon-green); filter: drop-shadow(0 0 6px color-mix(in srgb, rgb(var(--a-rgb) / var(--glow)) 60%, transparent));
     border: 1.5px solid rgb(var(--v-bright) / 0.85);
     background: linear-gradient(160deg, rgba(60, 22, 110, 0.95), rgba(20, 10, 40, 0.95));
-    box-shadow: 0 0 12px rgb(var(--v-main) / 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+    box-shadow: 0 0 12px rgb(var(--v-main) / calc(0.5 * var(--glow))), inset 0 1px 0 rgba(255, 255, 255, 0.12);
 }
 #qr-modal .qr-side-l .qr-chip { transform: rotate(-10deg); }
 #qr-modal .qr-side-r .qr-chip { transform: rotate(10deg); }
@@ -54,12 +54,12 @@
     position: relative; width: 28px; height: 64px; margin: 12px 0 2px; border-radius: 7px;
     border: 1px solid rgba(220, 255, 200, 0.45);
     background: linear-gradient(90deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.03) 35%, rgba(255, 255, 255, 0.1) 80%);
-    box-shadow: 0 0 14px color-mix(in srgb, var(--neon-green) 45%, transparent);
+    box-shadow: 0 0 14px color-mix(in srgb, rgb(var(--a-rgb) / var(--glow)) 45%, transparent);
 }
 #qr-modal .qr-can::before, #qr-modal .qr-can::after {
     content: ''; position: absolute; left: -4px; right: -4px; height: 9px; border-radius: 3px;
     background: linear-gradient(90deg, #3d3152, #d4c8ea 40%, #7a6a99 60%, #2b2140);
-    box-shadow: 0 0 6px rgb(var(--v-main) / 0.5);
+    box-shadow: 0 0 6px rgb(var(--v-main) / calc(0.5 * var(--glow)));
 }
 #qr-modal .qr-can::before { top: -7px; }
 #qr-modal .qr-can::after { bottom: -7px; }
@@ -71,7 +71,7 @@
         radial-gradient(circle at 45% 10%, rgba(255, 255, 255, 0.5) 0 1px, transparent 1.6px),
         linear-gradient(180deg, color-mix(in srgb, var(--neon-green) 95%, #fff), color-mix(in srgb, var(--neon-green) 70%, #000));
     background-size: 100% 40px, 100% 40px, 100% 40px, 100% 100%;
-    box-shadow: 0 0 12px var(--neon-green), inset 0 2px 0 rgba(255, 255, 255, 0.35);
+    box-shadow: 0 0 12px rgb(var(--a-rgb) / var(--glow)), inset 0 2px 0 rgba(255, 255, 255, 0.35);
     animation: qrBubbles 3s linear infinite, qrLevel 4s ease-in-out infinite;
 }
 #qr-modal .qr-side-r .qr-can-liquid { animation-delay: -1.5s, -2s; }
@@ -83,7 +83,7 @@
     position: relative; z-index: 1; justify-self: center; width: min(232px, 100%); padding: 10px; box-sizing: border-box;
     border-radius: 18px; border: 1.5px solid rgb(var(--v-bright) / 0.75);
     background: linear-gradient(180deg, #1c1030, #0d0819);
-    box-shadow: 0 0 16px rgb(var(--v-main) / 0.45), inset 0 0 12px rgba(0, 0, 0, 0.6);
+    box-shadow: 0 0 16px rgb(var(--v-main) / calc(0.45 * var(--glow))), inset 0 0 12px rgba(0, 0, 0, 0.6);
 }
 #qr-modal .qr-tile {
     width: 100%; aspect-ratio: 1 / 1; padding: 0; box-sizing: border-box; display: grid; place-items: center; overflow: hidden;
@@ -99,16 +99,16 @@
     font-family: 'Courier New', monospace; font-size: 0.8rem; text-align: center; overflow-wrap: anywhere;
     color: var(--neon-green); border: 1px solid color-mix(in srgb, var(--neon-green) 60%, transparent);
     background: color-mix(in srgb, var(--neon-green) 6%, transparent);
-    box-shadow: 0 0 10px color-mix(in srgb, var(--neon-green) 25%, transparent);
+    box-shadow: 0 0 10px color-mix(in srgb, rgb(var(--a-rgb) / var(--glow)) 25%, transparent);
 }
 #qr-modal .qr-actions { flex-direction: column; align-items: center; gap: 10px; }
 #qr-modal .qr-actions .info-btn { width: min(300px, 100%); min-height: 54px; border-radius: 14px; font-family: var(--font-ui); letter-spacing: 1.5px; }
 #qr-modal .qr-actions .info-btn[hidden] { display: none; }
 #qr-modal .qr-actions .info-btn.primary {
     border: 1px solid var(--s-purple); color: #fff; background: linear-gradient(135deg, rgb(var(--v-main) / 0.6), rgb(var(--v-deep) / 0.35));
-    box-shadow: 0 0 18px rgb(var(--v-main) / 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+    box-shadow: 0 0 18px rgb(var(--v-main) / calc(0.3 * var(--glow))), inset 0 1px 0 rgba(255, 255, 255, 0.12);
 }
-#qr-modal .qr-actions .info-btn.primary:hover { box-shadow: 0 0 26px rgb(var(--v-main) / 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.15); }
+#qr-modal .qr-actions .info-btn.primary:hover { box-shadow: 0 0 26px rgb(var(--v-main) / calc(0.5 * var(--glow))), inset 0 1px 0 rgba(255, 255, 255, 0.15); }
 #qr-modal .qr-actions .info-btn:not(.primary) { border: 1px solid var(--s-line); background: var(--s-soft); }
 #qr-modal .qr-actions .info-btn:not(.primary):hover { border-color: var(--s-purple); }
 

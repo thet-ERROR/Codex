@@ -1,6 +1,6 @@
 // js/modules/catalog.js
 import { state } from '../state.js';
-import { esc, escUrl, formatPrice, priceCentsOf, stockState, stockLabel, lampInfo, membersOnlyActive, formatShortDateTime, PACK_ICONS } from '../utils.js';
+import { esc, escUrl, formatPrice, priceCentsOf, stockState, stockLabel, lampInfo, membersOnlyActive, formatShortDateTime, PACK_ICONS, photoAt } from '../utils.js';
 import { getOptions } from './gallery.js';
 import { getLang } from '../i18n.js';
 
@@ -269,7 +269,7 @@ function buildCard() {
                 <span class="tc-attr"><i class="ph-fill ${PACK_ICONS[pc.category] || PACK_ICONS.drop}"></i></span>
             </div>
             <div class="tc-art" onclick="openGallery()">
-                <img src="${escUrl(pc.images && pc.images[0]) || 'assets/images/bg.jpg'}" class="tc-img" alt="">
+                <img src="${escUrl(photoAt(pc.images && pc.images[0])) || 'assets/images/bg.jpg'}" class="tc-img" alt="">
                 ${lampHTML}
                 ${nPhotos > 1 ? `<span class="hero-photos" aria-hidden="true"><i class="ph-bold ph-images"></i> ${nPhotos}</span>` : ''}
                 <button type="button" class="card-wish${inWishlist ? ' on' : ''}${wishSpin}" aria-pressed="${inWishlist}" aria-label="Wishlist" onclick="event.stopPropagation(); cardWish('${pcId}')"><i class="ph-bold ph-crosshair"></i></button>
@@ -381,7 +381,7 @@ function preloadNeighbours() {
     const n = state.filtered.length;
     if (n < 2) return;
     [1, -1].forEach(step => {
-        const src = state.filtered[(state.index + step + n) % n]?.images?.[0];
+        const src = photoAt(state.filtered[(state.index + step + n) % n]?.images?.[0]);
         // escUrl is the "is this a safe URL" check; the raw value is what the browser should fetch
         // (its output is HTML-escaped, which would mangle a `&` in a query string)
         // decode() also does the decoding up front, off the frame where the card swaps in

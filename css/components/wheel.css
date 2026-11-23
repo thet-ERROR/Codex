@@ -11,13 +11,13 @@
 #wheel-attempts { font-family: var(--font-ui); color: #aaa; font-size: 0.8rem; letter-spacing: 1px; margin-bottom: 10px; }
 .wheel-stage { position: relative; width: min(240px, 60vw); height: min(240px, 60vw); margin: 5px auto 20px auto; }
 
-.wheel-pointer { position: absolute; top: -10px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 13px solid transparent; border-right: 13px solid transparent; border-top: 22px solid var(--neon-green); z-index: 6; filter: drop-shadow(0 0 6px var(--neon-green)); transition: filter 0.2s ease; }
-.wheel-pointer.locked { filter: drop-shadow(0 0 12px var(--neon-green)) drop-shadow(0 0 24px var(--neon-green)); }
+.wheel-pointer { position: absolute; top: -10px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 13px solid transparent; border-right: 13px solid transparent; border-top: 22px solid var(--neon-green); z-index: 6; filter: drop-shadow(0 0 6px rgb(var(--a-rgb) / var(--glow))); transition: filter 0.2s ease; }
+.wheel-pointer.locked { filter: drop-shadow(0 0 12px rgb(var(--a-rgb) / var(--glow))) drop-shadow(0 0 24px rgb(var(--a-rgb) / var(--glow))); }
 
-#wheel { position: relative; width: 100%; height: 100%; border-radius: 50%; border: 3px solid var(--neon-green); box-shadow: 0 0 25px color-mix(in srgb, var(--neon-green) 40%, transparent), inset 0 0 25px color-mix(in srgb, var(--neon-green) 15%, transparent); transition: transform 4.5s cubic-bezier(0.1, 0.82, 0.15, 1); }
+#wheel { position: relative; width: 100%; height: 100%; border-radius: 50%; border: 3px solid var(--neon-green); box-shadow: 0 0 25px color-mix(in srgb, rgb(var(--a-rgb) / var(--glow)) 40%, transparent), inset 0 0 25px color-mix(in srgb, rgb(var(--a-rgb) / var(--glow)) 15%, transparent); transition: transform 4.5s cubic-bezier(0.1, 0.82, 0.15, 1); }
 .wheel-slice-label { position: absolute; top: 50%; left: 50%; width: 90px; height: 20px; line-height: 20px; margin-left: -45px; margin-top: -10px; text-align: center; font-family: var(--font-ui); font-weight: 800; font-size: 0.62rem; letter-spacing: 0.5px; color: var(--neon-green); text-shadow: 0 1px 3px #000; pointer-events: none; }
 
-.wheel-initiate-btn { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 80px; height: 80px; border-radius: 50%; background: #000; border: 2px solid var(--neon-green); color: var(--neon-green); font-family: var(--font-ui); font-weight: 900; font-size: 0.8rem; letter-spacing: 1px; cursor: pointer; z-index: 7; box-shadow: 0 0 15px color-mix(in srgb, var(--neon-green) 50%, transparent); animation: wheelPulse 1.8s ease-in-out infinite; transition: background 0.2s, color 0.2s; }
+.wheel-initiate-btn { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 80px; height: 80px; border-radius: 50%; background: #000; border: 2px solid var(--neon-green); color: var(--neon-green); font-family: var(--font-ui); font-weight: 900; font-size: 0.8rem; letter-spacing: 1px; cursor: pointer; z-index: 7; box-shadow: 0 0 15px color-mix(in srgb, rgb(var(--a-rgb) / var(--glow)) 50%, transparent); animation: wheelPulse 1.8s ease-in-out infinite; transition: background 0.2s, color 0.2s; }
 .wheel-initiate-btn:hover:not(:disabled) { background: var(--neon-green); color: #000; }
 .wheel-initiate-btn:disabled { opacity: 0.4; cursor: not-allowed; animation: none; box-shadow: none; }
 

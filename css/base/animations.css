@@ -2,7 +2,7 @@
 @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes slideUpFade { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 @keyframes blink { 50% { opacity: 0.3; } }
-@keyframes slowWaveBreath { 0% { background-position: 0% 50%; opacity: 0; filter: drop-shadow(0 0 10px rgba(255,255,255,0.2)); } 20% { opacity: 1; filter: drop-shadow(0 0 20px rgba(255,255,255,0.8)); } 50% { background-position: 100% 50%; opacity: 1; filter: drop-shadow(0 0 25px var(--neon-purple)); } 80% { opacity: 1; filter: drop-shadow(0 0 20px #ff4500); } 100% { background-position: 0% 50%; opacity: 0; filter: drop-shadow(0 0 10px rgba(255,255,255,0.2)); } }
+@keyframes slowWaveBreath { 0% { background-position: 0% 50%; opacity: 0; filter: drop-shadow(0 0 10px rgba(255,255,255,0.2)); } 20% { opacity: 1; filter: drop-shadow(0 0 20px rgba(255,255,255,0.8)); } 50% { background-position: 100% 50%; opacity: 1; filter: drop-shadow(0 0 25px rgb(var(--v-main) / var(--glow))); } 80% { opacity: 1; filter: drop-shadow(0 0 20px #ff4500); } 100% { background-position: 0% 50%; opacity: 0; filter: drop-shadow(0 0 10px rgba(255,255,255,0.2)); } }
 @keyframes dossierGlitch { 0% { opacity: 0; transform: scale(0.9) translateY(20px); } 100% { opacity: 1; transform: scale(1) translateY(0); } }
 @keyframes typing { from { width: 0 } to { width: 100% } }
 @keyframes blink-caret { from, to { border-color: transparent } 50% { border-color: var(--neon-green); } }
@@ -10,9 +10,9 @@
 @keyframes breathe { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
 @keyframes waveTextPurple { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
 @keyframes cursorBlink { 0%, 50% { opacity: 1; } 51%, 100% { opacity: 0; } }
-@keyframes wheelPulse { 0%, 100% { transform: translate(-50%, -50%) scale(1); box-shadow: 0 0 15px color-mix(in srgb, var(--neon-green) 50%, transparent); } 50% { transform: translate(-50%, -50%) scale(1.08); box-shadow: 0 0 25px color-mix(in srgb, var(--neon-green) 80%, transparent); } }
+@keyframes wheelPulse { 0%, 100% { transform: translate(-50%, -50%) scale(1); box-shadow: 0 0 15px color-mix(in srgb, rgb(var(--a-rgb) / var(--glow)) 50%, transparent); } 50% { transform: translate(-50%, -50%) scale(1.08); box-shadow: 0 0 25px color-mix(in srgb, rgb(var(--a-rgb) / var(--glow)) 80%, transparent); } }
 @keyframes logoAura { 0%, 100% { opacity: 0; } 50% { opacity: 1; } }
 @keyframes chromeBreathe {
-    0%, 100% { box-shadow: 0 0 14px rgb(var(--a-rgb) / 0.12), 0 0 22px rgb(var(--v-main) / 0.08); border-color: rgb(var(--a-rgb) / 0.22); }
-    50% { box-shadow: 0 0 20px rgb(var(--v-main) / 0.2), 0 0 30px rgb(var(--a-rgb) / 0.12); border-color: rgb(var(--v-main) / 0.32); }
+    0%, 100% { box-shadow: 0 0 14px rgb(var(--a-rgb) / calc(0.12 * var(--glow))), 0 0 22px rgb(var(--v-main) / calc(0.08 * var(--glow))); border-color: rgb(var(--a-rgb) / 0.22); }
+    50% { box-shadow: 0 0 20px rgb(var(--v-main) / calc(0.2 * var(--glow))), 0 0 30px rgb(var(--a-rgb) / calc(0.12 * var(--glow))); border-color: rgb(var(--v-main) / 0.32); }
 }

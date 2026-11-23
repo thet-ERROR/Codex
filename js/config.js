@@ -5,11 +5,12 @@ export const CONFIG = {
     // Returns and support questions go here — the Return button in the Information window opens a
     // prefilled email to this address.
     SUPPORT_EMAIL: 'd.codexphoenix@gmail.com',
-    DEFAULT_THEME: 'phoenix',
-    // The five themes (css/base/themes.css). colors = [accent, window colour], for the swatches and the
+    DEFAULT_THEME: 'graphite',
+    // The six themes (css/base/themes.css). colors = [accent, window colour], for the swatches and the
     // browser bar. source says where it comes from: free for everyone, the wheel, a rank, or secret (the
     // Konami code). Who has what is the server's call (codex-backend src/lib/themes.js).
     THEMES: {
+        graphite: { name: 'Graphite', colors: ['#c4e46e', '#94a3b8'], source: 'free' },
         phoenix: { name: 'Phoenix', colors: ['#ccff00', '#b026ff'], source: 'free' },
         nebula:  { name: 'Nebula',  colors: ['#c084fc', '#b026ff'], source: 'free' },
         inferno: { name: 'Inferno', colors: ['#ffaa00', '#ff5e00'], source: 'wheel' },

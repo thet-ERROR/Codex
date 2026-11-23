@@ -615,7 +615,7 @@ describe('title, share preview, headings and names (changes doc, step 5)', () =>
             assert.equal(wheel, lang === 'el-GR' ? 'Καθημερινή περιστροφή' : 'Daily Spin', 'the name follows the language');
         }));
     }
-    it('an X works from the keyboard and wears the HUD square close, not the grey browser button', () => withPage({ width: 1440, height: 900 }, async (page) => {
+    it('an X works from the keyboard and wears the HUD square close, not the grey browser button', () => withPage({ width: 1440, height: 900, storage: { codex_theme_id: 'phoenix' } }, async (page) => {
         await page.evaluate(() => window.openModal('wheel-modal'));
         await page.locator('#wheel-modal.active').waitFor();
         // a real button must not show the default grey browser face; the wheel close is the HUD one (1px purple line)

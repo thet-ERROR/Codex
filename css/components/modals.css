@@ -1,7 +1,7 @@
 /* Above every layer — modals sit at 99999-1000000 and the inspect card at 999999, and a toast fired
    from inside one of them (stock limit, locked colour, newsletter error) used to be painted under it */
 #toast-container { position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%); z-index: 2147483000; display: flex; flex-direction: column; gap: 10px; pointer-events: none; }
-.toast { background: rgba(0, 0, 0, 0.95); border: 1px solid var(--neon-green); color: #fff; padding: 15px 30px; border-radius: 8px; font-family: var(--font-ui); font-weight: bold; box-shadow: 0 0 20px rgb(var(--a-rgb) / 0.2); display: flex; align-items: center; gap: 10px; animation: slideUpFade 0.5s ease-out; pointer-events: auto; }
+.toast { background: rgba(0, 0, 0, 0.95); border: 1px solid var(--neon-green); color: #fff; padding: 15px 30px; border-radius: 8px; font-family: var(--font-ui); font-weight: bold; box-shadow: 0 0 20px rgb(var(--a-rgb) / calc(0.2 * var(--glow))); display: flex; align-items: center; gap: 10px; animation: slideUpFade 0.5s ease-out; pointer-events: auto; }
 .toast.achievement { border-color: var(--legendary-orange); color: var(--legendary-orange); }
 .toast.error { border-color: var(--retro-red); color: var(--retro-red); }
 /* Pressed again while it is still up (toast.js): a small bump instead of a second copy */
@@ -39,24 +39,24 @@ button.close-modal { padding: 0; border: 0; background: none; font-family: inher
 .auth-checkbox { display: flex; align-items: center; gap: 10px; font-family: var(--font-ui); font-size: 0.8rem; color: #aaa; cursor: pointer; }
 .auth-checkbox input { width: 18px; height: 18px; accent-color: var(--neon-green); cursor: pointer; }
 .auth-form .btn-inspect { background: transparent !important; border: 2px solid var(--neon-purple, rgb(var(--v-main))) !important; color: rgb(var(--v-pale)) !important; padding: 12px !important; width: 100% !important; font-family: 'Orbitron', sans-serif !important; font-weight: bold !important; font-size: 1rem !important; text-transform: uppercase !important; cursor: pointer !important; transition: all 0.3s ease !important; border-radius: 6px !important; margin-top: 10px !important; }
-.auth-form .btn-inspect:hover { background: var(--neon-purple, rgb(var(--v-main))) !important; color: #000 !important; box-shadow: 0 0 15px var(--neon-purple, rgb(var(--v-main))) !important; }
+.auth-form .btn-inspect:hover { background: var(--neon-purple, rgb(var(--v-main))) !important; color: #000 !important; box-shadow: 0 0 15px var(--neon-purple, rgb(var(--v-main) / var(--glow))) !important; }
 
 .tutorial-lang-opts { display: flex; gap: 15px; justify-content: center; margin-top: 20px; }
 .tutorial-lang-btn { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 20px 10px; background: rgba(255,255,255,0.03); border: 1px solid #333; border-radius: 10px; color: #fff; font-family: var(--font-ui); font-weight: 700; cursor: pointer; transition: 0.3s; }
-.tutorial-lang-btn:hover { border-color: var(--neon-green); background: rgb(var(--a-rgb) / 0.08); box-shadow: 0 0 15px rgb(var(--a-rgb) / 0.15); }
+.tutorial-lang-btn:hover { border-color: var(--neon-green); background: rgb(var(--a-rgb) / 0.08); box-shadow: 0 0 15px rgb(var(--a-rgb) / calc(0.15 * var(--glow))); }
 .tutorial-skip-link { margin-top: 18px; font-size: 0.8rem; color: #666; cursor: pointer; text-decoration: underline; }
 .tutorial-skip-link:hover { color: #999; }
 
-.whoami-content { width: 90%; max-width: 650px; background: #050806; border: 1px solid var(--neon-green); box-shadow: 0 0 40px color-mix(in srgb, var(--neon-green) 15%, transparent); font-family: monospace; }
+.whoami-content { width: 90%; max-width: 650px; background: #050806; border: 1px solid var(--neon-green); box-shadow: 0 0 40px color-mix(in srgb, rgb(var(--a-rgb) / var(--glow)) 15%, transparent); font-family: monospace; }
 .whoami-title { color: var(--neon-green); font-size: 1.1rem; letter-spacing: 1px; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px solid color-mix(in srgb, var(--neon-green) 20%, transparent); }
 .whoami-body { color: var(--neon-green); font-size: 0.95rem; line-height: 1.7; white-space: pre-wrap; min-height: 260px; text-align: left; }
 .whoami-cursor { display: inline-block; color: var(--neon-green); font-weight: bold; animation: cursorBlink 1s step-end infinite; }
 
 /* Driver.js Overrides */
-.driver-popover { background-color: rgba(10, 5, 20, 0.95) !important; border: 1px solid var(--neon-purple, rgb(var(--v-main))) !important; color: #fff !important; border-radius: 12px !important; box-shadow: 0 0 20px rgb(var(--v-main) / 0.3) !important; }
+.driver-popover { background-color: rgba(10, 5, 20, 0.95) !important; border: 1px solid var(--neon-purple, rgb(var(--v-main))) !important; color: #fff !important; border-radius: 12px !important; box-shadow: 0 0 20px rgb(var(--v-main) / calc(0.3 * var(--glow))) !important; }
 .driver-popover-title { color: var(--neon-green, #ccff00) !important; font-family: var(--font-ui) !important; font-size: 1.2rem !important; margin-bottom: 5px !important; }
 .driver-popover-description { color: #ccc !important; font-family: 'Space Grotesk', sans-serif !important; font-size: 0.95rem !important; }
-.driver-popover-footer button { background-color: transparent !important; border: 1px solid var(--neon-purple, rgb(var(--v-main))) !important; color: #fff !important; text-shadow: 0 0 5px var(--neon-purple, rgb(var(--v-main))) !important; transition: 0.3s ease !important; font-family: 'Chakra Petch', sans-serif !important; border-radius: 4px !important; }
+.driver-popover-footer button { background-color: transparent !important; border: 1px solid var(--neon-purple, rgb(var(--v-main))) !important; color: #fff !important; text-shadow: 0 0 5px var(--neon-purple, rgb(var(--v-main) / var(--glow))) !important; transition: 0.3s ease !important; font-family: 'Chakra Petch', sans-serif !important; border-radius: 4px !important; }
 .driver-popover-footer button:hover { background-color: var(--neon-purple, rgb(var(--v-main))) !important; color: #000 !important; text-shadow: none !important; }
 .driver-popover-close-btn { color: #fff !important; }
 /* driver.css sets overflow: hidden on the parent of whatever the tour highlights. On a phone the profile
@@ -101,7 +101,7 @@ button.close-modal { padding: 0; border: 0; background: none; font-family: inher
 .info-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 46px; padding: 10px 18px; border-radius: 10px; border: 1px solid #3a3a42; background: rgba(255, 255, 255, 0.04); color: #fff; text-decoration: none; font-family: var(--font-ui); font-weight: 800; font-size: 0.85rem; letter-spacing: 0.5px; text-transform: uppercase; cursor: pointer; transition: background-color 0.2s, border-color 0.2s, box-shadow 0.2s, transform 0.08s; }
 .info-btn:hover { border-color: #666; background: rgba(255, 255, 255, 0.09); }
 .info-btn.primary { background: var(--neon-purple); border-color: var(--neon-purple); }
-.info-btn.primary:hover { box-shadow: 0 0 18px rgb(var(--v-main) / 0.55); }
+.info-btn.primary:hover { box-shadow: 0 0 18px rgb(var(--v-main) / calc(0.55 * var(--glow))); }
 .info-btn:active { transform: scale(0.97); }
 
 .info-terms { list-style: none; counter-reset: term; margin: 0; padding: 0; display: grid; gap: 16px; }

@@ -21,7 +21,7 @@
    percentage ready-made, so a promotion visibly resets it instead of it creeping toward a
    far-off maximum. See rankFor() in the backend. */
 .dossier-rank-bar { background: #222; height: 6px; border-radius: 3px; margin: 6px 0 6px 0; overflow: hidden; }
-.dossier-rank-fill { background: var(--neon-purple); height: 100%; width: 0%; transition: 0.5s; box-shadow: 0 0 8px var(--neon-purple); }
+.dossier-rank-fill { background: var(--neon-purple); height: 100%; width: 0%; transition: 0.5s; box-shadow: 0 0 8px rgb(var(--v-main) / var(--glow)); }
 .dossier-xp { font-family: monospace; font-size: 0.72rem; color: #888; letter-spacing: 0.5px; margin-bottom: 8px; }
 
 .dossier-verify-banner {
@@ -54,7 +54,7 @@
 #dossier-achievements { border-left-color: var(--neon-purple); }
 .dossier-list:empty, .wishlist-grid:empty, .dossier-list:has(.dossier-empty), .wishlist-grid:has(.dossier-empty) { align-items: center; justify-content: center; }
 .dossier-list:hover, .wishlist-grid:hover { border-color: var(--neon-green); box-shadow: inset 0 0 10px rgba(0, 255, 0, 0.05); }
-#dossier-achievements:hover { border-color: var(--neon-purple); box-shadow: inset 0 0 10px rgb(var(--v-main) / 0.05); }
+#dossier-achievements:hover { border-color: var(--neon-purple); box-shadow: inset 0 0 10px rgb(var(--v-main) / calc(0.05 * var(--glow))); }
 .dossier-list::-webkit-scrollbar, .wishlist-grid::-webkit-scrollbar { width: 4px; }
 .dossier-list::-webkit-scrollbar-thumb, .wishlist-grid::-webkit-scrollbar-thumb { background: var(--neon-green); border-radius: 4px; }
 #dossier-achievements::-webkit-scrollbar-thumb { background: var(--neon-purple); }
@@ -83,7 +83,7 @@
 .ach-grid::-webkit-scrollbar-thumb { background: var(--neon-purple); border-radius: 4px; }
 
 .ach-viewall-btn { margin-top: 10px; width: 100%; background: transparent; border: 1px solid var(--neon-purple); color: var(--neon-purple); font-family: var(--font-ui); font-size: 0.7rem; font-weight: 800; letter-spacing: 1px; padding: 8px; border-radius: 8px; cursor: pointer; transition: 0.2s; }
-.ach-viewall-btn:hover { background: rgb(var(--v-main) / 0.15); box-shadow: 0 0 10px rgb(var(--v-main) / 0.3); }
+.ach-viewall-btn:hover { background: rgb(var(--v-main) / 0.15); box-shadow: 0 0 10px rgb(var(--v-main) / calc(0.3 * var(--glow))); }
 
 /* Was a stack of inline styles inside the JS template. Moved here so the wishlist rows can be
    restyled without touching openAgentDashboard(), and so the remove button can be a real element

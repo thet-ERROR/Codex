@@ -29,7 +29,7 @@
     position: fixed; top: 0; left: 0; z-index: 10050; max-width: 260px;
     padding: 10px 14px; border-radius: 10px; cursor: pointer;
     background: rgba(8, 8, 12, 0.97); border: 1px solid var(--neon-green);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8), 0 0 18px rgb(var(--a-rgb) / 0.25);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8), 0 0 18px rgb(var(--a-rgb) / calc(0.25 * var(--glow)));
     opacity: 0; pointer-events: none; transform: translateY(6px);
     transition: opacity 0.25s ease, transform 0.25s ease;
 }
@@ -45,7 +45,7 @@
 @keyframes cartHintBob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
 @media (prefers-reduced-motion: reduce) { .cart-hint.show { animation: none; } }
 
-.mc-checkout-btn:hover { box-shadow: 0 0 20px var(--neon-green); transform: scale(1.02); }
+.mc-checkout-btn:hover { box-shadow: 0 0 20px rgb(var(--a-rgb) / var(--glow)); transform: scale(1.02); }
 /* Coupon picker + discount line (updateCartUI in cart.js) */
 .mc-coupon { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 10px; font-family: var(--font-ui); font-weight: 700; font-size: 0.85rem; color: #ffc43d; }
 .mc-coupon label { display: flex; align-items: center; gap: 6px; white-space: nowrap; }

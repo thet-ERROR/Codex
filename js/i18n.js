@@ -60,9 +60,9 @@ const translations = {
         trustShippingTitle: "Αποστολή εντός Ελλάδας",
         trustShippingText: "Ασφαλής συσκευασία και παράδοση σε όλη την Ελλάδα, με πλήρη έλεγχο λειτουργίας πριν την αποστολή.",
 
-        settingsTitle: "Ρυθμίσεις συστήματος", themeLabel: "Θέμα", themeFree: "Δωρεάν", themeWheel: "Ημερήσιος τροχός", themeRank: "Επίπεδο", themeSecret: "Μυστικό",
+        settingsTitle: "Ρυθμίσεις συστήματος", themeLabel: "Θέμα", themeFree: "Δωρεάν", themeWheel: "Ημερήσιος τροχός", themeRank: "Elite Agent · 700 XP", themeSecret: "Μυστικό", themeNeon: "Neon", themeGroupFree: "Δωρεάν", themeGroupEarned: "Κερδίζονται", themeCleanTag: "Καθαρό · υψηλή αντίθεση", themeCleanDesc: "Ματ, χωρίς λάμψη, εύκολο στο διάβασμα",
         settingsSound: "Ήχος & μουσική", settingsLanguage: "Γλώσσα", settingsReplayTour: "Δες ξανά την ξενάγηση",
-        themesLockedNote: "Το Inferno κερδίζεται στον Ημερήσιο Τροχό, το Arctic ανεβαίνοντας επίπεδο στο προφίλ σου (απαιτείται σύνδεση).", colorsSpinBtn: "Γύρνα τον τροχό",
+        themesLockedNote: "Ό,τι κερδίζεις μένει στον λογαριασμό σου (απαιτείται σύνδεση).", colorsSpinBtn: "Γύρνα τον τροχό",
         toastThemeLocked: "Κλειδωμένο θέμα.", toastThemeWheel: "Το {name} είναι κλειδωμένο — γύρνα τον Ημερήσιο Τροχό για να το ξεκλειδώσεις.", toastThemeRank: "Το {name} είναι κλειδωμένο — ξεκλειδώνει στο επίπεδο {rank}.", toastThemeRankAny: "Το {name} είναι κλειδωμένο — ξεκλειδώνει ανεβαίνοντας επίπεδο στο προφίλ σου.",
         rankUpToast: "ΝΕΟ ΕΠΙΠΕΔΟ: {rank}",
         cardExtraFrom: "από +{price}", extraLocked: "Μη διαθέσιμο σε αυτό το σύστημα", rankLadderTitle: "Επίπεδα", rankInfoTitle: "Πώς δουλεύουν τα επίπεδα", rankStepNow: "ΤΩΡΑ", rankStepLeft: "{n} XP ακόμα", rankStepSpins: "+{n} περιστρ.",
@@ -369,9 +369,9 @@ const translations = {
         trustShippingTitle: "GR SHIPPING",
         trustShippingText: "Secure packaging and delivery across Greece, with a full functionality check before shipping.",
 
-        settingsTitle: "SYSTEM PREFERENCES", themeLabel: "THEME", themeFree: "Free", themeWheel: "Daily wheel", themeRank: "Rank", themeSecret: "Secret",
+        settingsTitle: "SYSTEM PREFERENCES", themeLabel: "THEME", themeFree: "Free", themeWheel: "Daily wheel", themeRank: "Elite Agent · 700 XP", themeSecret: "Secret", themeNeon: "Neon", themeGroupFree: "Free", themeGroupEarned: "To win", themeCleanTag: "Clean · high contrast", themeCleanDesc: "Matte, no glow, easy to read",
         settingsSound: "Sound & music", settingsLanguage: "Language", settingsReplayTour: "Replay the tour",
-        themesLockedNote: "Inferno is won on the Daily Spin, Arctic by ranking up on your profile (sign-in required).", colorsSpinBtn: "Spin the wheel",
+        themesLockedNote: "What you win stays on your account (sign-in required).", colorsSpinBtn: "Spin the wheel",
         toastThemeLocked: "Locked theme.", toastThemeWheel: "{name} is locked — spin the Daily Wheel to unlock it.", toastThemeRank: "{name} is locked — it unlocks at rank {rank}.", toastThemeRankAny: "{name} is locked — it unlocks as you rank up on your profile.",
         rankUpToast: "NEW RANK: {rank}",
         cardExtraFrom: "from +{price}", extraLocked: "Not available on this system", rankLadderTitle: "Ranks", rankInfoTitle: "How ranks work", rankStepNow: "NOW", rankStepLeft: "{n} XP to go", rankStepSpins: "+{n} spins",

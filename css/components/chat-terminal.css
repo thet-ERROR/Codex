@@ -45,7 +45,7 @@
 .chat-row:hover i { color: var(--neon-green); transform: translateX(2px); }
 .chat-sub-title { font-family: var(--font-ui); font-weight: 800; font-size: 0.95rem; color: #fff; margin: 0 0 2px; }
 .chat-action { width: 100%; min-height: 44px; border-radius: 8px; border: 1px solid var(--neon-green); background: var(--neon-green); color: #000; font-family: var(--font-ui); font-weight: 800; font-size: 0.85rem; letter-spacing: 0.5px; text-transform: uppercase; cursor: pointer; transition: box-shadow 0.2s, transform 0.08s; }
-.chat-action:hover { box-shadow: 0 0 14px var(--neon-green); }
+.chat-action:hover { box-shadow: 0 0 14px rgb(var(--a-rgb) / var(--glow)); }
 .chat-action:active { transform: scale(0.97); }
 
 /* ===== Help box — same vocabulary as the Information window: >// kicker, HUD corners, slab rows ===== */
