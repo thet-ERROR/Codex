@@ -55,10 +55,14 @@ describe('themes: the start and the switch', () => {
             bg: getComputedStyle(document.querySelector('.bg-layer')).filter,
             button: getComputedStyle(document.querySelector('.tc-actions .btn-card-inspect')).backgroundImage
         }));
+        // The background eases its filter over 1.2s (backgrounds.css): wait for it to settle before reading
+        const settled = (re) => page.waitForFunction((src) => new RegExp(src).test(getComputedStyle(document.querySelector('.bg-layer')).filter), re.source, { timeout: 4000 });
+        await settled(/saturate\(0\.2\)$/);
         const matte = await look();
-        assert.match(matte.bg, /saturate\(0\.2\)/);
+        assert.match(matte.bg, /saturate\(0\.2\)$/);
         assert.equal(matte.button, 'none');
         await page.evaluate(() => window.setTheme('phoenix'));
+        await settled(/^brightness\([\d.]+\)$/);
         const neon = await look();
         assert.doesNotMatch(neon.bg, /saturate/);
         assert.match(neon.button, /gradient/);
