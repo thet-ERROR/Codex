@@ -47,7 +47,18 @@ describe('themes: the start and the switch', () => {
         initScript: `new MutationObserver((m, o) => { if (document.body) { window.__themeAtBody = document.documentElement.dataset.theme || 'none'; o.disconnect(); } }).observe(document, { childList: true, subtree: true });`
     }, async (page) => {
         assert.equal(await page.evaluate(() => window.__themeAtBody), 'phoenix');
-        assert.equal(await token(page, '--glow'), '1');
+        assert.equal(await token(page, '--glow'), '0.6');
+    }));
+
+    // Graphite is also the plain :root, so whatever it sets reaches every theme unless the theme sets it back
+    it('only Graphite turns the neon sidebar icons grey; every other theme keeps their colour', () => withPage({}, async (page) => {
+        await unlockAll(page);
+        for (const id of Object.keys(LOOK)) {
+            await page.evaluate((i) => window.setTheme(i), id);
+            const filter = await page.evaluate(() => getComputedStyle(document.querySelector('.side-btn:not(.side-btn-info):not(#lang-toggle-btn) .side-ico')).filter);
+            if (id === 'graphite') assert.match(filter, /grayscale/, id);
+            else { assert.doesNotMatch(filter, /grayscale/, id); assert.match(filter, /hue-rotate/, id); }
+        }
     }));
 
     it('every theme changes both the accent and the window colour, and a window wears it', () => withPage({}, async (page) => {
