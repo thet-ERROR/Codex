@@ -56,10 +56,18 @@ window.codexMusic = bgMusic; // read by the tests
 bgMusic.preload = 'none';
 bgMusic.loop = true;
 
-// "Reduce motion": the background stays on its first frame
+// The background video is not fetched while the site loads (index.html: preload="none", no autoplay):
+// on a phone its 300 KB would share the connection with the scripts, the API and the PC photos.
+// The poster stands in until the intro hides, then it starts (startBackgroundVideo, from initApp).
+// "Reduce motion": it never starts and the background stays on the poster.
 const bgVideo = document.querySelector('.bg-video');
-if (bgVideo && window.matchMedia('(prefers-reduced-motion: reduce)').matches) { bgVideo.removeAttribute('autoplay'); bgVideo.pause(); }
-else if (bgVideo) {
+const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+function startBackgroundVideo() {
+    if (!bgVideo || reduceMotion) return;
+    bgVideo.preload = 'auto';
+    if (bgVideo.paused) bgVideo.play().catch(() => {});
+}
+if (bgVideo && !reduceMotion) {
     // A phone may refuse to autoplay (iOS Low Power Mode, data saver) and leaves the Earth standing still;
     // the first touch or key is allowed to start it. Coming back to the tab restarts it if it was paused.
     const startBackground = () => { if (bgVideo.paused) bgVideo.play().catch(() => {}); };
@@ -146,6 +154,10 @@ window.syncSettingsUI = syncSettingsUI;
 // threw between them — the splash never left at all. Now the whole boot shares one deadline: past
 // it the site renders with what it has, and whatever arrives late is applied when it lands.
 const BOOT_BUDGET_MS = 10000;
+// The intro: shown at least this long from the start of the page load, and then for a short tail
+// so the loading bar is seen reaching the end
+const INTRO_MIN_MS = 1400;
+const INTRO_TAIL_MS = 250;
 let bootDeadline = 0;
 function withinBudget(promise) {
     const remaining = Math.max(0, bootDeadline - Date.now());
@@ -335,11 +347,16 @@ const initApp = async () => {
         clearTimeout(slowNotice);
         const overlay = document.getElementById('startup-overlay');
         const bar = document.getElementById('loader-fill');
-        setTimeout(() => { if (bar) bar.style.width = "100%"; }, 500);
+        if (bar) bar.style.width = "100%";
+        // The intro is shown for at least INTRO_MIN_MS from the moment the page started loading, not
+        // for a fixed time after the site is ready: on a slow phone the load already took longer than
+        // that, so the site appears as soon as it is ready instead of waiting another 1.5 s on top.
+        const wait = Math.max(INTRO_TAIL_MS, INTRO_MIN_MS - performance.now());
         setTimeout(() => {
             if (overlay) overlay.classList.add('hidden');
+            startBackgroundVideo();
             initInteractiveTutorial();
-        }, 1500);
+        }, wait);
     }
 };
 

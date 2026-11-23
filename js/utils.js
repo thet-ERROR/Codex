@@ -29,6 +29,18 @@ export function escUrl(value) {
     return '';
 }
 
+// --- PHOTO SIZES ---
+// The PC photos live on Imgur at full size (up to 2160×2880, 100–300 KB). A card never shows more than
+// ~400 px of width, so it asks Imgur for a resized copy: the letter after the id picks the size
+// ('h' = 1024 px on the long side, 'l' = 640 px), always served as JPEG. Only a plain 7-character id is
+// rewritten — anything else (a local file, another host, a link that already names a size) is left alone.
+// INSPECT and the gallery keep the original, where the photo is shown large.
+const IMGUR_PLAIN = /^https:\/\/i\.imgur\.com\/([A-Za-z0-9]{7})\.(jpe?g|png|webp)$/;
+export function photoAt(url, size = 'h') {
+    const m = IMGUR_PLAIN.exec(String(url ?? '').trim());
+    return m ? `https://i.imgur.com/${m[1]}${size}.jpg` : url;
+}
+
 // --- PRICES ---
 // Every amount on the site is integer euro cents internally and goes through formatPrice() to be
 // shown — one formatter, so the card, the inspect view, the cart and the WhatsApp message can't

@@ -29,6 +29,10 @@
     <!-- One request for all five families (was three), and the font host's connection opened early -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <!-- The API, the icon CDN and the PC photos: their connections opened while the page is still loading -->
+    <link rel="preconnect" href="https://codex-backend-9kij.onrender.com" crossorigin>
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+    <link rel="preconnect" href="https://i.imgur.com">
     <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700;800&family=Space+Grotesk:wght@300;700&family=Exo+2:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     
     <!-- Version-pinned on purpose: an unpinned CDN URL always serves "latest", so a compromised
@@ -45,6 +49,41 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/driver.js@1.0.1/dist/driver.css" crossorigin="anonymous"/>
     <script src="https://cdn.jsdelivr.net/npm/driver.js@1.0.1/dist/driver.js.iife.js" crossorigin="anonymous" defer></script>
 
+    <!-- Every module main.js imports, asked for at once: without this the browser only finds them after
+         main.js itself has arrived, one round trip later (about 1.4 s on a slow phone connection).
+         Kept in step with the imports by tests/speed.test.js. -->
+    <link rel="modulepreload" href="js/config.js">
+    <link rel="modulepreload" href="js/state.js">
+    <link rel="modulepreload" href="js/api.js">
+    <link rel="modulepreload" href="js/utils.js">
+    <link rel="modulepreload" href="js/i18n.js">
+    <link rel="modulepreload" href="js/modules/achievements.js">
+    <link rel="modulepreload" href="js/modules/auth.js">
+    <link rel="modulepreload" href="js/modules/gallery.js">
+    <link rel="modulepreload" href="js/modules/cart.js">
+    <link rel="modulepreload" href="js/modules/catalog.js">
+    <link rel="modulepreload" href="js/modules/vote.js">
+    <link rel="modulepreload" href="js/modules/reviews.js">
+    <link rel="modulepreload" href="js/modules/terminal.js">
+    <link rel="modulepreload" href="js/modules/tutorial.js">
+    <link rel="modulepreload" href="js/modules/time.js">
+    <link rel="modulepreload" href="js/modules/stagefit.js">
+    <link rel="modulepreload" href="js/ui/scroll-fade.js">
+    <link rel="modulepreload" href="js/modules/compare.js">
+    <link rel="modulepreload" href="js/modules/wishlist.js">
+    <link rel="modulepreload" href="js/modules/chat.js">
+    <link rel="modulepreload" href="js/modules/whoami.js">
+    <link rel="modulepreload" href="js/modules/konami.js">
+    <link rel="modulepreload" href="js/modules/wheel.js">
+    <link rel="modulepreload" href="js/modules/themes.js">
+    <link rel="modulepreload" href="js/modules/info.js">
+    <link rel="modulepreload" href="js/modules/qr.js">
+    <link rel="modulepreload" href="js/modules/mascot.js">
+    <link rel="modulepreload" href="js/modules/checkout.js">
+    <link rel="modulepreload" href="js/modules/order-page.js">
+    <link rel="modulepreload" href="js/ui/modals.js">
+    <link rel="modulepreload" href="js/ui/toast.js">
+    <link rel="modulepreload" href="js/ui/ui-lock.js">
     <!-- The stylesheets, in cascade order (later wins). They used to be @imports inside css/style.css, which
          the browser could only discover after style.css itself had arrived: one round trip more before
          anything could be drawn. Listed here, they are all requested at once. A new stylesheet goes in
@@ -118,8 +157,8 @@ Type 'help' for a list of commands.
     <div id="toast-container" role="status" aria-live="polite"></div>
 
     <!-- The moving background: a short muted loop (was a 2 MB GIF; the MP4 is a sixth of that). The poster
-         is its first frame, shown until the video plays and kept for "reduce motion" (main.js pauses it). -->
-    <div class="bg-layer"><video class="bg-video" src="assets/images/bg.mp4" poster="assets/images/bg.jpg" autoplay muted loop playsinline preload="auto" aria-hidden="true" tabindex="-1"></video></div>
+         is its first frame, shown until the video plays and kept for "reduce motion". main.js starts the video once the intro hides. -->
+    <div class="bg-layer"><video class="bg-video" src="assets/images/bg.mp4" poster="assets/images/bg.jpg" muted loop playsinline preload="none" aria-hidden="true" tabindex="-1"></video></div>
     <div class="vignette"></div>
     <div class="grid-overlay"></div>
     <div class="moon-glow"></div>
