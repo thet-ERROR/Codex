@@ -50,6 +50,20 @@ describe('themes: the start and the switch', () => {
         assert.equal(await token(page, '--glow'), '0.6');
     }));
 
+    it('Graphite is matte: a dimmed grey background and a flat, solid main button; Phoenix keeps its gradient', () => withPage({}, async (page) => {
+        const look = () => page.evaluate(() => ({
+            bg: getComputedStyle(document.querySelector('.bg-layer')).filter,
+            button: getComputedStyle(document.querySelector('.tc-actions .btn-card-inspect')).backgroundImage
+        }));
+        const matte = await look();
+        assert.match(matte.bg, /saturate\(0\.2\)/);
+        assert.equal(matte.button, 'none');
+        await page.evaluate(() => window.setTheme('phoenix'));
+        const neon = await look();
+        assert.doesNotMatch(neon.bg, /saturate/);
+        assert.match(neon.button, /gradient/);
+    }));
+
     // Graphite is also the plain :root, so whatever it sets reaches every theme unless the theme sets it back
     it('only Graphite turns the neon sidebar icons grey; every other theme keeps their colour', () => withPage({}, async (page) => {
         await unlockAll(page);

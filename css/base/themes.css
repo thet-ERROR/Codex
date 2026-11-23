@@ -88,3 +88,17 @@
     --s-soft: rgb(var(--v-main) / 0.14);
     --s-glow: rgb(var(--v-main) / 0.35);
 }
+
+/* ===== Graphite: the matte finish =====
+   Beyond the tokens: the busy background is dimmed and greyed, and the main buttons are flat and solid, the
+   accent with dark text on it, so what to press reads at a glance. Only Graphite; the neon themes keep their
+   gradients. (Loaded first, so each rule names Graphite to win over the component files.) */
+:root[data-theme="graphite"] .bg-layer { filter: brightness(0.26) saturate(0.2); }
+:root[data-theme="graphite"] .tc-tab.active { background: rgb(var(--a-rgb)); color: #15171b; text-shadow: none; }
+:root[data-theme="graphite"] .tc-actions .btn-card-inspect {
+    background: rgb(var(--a-rgb)) !important; color: #15171b !important; text-shadow: none;
+    border-color: rgb(var(--a-rgb)) !important; box-shadow: none !important;
+}
+:root[data-theme="graphite"] .tc-actions .btn-card-compare { background: #23262c !important; border-color: rgb(var(--v-main) / 0.55) !important; box-shadow: none !important; }
+:root[data-theme="graphite"] #settings-modal .seg-btn.active { background: rgb(var(--v-pale)); color: #15171b; box-shadow: none; }
+:root[data-theme="graphite"] #settings-modal .set-spin { background: #23262c; border-color: rgb(var(--v-main) / 0.55); box-shadow: none; }
