@@ -1,6 +1,6 @@
 // js/modules/themes.js
 //
-// The five themes (css/base/themes.css): which one is on, which ones this visitor can wear, and how a locked
+// The six themes (css/base/themes.css): which one is on, which ones this visitor can wear, and how a locked
 // one tells you where to win it. The server decides who has what (codex-backend src/lib/themes.js) and sends
 // the list as `unlockedThemes` with /me, /wheel, the spin and the profile; this file only keeps it, in the
 // browser too so a visitor without an account (the Konami code) keeps what they found.
@@ -131,6 +131,9 @@ export function initThemes() {
     let id = startingTheme();
     // A saved theme that is not (or no longer) open falls back to the default
     if (!themeUnlocked(id)) id = CONFIG.DEFAULT_THEME;
+    // A look carried over from the colour days is saved as a theme id, so the next visit's <head> script
+    // (index.html) can put it on before the first paint
+    else if (!safeGet(KEY_THEME) && id !== CONFIG.DEFAULT_THEME) safeSet(KEY_THEME, id);
     state.theme = id;
     paint(id);
     refreshThemeLocks();

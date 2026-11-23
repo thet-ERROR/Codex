@@ -13,7 +13,7 @@
     width: 270px; height: 440px; padding: 0 18px 24px; justify-content: flex-end; gap: 0;
     border: 1.5px solid color-mix(in srgb, var(--pack) 55%, transparent); border-radius: 22px;
     background: linear-gradient(180deg, #16141d, #0c0b11);
-    box-shadow: 0 0 26px color-mix(in srgb, var(--pack) 22%, transparent), 0 24px 60px rgba(0, 0, 0, 0.6);
+    box-shadow: 0 0 26px color-mix(in srgb, color-mix(in srgb, var(--pack) calc(100% * var(--glow)), transparent) 22%, transparent), 0 24px 60px rgba(0, 0, 0, 0.6);
 }
 .pack-card::before, .pack-card::after { display: none; }
 .pack-icon-block, .pack-chevron { display: none !important; }
@@ -31,7 +31,7 @@
 #starter-menu .pack-desc { min-height: 2.7em; font-size: 1rem; line-height: 1.35; color: #c9c6d4; }
 .pack-count {
     margin-top: 10px; padding: 6px 18px; border: 0; border-radius: 999px; font-size: 0.95rem; font-weight: 800;
-    background: var(--pack); color: #fff; box-shadow: 0 0 16px color-mix(in srgb, var(--pack) 45%, transparent);
+    background: var(--pack); color: #fff; box-shadow: 0 0 16px color-mix(in srgb, color-mix(in srgb, var(--pack) calc(100% * var(--glow)), transparent) 45%, transparent);
 }
 .pack-card[data-pack="coding"] .pack-count { color: #04212a; }
 .pack-card .pack-count.empty { background: rgba(255, 255, 255, 0.08); color: #b4b1c0; box-shadow: none; }
@@ -42,10 +42,10 @@
 @media (hover: hover) {
     .pack-art { opacity: 0.65; filter: saturate(0.8) contrast(1.05); }
     .pack-card:hover .pack-art, .pack-card:focus-visible .pack-art { opacity: 1; filter: saturate(1.1); }
-    .pack-card:hover { transform: translateY(-6px); border-color: var(--pack); box-shadow: 0 0 34px color-mix(in srgb, var(--pack) 35%, transparent), 0 30px 70px rgba(0, 0, 0, 0.65); }
+    .pack-card:hover { transform: translateY(-6px); border-color: var(--pack); box-shadow: 0 0 34px color-mix(in srgb, color-mix(in srgb, var(--pack) calc(100% * var(--glow)), transparent) 35%, transparent), 0 30px 70px rgba(0, 0, 0, 0.65); }
     .pack-card:hover .pack-art { transform: scale(1.04); }
 }
-.pack-card:active { transform: scale(0.98); box-shadow: 0 0 18px color-mix(in srgb, var(--pack) 25%, transparent); }
+.pack-card:active { transform: scale(0.98); box-shadow: 0 0 18px color-mix(in srgb, color-mix(in srgb, var(--pack) calc(100% * var(--glow)), transparent) 25%, transparent); }
 
 /* Tablet and phone: wide banners — the picture on the right two-thirds, fading out to the left where
    the text sits on the dark face */

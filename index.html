@@ -4,7 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="PHOENIX CODEX: custom gaming PC χειροποίητα στη Θεσσαλονίκη. Διάλεξε έτοιμο σύστημα ή ψήφισε το επόμενο drop. Gaming, streaming και coding rigs με εγγύηση.">
-    <meta name="theme-color" content="#b026ff">
+    <meta name="theme-color" content="#94a3b8">
+    <!-- The saved theme, on <html> before anything is painted: without it a returning visitor would see
+         the default (Graphite) for a moment and then their own theme, and the whole page would be styled
+         twice. js/modules/themes.js takes over from here (and falls back if the theme is no longer open). -->
+    <script>try { var th = localStorage.getItem('codex_theme_id'); if (/^(graphite|phoenix|nebula|inferno|arctic|phantom)$/.test(th || '')) document.documentElement.dataset.theme = th; } catch (e) {}</script>
     <!-- Share previews (Instagram, WhatsApp, Facebook, Discord). og:image MUST be absolute: crawlers
          fetch it without knowing the page's URL, so a relative path resolves to nothing and every
          share showed up with no picture. Update the domain here when the site moves to its own. -->
@@ -645,39 +649,51 @@ Type 'help' for a list of commands.
                 <div class="set-section">
                     <div class="set-heading"><i class="ph-fill ph-palette" aria-hidden="true"></i><span data-i18n="themeLabel">THEME</span></div>
                     <div class="theme-opts" role="group" data-i18n-aria="themeLabel" aria-label="Theme">
-                        <button type="button" class="theme-card" data-theme-id="phoenix" onclick="playClick(); setTheme('phoenix')" aria-pressed="false">
-                            <span class="theme-swatch" style="--c1:#ccff00;--c2:#b026ff;" aria-hidden="true"></span>
-                            <span class="theme-text"><strong class="theme-name">Phoenix</strong><small class="theme-tag" data-i18n="themeFree">Free</small></span>
-                            <i class="ph-fill ph-lock-simple theme-lock" aria-hidden="true"></i>
+                        <!-- The clean one first and on its own: it is the readability choice, not one more colour -->
+                        <button type="button" class="theme-card theme-clean" data-theme-id="graphite" onclick="playClick(); setTheme('graphite')" aria-pressed="false">
+                            <span class="theme-prev" style="--c1:#c4e46e;--c2:#94a3b8;--c3:#1b1e23;" aria-hidden="true"><i></i><i></i></span>
+                            <span class="theme-text"><strong class="theme-name">Graphite</strong><small class="theme-tag" data-i18n="themeCleanTag">Clean · high contrast</small><small class="theme-desc" data-i18n="themeCleanDesc">Matte, no glow, easy to read</small></span>
                             <i class="ph-bold ph-check theme-check" aria-hidden="true"></i>
                         </button>
-                        <button type="button" class="theme-card" data-theme-id="nebula" onclick="playClick(); setTheme('nebula')" aria-pressed="false">
-                            <span class="theme-swatch" style="--c1:#c084fc;--c2:#b026ff;" aria-hidden="true"></span>
-                            <span class="theme-text"><strong class="theme-name">Nebula</strong><small class="theme-tag" data-i18n="themeFree">Free</small></span>
-                            <i class="ph-fill ph-lock-simple theme-lock" aria-hidden="true"></i>
-                            <i class="ph-bold ph-check theme-check" aria-hidden="true"></i>
-                        </button>
-                        <button type="button" class="theme-card locked" data-theme-id="inferno" onclick="playClick(); setTheme('inferno')" aria-pressed="false">
-                            <span class="theme-swatch" style="--c1:#ffaa00;--c2:#ff5e00;" aria-hidden="true"></span>
-                            <span class="theme-text"><strong class="theme-name">Inferno</strong><small class="theme-tag" data-i18n="themeWheel">Daily wheel</small></span>
-                            <i class="ph-fill ph-lock-simple theme-lock" aria-hidden="true"></i>
-                            <i class="ph-bold ph-check theme-check" aria-hidden="true"></i>
-                        </button>
-                        <button type="button" class="theme-card locked" data-theme-id="arctic" onclick="playClick(); setTheme('arctic')" aria-pressed="false">
-                            <span class="theme-swatch" style="--c1:#8fe8ff;--c2:#38bdf8;" aria-hidden="true"></span>
-                            <span class="theme-text"><strong class="theme-name">Arctic</strong><small class="theme-tag" data-i18n="themeRank">Rank</small></span>
-                            <i class="ph-fill ph-lock-simple theme-lock" aria-hidden="true"></i>
-                            <i class="ph-bold ph-check theme-check" aria-hidden="true"></i>
-                        </button>
-                        <!-- Secret: shown only to whoever found it (refreshThemeLocks in js/modules/themes.js, js/modules/konami.js) -->
-                        <button type="button" class="theme-card" data-theme-id="phantom" data-secret hidden onclick="playClick(); setTheme('phantom')" aria-pressed="false">
-                            <span class="theme-swatch" style="--c1:#e9e4ff;--c2:#e879f9;" aria-hidden="true"></span>
-                            <span class="theme-text"><strong class="theme-name">Phantom</strong><small class="theme-tag" data-i18n="themeSecret">Secret</small></span>
-                            <i class="ph-fill ph-lock-simple theme-lock" aria-hidden="true"></i>
-                            <i class="ph-bold ph-check theme-check" aria-hidden="true"></i>
-                        </button>
+                        <p class="theme-group" data-i18n="themeGroupFree">Free</p>
+                        <div class="theme-grid">
+                            <button type="button" class="theme-card" data-theme-id="phoenix" onclick="playClick(); setTheme('phoenix')" aria-pressed="false">
+                                <span class="theme-prev" style="--c1:#ccff00;--c2:#b026ff;--c3:#0f0a1c;" aria-hidden="true"><i></i><i></i></span>
+                                <span class="theme-text"><strong class="theme-name">Phoenix</strong><small class="theme-tag" data-i18n="themeNeon">Neon</small></span>
+                                <i class="ph-fill ph-lock-simple theme-lock" aria-hidden="true"></i>
+                                <i class="ph-bold ph-check theme-check" aria-hidden="true"></i>
+                            </button>
+                            <button type="button" class="theme-card" data-theme-id="nebula" onclick="playClick(); setTheme('nebula')" aria-pressed="false">
+                                <span class="theme-prev" style="--c1:#c084fc;--c2:#b026ff;--c3:#0f0a1c;" aria-hidden="true"><i></i><i></i></span>
+                                <span class="theme-text"><strong class="theme-name">Nebula</strong><small class="theme-tag" data-i18n="themeNeon">Neon</small></span>
+                                <i class="ph-fill ph-lock-simple theme-lock" aria-hidden="true"></i>
+                                <i class="ph-bold ph-check theme-check" aria-hidden="true"></i>
+                            </button>
+                        </div>
+                        <p class="theme-group" data-i18n="themeGroupEarned">To win</p>
+                        <div class="theme-grid">
+                            <button type="button" class="theme-card locked" data-theme-id="inferno" onclick="playClick(); setTheme('inferno')" aria-pressed="false">
+                                <span class="theme-prev" style="--c1:#ffaa00;--c2:#ff5e00;--c3:#1a0d06;" aria-hidden="true"><i></i><i></i></span>
+                                <span class="theme-text"><strong class="theme-name">Inferno</strong><small class="theme-tag" data-i18n="themeWheel">Daily wheel</small></span>
+                                <i class="ph-fill ph-lock-simple theme-lock" aria-hidden="true"></i>
+                                <i class="ph-bold ph-check theme-check" aria-hidden="true"></i>
+                            </button>
+                            <button type="button" class="theme-card locked" data-theme-id="arctic" onclick="playClick(); setTheme('arctic')" aria-pressed="false">
+                                <span class="theme-prev" style="--c1:#8fe8ff;--c2:#38bdf8;--c3:#07121d;" aria-hidden="true"><i></i><i></i></span>
+                                <span class="theme-text"><strong class="theme-name">Arctic</strong><small class="theme-tag" data-i18n="themeRank">Elite Agent · 700 XP</small></span>
+                                <i class="ph-fill ph-lock-simple theme-lock" aria-hidden="true"></i>
+                                <i class="ph-bold ph-check theme-check" aria-hidden="true"></i>
+                            </button>
+                            <!-- Secret: shown only to whoever found it (refreshThemeLocks in js/modules/themes.js, js/modules/konami.js) -->
+                            <button type="button" class="theme-card" data-theme-id="phantom" data-secret hidden onclick="playClick(); setTheme('phantom')" aria-pressed="false">
+                                <span class="theme-prev" style="--c1:#e9e4ff;--c2:#e879f9;--c3:#150a1a;" aria-hidden="true"><i></i><i></i></span>
+                                <span class="theme-text"><strong class="theme-name">Phantom</strong><small class="theme-tag" data-i18n="themeSecret">Secret</small></span>
+                                <i class="ph-fill ph-lock-simple theme-lock" aria-hidden="true"></i>
+                                <i class="ph-bold ph-check theme-check" aria-hidden="true"></i>
+                            </button>
+                        </div>
                     </div>
-                    <p class="set-note"><i class="ph-bold ph-lock-simple"></i> <span data-i18n="themesLockedNote">Inferno is won on the Daily Spin, Arctic by ranking up.</span></p>
+                    <p class="set-note"><i class="ph-bold ph-lock-simple"></i> <span data-i18n="themesLockedNote">What you win stays on your account (sign-in required).</span></p>
                     <button type="button" class="info-btn set-spin" onclick="playClick(); closeModal('settings-modal'); openWheelFromSettings()"><i class="ph-fill ph-gift"></i> <span data-i18n="colorsSpinBtn">Spin the wheel</span><i class="ph-bold ph-caret-right set-caret" aria-hidden="true"></i></button>
                 </div>
 

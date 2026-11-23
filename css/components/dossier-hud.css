@@ -56,7 +56,7 @@
         linear-gradient(170deg, #160b2c 0%, #0b0618 40%, #08040f 75%, #12071d 100%) padding-box,
         var(--rim) border-box !important;
     max-width: 720px; padding: 18px 20px 0; gap: 14px;
-    box-shadow: 0 0 0 1px rgb(var(--v-pink) / 0.12), 0 0 28px rgb(var(--v-main) / 0.35), 0 30px 80px rgba(0, 0, 0, 0.85), inset 0 0 40px rgb(var(--v-main) / 0.12);
+    box-shadow: 0 0 0 1px rgb(var(--v-pink) / 0.12), 0 0 28px rgb(var(--v-main) / calc(0.35 * var(--glow))), 0 30px 80px rgba(0, 0, 0, 0.85), inset 0 0 40px rgb(var(--v-main) / calc(0.12 * var(--glow)));
     color: var(--d-text);
     scrollbar-color: var(--d-purple) transparent;
     scrollbar-width: thin;
@@ -71,7 +71,7 @@
 /* --- header: emblem | name, rank, bar | crest; then the chips --- */
 #agent-dashboard-modal .dossier-header {
     --fill: linear-gradient(200deg, rgba(42, 18, 80, 0.9) 0%, rgba(20, 10, 40, 0.92) 45%, rgba(11, 6, 23, 0.94) 100%);
-    flex: none; padding: 14px 16px; box-shadow: 0 0 16px rgb(var(--v-main) / 0.18);
+    flex: none; padding: 14px 16px; box-shadow: 0 0 16px rgb(var(--v-main) / calc(0.18 * var(--glow)));
 }
 #agent-dashboard-modal .dossier-head-row { display: flex; align-items: center; gap: 14px; position: relative; padding-right: 30px; }
 #agent-dashboard-modal .dossier-emblem {
@@ -91,17 +91,17 @@
 #agent-dashboard-modal .dossier-head-text { flex: 1; min-width: 0; position: relative; z-index: 1; }
 #agent-dashboard-modal .dossier-crest {
     position: absolute; right: 8px; top: 50%; width: 104px; transform: translateY(-50%);
-    opacity: 0.55; pointer-events: none; filter: drop-shadow(0 0 12px rgb(var(--v-main) / 0.7));
+    opacity: 0.55; pointer-events: none; filter: drop-shadow(0 0 12px rgb(var(--v-main) / calc(0.7 * var(--glow))));
 }
 #agent-dashboard-modal .dossier-title { display: flex; align-items: center; gap: 6px; color: var(--d-dim); font-family: var(--font-ui); font-size: 0.72rem; letter-spacing: 1px; margin-bottom: 2px; }
 #agent-dashboard-modal .dossier-title i { color: var(--d-purple); font-size: 0.95rem; }
 #agent-dashboard-modal .agent-handle-box { margin-bottom: 2px; font-size: 1.4rem; }
 #agent-dashboard-modal .terminal-name {
     font-family: var(--font-ui); font-weight: 900; letter-spacing: 1px; color: #fff;
-    text-shadow: 0 0 10px rgb(var(--v-main) / 0.65); border-right-color: var(--d-pink);
+    text-shadow: 0 0 10px rgb(var(--v-main) / calc(0.65 * var(--glow))); border-right-color: var(--d-pink);
 }
 #agent-dashboard-modal .agent-rank { font-family: var(--font-ui); font-size: 0.78rem; letter-spacing: 1px; color: var(--d-dim); }
-#agent-dashboard-modal .neon-purple-text { color: rgb(var(--v-pink)); text-shadow: 0 0 8px rgb(var(--v-pink) / 0.55); }
+#agent-dashboard-modal .neon-purple-text { color: rgb(var(--v-pink)); text-shadow: 0 0 8px rgb(var(--v-pink) / calc(0.55 * var(--glow))); }
 /* The XP bar: a pink-violet fill with diagonal light stripes, in a dark rounded track */
 #agent-dashboard-modal .dossier-rank-bar {
     height: 9px; max-width: 78%; margin: 7px 0 5px; border-radius: 999px; overflow: hidden;
@@ -112,7 +112,7 @@
     background:
         repeating-linear-gradient(115deg, rgba(255, 255, 255, 0.22) 0 4px, transparent 4px 9px),
         linear-gradient(90deg, var(--d-violet), var(--d-purple) 45%, var(--d-pink));
-    box-shadow: 0 0 10px rgb(var(--v-pink) / 0.6), 0 0 18px rgb(var(--v-main) / 0.5);
+    box-shadow: 0 0 10px rgb(var(--v-pink) / calc(0.6 * var(--glow))), 0 0 18px rgb(var(--v-main) / calc(0.5 * var(--glow)));
 }
 #agent-dashboard-modal .dossier-xp { color: var(--d-dim); font-size: 0.72rem; margin-bottom: 2px; }
 #agent-dashboard-modal .network-status { font-family: var(--font-ui); font-size: 0.74rem; color: var(--d-dim); letter-spacing: 1px; }
@@ -144,7 +144,7 @@
 #agent-dashboard-modal .dossier-tab.active {
     color: #fff; border-color: transparent;
     background: linear-gradient(90deg, rgb(var(--v-mid) / 0.95), rgb(var(--v-main) / 0.95) 55%, rgb(var(--v-pink) / 0.95));
-    box-shadow: 0 0 14px rgb(var(--v-pink) / 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.18);
+    box-shadow: 0 0 14px rgb(var(--v-pink) / calc(0.35 * var(--glow))), inset 0 1px 0 rgba(255, 255, 255, 0.18);
 }
 #agent-dashboard-modal .dossier-tab.active i { color: #fff; }
 #agent-dashboard-modal .dossier-tab.active .dtab-count { background: rgba(10, 4, 20, 0.45); }
@@ -162,9 +162,9 @@
     flex: none; display: flex; align-items: center; gap: 8px; width: 100%; box-sizing: border-box; margin: 0 0 8px; padding: 7px 12px;
     border-radius: 10px !important;
     font-family: var(--font-ui); font-weight: 800; font-size: 0.88rem; letter-spacing: 0.5px; color: #f1e9ff;
-    box-shadow: 0 0 10px rgb(var(--v-main) / 0.18);
+    box-shadow: 0 0 10px rgb(var(--v-main) / calc(0.18 * var(--glow)));
 }
-#agent-dashboard-modal .dossier-heading i { flex: none; font-size: 1.1rem; color: rgb(var(--v-pale)); filter: drop-shadow(0 0 4px rgb(var(--v-main) / 0.7)); }
+#agent-dashboard-modal .dossier-heading i { flex: none; font-size: 1.1rem; color: rgb(var(--v-pale)); filter: drop-shadow(0 0 4px rgb(var(--v-main) / calc(0.7 * var(--glow)))); }
 #agent-dashboard-modal .dossier-heading-sub { font-size: 0.64rem; font-weight: 600; color: var(--d-dim); letter-spacing: 0; }
 #agent-dashboard-modal .coupon-heading {
     --rim: linear-gradient(135deg, #ffd66b, #b8860b);
@@ -178,11 +178,11 @@
 #agent-dashboard-modal .wishlist-grid {
     --rim: linear-gradient(135deg, rgb(var(--v-main) / 0.6), rgb(var(--v-pink) / 0.35) 50%, rgb(var(--v-deep) / 0.5));
     padding: 10px; gap: 8px; min-height: 0;
-    box-shadow: inset 0 0 18px rgb(var(--v-main) / 0.08);
+    box-shadow: inset 0 0 18px rgb(var(--v-main) / calc(0.08 * var(--glow)));
     scrollbar-color: var(--d-purple) transparent; scrollbar-width: thin;
 }
 #agent-dashboard-modal .dossier-list:hover,
-#agent-dashboard-modal .wishlist-grid:hover { box-shadow: inset 0 0 18px rgb(var(--v-main) / 0.08); }
+#agent-dashboard-modal .wishlist-grid:hover { box-shadow: inset 0 0 18px rgb(var(--v-main) / calc(0.08 * var(--glow))); }
 #agent-dashboard-modal #dossier-coupons {
     --rim: linear-gradient(135deg, rgba(255, 214, 107, 0.7), rgba(184, 134, 11, 0.55));
     --fill: linear-gradient(180deg, rgba(26, 18, 5, 0.94), rgba(12, 8, 2, 0.94));
@@ -192,7 +192,7 @@
 #agent-dashboard-modal .dossier-empty-rich > i {
     flex: none; width: 46px; height: 46px; display: grid; place-items: center; font-size: 1.7rem; color: rgb(var(--v-pale));
     border-radius: 12px; border: 1px solid rgb(var(--v-main) / 0.5); background: rgb(var(--v-main) / 0.1);
-    filter: drop-shadow(0 0 6px rgb(var(--v-main) / 0.4));
+    filter: drop-shadow(0 0 6px rgb(var(--v-main) / calc(0.4 * var(--glow))));
 }
 #agent-dashboard-modal .dossier-empty-rich strong { display: block; color: #f1e9ff; font-size: 0.88rem; font-weight: 700; }
 #agent-dashboard-modal .dossier-empty-rich small { display: block; margin-top: 2px; color: var(--d-dim); font-size: 0.72rem; line-height: 1.4; }
@@ -216,8 +216,8 @@
 #agent-dashboard-modal #dossier-achievements { flex: none; max-height: none; overflow: visible; }
 #agent-dashboard-modal .ach-card { flex: none; padding: 8px 10px; gap: 12px; border-color: rgb(var(--v-main) / 0.25); background: rgb(var(--v-main) / 0.05); border-radius: 10px; }
 #agent-dashboard-modal .ach-card .ach-icon { font-size: 1.5rem; color: #4c3a6b; }
-#agent-dashboard-modal .ach-card.unlocked { border-color: rgb(var(--v-pink) / 0.6); background: linear-gradient(90deg, rgb(var(--v-pink) / 0.1), rgb(var(--v-main) / 0.05)); box-shadow: 0 0 10px rgb(var(--v-pink) / 0.12); }
-#agent-dashboard-modal .ach-card.unlocked .ach-icon { color: var(--d-pink); filter: drop-shadow(0 0 5px rgb(var(--v-pink) / 0.6)); }
+#agent-dashboard-modal .ach-card.unlocked { border-color: rgb(var(--v-pink) / 0.6); background: linear-gradient(90deg, rgb(var(--v-pink) / 0.1), rgb(var(--v-main) / 0.05)); box-shadow: 0 0 10px rgb(var(--v-pink) / calc(0.12 * var(--glow))); }
+#agent-dashboard-modal .ach-card.unlocked .ach-icon { color: var(--d-pink); filter: drop-shadow(0 0 5px rgb(var(--v-pink) / calc(0.6 * var(--glow)))); }
 #agent-dashboard-modal .ach-card.unlocked .ach-info h3 { color: var(--d-pink); }
 #agent-dashboard-modal .ach-card.unlocked .ach-status { color: #2ee87a; }
 
@@ -229,19 +229,19 @@
 #agent-dashboard-modal .dossier-ladder:not(.has-ranks) { flex: 1 1 auto; min-height: 220px; }
 #agent-dashboard-modal .dossier-ladder-head { flex: none; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
 #agent-dashboard-modal .dossier-ladder-title { display: flex; align-items: center; gap: 8px; font-family: var(--font-ui); font-weight: 800; font-size: 0.85rem; letter-spacing: 1px; color: #f1e9ff; text-transform: uppercase; }
-#agent-dashboard-modal .dossier-ladder-title i { color: rgb(var(--v-pale)); filter: drop-shadow(0 0 4px rgb(var(--v-main) / 0.7)); }
+#agent-dashboard-modal .dossier-ladder-title i { color: rgb(var(--v-pale)); filter: drop-shadow(0 0 4px rgb(var(--v-main) / calc(0.7 * var(--glow)))); }
 #agent-dashboard-modal .rank-info-btn {
     flex: none; width: 34px; height: 34px; display: grid; place-items: center; padding: 0; border-radius: 50%; cursor: pointer;
     border: 1px solid rgb(var(--v-main) / 0.6); background: rgb(var(--v-main) / 0.12); color: rgb(var(--v-pale)); font-size: 1.05rem;
-    box-shadow: 0 0 10px rgb(var(--v-main) / 0.25); transition: background-color 0.2s, color 0.2s, box-shadow 0.2s;
+    box-shadow: 0 0 10px rgb(var(--v-main) / calc(0.25 * var(--glow))); transition: background-color 0.2s, color 0.2s, box-shadow 0.2s;
 }
-#agent-dashboard-modal .rank-info-btn:hover { background: rgb(var(--v-main) / 0.3); color: #fff; box-shadow: 0 0 16px rgb(var(--v-pink) / 0.45); }
+#agent-dashboard-modal .rank-info-btn:hover { background: rgb(var(--v-main) / 0.3); color: #fff; box-shadow: 0 0 16px rgb(var(--v-pink) / calc(0.45 * var(--glow))); }
 
 #agent-dashboard-modal .dossier-ladder-list { display: none; flex-direction: column; gap: 6px; }
 #agent-dashboard-modal .dossier-ladder.has-ranks .dossier-ladder-list { display: flex; }
 #agent-dashboard-modal .dossier-ladder-empty { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; padding: 10px 0; }
 #agent-dashboard-modal .dossier-ladder.has-ranks .dossier-ladder-empty { display: none; }
-#agent-dashboard-modal .dossier-ladder-crest { width: 110px; opacity: 0.4; filter: drop-shadow(0 0 14px rgb(var(--v-main) / 0.7)); }
+#agent-dashboard-modal .dossier-ladder-crest { width: 110px; opacity: 0.4; filter: drop-shadow(0 0 14px rgb(var(--v-main) / calc(0.7 * var(--glow)))); }
 #agent-dashboard-modal .dossier-ladder-line { font-family: var(--font-ui); font-size: 0.72rem; letter-spacing: 6px; text-transform: uppercase; color: #8f80b8; text-align: center; }
 
 /* A step: badge · name + XP + what it gives · state. Reached steps are lit, the current one burns
@@ -275,9 +275,9 @@
 
 #agent-dashboard-modal .rank-step.current {
     border-color: var(--d-pink); background: linear-gradient(90deg, rgb(var(--v-pink) / 0.2), rgb(var(--v-main) / 0.1));
-    box-shadow: 0 0 14px rgb(var(--v-pink) / 0.3), inset 0 0 12px rgb(var(--v-main) / 0.12);
+    box-shadow: 0 0 14px rgb(var(--v-pink) / calc(0.3 * var(--glow))), inset 0 0 12px rgb(var(--v-main) / calc(0.12 * var(--glow)));
 }
-#agent-dashboard-modal .rank-step.current .rank-step-ico { color: var(--d-pink); border-color: var(--d-pink); filter: drop-shadow(0 0 6px rgb(var(--v-pink) / 0.6)); }
+#agent-dashboard-modal .rank-step.current .rank-step-ico { color: var(--d-pink); border-color: var(--d-pink); filter: drop-shadow(0 0 6px rgb(var(--v-pink) / calc(0.6 * var(--glow)))); }
 #agent-dashboard-modal .rank-step.current .rank-step-body strong { color: #fff; }
 #agent-dashboard-modal .rank-step.current .rank-step-body small { color: #d9c8f5; }
 #agent-dashboard-modal .rank-step.current .rk-chip { color: #fff; border-color: rgb(var(--v-pink) / 0.6); }
@@ -302,8 +302,8 @@
     --rim: linear-gradient(90deg, rgb(var(--v-bright) / 0.9), rgb(var(--v-pink) / 0.8), rgb(var(--v-bright) / 0.9));
     --fill: linear-gradient(90deg, rgba(44, 17, 80, 0.96), rgba(70, 18, 70, 0.96) 50%, rgba(44, 17, 80, 0.96));
     min-height: 46px; border-radius: 12px !important;
-    color: #f1e9ff; font-size: 0.9rem; letter-spacing: 2px; text-shadow: 0 0 8px rgb(var(--v-pink) / 0.6); animation: none;
-    box-shadow: 0 0 14px rgb(var(--v-main) / 0.3);
+    color: #f1e9ff; font-size: 0.9rem; letter-spacing: 2px; text-shadow: 0 0 8px rgb(var(--v-pink) / calc(0.6 * var(--glow))); animation: none;
+    box-shadow: 0 0 14px rgb(var(--v-main) / calc(0.3 * var(--glow)));
 }
 #agent-dashboard-modal #dossier-logout-btn::before { content: '›'; margin-right: 10px; color: var(--d-pink); font-size: 1.3rem; line-height: 0; }
 #agent-dashboard-modal #dossier-logout-btn:hover { --fill: linear-gradient(90deg, rgba(61, 24, 112, 0.96), rgba(92, 24, 88, 0.96) 50%, rgba(61, 24, 112, 0.96)); }
@@ -314,20 +314,20 @@
 #agent-dashboard-modal .tube-cap {
     flex: none; width: 14px; height: 22px; border-radius: 7px;
     background: linear-gradient(180deg, #e9defa, #8e7ab0 45%, #3b2d55 55%, rgb(var(--v-pale)));
-    box-shadow: 0 0 8px rgb(var(--v-main) / 0.5);
+    box-shadow: 0 0 8px rgb(var(--v-main) / calc(0.5 * var(--glow)));
 }
 #agent-dashboard-modal .tube-glass {
     flex: 1; position: relative; height: 16px; margin: 0 -2px; border-radius: 8px;
     background: linear-gradient(180deg, rgba(255, 255, 255, 0.25), rgba(255, 255, 255, 0.04) 40%, rgba(255, 255, 255, 0.1));
     border: 1px solid rgb(var(--v-pale) / 0.55);
-    box-shadow: 0 0 12px rgb(var(--v-main) / 0.55), inset 0 0 6px rgb(var(--v-main) / 0.4);
+    box-shadow: 0 0 12px rgb(var(--v-main) / calc(0.55 * var(--glow))), inset 0 0 6px rgb(var(--v-main) / calc(0.4 * var(--glow)));
 }
 /* Two clamps on each glass: metal rings across it */
 #agent-dashboard-modal .tube-glass::before,
 #agent-dashboard-modal .tube-glass::after {
     content: ''; position: absolute; top: -5px; bottom: -5px; width: 9px; border-radius: 3px; z-index: 2;
     background: linear-gradient(90deg, #4a3a66, #d9ccf0 40%, #7d6aa0 60%, #2e2244);
-    box-shadow: 0 0 6px rgb(var(--v-main) / 0.5);
+    box-shadow: 0 0 6px rgb(var(--v-main) / calc(0.5 * var(--glow)));
 }
 #agent-dashboard-modal .tube-glass::before { left: 14%; }
 #agent-dashboard-modal .tube-glass::after { right: 14%; }
@@ -337,7 +337,7 @@
         linear-gradient(180deg, rgba(255, 255, 255, 0.35), transparent 45%),
         repeating-linear-gradient(90deg, rgb(var(--v-mid)) 0 18px, rgb(var(--v-bright)) 18px 26px, rgb(var(--v-deep)) 26px 40px);
     background-size: 100% 100%, 80px 100%;
-    box-shadow: 0 0 10px rgb(var(--v-bright) / 0.8);
+    box-shadow: 0 0 10px rgb(var(--v-bright) / calc(0.8 * var(--glow)));
     animation: tubeFlow 4s linear infinite;
 }
 @keyframes tubeFlow { to { background-position: 0 0, 80px 0; } }
@@ -345,7 +345,7 @@
     flex: none; position: relative; z-index: 3; width: 92px; height: 30px; margin: 0 4px; display: grid; place-items: center;
     border-radius: 9px; border: 1.5px solid rgb(var(--v-bright));
     background: radial-gradient(80% 90% at 50% 50%, #0c2a33, #070b14 80%);
-    box-shadow: 0 0 12px rgb(var(--v-main) / 0.7), inset 0 0 10px rgba(62, 240, 255, 0.25);
+    box-shadow: 0 0 12px rgb(var(--v-main) / calc(0.7 * var(--glow))), inset 0 0 10px rgba(62, 240, 255, 0.25);
 }
 #agent-dashboard-modal .tube-monitor svg { width: 70px; height: 20px; overflow: visible; }
 #agent-dashboard-modal .tube-monitor polyline {

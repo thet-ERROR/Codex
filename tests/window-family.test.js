@@ -6,6 +6,9 @@ import { describe, it, before, after } from 'node:test';
 import assert from 'node:assert/strict';
 import { serveSite, launch, newPage } from './helpers.js';
 
+// The shell's colours checked here are Phoenix's (the purple HUD); the default theme is now Graphite
+const PHOENIX = { codex_theme_id: 'phoenix' };
+
 let site, browser;
 before(async () => { site = await serveSite(); browser = await launch(); });
 after(async () => { await browser.close(); await site.close(); });
@@ -43,7 +46,7 @@ for (const [name, opts] of [['desktop', { width: 1440, height: 900, mobile: fals
     describe(`window family on a ${name}`, () => {
         for (const w of WINDOWS) {
             it(`${w.id} wears the HUD shell`, async () => {
-                const page = await newPage(browser, site, { locale: 'el-GR', ...opts });
+                const page = await newPage(browser, site, { locale: 'el-GR', storage: PHOENIX, ...opts });
                 try {
                     const m = await measure(page, w);
                     // 24px corners on a desktop; a phone sheet rounds only the top, at 22px
@@ -80,7 +83,7 @@ describe('windows with their own inside', () => {
     }
     it('wheel and the rig window: slab and square close', async () => {
         for (const [open, ready, frame] of [[() => window.openModal('wheel-modal'), '#wheel-modal.active', '#wheel-modal .modal-content'], [() => window.openModal('mission-modal'), '#mission-modal.active', '#mission-modal .modal-content']]) {
-            const page = await newPage(browser, site, { locale: 'el-GR', width: 1440, height: 900, mobile: false });
+            const page = await newPage(browser, site, { locale: 'el-GR', width: 1440, height: 900, mobile: false, storage: PHOENIX });
             try {
                 const m = await look(page, open, ready, { frame, close: frame + ' .close-modal' });
                 assert.deepEqual([m.radius, m.rim, m.closeW, m.closeH, m.closeRadius], ['24px', true, 44, 44, '12px'], frame);
@@ -106,7 +109,7 @@ describe('compare and profile: the shared close', () => {
     const close = (page, sel) => page.evaluate((s) => { const x = document.querySelector(s), r = x.getBoundingClientRect(); return [Math.round(r.width), Math.round(r.height), getComputedStyle(x).borderTopLeftRadius, getComputedStyle(x).borderTopColor]; }, sel);
     for (const [name, opts] of [['desktop', { width: 1440, height: 900, mobile: false }], ['phone', { width: 390, height: 844, mobile: true }]]) {
         it(`compare close on a ${name}`, async () => {
-            const page = await newPage(browser, site, { locale: 'el-GR', ...opts });
+            const page = await newPage(browser, site, { locale: 'el-GR', storage: PHOENIX, ...opts });
             try {
                 await page.evaluate(() => import('./js/state.js').then(m => { m.state.compareList = m.state.inventory.slice(0, 2); window.openCompareModal(); }));
                 await page.locator('#compare-modal.active').waitFor();
@@ -115,7 +118,7 @@ describe('compare and profile: the shared close', () => {
             } finally { await page.context().close(); }
         });
         it(`profile close on a ${name}`, async () => {
-            const page = await newPage(browser, site, { locale: 'el-GR', member: true, ...opts });
+            const page = await newPage(browser, site, { locale: 'el-GR', member: true, storage: PHOENIX, ...opts });
             try {
                 await page.evaluate(() => window.openAgentDashboard());
                 await page.locator('#agent-dashboard-modal.active').waitFor();

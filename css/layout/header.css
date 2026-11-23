@@ -5,7 +5,7 @@ header {
 }
 body.night-mode header { background: linear-gradient(to bottom, rgba(5,5,15,0.95), transparent); }
 
-.logo { height: 88px; width: auto; object-fit: contain; display: block; position: relative; z-index: 5001; cursor: pointer; filter: drop-shadow(0 0 8px rgb(var(--v-main) / 0.4)); transition: transform 0.3s ease; }
+.logo { height: 88px; width: auto; object-fit: contain; display: block; position: relative; z-index: 5001; cursor: pointer; filter: drop-shadow(0 0 8px rgb(var(--v-main) / calc(0.4 * var(--glow)))); transition: transform 0.3s ease; }
 .logo:hover { transform: scale(1.06); }
 /* The breathing glow. It used to be an animated drop-shadow on the logo itself, and a filter that moves
    pixels can't be animated on the compositor: the browser recalculated style on every frame of the whole
@@ -22,7 +22,7 @@ body.night-mode header { background: linear-gradient(to bottom, rgba(5,5,15,0.95
 @media (max-width: 1024px), (prefers-reduced-motion: reduce) {
     .logo-wrap { display: contents; }
     .logo-aura { display: none; }
-    .logo { filter: drop-shadow(0 0 10px rgb(var(--v-main) / 0.4)); }
+    .logo { filter: drop-shadow(0 0 10px rgb(var(--v-main) / calc(0.4 * var(--glow)))); }
 }
 
 .nav-bar { display: flex; gap: 10px; background: rgba(255,255,255,0.05); padding: 8px; border-radius: 40px; border: 1px solid var(--glass-border); backdrop-filter: blur(10px); position: absolute; left: 50%; transform: translateX(-50%); }
@@ -58,9 +58,9 @@ body.night-mode header { background: linear-gradient(to bottom, rgba(5,5,15,0.95
 }
 /* A window covers the header; no point animating under it */
 body:has(.modal-overlay.active) .vote-bot { visibility: hidden; }
-.nav-btn.active-live { background: var(--neon-green); color: #000; box-shadow: 0 0 15px var(--neon-green); }
+.nav-btn.active-live { background: var(--neon-green); color: #000; box-shadow: 0 0 15px rgb(var(--a-rgb) / var(--glow)); }
 .nav-btn.active-starter { background: var(--retro-red); color: #fff; box-shadow: 0 0 15px var(--retro-red); }
-.nav-btn.active-vote { background: var(--neon-purple); color: #fff; box-shadow: 0 0 20px var(--neon-purple); }
+.nav-btn.active-vote { background: var(--neon-purple); color: #fff; box-shadow: 0 0 20px rgb(var(--v-main) / var(--glow)); }
 
 .nav-btn.cart-btn { border: 1px solid #444; color: var(--neon-green); position: relative; }
 .nav-btn.cart-btn:hover, .nav-btn.cart-btn.active { background: var(--neon-green); color: #000; border-color: var(--neon-green); }
@@ -74,11 +74,11 @@ body:has(.modal-overlay.active) .vote-bot { visibility: hidden; }
 /* Phone-only cart button — see index.html. Shown by css/responsive/mobile.css. */
 .cart-btn-mobile { display: none; position: relative; width: 45px; height: 45px; border-radius: 50%; background: rgba(255,255,255,0.05); border: 1px solid var(--neon-green); color: var(--neon-green); font-size: 1.3rem; cursor: pointer; align-items: center; justify-content: center; transition: 0.3s; }
 .cart-btn-mobile .cart-count { position: absolute; top: -4px; right: -4px; min-width: 18px; text-align: center; }
-.cart-btn-mobile.active { background: var(--neon-green); color: #000; box-shadow: 0 0 15px var(--neon-green); }
+.cart-btn-mobile.active { background: var(--neon-green); color: #000; box-shadow: 0 0 15px rgb(var(--a-rgb) / var(--glow)); }
 
 .profile-container { position: relative; z-index: 999999 !important; pointer-events: auto !important; }
 .profile-btn { width: 45px; height: 45px; border-radius: 50%; background: rgba(255,255,255,0.05); border: 1px solid var(--neon-green); color: var(--neon-green); font-size: 1.5rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.3s; }
-.profile-btn:hover { background: var(--neon-green); color: #000; box-shadow: 0 0 15px var(--neon-green); }
+.profile-btn:hover { background: var(--neon-green); color: #000; box-shadow: 0 0 15px rgb(var(--a-rgb) / var(--glow)); }
 
 .profile-menu { position: absolute !important; top: 55px !important; right: 0 !important; width: 180px !important; background: #0a0a0c !important; border: 1px solid var(--neon-purple) !important; border-radius: 10px !important; padding: 10px !important; display: none; flex-direction: column !important; gap: 5px !important; box-shadow: 0 10px 50px rgba(0,0,0,0.9) !important; z-index: 9999999 !important; pointer-events: auto !important; }
 .profile-menu.show { display: flex !important; animation: fadeIn 0.2s; }

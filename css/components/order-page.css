@@ -4,7 +4,7 @@
    parts: the number, the steps, the blocks, the request forms, and the profile's order rows. */
 #order-modal .op-body { display: flex; flex-direction: column; gap: 14px; }
 #order-modal .op-head { text-align: center; }
-#order-modal .op-number { font-family: var(--font-ui); font-size: 1.8rem; font-weight: 800; letter-spacing: 3px; color: #fff; text-shadow: 0 0 16px rgb(var(--v-main) / 0.6); }
+#order-modal .op-number { font-family: var(--font-ui); font-size: 1.8rem; font-weight: 800; letter-spacing: 3px; color: #fff; text-shadow: 0 0 16px rgb(var(--v-main) / calc(0.6 * var(--glow))); }
 #order-modal .op-date { font-size: 0.78rem; color: #9b93b5; margin-top: 2px; }
 
 /* --- the steps: a vertical line with a dot per step --- */
@@ -16,7 +16,7 @@
 #order-modal .op-step.done::before { background: var(--neon-green); }
 #order-modal .op-dot { flex: none; display: grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; border: 2px solid rgb(var(--v-main) / 0.45); background: var(--s-panel); font-size: 0.7rem; color: #000; }
 #order-modal .op-step.done .op-dot { background: var(--neon-green); border-color: var(--neon-green); }
-#order-modal .op-step.now .op-dot { border-color: var(--neon-green); box-shadow: 0 0 0 4px rgb(var(--a-rgb) / 0.18), 0 0 12px var(--neon-green); background: var(--s-panel); }
+#order-modal .op-step.now .op-dot { border-color: var(--neon-green); box-shadow: 0 0 0 4px rgb(var(--a-rgb) / 0.18), 0 0 12px rgb(var(--a-rgb) / var(--glow)); background: var(--s-panel); }
 #order-modal .op-step.cancelled .op-dot { background: #ff4d4d; border-color: #ff4d4d; color: #fff; }
 #order-modal .op-step-text { display: flex; flex-direction: column; min-width: 0; font-size: 0.9rem; color: #e7e3f1; }
 #order-modal .op-step.todo .op-step-text { color: #7d7695; }

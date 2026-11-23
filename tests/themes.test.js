@@ -1,4 +1,4 @@
-// The five themes (css/base/themes.css, js/modules/themes.js): which one is on, who can wear which, what an
+// The six themes (css/base/themes.css, js/modules/themes.js): which one is on, who can wear which, what an
 // old browser holds from the thirteen-colour days, and that every theme stays readable (axe contrast) on the
 // windows that carry the most colour. Run from this folder: npm test
 
@@ -25,6 +25,7 @@ const unlockAll = (page) => page.evaluate(() => window.applyThemeData(['inferno'
 
 // The accent and the window colour each theme must put on the page (the values of css/base/themes.css)
 const LOOK = {
+    graphite: { accent: 'rgb(196 228 110)', window: 'rgb(148 163 184)' },
     phoenix: { accent: 'rgb(204 255 0)', window: 'rgb(176 38 255)' },
     nebula:  { accent: 'rgb(192 132 252)', window: 'rgb(176 38 255)' },
     inferno: { accent: 'rgb(255 170 0)', window: 'rgb(255 94 0)' },
@@ -33,10 +34,20 @@ const LOOK = {
 };
 
 describe('themes: the start and the switch', () => {
-    it('a new visitor gets Phoenix, the look the site always had', () => withPage({}, async (page) => {
-        assert.equal(await on(page), 'phoenix');
-        assert.equal(await token(page, '--neon-green'), LOOK.phoenix.accent);
-        assert.equal(await token(page, '--s-purple'), LOOK.phoenix.window);
+    it('a new visitor gets Graphite, the clean matte look, with no neon glow', () => withPage({}, async (page) => {
+        assert.equal(await on(page), 'graphite');
+        assert.equal(await token(page, '--neon-green'), LOOK.graphite.accent);
+        assert.equal(await token(page, '--s-purple'), LOOK.graphite.window);
+        assert.equal(await token(page, '--glow'), '0');
+    }));
+
+    it('a saved theme is on before the first paint, so a returning visitor never sees the default flash', () => withPage({
+        storage: { codex_theme_id: 'phoenix' },
+        // Records the theme at the moment <body> starts, before any module script has run
+        initScript: `new MutationObserver((m, o) => { if (document.body) { window.__themeAtBody = document.documentElement.dataset.theme || 'none'; o.disconnect(); } }).observe(document, { childList: true, subtree: true });`
+    }, async (page) => {
+        assert.equal(await page.evaluate(() => window.__themeAtBody), 'phoenix');
+        assert.equal(await token(page, '--glow'), '1');
     }));
 
     it('every theme changes both the accent and the window colour, and a window wears it', () => withPage({}, async (page) => {
@@ -58,7 +69,7 @@ describe('themes: the start and the switch', () => {
         assert.equal(await page.evaluate(() => window.setTheme('inferno')), false);
         assert.match(await page.locator('#toast-container .toast').first().textContent(), /Inferno.*Daily Wheel/i);
         assert.equal(await page.evaluate(() => window.setTheme('arctic')), false);
-        assert.equal(await on(page), 'phoenix');
+        assert.equal(await on(page), 'graphite');
         assert.equal(await page.evaluate(() => window.setTheme('nebula')), true);
         assert.equal(await on(page), 'nebula');
         assert.equal(await page.evaluate(() => window.setTheme('nope')), false);
@@ -81,7 +92,7 @@ describe('themes: what an old browser holds from the thirteen colours', () => {
         ['the old purple becomes Nebula', { codex_theme: '#b026ff' }, 'nebula', []],
         ['the old lime stays Phoenix', { codex_theme: '#ccff00' }, 'phoenix', []],
         ['an old free colour with no new twin (cyan) falls back to Phoenix', { codex_theme: '#00f0ff' }, 'phoenix', []],
-        ['a locked colour that was never won falls back to Phoenix, nothing is handed out', { codex_theme: '#ff5e00' }, 'phoenix', []]
+        ['a locked colour that was never won falls back to the default (Graphite), nothing is handed out', { codex_theme: '#ff5e00' }, 'graphite', []]
     ];
     for (const [name, storage, theme, unlocked] of cases) {
         it(name, () => withPage({ storage }, async (page) => {
@@ -93,12 +104,13 @@ describe('themes: what an old browser holds from the thirteen colours', () => {
 });
 
 describe('themes: the settings window', () => {
-    it('lists the five themes with the secret one hidden, locks on the two that are won, and the current one marked', () => withPage({}, async (page) => {
+    it('lists the six themes, the clean one first, with the secret one hidden, locks on the two that are won, and the current one marked', () => withPage({}, async (page) => {
         await page.evaluate(() => window.openModal('settings-modal'));
         await page.waitForTimeout(450);
         const cards = await page.evaluate(() => [...document.querySelectorAll('.theme-card')].map(c => ({ id: c.dataset.themeId, hidden: c.hidden, locked: c.classList.contains('locked'), pressed: c.getAttribute('aria-pressed') })));
         assert.deepEqual(cards, [
-            { id: 'phoenix', hidden: false, locked: false, pressed: 'true' },
+            { id: 'graphite', hidden: false, locked: false, pressed: 'true' },
+            { id: 'phoenix', hidden: false, locked: false, pressed: 'false' },
             { id: 'nebula', hidden: false, locked: false, pressed: 'false' },
             { id: 'inferno', hidden: false, locked: true, pressed: 'false' },
             { id: 'arctic', hidden: false, locked: true, pressed: 'false' },
@@ -132,7 +144,7 @@ describe('themes: the terminal', () => {
     it('`color` lists the themes, a locked one has a lock, and a name switches to it', () => withPage({}, async (page) => {
         await run(page, 'color');
         const chips = await page.evaluate(() => [...document.querySelectorAll('#cli-output .cli-chip')].map(c => c.textContent));
-        assert.deepEqual(chips, ['phoenix', 'nebula', 'inferno \u{1F512}', 'arctic \u{1F512}']);
+        assert.deepEqual(chips, ['graphite', 'phoenix', 'nebula', 'inferno \u{1F512}', 'arctic \u{1F512}']);
         await run(page, 'color nebula');
         assert.equal(await on(page), 'nebula');
         await run(page, 'color inferno');
