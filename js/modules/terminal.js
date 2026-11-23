@@ -151,6 +151,12 @@ const COMMANDS = {
     exit() {
         toggleCLI();
     },
+    // Hidden (not in `help`): the RAM RUSH mini game
+    ramrush() {
+        // Close the terminal if it is open (a run from elsewhere must not open it instead)
+        if (document.getElementById('cli-overlay')?.classList.contains('active')) toggleCLI();
+        openRamRush();
+    },
     theme(arg) {
         // With no argument it steps through the three modes: night → day → auto → night …
         const order = ['night', 'day', 'auto'];
@@ -339,3 +345,16 @@ export function initTerminal() {
 // Εξαγωγή στο global scope (χρησιμοποιείται στο onclick="toggleCLI()")
 window.toggleCLI = toggleCLI;
 window.runTerminalCommand = runCommand;
+
+// RAM RUSH (game/): imported only now, when someone opens it, so the site never downloads the game for a
+// visit that doesn't play. A dynamic import is not preloaded (index.html preloads the static imports only).
+let ramRushLoading = null;
+export function openRamRush() {
+    if (ramRushLoading) return ramRushLoading;
+    ramRushLoading = import('../../game/main.js')
+        .then(m => m.open())
+        .catch(() => { if (window.showToast) window.showToast(T('ramRushFailed'), 'error'); })
+        .finally(() => { ramRushLoading = null; });
+    return ramRushLoading;
+}
+window.openRamRush = openRamRush;

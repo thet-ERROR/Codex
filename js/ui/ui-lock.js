@@ -23,9 +23,12 @@ const checkUILock = () => {
     const isReviewsOpen = rightSidebar && rightSidebar.classList.contains('mobile-active');
     const isGalleryOpen = gallery && gallery.style.display === 'flex';
 
-    videoBehindCover(!!(anyModalOpen || isGalleryOpen));
+    // RAM RUSH (game/main.js) covers the whole screen and marks the body while it is open
+    const isGameOpen = document.body.classList.contains('rr-playing');
 
-    const shouldLock = isTerminalOpen || isReviewsOpen || isGalleryOpen || anyModalOpen;
+    videoBehindCover(!!(anyModalOpen || isGalleryOpen || isGameOpen));
+
+    const shouldLock = isTerminalOpen || isReviewsOpen || isGalleryOpen || anyModalOpen || isGameOpen;
     const isLocked = document.body.classList.contains('ui-locked');
 
     // Αν δεν αλλάζει τίποτα, μην κάνεις τίποτα — αποφεύγουμε άσκοπο mutation
