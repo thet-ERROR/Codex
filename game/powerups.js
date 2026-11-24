@@ -268,29 +268,9 @@ export function createPowerups({ rng = Math.random, reducedMotion = false } = {}
         }
     }
 
-    // Top left: each power-up on, its icon and a bar that empties; under XMP the MHz meter
-    p.drawHud = (ctx, top = 34) => {
-        let y = top;
-        for (const a of p.active.values()) {
-            const def = POWERUPS[a.id];
-            if (!blinkOff(a.remaining)) icon(ctx, 34, y, 18, def.color, a.id);
-            ctx.fillStyle = 'rgba(13, 12, 29, 0.7)';
-            ctx.fillRect(60, y - 5, 120, 10);
-            ctx.fillStyle = def.color;
-            ctx.fillRect(60, y - 5, 120 * Math.max(0, a.remaining / def.duration), 10);
-            ctx.font = '700 12px system-ui, sans-serif';
-            ctx.fillStyle = '#f1f0f7';
-            ctx.textAlign = 'left';
-            ctx.fillText(def.name, 60, y - 10);
-            y += 46;
-        }
-        if (p.isOn('xmp') || p.mhz > POWERUPS.xmp.mhz[0] + 5) {
-            ctx.font = '800 15px ui-monospace, monospace';
-            ctx.fillStyle = POWERUPS.xmp.color;
-            ctx.textAlign = 'left';
-            ctx.fillText(`${Math.round(p.mhz)} MHz`, 60, y - 18);
-        }
-    };
+    // For the HUD (hud.js): the ring icon, and whether a power-up in its last seconds blinks off now
+    p.icon = icon;
+    p.blinkOff = blinkOff;
 
     return p;
 }
