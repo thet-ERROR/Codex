@@ -81,6 +81,20 @@ export const ENEMIES = {
         anims: { walk: 'fireCrawler.crawl' },
         attack: 'spikes',
         eye: [0.26, 0.57]
+    },
+    // The mini-boss (plan §6, §5b): walks in, holds its ground at holdX, and fires its cannons again and
+    // again until it is down. Out of the hero's reach: only RAMs settle it.
+    mechBoss: {
+        hp: 16, speed: 160,           // px/s it walks in, on screen
+        damage: 2, score: 200, xp: 100,
+        scale: 0.75,                  // the frames are ~223–241px tall: drawn ~170–180px, well over the hero
+        hitbox: 0.6, hitboxW: 0.5,
+        frameTime: 0.16,
+        behaviour: 'boss', boss: true,
+        holdX: 760,                   // where it stands and fights (the hero goes no further than 620)
+        anims: { walk: 'mechBoss.walk', charge: 'mechBoss.charge', fire: 'mechBoss.fire', stunned: 'mechBoss.stunned' },
+        attack: 'beam',
+        muzzle: [0.24, 0.22]          // its front cannon's mouth (share of the charge frame): where the beam leaves
     }
 };
 
@@ -151,7 +165,34 @@ export const ATTACKS = {
         hitbox: [0.6, 0.7],           // share of the drawn frame: width, height (from the road up)
         recover: 1.4,                 // s it stays while its spikes are up, open to RAMs; then it crawls on
         damage: 1
+    },
+    // Malware Core: its cannons glow magenta and a warning line shows where the beam will go, high (slide
+    // under it) or low (jump it), in turn; then a thick beam. (Parry comes next.)
+    beam: {
+        chance: 1,
+        telegraph: 0.9,               // s: the cannons charge (the laser_charge sound is as long)
+        fire: 0.5,                    // s the beam lasts
+        recover: 0.8,
+        cooldown: 1.4,                // s between the end of one and the warning of the next
+        first: 0.8,                   // s after it takes its place before the first
+        lanes: { high: 100, low: 28 },   // px above the road where the beam crosses the hero
+        width: 30,
+        length: 1400,
+        damage: 2
     }
+};
+// Parry (plan §5b): E or the right mouse button (on a touch screen, the button at the bottom right).
+// Pressed in the last WINDOW seconds before the boss's beam: the shot never comes, the boss is stunned
+// (RAMs hurt it STUN_MULT times), a short freeze, a flash, bonus XP. Pressed at any other time: the parry
+// rests for COOLDOWN, so it cannot be spammed. Parry alone never kills it: it does no damage.
+export const PARRY = {
+    window: 0.25,
+    cooldown: 1,
+    stun: 1.5,
+    stunMult: 2,
+    hitStop: 0.08,
+    xp: 20,
+    button: { x: 888, y: 440, r: 46, hit: 80 }   // the touch button, in the game's 960×540 (hit: its reach)
 };
 export const DIRECTOR = {
     rest: 0.8                         // s after one attack ends before another may start (one at a time)
@@ -167,6 +208,7 @@ export const SPAWNS = {
     zones: [['orangeBot'], ['orangeBot', 'orangeBot', 'blueRunner'], ['orangeBot', 'orangeBot', 'blueRunner', 'spyDrone'],
         ['orangeBot', 'blueRunner', 'spyDrone', 'fireCrawler']],      // from 1500 m the Fire Crawlers
     pool: 6,
+    boss: { firstM: 1000, everyM: 1000 },   // a Malware Core every 1000 m; while it stands, nothing else comes
     spikes: 6                       // spikes on the road at once (two rows)
 };
 export const HIT_FLASH = 0.08;        // s an enemy shows white when hit
