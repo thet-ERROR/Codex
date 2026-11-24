@@ -53,5 +53,49 @@
    1.0
   ],
   "faces": "left"
+ },
+ "blueRunner.run.0": {
+  "x": 503,
+  "y": 0,
+  "w": 161,
+  "h": 170,
+  "anchor": [
+   0.5,
+   1.0
+  ],
+  "faces": "left"
+ },
+ "blueRunner.run.1": {
+  "x": 666,
+  "y": 0,
+  "w": 161,
+  "h": 170,
+  "anchor": [
+   0.5,
+   1.0
+  ],
+  "faces": "left"
+ },
+ "blueRunner.run.2": {
+  "x": 829,
+  "y": 0,
+  "w": 161,
+  "h": 170,
+  "anchor": [
+   0.5,
+   1.0
+  ],
+  "faces": "left"
+ },
+ "blueRunner.charge.0": {
+  "x": 992,
+  "y": 0,
+  "w": 175,
+  "h": 125,
+  "anchor": [
+   0.5,
+   1.0
+  ],
+  "faces": "left"
  }
 }

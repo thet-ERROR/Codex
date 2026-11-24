@@ -75,10 +75,45 @@ const roll = {
     // Which animation shows now (names from config: walk, curl, ball)
     anim(s) { return s.state === ATTACK ? s.def.anims.ball : s.state === PATROL ? s.def.anims.walk : s.def.anims.curl; },
 
-    damage(s) { return s.state === ATTACK ? this.cfg.damage : s.def.damage; }
+    damage(s) { return s.state === ATTACK ? this.cfg.damage : s.def.damage; },
+
+    hurt() {}                                          // a RAM does not stop a bouncing ball (it glances off)
 };
 
-export const KINDS = { roll };
+// The Blue Runner's Charge. Crouches with its visor red, then runs at the hero at CHARGE × its speed, on
+// past him; a RAM in the charge stops it short, throws it back a little, and it stands open.
+const charge = {
+    cfg: ATTACKS.charge,
+
+    patrol(s, c) { roll.patrol.call(this, s, c); },   // run on, and in range (with the director's yes) warn
+
+    telegraph(s, c) {
+        s.x -= c.scroll;
+        if (s.st < this.cfg.telegraph) return;
+        s.state = ATTACK; s.st = 0;
+        s.goal = (c.heroX === null ? 230 : c.heroX) - this.cfg.pastHero;
+    },
+
+    attack(s, c) {
+        s.x -= c.scroll + s.def.speed * this.cfg.speed * c.dt;
+        if (s.x <= s.goal || s.st >= this.cfg.maxT) this.stop(s, c.director);
+        return false;
+    },
+
+    stop(s, director) { s.state = RECOVER; s.st = 0; director.release(s); },
+
+    recover(s, c) { roll.recover.call(this, s, c); },
+
+    vulnerable() { return true; },
+
+    anim(s) { return s.state === ATTACK ? s.def.anims.charge : s.state === PATROL ? s.def.anims.walk : s.def.anims.crouch; },
+
+    damage(s) { return s.state === ATTACK ? this.cfg.damage : s.def.damage; },
+
+    hurt(s, c) { if (s.state === ATTACK) { s.x += this.cfg.knock; this.stop(s, c.director); } }
+};
+
+export const KINDS = { roll, charge };
 
 // One step of the enemy's machine; returns true when a bounce touched the road
 export function step(s, c) {
@@ -95,4 +130,6 @@ export function step(s, c) {
 export const vulnerable = (s) => { const k = KINDS[s.def.attack]; return k ? k.vulnerable(s) : true; };
 export const animOf = (s) => { const k = KINDS[s.def.attack]; return k ? k.anim(s) : s.def.anims.walk; };
 export const damageOf = (s) => { const k = KINDS[s.def.attack]; return k ? k.damage(s) : s.def.damage; };
+// A RAM hit it (and it lives on): what that does to its attack
+export const hurt = (s, c) => { const k = KINDS[s.def.attack]; if (k) k.hurt(s, c); };
 export const chanceOf = (def) => (ATTACKS[def.attack] ? ATTACKS[def.attack].chance : 0);

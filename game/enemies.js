@@ -13,15 +13,16 @@
 // attack at a time. Here: what that means on screen (the curl and its blinking eye, the bouncing ball,
 // the dust where it lands, the spark when a RAM glances off the armour).
 
-import { ENEMIES, SPAWNS, HIT_FLASH, POWERUPS } from './config.js';
+import { ENEMIES, SPAWNS, HIT_FLASH, POWERUPS, ATTACKS } from './config.js';
 import { GROUND } from './hero.js';
-import { PATROL, TELEGRAPH, ATTACK, createDirector, step, vulnerable, animOf, damageOf, chanceOf } from './attacks.js';
+import { PATROL, TELEGRAPH, ATTACK, RECOVER, createDirector, step, vulnerable, animOf, damageOf, chanceOf, hurt } from './attacks.js';
 
 const W = 960;
 const DIE_T = 0.25;                    // the death pop
 const CLINK_T = 0.14;                  // the spark of a glancing RAM
 const DUST_T = 0.3;                    // the puff where a bounce lands
-const EYE = { x: 0.34, y: 0.61 };      // the Orange Bot's eye on its curl frame (share of the frame)
+const LINES = 7;                       // speed lines behind a charge
+const ATTACKS_CHARGE_T = ATTACKS.charge.telegraph;
 
 // The sheet in white, for the flash: drawn once, the shape kept by its alpha
 function whiten(sheet) {
@@ -39,7 +40,7 @@ export function createEnemies(sheet, frames, { rng = Math.random, reducedMotion 
     const white = sheet ? whiten(sheet) : null;
     const pool = Array.from({ length: SPAWNS.pool }, () => ({
         on: false, id: '', def: null, x: 0, y: GROUND, hp: 0, t: 0, flash: 0, dying: 0, hitHero: false,
-        state: PATROL, st: 0, attacks: false, h: 0, vx: 0, hop: 0, hops: 0, spin: 0,
+        state: PATROL, st: 0, attacks: false, h: 0, vx: 0, hop: 0, hops: 0, spin: 0, goal: 0,
         clink: 0, clinkX: 0, clinkY: 0, dust: 0, dustX: 0
     }));
     const director = createDirector();
@@ -70,15 +71,16 @@ export function createEnemies(sheet, frames, { rng = Math.random, reducedMotion 
     for (const a of Object.keys(count)) names[a] = Array.from({ length: count[a] }, (_, i) => `${a}.${i}`);
     function frameOf(s) {
         const list = names[animOf(s)];
-        return frames[list[Math.floor(s.t / s.def.frameTime) % list.length]];
+        // only on the move does it step through its frames; warning, attack pose and rest hold the first
+        return frames[list[s.state === PATROL ? Math.floor(s.t / s.def.frameTime) % list.length : 0]];
     }
 
     // The hitbox: a share of the drawn frame, centred on it, standing on its feet (the ball: centred on it)
     e.box = (s) => {
         const f = frameOf(s);
-        const w = f.w * s.def.scale, h = f.h * s.def.scale, k = s.def.hitbox;
-        const lift = s.state === ATTACK ? h * (1 - k) / 2 : 0;
-        return { x: s.x - w * k / 2, y: s.y - h * k - lift, w: w * k, h: h * k };
+        const w = f.w * s.def.scale, h = f.h * s.def.scale, k = s.def.hitbox, kw = s.def.hitboxW || k;
+        const lift = s.state === ATTACK && s.def.attack === 'roll' ? h * (1 - k) / 2 : 0;
+        return { x: s.x - w * kw / 2, y: s.y - h * k - lift, w: w * kw, h: h * k };
     };
 
     // dt: s; scroll: px the road moved; distM: metres run; hero: { box, hit(damage) }; rams: hit(box),
@@ -124,6 +126,7 @@ export function createEnemies(sheet, frames, { rng = Math.random, reducedMotion 
                     if (powerups && rng() < POWERUPS.xmp.dropChance) powerups.spawn('xmp', s.x, GROUND - 70);
                     continue;
                 }
+                hurt(s, link);                         // e.g. a charge stopped short
             }
             // touching the hero: one hit per enemy (it goes on through him)
             if (hero && !s.hitHero) {
@@ -156,7 +159,9 @@ export function createEnemies(sheet, frames, { rng = Math.random, reducedMotion 
                 const k = Math.min(1, s.st / 0.5);
                 sx = 1 + 0.12 * k; sy = 1 - 0.14 * k;
             }
-            if (s.state === ATTACK && s.h < 14) { sx = 1.14; sy = 0.86; }   // the ball squashes on the road
+            if (s.state === ATTACK && s.def.attack === 'roll' && s.h < 14) { sx = 1.14; sy = 0.86; }   // the ball squashes on the road
+            // the Blue Runner pants after its charge: a slow heave
+            if (s.state === RECOVER && s.def.attack === 'charge' && !reducedMotion) sy = 1 - 0.04 * Math.abs(Math.sin(s.st * 9));
             if (s.dying > 0) { const k = 1 - s.dying / DIE_T; sc *= 1 + 0.35 * k; alpha = 1 - k; bob = 0; }
             const w = f.w * sc * sx, h = f.h * sc * sy;
             const shake = s.state === TELEGRAPH && !reducedMotion ? Math.sin(s.t * 70) * 1.5 : 0;   // and trembles
@@ -168,8 +173,12 @@ export function createEnemies(sheet, frames, { rng = Math.random, reducedMotion 
             ctx.beginPath();
             ctx.ellipse(s.x, GROUND + 2, f.w * sc * 0.32 * (1 - up * 0.4), 6 * (1 - up * 0.4), 0, 0, Math.PI * 2);
             ctx.fill();
+            ctx.restore();
+            if (s.def.attack === 'charge' && s.dying <= 0) drawLines(ctx, s, w, h);
+            ctx.save();
+            ctx.globalAlpha = alpha;
             const img = s.flash > 0 || s.dying > 0 ? white : sheet;
-            if (s.state === ATTACK) {
+            if (s.state === ATTACK && s.def.attack === 'roll') {
                 // the ball rolls: turned about its own centre
                 ctx.translate(s.x, s.y - h / 2);
                 ctx.rotate(s.spin);
@@ -177,9 +186,9 @@ export function createEnemies(sheet, frames, { rng = Math.random, reducedMotion 
             } else {
                 const dx = s.x + shake - w * f.anchor[0], dy = s.y - bob - h * f.anchor[1];
                 ctx.drawImage(img, f.x, f.y, f.w, f.h, dx, dy, w, h);
-                // the warning: the eye blinks red-hot while it winds up (steady with reduced motion)
-                if (s.state === TELEGRAPH && s.dying <= 0 && (reducedMotion || Math.floor(s.st * 12) % 2 === 0)) {
-                    const ex = dx + w * EYE.x, ey = dy + h * EYE.y;
+                // the warning: the eye (the visor) blinks red-hot while it winds up (steady with reduced motion)
+                if (s.state === TELEGRAPH && s.dying <= 0 && s.def.eye && (reducedMotion || Math.floor(s.st * 12) % 2 === 0)) {
+                    const ex = dx + w * s.def.eye[0], ey = dy + h * s.def.eye[1];
                     ctx.globalCompositeOperation = 'lighter';
                     const g = ctx.createRadialGradient(ex, ey, 0, ex, ey, 22);
                     g.addColorStop(0, 'rgba(255, 240, 170, 1)');
@@ -193,6 +202,26 @@ export function createEnemies(sheet, frames, { rng = Math.random, reducedMotion 
             drawBits(ctx, s);
         }
     };
+
+    // Speed lines behind a charge (to its right: it runs left): faint and gathering while it crouches,
+    // long and bright while it runs. Fixed lanes, so nothing random per frame.
+    function drawLines(ctx, s, w, h) {
+        const k = s.state === TELEGRAPH ? Math.min(1, s.st / ATTACKS_CHARGE_T) : s.state === ATTACK ? 1 : 0;
+        if (k <= 0) return;
+        const long = s.state === ATTACK ? 1 : 0.4;
+        ctx.save();
+        ctx.globalCompositeOperation = 'lighter';
+        ctx.lineWidth = 3;
+        ctx.lineCap = 'round';
+        for (let n = 0; n < LINES; n++) {
+            const y = s.y - h * (0.12 + 0.72 * n / (LINES - 1));
+            const x0 = s.x + w * 0.2 + ((n * 37) % 23);
+            const len = (80 + ((n * 53) % 60)) * long * k;
+            ctx.strokeStyle = n % 2 ? `rgba(200, 245, 255, ${0.8 * k})` : `rgba(80, 200, 255, ${0.75 * k})`;
+            ctx.beginPath(); ctx.moveTo(x0, y); ctx.lineTo(x0 + len, y); ctx.stroke();
+        }
+        ctx.restore();
+    }
 
     // The dust where a bounce landed, and the spark where a RAM glanced off the ball
     function drawBits(ctx, s) {

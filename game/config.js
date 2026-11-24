@@ -44,7 +44,19 @@ export const ENEMIES = {
         frameTime: 0.14,              // s per walk frame
         behaviour: 'walk',
         anims: { walk: 'orangeBot.walk', curl: 'orangeBot.curl', ball: 'orangeBot.ball' },
-        attack: 'roll'                // its own attack (plan §5b), in ATTACKS below
+        attack: 'roll',               // its own attack (plan §5b), in ATTACKS below
+        eye: [0.34, 0.61]             // where its eye glows in the warning (share of the curl frame)
+    },
+    blueRunner: {
+        hp: 2, speed: 120,            // a runner: faster than the Orange Bot
+        damage: 1, score: 20, xp: 10,
+        scale: 0.7,                   // the frames are 170px tall: drawn ~119px, about the hero's height
+        hitbox: 0.7, hitboxW: 0.45,   // its arms and legs stretch wide: the box is narrower than tall
+        frameTime: 0.1,
+        behaviour: 'run',
+        anims: { walk: 'blueRunner.run', crouch: 'blueRunner.run', charge: 'blueRunner.charge' },
+        attack: 'charge',
+        eye: [0.25, 0.25]             // its visor (share of the run frame)
     }
 };
 
@@ -67,6 +79,19 @@ export const ATTACKS = {
         recover: 0.6,                 // s it lies curled after the last bounce, open to RAMs
         spin: 9,                      // rad/s while rolling
         damage: 1
+    },
+    // Blue Runner: stops and crouches, its visor turns red and speed lines gather, then it charges at
+    // three times its speed. Jump over it, or a RAM stops the charge (and it staggers, open).
+    charge: {
+        chance: 0.8,
+        triggerAhead: [420, 600],
+        telegraph: 0.6,               // s crouched, the visor red
+        speed: 3,                     // × its run speed, on top of the road (on screen ~660 px/s)
+        pastHero: 220,                // px past the hero where the charge runs out
+        maxT: 1.4,                    // s at most, wherever the hero is
+        recover: 0.7,                 // s it stands panting after, open to RAMs
+        knock: 40,                    // px a RAM that stops the charge throws it back
+        damage: 1
     }
 };
 export const DIRECTOR = {
@@ -79,7 +104,7 @@ export const SPAWNS = {
     firstM: 60,
     gapM: [25, 45],
     zoneM: 500,
-    zones: [['orangeBot']],
+    zones: [['orangeBot'], ['orangeBot', 'orangeBot', 'blueRunner']],   // from 500 m: one in three a Blue Runner
     pool: 6
 };
 export const HIT_FLASH = 0.08;        // s an enemy shows white when hit

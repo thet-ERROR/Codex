@@ -18,6 +18,8 @@ GROUPS = {
     'orangeBot.walk': ['orange-bot-1', 'orange-bot-2', 'orange-bot-3'],
     'orangeBot.curl': ['orange-bot-curl'],
     'orangeBot.ball': ['orange-bot-ball'],
+    'blueRunner.run': ['blue-runner-1', 'blue-runner-2', 'blue-runner-3'],
+    'blueRunner.charge': ['blue-runner-charge'],
 }
 
 pieces = {}

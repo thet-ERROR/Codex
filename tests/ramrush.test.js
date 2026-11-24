@@ -760,13 +760,13 @@ const rollRun = (page, opts = {}) => page.evaluate(async (opts) => {
     e.natural = false;
     const rams = createRams();
     const hero = { box: { x: 204, y: 342, w: 52, h: 118 }, hit: () => false };
-    for (const x of opts.at || [900]) e.spawn('orangeBot', x, true);
+    for (const x of opts.at || [900]) e.spawn(opts.id || 'orangeBot', x, true);
     const log = [], rlog = [];
     let thrownAir = null, thrownDown = null;
     for (let f = 0; f < 60 * (opts.secs || 4); f++) {
         // a RAM straight into the ball high in the air, and one into it lying curled after
         const b = e.list()[0];
-        if (opts.throws && b && !thrownAir && b.state === 'attack' && b.h > 90) {
+        if (opts.throws && b && !thrownAir && b.state === 'attack' && (b.h > 90 || (opts.id === 'blueRunner' && b.x < 600))) {
             rams.throw(b.box.x - 4, b.box.y + b.box.h / 2); thrownAir = { hp: b.hp };
         }
         if (opts.throws && b && thrownAir && !thrownDown && b.state === 'recover') {
@@ -859,6 +859,77 @@ describe('RAM RUSH: the enemies\' attacks (5b), the Orange Bot\'s Roll & Bounce 
         const seen = [...new Set(rec.map(s => s.enemies[0]?.state).filter(Boolean))];
         assert.deepEqual(seen.slice(0, 3), ['patrol', 'telegraph', 'attack'], seen.join());
         assert.equal((await gameState(page)).hp, 2);
+        assert.deepEqual(page.problems, []);
+    }));
+});
+
+describe('RAM RUSH: the Blue Runner and its Charge (5b)', () => {
+    it('the sheet: its three run frames share one box, and the charge pose; all stand on their feet facing left', () => withPage(DESK, async (page) => {
+        await openGame(page);
+        const f = await page.evaluate(async () => (await fetch('/game/assets/enemies.json')).json());
+        const run = ['0', '1', '2'].map(n => f[`blueRunner.run.${n}`]);
+        assert.ok(run.every(r => r && r.w === run[0].w && r.h === run[0].h), 'one box for the run');
+        for (const r of [...run, f['blueRunner.charge.0']]) assert.deepEqual([r.anchor, r.faces], [[0.5, 1], 'left']);
+    }));
+
+    it('it runs in, crouches still for 0.6 s with its visor red, charges past the hero at over 600 px/s, stands open, runs on', () => withPage(DESK, async (page) => {
+        await openGame(page);
+        const log = await rollRun(page, { id: 'blueRunner', secs: 4 });
+        const runs = runsOf(log);
+        assert.deepEqual(runs.map(r => r.state).slice(0, 4), ['patrol', 'telegraph', 'attack', 'recover'], JSON.stringify(runs));
+        assert.ok(runs[1].frames >= 36, `the warning lasts at least 0.6 s: ${runs[1].frames} frames`);
+        const tele = log.filter(l => l[0]?.state === 'telegraph').map(l => l[0]);
+        assert.ok(tele.every((s, i) => i === 0 || Math.abs(tele[i - 1].x - s.x - 5) < 1e-6), 'crouched, only scrolled with the road');
+        const atk = log.filter(l => l[0]?.state === 'attack').map(l => l[0]);
+        const speed = (atk[0].x - atk.at(-1).x) / ((atk.length - 1) / 60);
+        assert.ok(speed > 600, `charges at ${speed.toFixed(0)} px/s`);
+        assert.ok(atk.at(-1).x < 230 - 150, `on past the hero: ${atk.at(-1).x}`);
+        assert.ok(log.every(l => !l[0] || l[0].h === 0), 'always on the road');
+    }));
+
+    it('a RAM in the charge stops it short: one hp less, thrown back a little, standing open', () => withPage(DESK, async (page) => {
+        await openGame(page);
+        const { log } = await rollRun(page, { id: 'blueRunner', secs: 3, throws: true });
+        const k = log.findIndex(l => l[0]?.state === 'attack' && l[0].hp === 1);
+        const stopped = log.findIndex(l => l[0]?.hp === 1);
+        assert.ok(stopped > 0 && k === -1, 'never charges on once hit');
+        assert.equal(log[stopped][0].state, 'recover');
+        assert.ok(log[stopped][0].x > log[stopped - 1][0].x, 'thrown back');
+        assert.ok(log[stopped][0].x > 300, `stopped well before the hero: ${log[stopped][0].x}`);
+    }));
+
+    it('it comes from 500 m on: before that only Orange Bots, after it both', () => withPage(DESK, async (page) => {
+        await openGame(page);
+        const out = await page.evaluate(async () => {
+            const { createEnemies } = await import('/game/enemies.js');
+            const frames = await (await fetch('/game/assets/enemies.json')).json();
+            let seed = 11; const rng = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+            const e = createEnemies(null, frames, { rng });
+            const seen = [];
+            let m = 0;
+            const spawn = e.spawn;
+            e.spawn = (id, x, a) => { seen.push([m, id]); return spawn(id, x, a); };
+            for (; m < 2500; m++) e.update(0.016, 2000, m, null, null, null);
+            return seen;
+        });
+        assert.ok(out.filter(([m]) => m < 500).every(([, id]) => id === 'orangeBot'), 'only Orange Bots first');
+        const later = new Set(out.filter(([m]) => m >= 500).map(([, id]) => id));
+        assert.deepEqual([...later].sort(), ['blueRunner', 'orangeBot']);
+    }));
+
+    it('in the game: standing still costs a heart; jumped over in time, it does no harm', () => withPage(DESK, async (page) => {
+        await openSettled(page);
+        const spawn = () => page.evaluate(async () => (await import('/game/main.js')).testSpawnEnemy('blueRunner', 980, { attack: true }));
+        await spawn();
+        await waitState(page, (s) => s.enemies[0] && s.enemies[0].state === 'recover', 4000);
+        assert.equal((await gameState(page)).hp, 2);
+        await waitState(page, (s) => s.enemies.length === 0 && s.invuln === 0, 4000);
+        await spawn();
+        await waitState(page, (s) => s.enemies[0] && s.enemies[0].state === 'attack' && s.enemies[0].x < 470, 4000);
+        await page.keyboard.down('ArrowUp');
+        await waitState(page, (s) => s.enemies[0] && s.enemies[0].state === 'recover', 3000);
+        await page.keyboard.up('ArrowUp');
+        assert.equal((await gameState(page)).hp, 2, 'cleared it');
         assert.deepEqual(page.problems, []);
     }));
 });
