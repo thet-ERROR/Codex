@@ -5,7 +5,11 @@
 // under one element (#rr-overlay) and one <style> (#rr-style), both prefixed `rr-`, and both are removed on
 // close together with every listener and the animation loop, so a closed game leaves nothing behind.
 //
-// Step 2 of the plan: the window, the loop and the moving city. The hero, the controls and the enemies come next.
+// Step 2 of the plan: the window, the loop and the moving city. Step 3: the hero runs on the road with his
+// drone (hero.js), and on a phone held upright the world sits on top with a touch area below it.
+// The controls and the enemies come next.
+
+import { createHero } from './hero.js';
 
 const ASSETS = new URL('./assets/', import.meta.url);
 const W = 960, H = 540;                       // the game's own coordinates; the canvas is scaled to fit
@@ -34,6 +38,16 @@ const CSS = `
     color: #f1f0f7; font-size: 22px; line-height: 1; cursor: pointer; }
 .rr-close:focus-visible { outline: 2px solid #22d3ee; outline-offset: 2px; }
 .rr-status { position: absolute; inset: auto 0 50% 0; text-align: center; font-size: 15px; letter-spacing: 1px; pointer-events: none; }
+.rr-pad { display: none; }
+/* A phone held upright: the world on top (full width, under the ✕), the touch area fills the rest */
+@media (orientation: portrait) {
+    .rr-overlay { flex-direction: column; justify-content: flex-start; }
+    .rr-canvas { width: 100vw; margin-top: calc(max(12px, env(safe-area-inset-top)) + 56px); }
+    .rr-pad { display: block; flex: 1; width: 100%; min-height: 120px;
+        background: linear-gradient(180deg, #15132e, #0d0c1d); border-top: 1px solid rgba(34, 211, 238, 0.25);
+        padding-bottom: env(safe-area-inset-bottom); }
+    .rr-status { inset: calc(max(12px, env(safe-area-inset-top)) + 56px + 28vw) 0 auto 0; }
+}
 `;
 
 let game = null;           // the one running game, or null
@@ -71,6 +85,7 @@ export async function open() {
     overlay.setAttribute('aria-modal', 'true');
     overlay.setAttribute('aria-label', txt().title);
     overlay.innerHTML = `<canvas class="rr-canvas" width="${W}" height="${H}"></canvas>
+        <div class="rr-pad" aria-hidden="true"></div>
         <p class="rr-status" aria-live="polite">${txt().loading}</p>
         <button type="button" class="rr-close" aria-label="${txt().close}">✕</button>`;
     document.body.appendChild(overlay);
@@ -85,7 +100,7 @@ export async function open() {
     sky.addColorStop(0, '#1e1b4b');
     sky.addColorStop(1, '#0d0c1d');
 
-    const g = { overlay, style, raf: 0, last: 0, distance: 0, paused: false, images: null, closed: false };
+    const g = { overlay, style, raf: 0, last: 0, distance: 0, paused: false, images: null, hero: null, closed: false };
     game = g;
 
     function frame(t) {
@@ -96,7 +111,9 @@ export async function open() {
         g.distance += SPEED * dt;
         ctx.fillStyle = sky;
         ctx.fillRect(0, 0, W, H);
+        g.hero.update(dt);
         for (const [name, factor, h, bottom] of LAYERS) drawLayer(ctx, g.images[name], factor, h, bottom, g.distance);
+        g.hero.draw(ctx);
     }
 
     function onKey(e) {
@@ -123,8 +140,13 @@ export async function open() {
     closeBtn.focus();
     g.raf = requestAnimationFrame(frame);
     try {
-        const imgs = await Promise.all(LAYERS.map(([name]) => loadImage(name)));
+        const [imgs, sheet, frames] = await Promise.all([
+            Promise.all(LAYERS.map(([name]) => loadImage(name))),
+            loadImage('sprites'),
+            fetch(new URL('sprites.json', ASSETS)).then(r => { if (!r.ok) throw new Error('RAM RUSH: sprites.json'); return r.json(); })
+        ]);
         if (g.closed) return g;
+        g.hero = createHero(sheet, frames);
         g.images = Object.fromEntries(LAYERS.map(([name], i) => [name, imgs[i]]));
         status.textContent = '';
     } catch (e) {
@@ -141,3 +163,9 @@ export function close() {
 }
 
 export const isOpen = () => !!game;
+
+// A read-only look at the running game, for the tests (tests/ramrush.test.js)
+export const state = () => game && game.hero && {
+    hero: { x: game.hero.x, y: game.hero.y, bob: game.hero.bob, frame: game.hero.frame },
+    drone: { x: game.hero.drone.x, y: game.hero.drone.y }
+};

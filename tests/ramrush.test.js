@@ -32,7 +32,8 @@ describe('RAM RUSH: open and close', () => {
         await openGame(page);
         const files = await gameFiles(page);
         assert.ok(files.includes('/game/main.js'), files.join());
-        for (const l of ['sky', 'far', 'mid', 'rail', 'road']) assert.ok(files.includes(`/game/assets/${l}.webp`), l);
+        for (const l of ['sky', 'far', 'mid', 'rail', 'road', 'sprites']) assert.ok(files.includes(`/game/assets/${l}.webp`), l);
+        assert.ok(files.includes('/game/hero.js') && files.includes('/game/assets/sprites.json'), files.join());
         assert.deepEqual(page.problems, []);
     }));
 
@@ -102,5 +103,74 @@ describe('RAM RUSH: open and close', () => {
     it('is a secret: `help` does not list it', () => withPage({}, async (page) => {
         await page.evaluate(() => window.runTerminalCommand('help'));
         assert.doesNotMatch(await page.evaluate(() => document.getElementById('cli-output').textContent), /ramrush/i);
+    }));
+});
+
+// Samples the running game's state (game/main.js `state()`, the same module instance the terminal loaded)
+const samples = (page, n, gapMs) => page.evaluate(async ([n, gapMs]) => {
+    const m = await import('/game/main.js');
+    const out = [];
+    for (let i = 0; i < n; i++) { out.push(m.state()); await new Promise(r => setTimeout(r, gapMs)); }
+    return out;
+}, [n, gapMs]);
+
+describe('RAM RUSH: the hero and his drone', () => {
+    it('the hero runs on the road: feet on the ground line, the two run frames take turns, a small bob', () => withPage({}, async (page) => {
+        await openGame(page);
+        const s = await samples(page, 24, 40);
+        assert.ok(s.every(x => x.hero.y === 460), 'feet on the road');
+        assert.deepEqual([...new Set(s.map(x => x.hero.frame))].sort(), ['run0', 'run1']);
+        assert.ok(s.every(x => x.hero.bob >= 0 && x.hero.bob <= 4), 'lifts, never sinks');
+        assert.ok(s.some(x => x.hero.bob > 1), 'and it does lift');
+    }));
+
+    it('the drone follows him smoothly: behind and above, no jumps', () => withPage({}, async (page) => {
+        await openGame(page);
+        const s = await samples(page, 30, 30);
+        for (const x of s) {
+            assert.ok(x.drone.x < x.hero.x && x.drone.y < x.hero.y - 100, JSON.stringify(x));
+            assert.ok(Math.hypot(x.drone.x - x.hero.x, x.drone.y - x.hero.y) < 220, 'stays close');
+        }
+        for (let i = 1; i < s.length; i++) assert.ok(Math.abs(s[i].drone.y - s[i - 1].drone.y) < 8, `jump at ${i}`);
+        assert.ok(new Set(s.map(x => Math.round(x.drone.y))).size > 3, 'and it hovers');
+    }));
+
+    it('the hero is solid: only his outline is see-through, not his dark clothes', () => withPage({}, async (page) => {
+        await openGame(page);
+        const half = await page.evaluate(async () => {
+            const frames = await (await fetch('/game/assets/sprites.json')).json();
+            const img = new Image(); img.src = '/game/assets/sprites.webp'; await img.decode();
+            const res = {};
+            for (const k of ['run0', 'run1']) {
+                const f = frames[k];
+                const c = new OffscreenCanvas(f.w, f.h).getContext('2d');
+                c.drawImage(img, f.x, f.y, f.w, f.h, 0, 0, f.w, f.h);
+                const a = c.getImageData(0, 0, f.w, f.h).data;
+                let partial = 0, seen = 0;
+                for (let i = 3; i < a.length; i += 4) if (a[i] > 8) { seen++; if (a[i] < 230) partial++; }
+                res[k] = partial / seen;
+            }
+            return res;
+        });
+        for (const [k, v] of Object.entries(half)) assert.ok(v < 0.12, `${k}: ${(v * 100).toFixed(1)}% half-transparent`);
+    }));
+});
+
+describe('RAM RUSH: on a phone', () => {
+    const box = (page, sel) => page.locator(sel).evaluate(el => { const r = el.getBoundingClientRect(); return { top: r.top, bottom: r.bottom, w: r.width, h: r.height, shown: getComputedStyle(el).display !== 'none' }; });
+
+    it('held upright: the world on top, full width and under the ✕, a touch area below it to the bottom', () => withPage({ width: 390, height: 844, mobile: true }, async (page) => {
+        await openGame(page);
+        const [canvas, pad, x] = [await box(page, '.rr-canvas'), await box(page, '.rr-pad'), await box(page, '.rr-close')];
+        assert.equal(Math.round(canvas.w), 390);
+        assert.ok(canvas.top >= x.bottom, 'the ✕ does not cover the world');
+        assert.ok(pad.shown && pad.top >= canvas.bottom - 1 && Math.round(pad.bottom) === 844 && pad.h > 300, JSON.stringify(pad));
+    }));
+
+    it('held sideways (or on a desktop): the world fills the screen and there is no touch area', () => withPage({ width: 844, height: 390, mobile: true }, async (page) => {
+        await openGame(page);
+        const [canvas, pad] = [await box(page, '.rr-canvas'), await box(page, '.rr-pad')];
+        assert.equal(pad.shown, false);
+        assert.equal(Math.round(canvas.h), 390);
     }));
 });
