@@ -358,3 +358,22 @@ export function openRamRush() {
     return ramRushLoading;
 }
 window.openRamRush = openRamRush;
+
+// The easter egg: typing r-a-m anywhere outside a text field opens it. Read by key position (e.code), so it
+// works the same on a Greek layout (where the same keys type ρ-α-μ). Never inside an input, never with a modifier.
+const RAM_KEYS = ['KeyR', 'KeyA', 'KeyM'];
+let ramKeyAt = 0;
+document.addEventListener('keydown', (e) => {
+    if (e.ctrlKey || e.metaKey || e.altKey || e.repeat) return;
+    const el = e.target;
+    if (el && (el.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(el.tagName))) { ramKeyAt = 0; return; }
+    if (e.code === RAM_KEYS[ramKeyAt]) {
+        ramKeyAt++;
+        if (ramKeyAt === RAM_KEYS.length) {
+            ramKeyAt = 0;
+            if (!document.getElementById('rr-overlay')) openRamRush();
+        }
+    } else {
+        ramKeyAt = e.code === RAM_KEYS[0] ? 1 : 0;
+    }
+});

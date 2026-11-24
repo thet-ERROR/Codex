@@ -83,6 +83,22 @@ describe('RAM RUSH: open and close', () => {
         assert.equal(await page.evaluate(() => document.getElementById('cli-overlay').classList.contains('active')), false);
     }));
 
+    it('the easter egg: typing r-a-m on the page opens it (by key, so a Greek layout works too)', () => withPage({ width: 1440, height: 900 }, async (page) => {
+        for (const k of ['KeyR', 'KeyA', 'KeyM']) await page.keyboard.press(k);
+        await page.locator('#rr-overlay').waitFor({ timeout: 8000 });
+    }));
+
+    it('…but not while typing in a field, not with Ctrl, and not out of order', () => withPage({ width: 1440, height: 900 }, async (page) => {
+        await page.evaluate(() => window.toggleCLI());
+        await page.locator('#cli-input').focus();
+        for (const k of ['KeyR', 'KeyA', 'KeyM']) await page.keyboard.press(k);
+        await page.evaluate(() => { document.activeElement.blur(); window.toggleCLI(); });
+        for (const k of ['Control+KeyR', 'Control+KeyA', 'Control+KeyM']) await page.keyboard.press(k);
+        for (const k of ['KeyR', 'KeyM', 'KeyA']) await page.keyboard.press(k);
+        await page.waitForTimeout(600);
+        assert.equal(await page.locator('#rr-overlay').count(), 0);
+    }));
+
     it('is a secret: `help` does not list it', () => withPage({}, async (page) => {
         await page.evaluate(() => window.runTerminalCommand('help'));
         assert.doesNotMatch(await page.evaluate(() => document.getElementById('cli-output').textContent), /ramrush/i);
