@@ -97,5 +97,115 @@
    1.0
   ],
   "faces": "left"
+ },
+ "spyDrone.fly.0": {
+  "x": 1169,
+  "y": 0,
+  "w": 155,
+  "h": 115,
+  "anchor": [
+   0.5,
+   1.0
+  ],
+  "faces": "left"
+ },
+ "spyDrone.fly.1": {
+  "x": 1326,
+  "y": 0,
+  "w": 155,
+  "h": 115,
+  "anchor": [
+   0.5,
+   1.0
+  ],
+  "faces": "left"
+ },
+ "spyDrone.fly.2": {
+  "x": 1483,
+  "y": 0,
+  "w": 155,
+  "h": 115,
+  "anchor": [
+   0.5,
+   1.0
+  ],
+  "faces": "left"
+ },
+ "fireCrawler.crawl.0": {
+  "x": 1640,
+  "y": 0,
+  "w": 170,
+  "h": 115,
+  "anchor": [
+   0.5,
+   1.0
+  ],
+  "faces": "left"
+ },
+ "fireCrawler.crawl.1": {
+  "x": 1812,
+  "y": 0,
+  "w": 170,
+  "h": 115,
+  "anchor": [
+   0.5,
+   1.0
+  ],
+  "faces": "left"
+ },
+ "fireCrawler.crawl.2": {
+  "x": 1984,
+  "y": 0,
+  "w": 170,
+  "h": 115,
+  "anchor": [
+   0.5,
+   1.0
+  ],
+  "faces": "left"
+ },
+ "fireCrawler.crawl.3": {
+  "x": 2156,
+  "y": 0,
+  "w": 170,
+  "h": 115,
+  "anchor": [
+   0.5,
+   1.0
+  ],
+  "faces": "left"
+ },
+ "spikes.rise.0": {
+  "x": 2328,
+  "y": 0,
+  "w": 146,
+  "h": 42,
+  "anchor": [
+   0.5,
+   1.0
+  ],
+  "faces": "left"
+ },
+ "spikes.rise.1": {
+  "x": 2476,
+  "y": 0,
+  "w": 150,
+  "h": 77,
+  "anchor": [
+   0.5,
+   1.0
+  ],
+  "faces": "left"
+ },
+ "spikes.rise.2": {
+  "x": 2628,
+  "y": 0,
+  "w": 152,
+  "h": 112,
+  "anchor": [
+   0.5,
+   1.0
+  ],
+  "faces": "left"
  }
 }

@@ -113,7 +113,89 @@ const charge = {
     hurt(s, c) { if (s.state === ATTACK) { s.x += this.cfg.knock; this.stop(s, c.director); } }
 };
 
-export const KINDS = { roll, charge };
+// The Spy Drone's Laser. It flies over the hero's head; in range it stops in the air (it holds its place on
+// screen, the road goes on under it) and its eye charges, aiming at the hero, following him until LOCK
+// before the shot; then a straight beam along that line. What the beam touches is hurt once.
+const laser = {
+    cfg: ATTACKS.laser,
+
+    patrol(s, c) { roll.patrol.call(this, s, c); },
+
+    telegraph(s, c) {
+        // aim: from the eye to the hero's head (a slide goes under it), until the lock
+        if (s.st <= this.cfg.telegraph - this.cfg.lock && c.heroBox) {
+            const e = c.eyeOf(s), b = c.heroBox;
+            const dx = b.x + b.w / 2 - e.x, dy = b.y + b.h * this.cfg.aimAt - e.y, d = Math.hypot(dx, dy) || 1;
+            s.ax = dx / d; s.ay = dy / d;
+        }
+        if (s.st < this.cfg.telegraph) return;
+        s.state = ATTACK; s.st = 0; s.zapped = false;
+    },
+
+    attack(s, c) {
+        if (!s.zapped && c.hero && c.heroBox && beamHits(c.eyeOf(s), s.ax, s.ay, this.cfg, c.heroBox)) {
+            if (c.hero.hit(this.cfg.damage)) s.zapped = true;
+        }
+        if (s.st >= this.cfg.fire) { s.state = RECOVER; s.st = 0; c.director.release(s); }
+        return false;
+    },
+
+    recover(s, c) { if (s.st >= this.cfg.recover) { s.state = PATROL; s.st = 0; s.attacks = false; } },
+
+    vulnerable() { return true; },
+    anim(s) { return s.def.anims.walk; },
+    damage(s) { return s.def.damage; },
+    hurt() {}                                          // one RAM is the end of it anyway (1 hp)
+};
+
+// Does a beam from e along (ax, ay) touch box b? The box grown by half the beam's width, against the ray
+// (the slab test): exact, and no points sampled along it.
+export function beamHits(e, ax, ay, cfg, b) {
+    const r = cfg.width / 2;
+    let t0 = 0, t1 = cfg.length;
+    for (const [o, d, lo, hi] of [[e.x, ax, b.x - r, b.x + b.w + r], [e.y, ay, b.y - r, b.y + b.h + r]]) {
+        if (Math.abs(d) < 1e-9) { if (o < lo || o > hi) return false; continue; }
+        let a = (lo - o) / d, z = (hi - o) / d;
+        if (a > z) [a, z] = [z, a];
+        t0 = Math.max(t0, a); t1 = Math.min(t1, z);
+        if (t0 > t1) return false;
+    }
+    return true;
+}
+
+// The Fire Crawler's Spikes. It stops; the cracks open in a row ahead of the hero (enemies.js keeps the
+// spikes: they belong to the road, and outlive it); when the warning is over they burst out. It stays
+// while they are up, then moves on.
+const spikes = {
+    cfg: ATTACKS.spikes,
+
+    patrol(s, c) { roll.patrol.call(this, s, c); },
+
+    telegraph(s, c) {
+        s.x -= c.scroll;
+        if (!s.placed) { s.placed = true; c.spikes.place(s, c.heroX === null ? 230 : c.heroX); }
+        if (s.st >= this.cfg.telegraph) { s.state = ATTACK; s.st = 0; }
+    },
+
+    attack(s, c) {
+        s.x -= c.scroll;
+        if (s.st >= this.cfg.rise) { s.state = RECOVER; s.st = 0; }
+        return false;
+    },
+
+    // it lets the next attack come only once its spikes have had their time (one at a time)
+    recover(s, c) {
+        s.x -= c.scroll;
+        if (s.st >= this.cfg.recover) { s.state = PATROL; s.st = 0; s.attacks = false; c.director.release(s); }
+    },
+
+    vulnerable() { return true; },
+    anim(s) { return s.def.anims.walk; },
+    damage(s) { return s.def.damage; },
+    hurt() {}
+};
+
+export const KINDS = { roll, charge, laser, spikes };
 
 // One step of the enemy's machine; returns true when a bounce touched the road
 export function step(s, c) {

@@ -8,6 +8,8 @@ Frames of one animation (orange-bot-1, -2, -3) share one box, the union of their
 on the same spot from frame to frame instead of jumping with each pose. Each frame in the JSON has x, y, w, h,
 anchor [0.5, 1.0] (bottom centre = the feet on the road) and faces "left" (they come at the hero from the right).
 Only the enemies the game uses so far are packed; add a group to GROUPS when the next one comes in.
+Groups in OWN_BOX come in different canvas sizes (the spikes, growing out of the road): each frame keeps its
+own outline instead, and still stands on its bottom centre.
 """
 import json, sys, pathlib
 from PIL import Image
@@ -20,7 +22,12 @@ GROUPS = {
     'orangeBot.ball': ['orange-bot-ball'],
     'blueRunner.run': ['blue-runner-1', 'blue-runner-2', 'blue-runner-3'],
     'blueRunner.charge': ['blue-runner-charge'],
+    'spyDrone.fly': ['spy-drone-1', 'spy-drone-2', 'spy-drone-3'],
+    'fireCrawler.crawl': ['fire-crawler-1', 'fire-crawler-2', 'fire-crawler-3', 'fire-crawler-4'],
+    'spikes.rise': ['spikes-1', 'spikes-2', 'spikes-3'],
 }
+
+OWN_BOX = {'spikes.rise'}
 
 pieces = {}
 for anim, files in GROUPS.items():
@@ -29,7 +36,7 @@ for anim, files in GROUPS.items():
     # one box for the whole animation (all frames of a group come at the same canvas size)
     u = (min(b[0] for b in boxes), min(b[1] for b in boxes), max(b[2] for b in boxes), max(b[3] for b in boxes))
     for i, im in enumerate(ims):
-        pieces[f'{anim}.{i}'] = im.crop(u)
+        pieces[f'{anim}.{i}'] = im.crop(boxes[i] if anim in OWN_BOX else u)
 
 W = sum(p.width + 2 for p in pieces.values()); H = max(p.height for p in pieces.values())
 sheet = Image.new('RGBA', (W, H), (0, 0, 0, 0)); meta, x = {}, 0
