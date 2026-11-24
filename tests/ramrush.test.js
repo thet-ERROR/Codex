@@ -226,3 +226,272 @@ describe('RAM RUSH: on a phone', () => {
         assert.equal(over, true, 'the game is on top');
     }));
 });
+
+// Records the game's state every ~16ms while the keys are pressed, then hands the whole run back
+const startRec = (page) => page.evaluate(async () => {
+    const m = await import('/game/main.js');
+    window.__rec = [];
+    window.__recId = setInterval(() => { const s = m.state(); if (s) window.__rec.push(s); }, 16);
+});
+const stopRec = (page) => page.evaluate(() => { clearInterval(window.__recId); return window.__rec; });
+const gameState = (page) => page.evaluate(async () => (await import('/game/main.js')).state());
+// Timing tests start once the frames flow evenly: opened the instant the page loads, the site's own start-up
+// (its intro, the catalog) can hold a frame back for a moment, which a jump timed in ms would feel
+const settle = (page) => page.waitForFunction(() => new Promise(r => {
+    let worst = 0, last = performance.now(); const t0 = last;
+    const f = (t) => { worst = Math.max(worst, t - last); last = t; if (t - t0 < 250) requestAnimationFrame(f); else r(worst < 40); };
+    requestAnimationFrame(f);
+}), null, { timeout: 10000, polling: 300 });
+const openSettled = async (page) => { await openGame(page); await settle(page); };
+const apex = (rec) => 460 - Math.min(...rec.map(s => s.hero.y));
+const airTime = (rec) => rec.filter(s => !s.hero.onGround).length;
+const DESK = { width: 1440, height: 900 };
+
+describe('RAM RUSH: the controls', () => {
+    it('↑ held: a full jump, well over his height, and he lands back on the road', () => withPage(DESK, async (page) => {
+        await openSettled(page);
+        await startRec(page);
+        await page.keyboard.down('ArrowUp'); await page.waitForTimeout(450); await page.keyboard.up('ArrowUp');
+        await page.waitForTimeout(600);
+        const rec = await stopRec(page);
+        assert.ok(apex(rec) > 150 && apex(rec) < 230, `apex ${apex(rec)}`);
+        const frames = new Set(rec.map(s => s.hero.frame));
+        assert.ok(frames.has('jump') && frames.has('land'), [...frames].join());
+        const last = rec.at(-1).hero;
+        assert.deepEqual([last.y, last.onGround, last.jumps], [460, true, 0]);
+    }));
+
+    it('a quick tap is a hop: letting go early cuts the jump short', () => withPage(DESK, async (page) => {
+        await openSettled(page);
+        await startRec(page);
+        await page.keyboard.press('ArrowUp');
+        await page.waitForTimeout(700);
+        const rec = await stopRec(page);
+        assert.ok(apex(rec) > 10 && apex(rec) < 110, `hop ${apex(rec)}`);
+    }));
+
+    it('↑ again in the air: the double jump, higher, with the boost flames; a third press does nothing', () => withPage(DESK, async (page) => {
+        await openSettled(page);
+        await startRec(page);
+        await page.keyboard.down('ArrowUp'); await page.waitForTimeout(200); await page.keyboard.up('ArrowUp');
+        await page.keyboard.down('ArrowUp'); await page.waitForTimeout(250); await page.keyboard.up('ArrowUp');
+        await page.keyboard.press('ArrowUp');
+        await page.waitForTimeout(1200);
+        const rec = await stopRec(page);
+        assert.ok(apex(rec) > 240, `apex ${apex(rec)}`);
+        assert.ok(rec.some(s => s.hero.frame === 'boost'), 'boost frame');
+        assert.equal(Math.max(...rec.map(s => s.hero.jumps)), 2);
+        assert.equal(rec.at(-1).hero.onGround, true);
+    }));
+
+    it('↓ on the road: a slide, low (under head-height things) and then back to running', () => withPage(DESK, async (page) => {
+        await openSettled(page);
+        await startRec(page);
+        await page.keyboard.press('ArrowDown');
+        await page.waitForTimeout(900);
+        const rec = await stopRec(page);
+        const sliding = rec.filter(s => s.hero.frame === 'slide');
+        assert.ok(sliding.length > 5, 'slides');
+        assert.ok(sliding.every(s => s.hero.box.h < 70), 'low while sliding');
+        assert.ok(/^run/.test(rec.at(-1).hero.frame) && rec.at(-1).hero.box.h > 100, 'running again');
+    }));
+
+    it('↓ in the air: a fast fall, back on the road sooner', () => withPage(DESK, async (page) => {
+        await openSettled(page);
+        await startRec(page);
+        await page.keyboard.down('ArrowUp'); await page.waitForTimeout(450); await page.keyboard.up('ArrowUp');
+        await page.waitForTimeout(700);
+        const plain = airTime(await stopRec(page));
+        await startRec(page);
+        await page.keyboard.down('ArrowUp'); await page.waitForTimeout(150); await page.keyboard.press('ArrowDown'); await page.keyboard.up('ArrowUp');
+        await page.waitForTimeout(700);
+        const fast = airTime(await stopRec(page));
+        assert.ok(fast < plain * 0.75, `fast ${fast} vs plain ${plain}`);
+    }));
+
+    it('← / → move him along the road, never off it', () => withPage(DESK, async (page) => {
+        await openSettled(page);
+        await page.keyboard.down('ArrowRight'); await page.waitForTimeout(500); await page.keyboard.up('ArrowRight');
+        await page.waitForTimeout(300);
+        let s = await gameState(page);
+        assert.ok(s.hero.x > 330, `forward to ${s.hero.x}`);
+        await page.keyboard.down('KeyA'); await page.waitForTimeout(2500); await page.keyboard.up('KeyA');
+        await page.waitForTimeout(300);
+        s = await gameState(page);
+        assert.ok(s.hero.x >= 109 && s.hero.x < 125, `back to ${s.hero.x}`);
+    }));
+
+    it("the game's keys stay in the game: Space jumps (never presses the ✕), the page hears nothing, and after closing it hears them again", () => withPage(DESK, async (page) => {
+        await openSettled(page);
+        await page.evaluate(() => { window.__pageKeys = 0; document.addEventListener('keydown', (e) => { if (/^Arrow|Space/.test(e.code)) window.__pageKeys++; }); });
+        await startRec(page);
+        await page.keyboard.press('Space');
+        await page.keyboard.press('ArrowRight');
+        await page.waitForTimeout(400);
+        const rec = await stopRec(page);
+        assert.ok(rec.some(s => !s.hero.onGround), 'Space jumped');
+        assert.equal(await page.locator('#rr-overlay').count(), 1, 'still playing');
+        assert.equal(await page.evaluate(() => window.__pageKeys), 0);
+        await page.keyboard.press('Escape');
+        await page.keyboard.press('ArrowRight');
+        assert.equal(await page.evaluate(() => window.__pageKeys), 1);
+    }));
+
+    it('P pauses the world, P again carries on', () => withPage(DESK, async (page) => {
+        await openSettled(page);
+        await page.keyboard.press('KeyP');
+        await page.waitForTimeout(100);
+        const a = await gameState(page);
+        await page.waitForTimeout(300);
+        const b = await gameState(page);
+        assert.equal(a.paused, true);
+        assert.equal(a.distance, b.distance, 'frozen');
+        await page.keyboard.press('KeyP');
+        await page.waitForTimeout(300);
+        const c = await gameState(page);
+        assert.equal(c.paused, false);
+        assert.ok(c.distance > b.distance, 'moving again');
+    }));
+});
+
+describe('RAM RUSH: the swipes, on a phone', () => {
+    const PHONE = { width: 390, height: 844, mobile: true };
+    // A finger on the touch area: down, a few moves along (dx, dy), up
+    const swipe = (page, dx, dy) => page.evaluate(([dx, dy]) => {
+        const pad = document.querySelector('.rr-pad');
+        const r = pad.getBoundingClientRect();
+        const x = r.left + r.width / 2, y = r.top + r.height / 2;
+        const ev = (type, k) => pad.dispatchEvent(new PointerEvent(type, { bubbles: true, pointerId: 7, pointerType: 'touch', isPrimary: true, clientX: x + dx * k, clientY: y + dy * k }));
+        ev('pointerdown', 0); ev('pointermove', 0.3); ev('pointermove', 0.7); ev('pointermove', 1); ev('pointerup', 1);
+    }, [dx, dy]);
+
+    it('the touch area tells what the swipes do', () => withPage(PHONE, async (page) => {
+        await openSettled(page);
+        assert.equal((await page.locator('.rr-hint span').allTextContents()).length, 4);
+        assert.ok(await page.locator('.rr-hint').isVisible());
+    }));
+
+    it('swipe up jumps, twice is the double jump; swipe down slides; sideways steps him over', () => withPage(PHONE, async (page) => {
+        await openSettled(page);
+        await startRec(page);
+        await swipe(page, 0, -90);
+        await page.waitForTimeout(180);
+        await swipe(page, 0, -90);
+        await page.waitForTimeout(1400);
+        let rec = await stopRec(page);
+        assert.equal(Math.max(...rec.map(s => s.hero.jumps)), 2, 'double jump');
+        assert.ok(apex(rec) > 240, `apex ${apex(rec)}`);
+
+        await startRec(page);
+        await swipe(page, 0, 90);
+        await page.waitForTimeout(250);
+        rec = await stopRec(page);
+        assert.ok(rec.some(s => s.hero.frame === 'slide'), 'slide');
+
+        const x0 = rec.at(-1).hero.x;
+        await swipe(page, 100, 0);
+        await page.waitForTimeout(500);
+        const x1 = (await gameState(page)).hero.x;
+        assert.ok(x1 - x0 > 120, `stepped ${x1 - x0}`);
+        assert.equal((await gameState(page)).thrown, 0, 'a swipe never throws');
+    }));
+
+    it('a tap on the touch area throws a RAM straight ahead', () => withPage(PHONE, async (page) => {
+        await openSettled(page);
+        await page.evaluate(() => {
+            const pad = document.querySelector('.rr-pad');
+            const r = pad.getBoundingClientRect();
+            const o = { bubbles: true, pointerId: 9, pointerType: 'touch', isPrimary: true, clientX: r.left + 50, clientY: r.top + 50 };
+            pad.dispatchEvent(new PointerEvent('pointerdown', o));
+            pad.dispatchEvent(new PointerEvent('pointerup', o));
+        });
+        await page.waitForTimeout(150);
+        const s = await gameState(page);
+        assert.equal(s.thrown, 1);
+        assert.ok(s.rams.length === 1 && s.rams[0].vx > 0 && Math.abs(s.rams[0].vy) < 1, JSON.stringify(s.rams));
+    }));
+});
+
+describe('RAM RUSH: the RAM throw', () => {
+    it('J throws one straight ahead from his hand; it flies off and its stick comes back for the next throw', () => withPage(DESK, async (page) => {
+        await openSettled(page);
+        await page.keyboard.press('KeyJ');
+        await page.waitForTimeout(120);
+        const a = await gameState(page);
+        assert.equal(a.rams.length, 1);
+        const r = a.rams[0];
+        assert.ok(r.x > a.hero.x && r.vx > 800 && Math.abs(r.vy) < 1, JSON.stringify(r));
+        assert.ok(r.y < a.hero.y - 40 && r.y > a.hero.y - 120, 'at hand height');
+        await page.waitForTimeout(1300);
+        assert.equal((await gameState(page)).rams.length, 0, 'gone once off the screen');
+        await page.keyboard.press('KeyX');
+        await page.waitForTimeout(80);
+        assert.equal((await gameState(page)).rams.length, 1, 'X throws too');
+    }));
+
+    it('the cooldown: five presses in a blink are one throw, held a moment apart they are more', () => withPage(DESK, async (page) => {
+        await openSettled(page);
+        for (let k = 0; k < 5; k++) await page.keyboard.press('KeyJ');
+        await page.waitForTimeout(100);
+        assert.equal((await gameState(page)).thrown, 1);
+        await page.waitForTimeout(400);
+        await page.keyboard.press('KeyJ');
+        await page.waitForTimeout(450);
+        await page.keyboard.press('KeyJ');
+        await page.waitForTimeout(50);
+        assert.equal((await gameState(page)).thrown, 3);
+    }));
+
+    it('a click on the world aims it there (only forward, and not too steep)', () => withPage(DESK, async (page) => {
+        await openSettled(page);
+        const box = await page.locator('.rr-canvas').boundingBox();
+        const at = (gx, gy) => [box.x + gx * box.width / 960, box.y + gy * box.height / 540];
+        await page.mouse.click(...at(700, 150));
+        await page.waitForTimeout(60);
+        let r = (await gameState(page)).rams[0];
+        assert.ok(r.vy < -200 && r.vx > 0, `up and ahead ${JSON.stringify(r)}`);
+        assert.ok(Math.atan2(-r.vy, r.vx) <= 35 * Math.PI / 180 + 0.01, 'at most 35°');
+        await page.waitForTimeout(450);
+        await page.mouse.click(...at(60, 400));        // behind him: straight ahead instead
+        await page.waitForTimeout(60);
+        const rams = (await gameState(page)).rams;
+        r = rams.at(-1);
+        assert.ok(r.vx > 800 && Math.abs(r.vy) < 1, `behind = straight ${JSON.stringify(r)}`);
+    }));
+
+    it('the auto-aim bends a throw toward a target ahead, a little; never one behind or far off its line', () => withPage(DESK, async (page) => {
+        const out = await page.evaluate(async () => {
+            const { createRams } = await import('/game/ram.js');
+            const fly = (targets) => {
+                const r = createRams();
+                r.throw(100, 300);
+                for (let k = 0; k < 20; k++) r.update(1 / 60, targets);
+                return r.active()[0];
+            };
+            return {
+                none: fly([]),
+                ahead: fly([{ x: 520, y: 220 }]),
+                behind: fly([{ x: 40, y: 220 }]),
+                offLine: fly([{ x: 420, y: 20 }])
+            };
+        });
+        assert.equal(out.none.vy, 0);
+        assert.ok(out.ahead.vy < -100 && out.ahead.y < 300, `bent up ${JSON.stringify(out.ahead)}`);
+        assert.ok(Math.atan2(-out.ahead.vy, out.ahead.vx) < 0.85, 'a little, not a homing missile');
+        assert.equal(out.behind.vy, 0);
+        assert.equal(out.offLine.vy, 0);
+    }));
+
+    it('hit(): a stick inside a box is spent on it and gives its damage', () => withPage(DESK, async (page) => {
+        const out = await page.evaluate(async () => {
+            const { createRams } = await import('/game/ram.js');
+            const r = createRams();
+            r.throw(100, 300);
+            r.update(0.1, []);                       // now at x ≈ 190
+            const miss = r.hit({ x: 400, y: 260, w: 60, h: 80 });
+            const hit = r.hit({ x: 170, y: 260, w: 60, h: 80 });
+            return { miss, hit, left: r.active().length };
+        });
+        assert.deepEqual(out, { miss: 0, hit: 1, left: 0 });
+    }));
+});

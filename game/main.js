@@ -8,9 +8,13 @@
 // Step 2 of the plan: the window, the loop and the moving city. Step 3: the hero runs on the road with his
 // drone (hero.js). Step 3b: the game runs inside the terminal's own window (the output, the chips and the
 // prompt step aside, the title bar says `ramrush`), and on a phone held upright the world sits on top with a
-// touch area below it. The controls and the enemies come next.
+// touch area below it. Step 4: the controls (input.js) and the moves (hero.js), P pauses, and a short
+// reminder of the keys (or of the swipes, on a phone) shows at the start. Step 5: the RAM throw (ram.js), by
+// key, click or tap. The enemies come next.
 
 import { createHero } from './hero.js';
+import { createRams } from './ram.js';
+import { createInput } from './input.js';
 
 const ASSETS = new URL('./assets/', import.meta.url);
 const W = 960, H = 540;                       // the game's own coordinates; the canvas is scaled to fit
@@ -25,8 +29,14 @@ const LAYERS = [
 ];
 
 const TEXT = {
-    el: { title: 'RAM RUSH', close: 'Κλείσιμο παιχνιδιού', loading: 'Φόρτωση…', failed: 'Το παιχνίδι δεν φόρτωσε. Δοκίμασε ξανά.' },
-    en: { title: 'RAM RUSH', close: 'Close the game', loading: 'Loading…', failed: 'The game did not load. Try again.' }
+    el: { title: 'RAM RUSH', close: 'Κλείσιμο παιχνιδιού', loading: 'Φόρτωση…', failed: 'Το παιχνίδι δεν φόρτωσε. Δοκίμασε ξανά.',
+        paused: 'ΠΑΥΣΗ', resume: 'P για συνέχεια',
+        keys: '↑ / W / Space άλμα (ξανά στον αέρα: διπλό)   ↓ / S slide   ← → κίνηση   J / X / κλικ RAM   P παύση   Esc έξοδος',
+        swipes: ['Πάτα για ρίψη RAM', 'Σύρε ↑ για άλμα (ξανά στον αέρα: διπλό)', 'Σύρε ↓ για slide', 'Σύρε ← → για κίνηση'] },
+    en: { title: 'RAM RUSH', close: 'Close the game', loading: 'Loading…', failed: 'The game did not load. Try again.',
+        paused: 'PAUSED', resume: 'P to resume',
+        keys: '↑ / W / Space jump (again in the air: double)   ↓ / S slide   ← → move   J / X / click RAM   P pause   Esc exit',
+        swipes: ['Tap to throw a RAM', 'Swipe ↑ to jump (again in the air: double)', 'Swipe ↓ to slide', 'Swipe ← → to move'] }
 };
 const txt = () => TEXT[document.documentElement.lang === 'en' ? 'en' : 'el'];
 
@@ -44,7 +54,10 @@ const CSS = `
 .rr-canvas { display: block; width: min(100%, calc((100dvh - 150px) * 16 / 9)); height: auto; aspect-ratio: 16 / 9; image-rendering: auto; }
 .rr-status { position: absolute; top: 0; left: 0; right: 0; aspect-ratio: 16 / 9; display: flex; align-items: center;
     justify-content: center; font-size: 15px; letter-spacing: 1px; pointer-events: none; }
+.rr-overlay:focus { outline: none; }
 .rr-pad { display: none; }
+.rr-hint { margin: 0; padding: 18px 16px; display: flex; flex-direction: column; gap: 10px; align-items: center;
+    color: rgba(241, 240, 247, 0.55); font-size: 14px; letter-spacing: 0.5px; text-align: center; pointer-events: none; user-select: none; }
 /* A phone held upright: the terminal's window takes the whole screen, the world sits on top and the touch area fills the rest */
 @media (orientation: portrait) {
     #cli-overlay.rr-in-term { width: calc(100vw - 20px) !important; height: calc(100dvh - env(safe-area-inset-top) - 20px) !important;
@@ -61,7 +74,8 @@ let game = null;           // the one running game, or null
 function loadImage(name) {
     return new Promise((resolve, reject) => {
         const img = new Image();
-        img.onload = () => resolve(img);
+        // decoded before the first frame: drawn undecoded, the big layers stalled the loop for ~0.5s at the start
+        img.onload = () => img.decode().catch(() => {}).then(() => resolve(img));
         img.onerror = () => reject(new Error(`RAM RUSH: ${name} did not load`));
         img.src = new URL(`${name}.webp`, ASSETS).href;
     });
@@ -93,8 +107,9 @@ export async function open() {
     overlay.className = 'rr-overlay';
     overlay.setAttribute('role', 'group');
     overlay.setAttribute('aria-label', txt().title);
+    overlay.tabIndex = -1;           // it takes the focus, so Space can never "click" the bar's ✕
     overlay.innerHTML = `<canvas class="rr-canvas" width="${W}" height="${H}"></canvas>
-        <div class="rr-pad" aria-hidden="true"></div>
+        <div class="rr-pad" aria-hidden="true"><p class="rr-hint">${txt().swipes.map(l => `<span>${l}</span>`).join('')}</p></div>
         <p class="rr-status" aria-live="polite">${txt().loading}</p>`;
     cli.appendChild(overlay);
     cli.classList.add('rr-in-term');
@@ -121,20 +136,71 @@ export async function open() {
     sky.addColorStop(0, '#1e1b4b');
     sky.addColorStop(1, '#0d0c1d');
 
-    const g = { overlay, style, raf: 0, last: 0, distance: 0, paused: false, images: null, hero: null, closed: false };
+    const g = { overlay, style, raf: 0, last: 0, distance: 0, paused: false, userPaused: false, images: null, hero: null, closed: false,
+        hintT: matchMedia('(pointer: fine)').matches ? 7 : 0 };   // the keys reminder (a phone has it in the touch area)
     game = g;
+    const input = createInput(overlay);
+
+    function drawHint() {
+        const a = Math.min(1, g.hintT / 1.2);   // fades out over its last second
+        ctx.save();
+        ctx.globalAlpha = a;
+        ctx.font = '600 15px system-ui, sans-serif';
+        const w = ctx.measureText(txt().keys).width + 32;
+        ctx.fillStyle = 'rgba(13, 12, 29, 0.72)';
+        ctx.beginPath();
+        ctx.roundRect((W - w) / 2, H - 46, w, 30, 15);
+        ctx.fill();
+        ctx.fillStyle = '#f1f0f7';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(txt().keys, W / 2, H - 31);
+        ctx.restore();
+    }
+    function drawPause() {
+        ctx.save();
+        ctx.fillStyle = 'rgba(13, 12, 29, 0.6)';
+        ctx.fillRect(0, 0, W, H);
+        ctx.fillStyle = '#f1f0f7';
+        ctx.textAlign = 'center';
+        ctx.font = '800 44px system-ui, sans-serif';
+        ctx.fillText(txt().paused, W / 2, H / 2 - 6);
+        ctx.font = '500 17px system-ui, sans-serif';
+        ctx.fillStyle = 'rgba(241, 240, 247, 0.75)';
+        ctx.fillText(txt().resume, W / 2, H / 2 + 30);
+        ctx.restore();
+    }
 
     function frame(t) {
         g.raf = requestAnimationFrame(frame);
         const dt = Math.min((t - (g.last || t)) / 1000, 0.05);   // capped, so a hiccup never jumps the world
         g.last = t;
+        const i = input.consume();   // read every frame, so nothing pressed while loading or paused piles up
         if (g.paused || !g.images) return;
+        if (i.pause) {
+            g.userPaused = !g.userPaused;
+            if (g.userPaused) drawPause();   // drawn once over the last picture; the loop then waits
+        }
+        if (g.userPaused) return;
         g.distance += SPEED * dt;
         ctx.fillStyle = sky;
         ctx.fillRect(0, 0, W, H);
-        g.hero.update(dt);
+        g.hero.update(dt, i);
+        if (i.throw) {
+            // a click or tap on the world aims there; on the touch area below it (or by key) straight ahead
+            const hand = g.hero.hand();
+            let tx, ty;
+            if (i.aim) {
+                const r = canvas.getBoundingClientRect();
+                if (i.aim.y <= r.bottom && i.aim.y >= r.top) { tx = (i.aim.x - r.left) * W / r.width; ty = (i.aim.y - r.top) * H / r.height; }
+            }
+            g.rams.throw(hand.x, hand.y, tx, ty);
+        }
+        g.rams.update(dt, []);
         for (const [name, factor, h, bottom] of LAYERS) drawLayer(ctx, g.images[name], factor, h, bottom, g.distance);
         g.hero.draw(ctx);
+        g.rams.draw(ctx);
+        if (g.hintT > 0) { g.hintT -= dt; drawHint(); }
     }
 
     function onKey(e) {
@@ -149,6 +215,7 @@ export async function open() {
 
     g.teardown = () => {
         cancelAnimationFrame(g.raf);
+        input.destroy();
         watch.disconnect();
         document.removeEventListener('keydown', onKey);
         document.removeEventListener('visibilitychange', onVisibility);
@@ -159,12 +226,12 @@ export async function open() {
         cli.classList.remove('rr-in-term');
         document.body.classList.remove('rr-playing');
         // Back to the prompt if the terminal is still open (no keyboard pop-up on a phone), else to where the visitor was
-        const input = document.getElementById('cli-input');
-        if (cli.classList.contains('active')) { if (input && !matchMedia('(max-width: 768px)').matches) input.focus(); }
+        const prompt = document.getElementById('cli-input');
+        if (cli.classList.contains('active')) { if (prompt && !matchMedia('(max-width: 768px)').matches) prompt.focus(); }
         else if (opener && typeof opener.focus === 'function' && opener.isConnected) opener.focus();
     };
 
-    if (closeBtn) closeBtn.focus();
+    overlay.focus({ preventScroll: true });
     g.raf = requestAnimationFrame(frame);
     try {
         const [imgs, sheet, frames] = await Promise.all([
@@ -174,6 +241,7 @@ export async function open() {
         ]);
         if (g.closed) return g;
         g.hero = createHero(sheet, frames);
+        g.rams = createRams();
         g.images = Object.fromEntries(LAYERS.map(([name], i) => [name, imgs[i]]));
         status.textContent = '';
     } catch (e) {
@@ -192,7 +260,13 @@ export function close() {
 export const isOpen = () => !!game;
 
 // A read-only look at the running game, for the tests (tests/ramrush.test.js)
-export const state = () => game && game.hero && {
-    hero: { x: game.hero.x, y: game.hero.y, bob: game.hero.bob, frame: game.hero.frame },
-    drone: { x: game.hero.drone.x, y: game.hero.drone.y }
+export const state = () => {
+    if (!game || !game.hero) return null;
+    const h = game.hero;
+    return {
+        hero: { x: h.x, y: h.y, vy: h.vy, bob: h.bob, frame: h.frame, onGround: h.onGround, jumps: h.jumps, box: h.box() },
+        drone: { x: h.drone.x, y: h.drone.y },
+        rams: game.rams.active(), thrown: game.rams.thrown,
+        distance: game.distance, paused: game.userPaused
+    };
 };
