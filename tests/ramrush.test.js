@@ -1700,3 +1700,59 @@ describe('RAM RUSH: difficulty that rises (step 8)', () => {
         }
     }));
 });
+
+describe('RAM RUSH: the pause button (8c.2)', () => {
+    const PHONE_L = { width: 844, height: 390, mobile: true };
+    // where the button is on the screen, and how many CSS px a game px is
+    const btn = (page) => page.evaluate(async () => {
+        const { PAUSE_BUTTON: b } = await import('/game/config.js');
+        const r = document.querySelector('.rr-canvas').getBoundingClientRect(), k = r.width / 960;
+        return { x: r.left + b.x * k, y: r.top + b.y * k, k };
+    });
+    const touchAt = (page, x, y) => page.evaluate(([x, y]) => {
+        const c = document.querySelector('.rr-canvas');
+        const o = { bubbles: true, pointerId: 21, pointerType: 'touch', isPrimary: true, clientX: x, clientY: y };
+        c.dispatchEvent(new PointerEvent('pointerdown', o));
+        c.dispatchEvent(new PointerEvent('pointerup', o));
+    }, [x, y]);
+
+    it('a click on it pauses (the same as P), another resumes; nothing is thrown', () => withPage(DESK, async (page) => {
+        await openSettled(page);
+        const b = await btn(page);
+        await page.mouse.click(b.x, b.y);
+        await waitState(page, (s) => s.paused === true, 2000);
+        const a = await gameState(page);
+        await page.waitForTimeout(300);
+        assert.equal((await gameState(page)).distance, a.distance, 'the world stands still');
+        await page.mouse.click(b.x, b.y);
+        await waitState(page, (s) => s.paused === false, 2000);
+        assert.equal((await gameState(page)).thrown, 0, 'not a throw');
+        await page.keyboard.press('KeyP');
+        await waitState(page, (s) => s.paused === true, 2000);
+        assert.deepEqual(page.problems, []);
+    }));
+
+    it('a tap on a phone held sideways pauses and throws nothing', () => withPage(PHONE_L, async (page) => {
+        await openSettled(page);
+        const b = await btn(page);
+        await touchAt(page, b.x, b.y);
+        await waitState(page, (s) => s.paused === true, 2000);
+        assert.equal((await gameState(page)).thrown, 0);
+        await touchAt(page, b.x, b.y);
+        await waitState(page, (s) => s.paused === false, 2000);
+    }));
+
+    it('its reach is at least 44 CSS px on the screen, even on a small canvas; just outside, it is only a tap on the world', () => withPage(PHONE_L, async (page) => {
+        await openSettled(page);
+        const b = await btn(page);
+        assert.ok(b.k * 34 < 44, `the drawn button is smaller than a finger here: ${(b.k * 34).toFixed(0)} px`);
+        await touchAt(page, b.x - 20, b.y + 20);            // 20 px off each way: inside 44 × 44
+        await waitState(page, (s) => s.paused === true, 2000);
+        await touchAt(page, b.x - 20, b.y + 20);
+        await waitState(page, (s) => s.paused === false, 2000);
+        await touchAt(page, b.x - 30, b.y);                 // 30 px to the side: outside
+        await page.waitForTimeout(150);
+        const s = await gameState(page);
+        assert.deepEqual([s.paused, s.thrown], [false, 1], 'a tap on the world: it threw');
+    }));
+});

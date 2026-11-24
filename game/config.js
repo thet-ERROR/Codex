@@ -234,6 +234,9 @@ export const PARRY = {
     xp: 20,
     button: { x: 888, y: 440, r: 46, hit: 80 }   // the touch button, in the game's 960×540 (hit: its reach)
 };
+// The pause button (plan §8c.2), top right of the world: its size in the game's 960×540, and the least its
+// reach may be on the screen in CSS px (a finger needs 44), whatever the size the canvas is shown at.
+export const PAUSE_BUTTON = { x: 927, y: 33, size: 34, minHit: 44 };
 export const DIRECTOR = {
     rest: 0.8                         // s after one attack ends before another may start (one at a time)
 };
