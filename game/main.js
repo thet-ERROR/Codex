@@ -306,6 +306,7 @@ export async function open() {
                 speed: pu.getStat('speedMult'), cooldown: pu.getStat('rofMult'), damage: pu.getStat('damageMult'), hot: pu.isOn('xmp')
             });
         }
+        g.powerups.droneStep(wdt, g.hero.drone, g.enemies.targets(), g.rams);
         g.rams.update(wdt, g.enemies.targets());
         g.heroLink.box = g.hero.box();
         g.enemies.update(wdt, SPEED * wdt, g.distance / PX_PER_M, g.heroLink, g.rams, g.powerups);
@@ -315,6 +316,7 @@ export async function open() {
         g.enemies.draw(ctx);
         g.powerups.drawAura(ctx, g.heroLink.box);
         g.hero.draw(ctx);
+        g.powerups.drawDrone(ctx, g.hero.drone);
         g.rams.draw(ctx);
         drawParry();
         drawLife();
@@ -369,7 +371,13 @@ export async function open() {
             g.powerups = createPowerups({ reducedMotion });
             g.enemies = createEnemies(enemySheet, enemyFrames, { reducedMotion });
             g.enemies.natural = !g.quiet;
-            g.heroLink = { box: g.hero.box(), hit: (d) => g.hero.hit(d) };
+            // a blow goes to the shield first (Liquid Cooling), then to his life
+            g.heroLink = { box: g.hero.box(), hit: (d) => {
+                if (g.hero.invuln > 0 || g.hero.hp <= 0) return false;
+                const safe = g.powerups.absorb();
+                if (safe) { g.hero.invuln = safe; return true; }
+                return g.hero.hit(d);
+            } };
             g.distance = 0; g.over = false; g.overT = 0;
             g.parryCool = 0; g.parryFx = 0; g.parryPerfect = false; g.stop = 0; g.flashT = 0;
         };
@@ -398,7 +406,7 @@ export const state = () => {
     return {
         hero: { x: h.x, y: h.y, vy: h.vy, bob: h.bob, frame: h.frame, onGround: h.onGround, jumps: h.jumps, box: h.box() },
         drone: { x: h.drone.x, y: h.drone.y },
-        rams: game.rams.active(), thrown: game.rams.thrown, cooldown: game.rams.cooldown,
+        rams: game.rams.active(), bolts: game.rams.bolts(), droneShots: game.powerups.droneShots || 0, thrown: game.rams.thrown, cooldown: game.rams.cooldown,
         powerups: [...game.powerups.active.values()].map(a => ({ ...a })), pickups: game.powerups.pickups(),
         mhz: game.powerups.mhz, taken: game.powerups.taken,
         hp: h.hp, invuln: h.invuln, over: !!game.over,

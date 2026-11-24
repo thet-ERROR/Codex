@@ -1376,3 +1376,147 @@ describe('RAM RUSH: Parry (5b)', () => {
         assert.equal((await gameState(page)).thrown, 0);
     }));
 });
+
+describe('RAM RUSH: power-ups, Liquid Cooling (4b)', () => {
+    it('a shield for 8 s: it takes the next blow and breaks; picked again it is one shield, with its time refilled', () => withPage(DESK, async (page) => {
+        await openGame(page);
+        const out = await page.evaluate(async () => {
+            const { createPowerups } = await import('/game/powerups.js');
+            const p = createPowerups();
+            const none = p.absorb();
+            p.activate('cooling');
+            p.update(3, 0, 0);
+            p.activate('cooling');
+            const refilled = [p.remaining('cooling'), p.active.size];
+            const first = p.absorb();
+            const after = [p.isOn('cooling'), p.absorb()];
+            p.activate('cooling');
+            p.update(8.1, 0, 0);
+            return { none, refilled, first, after, ended: p.isOn('cooling'), stats: ['speedMult', 'rofMult', 'damageMult'].map(n => p.getStat(n)) };
+        });
+        assert.equal(out.none, 0, 'no shield, nothing taken');
+        assert.deepEqual(out.refilled, [8, 1]);
+        assert.ok(out.first > 0.5, 'took it, and he is safe a moment');
+        assert.deepEqual(out.after, [false, 0], 'broken: the next one is his');
+        assert.equal(out.ended, false, 'over after 8 s');
+        assert.deepEqual(out.stats, [1, 1, 1], 'it changes no throw');
+    }));
+
+    it('on the road both come (XMP more often); a fallen enemy may drop either', () => withPage(DESK, async (page) => {
+        await openGame(page);
+        const out = await page.evaluate(async () => {
+            const { createPowerups } = await import('/game/powerups.js');
+            const { createEnemies } = await import('/game/enemies.js');
+            let seed = 4; const rng = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+            const p = createPowerups({ rng });
+            const road = { xmp: 0, cooling: 0 };
+            for (let k = 0; k < 500; k++) road[p.pick('road')]++;
+            // an enemy that falls with the dice: 0.5 (it walks), 0 (it drops), then which one: a die just past
+            // XMP's share of the chances is Liquid Cooling, whatever comes after in the list
+            const { POWERUPS } = await import('/game/config.js');
+            const total = Object.values(POWERUPS).reduce((a, d) => a + d.dropChance, 0);
+            const frames = await (await fetch('/game/assets/enemies.json')).json();
+            const dice = [0.5, 0, (POWERUPS.xmp.dropChance + 0.001) / total]; let n = 0;
+            const e = createEnemies(null, frames, { rng: () => dice[n++ % dice.length] });
+            e.natural = false;
+            e.spawn('orangeBot', 500);
+            const drops = [];
+            e.update(0.016, 0, 0, null, { hit: () => 5 }, { spawn: (id) => drops.push(id) });
+            return { road, drops };
+        });
+        assert.ok(out.road.xmp > out.road.cooling && out.road.cooling > 100, JSON.stringify(out.road));
+        assert.deepEqual(out.drops, ['cooling']);
+    }));
+
+    it('in the game: run into it, the bubble is on; an Orange Bot breaks it instead of a heart, and the next blow is his', () => withPage(DESK, async (page) => {
+        await openSettled(page);
+        await page.evaluate(async () => (await import('/game/main.js')).testSpawnPickup('cooling', 330, 400));
+        await waitState(page, (s) => s.powerups.some(p => p.id === 'cooling'), 3000);
+        await spawnEnemy(page, 'orangeBot', 300);
+        await waitState(page, (s) => !s.powerups.some(p => p.id === 'cooling'), 2000);
+        let s = await gameState(page);
+        assert.equal(s.hp, 3);
+        assert.ok(s.invuln > 0.4, `safe a moment: ${s.invuln}`);
+        await waitState(page, (s) => s.invuln === 0 && s.enemies.length === 0, 3000);
+        await spawnEnemy(page, 'orangeBot', 300);
+        await waitState(page, (s) => s.hp === 2, 2000);
+        assert.deepEqual(page.problems, []);
+    }));
+});
+
+describe('RAM RUSH: power-ups, Drone Assist (4b)', () => {
+    it('8 s: every 0.8 s one bolt at the nearest target ahead of the drone and in range; none behind it, none out of range, none when off', () => withPage(DESK, async (page) => {
+        await openGame(page);
+        const out = await page.evaluate(async () => {
+            const { createPowerups } = await import('/game/powerups.js');
+            const { createRams } = await import('/game/ram.js');
+            const drone = { x: 150, y: 310 };
+            const run = (targets, secs, on = true) => {
+                const p = createPowerups(), r = createRams();
+                if (on) p.activate('drone');
+                const seen = [];
+                for (let f = 0; f < secs * 60; f++) {
+                    p.update(1 / 60, 0, 0);
+                    p.droneStep(1 / 60, drone, targets, r);
+                    r.update(1 / 60, []);
+                    for (const b of r.bolts()) if (!seen.some(q => Math.abs(q.vx - b.vx) < 1e-6 && Math.abs(q.vy - b.vy) < 1e-6 && q.x > b.x - 200)) seen.push(b);
+                }
+                return { shots: p.droneShots || 0, first: r.bolts()[0] || null, p };
+            };
+            const near = { x: 450, y: 400 }, far = { x: 700, y: 400 }, behind = { x: 60, y: 400 }, tooFar = { x: 900, y: 400 };
+            const a = run([far, near], 2.5);       // 3 shots in 2.5 s (at 0, 0.8, 1.6, and 2.4)
+            const b = run([behind, tooFar], 2);
+            const c = run([near], 2, false);
+            // the aim: the nearest one
+            const p = createPowerups(), r = createRams(); p.activate('drone');
+            p.droneStep(0.016, drone, [far, near], r);
+            const bolt = r.bolts()[0];
+            return { shots: [a.shots, b.shots, c.shots], aim: [Math.sign(bolt.vx), Math.sign(bolt.vy), Math.round(Math.atan2(bolt.vy, bolt.vx) * 100) / 100,
+                Math.round(Math.atan2(near.y - drone.y, near.x - (drone.x + 12)) * 100) / 100] };
+        });
+        assert.deepEqual(out.shots, [4, 0, 0]);
+        assert.equal(out.aim[2], out.aim[3], 'at the nearest');
+    }));
+
+    it('its bolt hurts an enemy like a RAM, and glances off the Orange Bot ball in the air', () => withPage(DESK, async (page) => {
+        await openGame(page);
+        const out = await page.evaluate(async () => {
+            const { createRams } = await import('/game/ram.js');
+            const r = createRams();
+            r.bolt(100, 300, 300, 300, 1000, 1);
+            r.update(0.15, []);
+            const dmg = r.hit({ x: 230, y: 280, w: 40, h: 40 });
+            r.bolt(100, 300, 300, 300, 1000, 1);
+            r.update(0.15, []);
+            const at = r.deflect({ x: 230, y: 280, w: 40, h: 40 });
+            const after = r.bolts()[0];
+            return { dmg, spark: !!at, back: after.vx < 0, nothing: r.hit({ x: 230, y: 200, w: 60, h: 160 }) };
+        });
+        assert.deepEqual(out, { dmg: 1, spark: true, back: true, nothing: 0 });
+    }));
+
+    it('in the game: run into it, the drone glows and brings down an Orange Bot on its own; the hero threw nothing', () => withPage(DESK, async (page) => {
+        await openSettled(page);
+        await page.evaluate(async () => (await import('/game/main.js')).testSpawnPickup('drone', 330, 400));
+        await waitState(page, (s) => s.powerups.some(p => p.id === 'drone'), 3000);
+        await spawnEnemy(page, 'orangeBot', 820);
+        await waitState(page, (s) => s.killed === 1, 6000);
+        const s = await gameState(page);
+        assert.ok(s.droneShots >= 2, `shots ${s.droneShots}`);
+        assert.equal(s.thrown, 0, 'not a throw of his');
+        assert.deepEqual(page.problems, []);
+    }));
+
+    it('on the road it comes too, with its own look (a lime ring)', () => withPage(DESK, async (page) => {
+        await openGame(page);
+        const out = await page.evaluate(async () => {
+            const { createPowerups } = await import('/game/powerups.js');
+            let seed = 8; const rng = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+            const p = createPowerups({ rng });
+            const n = { xmp: 0, cooling: 0, drone: 0 };
+            for (let k = 0; k < 600; k++) n[p.pick('road')]++;
+            return n;
+        });
+        assert.ok(out.drone > 100 && out.xmp > out.drone, JSON.stringify(out));
+    }));
+});
