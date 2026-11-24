@@ -307,7 +307,7 @@ export async function open() {
             g.hero = createHero(sheet, frames, { reducedMotion });
             g.rams = createRams();
             g.powerups = createPowerups({ reducedMotion });
-            g.enemies = createEnemies(enemySheet, enemyFrames);
+            g.enemies = createEnemies(enemySheet, enemyFrames, { reducedMotion });
             g.enemies.natural = !g.quiet;
             g.heroLink = { box: g.hero.box(), hit: (d) => g.hero.hit(d) };
             g.distance = 0; g.over = false; g.overT = 0;
@@ -349,6 +349,7 @@ export const state = () => {
 // For the tests only: put a pickup on the road (the natural ones come every 400–700 m, ~40 s apart)
 export const testSpawnPickup = (id, x, y) => !!(game && game.powerups && game.powerups.spawn(id, x, y));
 // … an enemy (the natural ones start at 60 m, ~6 s in) …
-export const testSpawnEnemy = (id, x) => !!(game && game.enemies && game.enemies.spawn(id, x));
+// (calm, only walking, unless { attack: true })
+export const testSpawnEnemy = (id, x, opts = {}) => !!(game && game.enemies && game.enemies.spawn(id, x, !!opts.attack));
 // … and a quiet road: no enemies of their own, so a test about something else is not disturbed
 export const testQuiet = () => { if (game) { game.quiet = true; if (game.enemies) game.enemies.natural = false; } };

@@ -43,8 +43,34 @@ export const ENEMIES = {
         hitbox: 0.7,
         frameTime: 0.14,              // s per walk frame
         behaviour: 'walk',
-        anim: 'orangeBot.walk'
+        anims: { walk: 'orangeBot.walk', curl: 'orangeBot.curl', ball: 'orangeBot.ball' },
+        attack: 'roll'                // its own attack (plan §5b), in ATTACKS below
     }
+};
+
+// The enemies' attacks (plan §5b): PATROL → TELEGRAPH → ATTACK → RECOVER. The warning always lasts long
+// enough to react to; after the attack the enemy is open for a while.
+export const ATTACKS = {
+    // Orange Bot: curls up, then bounces toward the hero as a ball. The armoured ball only takes a RAM
+    // while it touches the road; in the air the RAMs glance off it.
+    roll: {
+        chance: 0.75,                 // how many Orange Bots attack at all (the rest only walk)
+        triggerAhead: [430, 620],     // px ahead of the hero where it curls up
+        telegraph: 0.5,               // s curled up, the eye blinking
+        hops: [2, 3],                 // bounces, at random
+        hopT: 0.42,                   // s per bounce
+        hopH: 135,                    // px high, the first one; each next is a little lower
+        hopDecay: 0.12,
+        landBehind: 80,               // px past the hero where the last bounce lands
+        minSpeed: 220,                // px/s on screen, however close it already was
+        vulnerableBelow: 24,          // px off the road: only then can a RAM hurt it
+        recover: 0.6,                 // s it lies curled after the last bounce, open to RAMs
+        spin: 9,                      // rad/s while rolling
+        damage: 1
+    }
+};
+export const DIRECTOR = {
+    rest: 0.8                         // s after one attack ends before another may start (one at a time)
 };
 
 // What comes, and when. Zones every zoneM metres; each zone lists who may appear in it (the last entry

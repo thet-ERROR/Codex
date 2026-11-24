@@ -749,3 +749,116 @@ describe('RAM RUSH: enemies, the Orange Bot first, and the hero\'s life', () => 
         assert.deepEqual(out.drops, ['xmp']);
     }));
 });
+
+// Plan 5b: the enemies' own attacks. The logic runs in the page on its own (no game loop), step by step at
+// 60 fps against a hero standing at x 230, so every number is exact; one test plays it for real.
+const rollRun = (page, opts = {}) => page.evaluate(async (opts) => {
+    const { createEnemies } = await import('/game/enemies.js');
+    const { createRams } = await import('/game/ram.js');
+    const frames = await (await fetch('/game/assets/enemies.json')).json();
+    const e = createEnemies(null, frames, { rng: () => opts.rng ?? 0 });
+    e.natural = false;
+    const rams = createRams();
+    const hero = { box: { x: 204, y: 342, w: 52, h: 118 }, hit: () => false };
+    for (const x of opts.at || [900]) e.spawn('orangeBot', x, true);
+    const log = [], rlog = [];
+    let thrownAir = null, thrownDown = null;
+    for (let f = 0; f < 60 * (opts.secs || 4); f++) {
+        // a RAM straight into the ball high in the air, and one into it lying curled after
+        const b = e.list()[0];
+        if (opts.throws && b && !thrownAir && b.state === 'attack' && b.h > 90) {
+            rams.throw(b.box.x - 4, b.box.y + b.box.h / 2); thrownAir = { hp: b.hp };
+        }
+        if (opts.throws && b && thrownAir && !thrownDown && b.state === 'recover') {
+            rams.cooldown = 0; rams.throw(b.box.x - 4, b.box.y + b.box.h / 2); thrownDown = { hp: b.hp };
+        }
+        rams.update(1 / 60, []);
+        e.update(1 / 60, 5, 0, hero, rams, null);
+        log.push(e.list().map(s => ({ state: s.state, x: s.x, h: s.h, hop: s.hop, hops: s.hops, hp: s.hp, vul: s.vulnerable, clink: s.clink })));
+        if (opts.throws) rlog.push(rams.active());
+    }
+    return opts.throws ? { log, rlog } : log;
+}, opts);
+const runsOf = (log, k = 0) => {                 // the states one enemy went through, with how long each lasted
+    const out = [];
+    for (const l of log) {
+        const s = l[k]?.state;
+        if (!s) continue;
+        if (out.at(-1)?.state === s) out.at(-1).frames++; else out.push({ state: s, frames: 1 });
+    }
+    return out;
+};
+
+describe('RAM RUSH: the enemies\' attacks (5b), the Orange Bot\'s Roll & Bounce first', () => {
+    it('the sheet has the curl and the ball', () => withPage(DESK, async (page) => {
+        await openGame(page);
+        const f = await page.evaluate(async () => (await fetch('/game/assets/enemies.json')).json());
+        for (const k of ['orangeBot.curl.0', 'orangeBot.ball.0']) assert.deepEqual([f[k]?.anchor, f[k]?.faces], [[0.5, 1], 'left'], k);
+    }));
+
+    it('it walks, curls up for half a second (standing still on the road), bounces 2–3 times toward the hero, lies open, then walks on, once', () => withPage(DESK, async (page) => {
+        await openGame(page);
+        const log = await rollRun(page, { secs: 5 });
+        const runs = runsOf(log);
+        assert.deepEqual(runs.map(r => r.state), ['patrol', 'telegraph', 'attack', 'recover', 'patrol'], JSON.stringify(runs));
+        assert.ok(runs[1].frames >= 30, `the warning lasts at least 0.5 s: ${runs[1].frames} frames`);
+        const tele = log.filter(l => l[0]?.state === 'telegraph').map(l => l[0]);
+        assert.ok(tele.every((s, i) => s.h === 0 && (i === 0 || Math.abs(tele[i - 1].x - s.x - 5) < 1e-6)), 'still on the road, only scrolled');
+        const atk = log.filter(l => l[0]?.state === 'attack').map(l => l[0]);
+        assert.ok([2, 3].includes(atk[0].hops), `hops ${atk[0].hops}`);
+        assert.ok(Math.max(...atk.map(s => s.h)) > 110, 'bounces high: a slide passes under it');
+        assert.ok(atk.every((s, i) => i === 0 || s.x < atk[i - 1].x), 'always toward the hero');
+        const landed = log.find(l => l[0]?.state === 'recover')[0];
+        assert.ok(landed.x < 230 && landed.x > 100, `the last bounce lands just past him: ${landed.x}`);
+    }));
+
+    it('in the air the ball is armoured: a RAM glances off with a spark and is spent; lying curled after, a RAM hurts it', () => withPage(DESK, async (page) => {
+        await openGame(page);
+        const { log, rlog } = await rollRun(page, { secs: 5, throws: true });
+        const atk = log.filter(l => l[0]?.state === 'attack');
+        assert.ok(atk.some(l => l[0].clink > 0), 'the spark');
+        assert.ok(rlog.some(rs => rs.some(r => r.spent && r.vx < 0)), 'the RAM flew back, spent');
+        assert.ok(atk.every(l => l[0].hp === 2), 'no harm in the air');
+        assert.ok(atk.filter(l => l[0].h > 30).every(l => !l[0].vul) && atk.some(l => l[0].vul), 'open only as it touches the road');
+        assert.equal(log.filter(l => l[0]).at(-1)[0].hp, 1, 'hurt while lying curled');
+    }));
+
+    it('the director: two in range, only one attacks at a time, the other after the first is done and a short rest', () => withPage(DESK, async (page) => {
+        await openGame(page);
+        const log = await rollRun(page, { at: [700, 760], secs: 6 });
+        const busy = log.map(l => l.filter(s => s.state === 'telegraph' || s.state === 'attack').length);
+        assert.ok(busy.every(n => n <= 1), 'never two at once');
+        const a = runsOf(log, 0), b = runsOf(log, 1);
+        assert.ok(a.some(r => r.state === 'attack'), JSON.stringify(a));
+        // the second did not get its turn while the first one attacked (it walked on, or attacked after)
+        const firstEnd = log.findIndex(l => l[0]?.state === 'recover');
+        const secondStart = log.findIndex(l => l[1]?.state === 'telegraph');
+        assert.ok(secondStart === -1 || secondStart >= firstEnd + 0.8 * 60 - 1, `${firstEnd} → ${secondStart}; ${JSON.stringify(b)}`);
+    }));
+
+    it('left to chance (config: 75 %), some attack and some only walk; the tests\' own spawns stay calm', () => withPage(DESK, async (page) => {
+        await openSettled(page);
+        const out = await page.evaluate(async () => {
+            const { createEnemies } = await import('/game/enemies.js');
+            const frames = await (await fetch('/game/assets/enemies.json')).json();
+            const yes = createEnemies(null, frames, { rng: () => 0.5 }), no = createEnemies(null, frames, { rng: () => 0.9 });
+            yes.spawn('orangeBot', 900); no.spawn('orangeBot', 900);
+            return [yes.list()[0].attacks, no.list()[0].attacks];
+        });
+        assert.deepEqual(out, [true, false]);
+        await spawnEnemy(page, 'orangeBot', 900);
+        assert.equal((await gameState(page)).enemies[0].attacks, false);
+    }));
+
+    it('in the game: it curls, bounces and catches a hero who stands still (one heart)', () => withPage(DESK, async (page) => {
+        await openSettled(page);
+        await page.evaluate(async () => (await import('/game/main.js')).testSpawnEnemy('orangeBot', 980, { attack: true }));
+        await startRec(page);
+        await waitState(page, (s) => s.enemies[0] && s.enemies[0].state === 'recover', 4000);
+        const rec = await stopRec(page);
+        const seen = [...new Set(rec.map(s => s.enemies[0]?.state).filter(Boolean))];
+        assert.deepEqual(seen.slice(0, 3), ['patrol', 'telegraph', 'attack'], seen.join());
+        assert.equal((await gameState(page)).hp, 2);
+        assert.deepEqual(page.problems, []);
+    }));
+});
