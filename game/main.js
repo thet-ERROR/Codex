@@ -369,7 +369,13 @@ export async function open() {
             g.powerups = createPowerups({ reducedMotion });
             g.enemies = createEnemies(enemySheet, enemyFrames, { reducedMotion });
             g.enemies.natural = !g.quiet;
-            g.heroLink = { box: g.hero.box(), hit: (d) => g.hero.hit(d) };
+            // a blow goes to the shield first (Liquid Cooling), then to his life
+            g.heroLink = { box: g.hero.box(), hit: (d) => {
+                if (g.hero.invuln > 0 || g.hero.hp <= 0) return false;
+                const safe = g.powerups.absorb();
+                if (safe) { g.hero.invuln = safe; return true; }
+                return g.hero.hit(d);
+            } };
             g.distance = 0; g.over = false; g.overT = 0;
             g.parryCool = 0; g.parryFx = 0; g.parryPerfect = false; g.stop = 0; g.flashT = 0;
         };

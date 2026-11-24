@@ -18,6 +18,8 @@ import { GROUND } from './hero.js';
 import { PATROL, TELEGRAPH, ATTACK, RECOVER, STUNNED, createDirector, step, vulnerable, animOf, damageOf, chanceOf, hurt, landsIn, stun } from './attacks.js';
 
 const W = 960;
+// a fallen enemy drops a power-up with the sum of their chances; which one, weighed by each
+const DROP_TOTAL = Object.values(POWERUPS).reduce((a, d) => a + (d.dropChance || 0), 0);
 const DIE_T = 0.25;                    // the death pop
 const CLINK_T = 0.14;                  // the spark of a glancing RAM
 const DUST_T = 0.3;                    // the puff where a bounce lands
@@ -112,6 +114,11 @@ export function createEnemies(sheet, frames, { rng = Math.random, reducedMotion 
         killed: 0, score: 0, xp: 0,
         natural: true                  // the tests can turn the spawner off
     };
+    const dropOf = () => {
+        let r = rng() * DROP_TOTAL;
+        for (const [id, d] of Object.entries(POWERUPS)) { r -= d.dropChance || 0; if (r < 0) return id; }
+        return 'xmp';
+    };
     const gap = () => SPAWNS.gapM[0] + rng() * (SPAWNS.gapM[1] - SPAWNS.gapM[0]);
 
     // attacks: whether this one will attack at all (left out, the chance in config.js decides)
@@ -192,7 +199,7 @@ export function createEnemies(sheet, frames, { rng = Math.random, reducedMotion 
                     director.release(s);
                     spikes.cancel(s);
                     e.killed++; e.score += s.def.score; e.xp += s.def.xp;
-                    if (powerups && rng() < POWERUPS.xmp.dropChance) powerups.spawn('xmp', s.x, GROUND - 70);
+                    if (powerups && rng() < DROP_TOTAL) powerups.spawn(dropOf(), s.x, GROUND - 70);
                     continue;
                 }
                 hurt(s, link);                         // e.g. a charge stopped short

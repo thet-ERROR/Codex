@@ -5,15 +5,28 @@
 export const PX_PER_M = 30;          // the road moves 300 px/s = 10 m/s
 
 // Power-ups (plan §4b). mults multiply the hero's stats while it is on; picking up the same one again
-// only refills its time (no stacking). The colour is its icon's and its glow's.
+// only refills its time (no stacking). The colour is its icon's and its glow's; label is the word under
+// the pickup. dropChance: from a fallen enemy; road: how often it is the one on the road (a weight).
 export const POWERUPS = {
     xmp: {
-        name: 'XMP / EXPO',
+        name: 'XMP / EXPO', label: 'XMP',
         duration: 10,                 // s
         mults: { speedMult: 1.6, rofMult: 0.6, damageMult: 1.5 },   // throw speed, time between throws, damage
         color: '#22d3ee',
         dropChance: 0.08,             // from an enemy (step 6)
+        road: 3,
         mhz: [3200, 6000]             // the HUD meter: from, to (only for show)
+    },
+    // a shield that takes the next hit for him, then breaks
+    cooling: {
+        name: 'Liquid Cooling', label: 'COOLING',
+        duration: 8,
+        mults: {},
+        shield: 1,                    // hits it takes
+        breakSafe: 0.8,               // s he is safe after it breaks (so the same blow does not land at once)
+        color: '#60a5fa',
+        dropChance: 0.06,
+        road: 2
     }
 };
 export const POWERUP_WARN = 2;       // s: the last seconds blink

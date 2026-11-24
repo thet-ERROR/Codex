@@ -1376,3 +1376,67 @@ describe('RAM RUSH: Parry (5b)', () => {
         assert.equal((await gameState(page)).thrown, 0);
     }));
 });
+
+describe('RAM RUSH: power-ups, Liquid Cooling (4b)', () => {
+    it('a shield for 8 s: it takes the next blow and breaks; picked again it is one shield, with its time refilled', () => withPage(DESK, async (page) => {
+        await openGame(page);
+        const out = await page.evaluate(async () => {
+            const { createPowerups } = await import('/game/powerups.js');
+            const p = createPowerups();
+            const none = p.absorb();
+            p.activate('cooling');
+            p.update(3, 0, 0);
+            p.activate('cooling');
+            const refilled = [p.remaining('cooling'), p.active.size];
+            const first = p.absorb();
+            const after = [p.isOn('cooling'), p.absorb()];
+            p.activate('cooling');
+            p.update(8.1, 0, 0);
+            return { none, refilled, first, after, ended: p.isOn('cooling'), stats: ['speedMult', 'rofMult', 'damageMult'].map(n => p.getStat(n)) };
+        });
+        assert.equal(out.none, 0, 'no shield, nothing taken');
+        assert.deepEqual(out.refilled, [8, 1]);
+        assert.ok(out.first > 0.5, 'took it, and he is safe a moment');
+        assert.deepEqual(out.after, [false, 0], 'broken: the next one is his');
+        assert.equal(out.ended, false, 'over after 8 s');
+        assert.deepEqual(out.stats, [1, 1, 1], 'it changes no throw');
+    }));
+
+    it('on the road both come (XMP more often); a fallen enemy may drop either', () => withPage(DESK, async (page) => {
+        await openGame(page);
+        const out = await page.evaluate(async () => {
+            const { createPowerups } = await import('/game/powerups.js');
+            const { createEnemies } = await import('/game/enemies.js');
+            let seed = 4; const rng = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+            const p = createPowerups({ rng });
+            const road = { xmp: 0, cooling: 0 };
+            for (let k = 0; k < 500; k++) road[p.pick('road')]++;
+            // an enemy that falls with the dice: 0.5 (it walks), 0 (it drops), 0.99 (which: the last one)
+            const frames = await (await fetch('/game/assets/enemies.json')).json();
+            const dice = [0.5, 0, 0.99]; let n = 0;
+            const e = createEnemies(null, frames, { rng: () => dice[n++ % dice.length] });
+            e.natural = false;
+            e.spawn('orangeBot', 500);
+            const drops = [];
+            e.update(0.016, 0, 0, null, { hit: () => 5 }, { spawn: (id) => drops.push(id) });
+            return { road, drops };
+        });
+        assert.ok(out.road.xmp > out.road.cooling && out.road.cooling > 100, JSON.stringify(out.road));
+        assert.deepEqual(out.drops, ['cooling']);
+    }));
+
+    it('in the game: run into it, the bubble is on; an Orange Bot breaks it instead of a heart, and the next blow is his', () => withPage(DESK, async (page) => {
+        await openSettled(page);
+        await page.evaluate(async () => (await import('/game/main.js')).testSpawnPickup('cooling', 330, 400));
+        await waitState(page, (s) => s.powerups.some(p => p.id === 'cooling'), 3000);
+        await spawnEnemy(page, 'orangeBot', 300);
+        await waitState(page, (s) => !s.powerups.some(p => p.id === 'cooling'), 2000);
+        let s = await gameState(page);
+        assert.equal(s.hp, 3);
+        assert.ok(s.invuln > 0.4, `safe a moment: ${s.invuln}`);
+        await waitState(page, (s) => s.invuln === 0 && s.enemies.length === 0, 3000);
+        await spawnEnemy(page, 'orangeBot', 300);
+        await waitState(page, (s) => s.hp === 2, 2000);
+        assert.deepEqual(page.problems, []);
+    }));
+});
