@@ -10,7 +10,8 @@ const KEYS = {
     ArrowDown: 'down', KeyS: 'down',
     ArrowLeft: 'left', KeyA: 'left',
     ArrowRight: 'right', KeyD: 'right',
-    KeyP: 'pause'
+    KeyP: 'pause',
+    KeyJ: 'throw', KeyX: 'throw'
 };
 const SWIPE = 28;          // CSS px a finger travels before it counts as a swipe
 const TAP_MS = 300;        // a touch shorter than this that did not travel is a tap
@@ -21,7 +22,8 @@ export function createInput(surface) {
     // jumpUp: a release before this frame's press (it ends the jump already under way); jumpUpAfter: a
     // release after it (a quick tap: it ends the new jump). Kept apart, a quick second press can't be cut
     // by the first one's release arriving in the same frame.
-    function fresh() { return { jump: 0, jumpUp: false, jumpUpAfter: false, down: 0, nudge: 0, tap: 0, pause: 0 }; }
+    // throw: a throw asked for; aim: where on the screen (clientX/Y) the click or tap was, or null (a key: straight)
+    function fresh() { return { jump: 0, jumpUp: false, jumpUpAfter: false, down: 0, nudge: 0, throw: 0, aim: null, pause: 0 }; }
 
     function onKeyDown(e) {
         if (e.ctrlKey || e.metaKey || e.altKey) return;
@@ -34,6 +36,7 @@ export function createInput(surface) {
         if (a === 'jump') ev.jump++;
         else if (a === 'down') ev.down++;
         else if (a === 'pause') ev.pause++;
+        else if (a === 'throw') { ev.throw++; ev.aim = null; }
     }
     function onKeyUp(e) {
         const a = KEYS[e.code];
@@ -44,11 +47,13 @@ export function createInput(surface) {
     }
     function onBlur() { held.left = held.right = false; }
 
-    // Touch (and the mouse): a swipe fires as soon as the finger has travelled far enough, not on release,
-    // so a jump feels instant. Up = jump, down = slide, sideways = a step that way. A short still touch = tap.
+    // The mouse throws at once, toward the click. Touch: a swipe fires as soon as the finger has travelled
+    // far enough, not on release, so a jump feels instant. Up = jump, down = slide, sideways = a step that
+    // way. A short still touch is a tap: a throw, toward where it touched.
     let touch = null;
     function onPointerDown(e) {
         if (e.button > 0) return;
+        if (e.pointerType === 'mouse') { ev.throw++; ev.aim = { x: e.clientX, y: e.clientY }; return; }
         touch = { id: e.pointerId, x: e.clientX, y: e.clientY, t: performance.now(), fired: false };
     }
     function onPointerMove(e) {
@@ -62,7 +67,7 @@ export function createInput(surface) {
     function onPointerUp(e) {
         if (!touch || e.pointerId !== touch.id) return;
         onPointerMove(e);                // a quick flick may end before a move event reported it
-        if (!touch.fired && performance.now() - touch.t < TAP_MS) ev.tap++;
+        if (!touch.fired && performance.now() - touch.t < TAP_MS) { ev.throw++; ev.aim = { x: touch.x, y: touch.y }; }
         touch = null;
     }
     function onPointerCancel() { touch = null; }

@@ -117,6 +117,9 @@ export function createHero(sheet, frames) {
         ? { x: h.x - 55, y: h.y - 62, w: 110, h: 62 }
         : { x: h.x - 26, y: h.y - 118, w: 52, h: 118 };
 
+    // Where a thrown RAM leaves from: his front hand, lower while sliding
+    h.hand = () => h.slideT > 0 && h.onGround ? { x: h.x + 48, y: h.y - 40 } : { x: h.x + 34, y: h.y - 80 };
+
     function drawFrame(ctx, name, x, y, scale) {
         const f = frames[name];
         ctx.drawImage(sheet, f.x, f.y, f.w, f.h, x - f.ax * scale, y - f.ay * scale, f.w * scale, f.h * scale);

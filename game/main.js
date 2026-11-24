@@ -9,9 +9,11 @@
 // drone (hero.js). Step 3b: the game runs inside the terminal's own window (the output, the chips and the
 // prompt step aside, the title bar says `ramrush`), and on a phone held upright the world sits on top with a
 // touch area below it. Step 4: the controls (input.js) and the moves (hero.js), P pauses, and a short
-// reminder of the keys (or of the swipes, on a phone) shows at the start. The RAM throw and the enemies come next.
+// reminder of the keys (or of the swipes, on a phone) shows at the start. Step 5: the RAM throw (ram.js), by
+// key, click or tap. The enemies come next.
 
 import { createHero } from './hero.js';
+import { createRams } from './ram.js';
 import { createInput } from './input.js';
 
 const ASSETS = new URL('./assets/', import.meta.url);
@@ -29,12 +31,12 @@ const LAYERS = [
 const TEXT = {
     el: { title: 'RAM RUSH', close: 'Κλείσιμο παιχνιδιού', loading: 'Φόρτωση…', failed: 'Το παιχνίδι δεν φόρτωσε. Δοκίμασε ξανά.',
         paused: 'ΠΑΥΣΗ', resume: 'P για συνέχεια',
-        keys: '↑ / W / Space άλμα (ξανά στον αέρα: διπλό)   ↓ / S slide   ← → κίνηση   P παύση   Esc έξοδος',
-        swipes: ['Σύρε ↑ για άλμα (ξανά στον αέρα: διπλό)', 'Σύρε ↓ για slide', 'Σύρε ← → για κίνηση'] },
+        keys: '↑ / W / Space άλμα (ξανά στον αέρα: διπλό)   ↓ / S slide   ← → κίνηση   J / X / κλικ RAM   P παύση   Esc έξοδος',
+        swipes: ['Πάτα για ρίψη RAM', 'Σύρε ↑ για άλμα (ξανά στον αέρα: διπλό)', 'Σύρε ↓ για slide', 'Σύρε ← → για κίνηση'] },
     en: { title: 'RAM RUSH', close: 'Close the game', loading: 'Loading…', failed: 'The game did not load. Try again.',
         paused: 'PAUSED', resume: 'P to resume',
-        keys: '↑ / W / Space jump (again in the air: double)   ↓ / S slide   ← → move   P pause   Esc exit',
-        swipes: ['Swipe ↑ to jump (again in the air: double)', 'Swipe ↓ to slide', 'Swipe ← → to move'] }
+        keys: '↑ / W / Space jump (again in the air: double)   ↓ / S slide   ← → move   J / X / click RAM   P pause   Esc exit',
+        swipes: ['Tap to throw a RAM', 'Swipe ↑ to jump (again in the air: double)', 'Swipe ↓ to slide', 'Swipe ← → to move'] }
 };
 const txt = () => TEXT[document.documentElement.lang === 'en' ? 'en' : 'el'];
 
@@ -184,8 +186,20 @@ export async function open() {
         ctx.fillStyle = sky;
         ctx.fillRect(0, 0, W, H);
         g.hero.update(dt, i);
+        if (i.throw) {
+            // a click or tap on the world aims there; on the touch area below it (or by key) straight ahead
+            const hand = g.hero.hand();
+            let tx, ty;
+            if (i.aim) {
+                const r = canvas.getBoundingClientRect();
+                if (i.aim.y <= r.bottom && i.aim.y >= r.top) { tx = (i.aim.x - r.left) * W / r.width; ty = (i.aim.y - r.top) * H / r.height; }
+            }
+            g.rams.throw(hand.x, hand.y, tx, ty);
+        }
+        g.rams.update(dt, []);
         for (const [name, factor, h, bottom] of LAYERS) drawLayer(ctx, g.images[name], factor, h, bottom, g.distance);
         g.hero.draw(ctx);
+        g.rams.draw(ctx);
         if (g.hintT > 0) { g.hintT -= dt; drawHint(); }
     }
 
@@ -227,6 +241,7 @@ export async function open() {
         ]);
         if (g.closed) return g;
         g.hero = createHero(sheet, frames);
+        g.rams = createRams();
         g.images = Object.fromEntries(LAYERS.map(([name], i) => [name, imgs[i]]));
         status.textContent = '';
     } catch (e) {
@@ -251,6 +266,7 @@ export const state = () => {
     return {
         hero: { x: h.x, y: h.y, vy: h.vy, bob: h.bob, frame: h.frame, onGround: h.onGround, jumps: h.jumps, box: h.box() },
         drone: { x: h.drone.x, y: h.drone.y },
+        rams: game.rams.active(), thrown: game.rams.thrown,
         distance: game.distance, paused: game.userPaused
     };
 };
