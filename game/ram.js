@@ -23,6 +23,7 @@ const AIM_TURN = 2.4;                    // rad/s at most
 const SPIN = 13;                         // rad/s
 const TRAIL = 11;                        // points in the glow trail
 const W = 960, H = 540;
+const DEFLECT = { back: 0.35, up: 420, gravity: 2000 };   // a stick glancing off armour: back, up, and down it falls
 
 export function createRams() {
     const pool = Array.from({ length: POOL }, () => ({
@@ -39,8 +40,8 @@ export function createRams() {
         let ang = 0;
         if (tx !== undefined && tx > x) ang = Math.max(-THROW_CONE, Math.min(THROW_CONE, Math.atan2(ty - y, tx - x)));
         const v = STATS.speed * (mult.speed || 1);
-        Object.assign(s, { on: true, x, y, vx: Math.cos(ang) * v, vy: Math.sin(ang) * v, a: 0, flown: 0, tn: 0,
-            damage: STATS.damage * (mult.damage || 1) });
+        Object.assign(s, { on: true, x, y, vx: Math.cos(ang) * v, vy: Math.sin(ang) * v, a: 0, flown: 0, tn: 0, spent: false,
+            damage: STATS.damage * (mult.damage || 1), hot: !!mult.hot });
         r.cooldown = STATS.cooldown * (mult.cooldown || 1);
         r.thrown++;
         return true;
@@ -62,12 +63,14 @@ export function createRams() {
                 if (Math.abs(off) > AIM_CONE) continue;
                 best = off; bestD = d;
             }
+            if (s.spent) best = null;                          // a glanced-off stick only falls
             if (best !== null) {
                 heading += Math.max(-AIM_TURN * dt, Math.min(AIM_TURN * dt, best));
                 s.vx = Math.cos(heading) * v; s.vy = Math.sin(heading) * v;
             }
             // the glow trail: a ring of the last few positions
             const p = s.trail[s.tn % TRAIL]; p.x = s.x; p.y = s.y; s.tn++;
+            if (s.spent) s.vy += DEFLECT.gravity * dt;
             s.x += s.vx * dt; s.y += s.vy * dt;
             s.flown += v * dt;
             s.a += SPIN * dt;
@@ -78,7 +81,7 @@ export function createRams() {
     // Step 6: the first live stick inside the box is spent on it; returns its damage, or 0
     r.hit = (box) => {
         for (const s of pool) {
-            if (s.on && s.x > box.x - 10 && s.x < box.x + box.w + 10 && s.y > box.y - 6 && s.y < box.y + box.h + 6) {
+            if (s.on && !s.spent && s.x > box.x - 10 && s.x < box.x + box.w + 10 && s.y > box.y - 6 && s.y < box.y + box.h + 6) {
                 s.on = false;
                 return s.damage;
             }
@@ -86,7 +89,21 @@ export function createRams() {
         return 0;
     };
 
-    r.active = () => pool.filter(s => s.on).map(s => ({ x: s.x, y: s.y, vx: s.vx, vy: s.vy }));
+    // Step 5b: armour (the Orange Bot's ball in the air). The first live stick inside the box glances off:
+    // it flies back and drops, spent, and can hit nothing more. Returns where it struck, or null.
+    r.deflect = (box) => {
+        for (const s of pool) {
+            if (s.on && !s.spent && s.x > box.x - 10 && s.x < box.x + box.w + 10 && s.y > box.y - 6 && s.y < box.y + box.h + 6) {
+                s.spent = true;
+                s.vx = -Math.abs(s.vx) * DEFLECT.back;
+                s.vy = -DEFLECT.up;
+                return { x: s.x, y: s.y };
+            }
+        }
+        return null;
+    };
+
+    r.active = () => pool.filter(s => s.on).map(s => ({ x: s.x, y: s.y, vx: s.vx, vy: s.vy, damage: s.damage, hot: s.hot, spent: !!s.spent }));
     r.clear = () => { for (const s of pool) s.on = false; r.cooldown = 0; };
 
     r.draw = (ctx) => {
@@ -100,9 +117,11 @@ export function createRams() {
             for (let k = 0; k < n; k++) {
                 const p = s.trail[(s.tn - 1 - k) % TRAIL];
                 const f = 1 - k / TRAIL;
-                ctx.fillStyle = `rgba(217, 70, 239, ${0.6 * f})`;
+                // overclocked (XMP): a hotter trail, cyan into white, and wider
+                ctx.fillStyle = s.hot ? (k < 3 ? `rgba(240, 253, 255, ${0.75 * f})` : `rgba(34, 211, 238, ${0.65 * f})`)
+                    : `rgba(217, 70, 239, ${0.6 * f})`;
                 ctx.beginPath();
-                ctx.arc(p.x, p.y, 3 + 8 * f, 0, Math.PI * 2);
+                ctx.arc(p.x, p.y, (s.hot ? 4 : 3) + (s.hot ? 10 : 8) * f, 0, Math.PI * 2);
                 ctx.fill();
             }
             ctx.restore();

@@ -10,10 +10,14 @@
 // prompt step aside, the title bar says `ramrush`), and on a phone held upright the world sits on top with a
 // touch area below it. Step 4: the controls (input.js) and the moves (hero.js), P pauses, and a short
 // reminder of the keys (or of the swipes, on a phone) shows at the start. Step 5: the RAM throw (ram.js), by
-// key, click or tap. The enemies come next.
+// key, click or tap. Plan §4b: the power-ups (powerups.js, numbers in config.js), XMP first. Step 6: the
+// enemies (enemies.js, the Orange Bot first), the hero's life, and a plain game over that starts a new run.
 
 import { createHero } from './hero.js';
 import { createRams } from './ram.js';
+import { createPowerups } from './powerups.js';
+import { createEnemies } from './enemies.js';
+import { PX_PER_M, HERO } from './config.js';
 import { createInput } from './input.js';
 
 const ASSETS = new URL('./assets/', import.meta.url);
@@ -31,10 +35,12 @@ const LAYERS = [
 const TEXT = {
     el: { title: 'RAM RUSH', close: 'Κλείσιμο παιχνιδιού', loading: 'Φόρτωση…', failed: 'Το παιχνίδι δεν φόρτωσε. Δοκίμασε ξανά.',
         paused: 'ΠΑΥΣΗ', resume: 'P για συνέχεια',
+        over: 'GAME OVER', again: 'Space / J / πάτα για νέο παιχνίδι', score: 'Σκορ', kills: 'εχθροί',
         keys: '↑ / W / Space άλμα (ξανά στον αέρα: διπλό)   ↓ / S slide   ← → κίνηση   J / X / κλικ RAM   P παύση   Esc έξοδος',
         swipes: ['Πάτα για ρίψη RAM', 'Σύρε ↑ για άλμα (ξανά στον αέρα: διπλό)', 'Σύρε ↓ για slide', 'Σύρε ← → για κίνηση'] },
     en: { title: 'RAM RUSH', close: 'Close the game', loading: 'Loading…', failed: 'The game did not load. Try again.',
         paused: 'PAUSED', resume: 'P to resume',
+        over: 'GAME OVER', again: 'Space / J / tap for a new run', score: 'Score', kills: 'enemies',
         keys: '↑ / W / Space jump (again in the air: double)   ↓ / S slide   ← → move   J / X / click RAM   P pause   Esc exit',
         swipes: ['Tap to throw a RAM', 'Swipe ↑ to jump (again in the air: double)', 'Swipe ↓ to slide', 'Swipe ← → to move'] }
 };
@@ -140,6 +146,7 @@ export async function open() {
         hintT: matchMedia('(pointer: fine)').matches ? 7 : 0 };   // the keys reminder (a phone has it in the touch area)
     game = g;
     const input = createInput(overlay);
+    let newRun = () => {};
 
     function drawHint() {
         const a = Math.min(1, g.hintT / 1.2);   // fades out over its last second
@@ -171,6 +178,40 @@ export async function open() {
         ctx.restore();
     }
 
+    // The hero's life, top left (the HUD of plan §8c will dress it up): full and empty hearts
+    function heart(x, y, r, full) {
+        ctx.beginPath();
+        ctx.moveTo(x, y + r * 0.9);
+        ctx.bezierCurveTo(x - r * 1.6, y - r * 0.2, x - r * 0.6, y - r * 1.3, x, y - r * 0.45);
+        ctx.bezierCurveTo(x + r * 0.6, y - r * 1.3, x + r * 1.6, y - r * 0.2, x, y + r * 0.9);
+        ctx.fillStyle = full ? '#ef4444' : 'rgba(13, 12, 29, 0.7)';
+        ctx.fill();
+        ctx.lineWidth = 2;
+        ctx.strokeStyle = full ? '#fecaca' : 'rgba(241, 240, 247, 0.45)';
+        ctx.stroke();
+    }
+    function drawLife() {
+        ctx.save();
+        for (let k = 0; k < HERO.maxHp; k++) heart(30 + k * 32, 30, 11, k < g.hero.hp);
+        ctx.restore();
+    }
+    function drawOver() {
+        ctx.save();
+        ctx.fillStyle = 'rgba(13, 12, 29, 0.72)';
+        ctx.fillRect(0, 0, W, H);
+        ctx.textAlign = 'center';
+        ctx.fillStyle = '#f1f0f7';
+        ctx.font = '800 52px system-ui, sans-serif';
+        ctx.fillText(txt().over, W / 2, H / 2 - 30);
+        ctx.font = '600 20px system-ui, sans-serif';
+        ctx.fillStyle = '#22d3ee';
+        ctx.fillText(`${txt().score} ${g.enemies.score} · ${Math.floor(g.distance / PX_PER_M)} m · ${g.enemies.killed} ${txt().kills}`, W / 2, H / 2 + 12);
+        ctx.font = '500 17px system-ui, sans-serif';
+        ctx.fillStyle = 'rgba(241, 240, 247, 0.75)';
+        ctx.fillText(txt().again, W / 2, H / 2 + 48);
+        ctx.restore();
+    }
+
     function frame(t) {
         g.raf = requestAnimationFrame(frame);
         const dt = Math.min((t - (g.last || t)) / 1000, 0.05);   // capped, so a hiccup never jumps the world
@@ -182,6 +223,13 @@ export async function open() {
             if (g.userPaused) drawPause();   // drawn once over the last picture; the loop then waits
         }
         if (g.userPaused) return;
+        if (g.over) {
+            // the run is over: the picture waits under the GAME OVER; a jump, a throw or a tap starts anew
+            // (after a short moment, so the key that was being pressed when he fell does not skip it)
+            g.overT += dt;
+            if (g.overT > 0.7 && (i.jump || i.throw)) newRun();
+            return;
+        }
         g.distance += SPEED * dt;
         ctx.fillStyle = sky;
         ctx.fillRect(0, 0, W, H);
@@ -194,13 +242,25 @@ export async function open() {
                 const r = canvas.getBoundingClientRect();
                 if (i.aim.y <= r.bottom && i.aim.y >= r.top) { tx = (i.aim.x - r.left) * W / r.width; ty = (i.aim.y - r.top) * H / r.height; }
             }
-            g.rams.throw(hand.x, hand.y, tx, ty);
+            const pu = g.powerups;
+            g.rams.throw(hand.x, hand.y, tx, ty, {
+                speed: pu.getStat('speedMult'), cooldown: pu.getStat('rofMult'), damage: pu.getStat('damageMult'), hot: pu.isOn('xmp')
+            });
         }
-        g.rams.update(dt, []);
+        g.rams.update(dt, g.enemies.targets());
+        g.heroLink.box = g.hero.box();
+        g.enemies.update(dt, SPEED * dt, g.distance / PX_PER_M, g.heroLink, g.rams, g.powerups);
+        g.powerups.update(dt, SPEED * dt, g.distance / PX_PER_M, g.heroLink.box, g.rams);
         for (const [name, factor, h, bottom] of LAYERS) drawLayer(ctx, g.images[name], factor, h, bottom, g.distance);
+        g.powerups.draw(ctx);
+        g.enemies.draw(ctx);
+        g.powerups.drawAura(ctx, g.heroLink.box);
         g.hero.draw(ctx);
         g.rams.draw(ctx);
+        drawLife();
+        g.powerups.drawHud(ctx, 78);
         if (g.hintT > 0) { g.hintT -= dt; drawHint(); }
+        if (g.hero.hp <= 0) { g.over = true; g.overT = 0; drawOver(); }
     }
 
     function onKey(e) {
@@ -234,14 +294,25 @@ export async function open() {
     overlay.focus({ preventScroll: true });
     g.raf = requestAnimationFrame(frame);
     try {
-        const [imgs, sheet, frames] = await Promise.all([
+        const json = (name) => fetch(new URL(`${name}.json`, ASSETS)).then(r => { if (!r.ok) throw new Error(`RAM RUSH: ${name}.json`); return r.json(); });
+        const [imgs, sheet, frames, enemySheet, enemyFrames] = await Promise.all([
             Promise.all(LAYERS.map(([name]) => loadImage(name))),
-            loadImage('sprites'),
-            fetch(new URL('sprites.json', ASSETS)).then(r => { if (!r.ok) throw new Error('RAM RUSH: sprites.json'); return r.json(); })
+            loadImage('sprites'), json('sprites'),
+            loadImage('enemies'), json('enemies')
         ]);
         if (g.closed) return g;
-        g.hero = createHero(sheet, frames);
-        g.rams = createRams();
+        const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+        // a run: everything that starts over on GAME OVER
+        newRun = () => {
+            g.hero = createHero(sheet, frames, { reducedMotion });
+            g.rams = createRams();
+            g.powerups = createPowerups({ reducedMotion });
+            g.enemies = createEnemies(enemySheet, enemyFrames, { reducedMotion });
+            g.enemies.natural = !g.quiet;
+            g.heroLink = { box: g.hero.box(), hit: (d) => g.hero.hit(d) };
+            g.distance = 0; g.over = false; g.overT = 0;
+        };
+        newRun();
         g.images = Object.fromEntries(LAYERS.map(([name], i) => [name, imgs[i]]));
         status.textContent = '';
     } catch (e) {
@@ -266,7 +337,19 @@ export const state = () => {
     return {
         hero: { x: h.x, y: h.y, vy: h.vy, bob: h.bob, frame: h.frame, onGround: h.onGround, jumps: h.jumps, box: h.box() },
         drone: { x: h.drone.x, y: h.drone.y },
-        rams: game.rams.active(), thrown: game.rams.thrown,
+        rams: game.rams.active(), thrown: game.rams.thrown, cooldown: game.rams.cooldown,
+        powerups: [...game.powerups.active.values()].map(a => ({ ...a })), pickups: game.powerups.pickups(),
+        mhz: game.powerups.mhz, taken: game.powerups.taken,
+        hp: h.hp, invuln: h.invuln, over: !!game.over,
+        enemies: game.enemies.list(), killed: game.enemies.killed, score: game.enemies.score, xp: game.enemies.xp,
         distance: game.distance, paused: game.userPaused
     };
 };
+
+// For the tests only: put a pickup on the road (the natural ones come every 400–700 m, ~40 s apart)
+export const testSpawnPickup = (id, x, y) => !!(game && game.powerups && game.powerups.spawn(id, x, y));
+// … an enemy (the natural ones start at 60 m, ~6 s in) …
+// (calm, only walking, unless { attack: true })
+export const testSpawnEnemy = (id, x, opts = {}) => !!(game && game.enemies && game.enemies.spawn(id, x, !!opts.attack));
+// … and a quiet road: no enemies of their own, so a test about something else is not disturbed
+export const testQuiet = () => { if (game) { game.quiet = true; if (game.enemies) game.enemies.natural = false; } };
