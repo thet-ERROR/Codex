@@ -27,7 +27,19 @@ def cutout(n):
     corners = np.concatenate([im[:40, :40].reshape(-1, 3), im[:40, -40:].reshape(-1, 3), im[-40:, :40].reshape(-1, 3), im[-40:, -40:].reshape(-1, 3)])
     bg = np.median(corners, axis=0)
     d = np.sqrt(((im - bg) ** 2).sum(axis=2))
-    alpha = np.clip((d - 14) / (48 - 14), 0, 1)        # soft edge keeps the glow outline
+    soft = np.clip((d - 14) / (48 - 14), 0, 1)         # soft edge keeps the glow outline
+    # Only the background is see-through: the dark area joined to the picture's border, plus closed gaps
+    # (between the legs) that are the background's own colour. Dark clothes inside the body are not
+    # background, so they stay solid; a plain colour key made his trousers half transparent.
+    low = d < 48
+    lab_bg, n_bg = ndimage.label(low)
+    border = set(np.unique(np.concatenate([lab_bg[0], lab_bg[-1], lab_bg[:, 0], lab_bg[:, -1]]))) - {0}
+    is_bg = np.isin(lab_bg, list(border))
+    for i, sl in enumerate(ndimage.find_objects(lab_bg), start=1):
+        if i in border or sl is None: continue
+        part = lab_bg[sl] == i
+        if part.sum() > 400 and np.median(d[sl][part]) < 12: is_bg[sl] |= part
+    alpha = np.where(is_bg, soft, 1.0)
     lab, n_lab = ndimage.label(ndimage.binary_dilation(alpha > 0.35, iterations=6))
     sizes = ndimage.sum(np.ones_like(lab), lab, range(1, n_lab + 1))
     hero_id = int(np.argmax(sizes)) + 1

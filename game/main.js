@@ -5,7 +5,12 @@
 // under one element (#rr-overlay) and one <style> (#rr-style), both prefixed `rr-`, and both are removed on
 // close together with every listener and the animation loop, so a closed game leaves nothing behind.
 //
-// Step 2 of the plan: the window, the loop and the moving city. The hero, the controls and the enemies come next.
+// Step 2 of the plan: the window, the loop and the moving city. Step 3: the hero runs on the road with his
+// drone (hero.js). Step 3b: the game runs inside the terminal's own window (the output, the chips and the
+// prompt step aside, the title bar says `ramrush`), and on a phone held upright the world sits on top with a
+// touch area below it. The controls and the enemies come next.
+
+import { createHero } from './hero.js';
 
 const ASSETS = new URL('./assets/', import.meta.url);
 const W = 960, H = 540;                       // the game's own coordinates; the canvas is scaled to fit
@@ -20,20 +25,35 @@ const LAYERS = [
 ];
 
 const TEXT = {
-    el: { title: 'RAM RUSH', close: 'Κλείσιμο', loading: 'Φόρτωση…', failed: 'Το παιχνίδι δεν φόρτωσε. Δοκίμασε ξανά.' },
-    en: { title: 'RAM RUSH', close: 'Close', loading: 'Loading…', failed: 'The game did not load. Try again.' }
+    el: { title: 'RAM RUSH', close: 'Κλείσιμο παιχνιδιού', loading: 'Φόρτωση…', failed: 'Το παιχνίδι δεν φόρτωσε. Δοκίμασε ξανά.' },
+    en: { title: 'RAM RUSH', close: 'Close the game', loading: 'Loading…', failed: 'The game did not load. Try again.' }
 };
 const txt = () => TEXT[document.documentElement.lang === 'en' ? 'en' : 'el'];
 
 const CSS = `
-.rr-overlay { position: fixed; inset: 0; z-index: 2147482000; display: flex; align-items: center; justify-content: center;
-    background: #0d0c1d; color: #f1f0f7; font-family: system-ui, sans-serif; touch-action: none; }
-.rr-canvas { display: block; width: min(100vw, calc(100dvh * 16 / 9)); height: auto; aspect-ratio: 16 / 9; image-rendering: auto; }
-.rr-close { position: absolute; top: max(12px, env(safe-area-inset-top)); right: max(12px, env(safe-area-inset-right));
-    width: 44px; height: 44px; border-radius: 12px; border: 1px solid rgba(241, 240, 247, 0.35); background: rgba(13, 12, 29, 0.7);
-    color: #f1f0f7; font-size: 22px; line-height: 1; cursor: pointer; }
-.rr-close:focus-visible { outline: 2px solid #22d3ee; outline-offset: 2px; }
-.rr-status { position: absolute; inset: auto 0 50% 0; text-align: center; font-size: 15px; letter-spacing: 1px; pointer-events: none; }
+/* The terminal's window becomes the game's: wider on a desktop (but never taller than the screen),
+   and its own output, chips, prompt and logo step aside while the game is in it */
+#cli-overlay.rr-in-term { width: min(960px, 96vw, calc((100dvh - 150px) * 16 / 9 + 20px)) !important; max-width: none !important;
+    height: auto !important; max-height: none !important; padding: 10px !important;
+    z-index: 10050 !important; /* above the header (10000), which a window this big can reach on a short screen */ }
+#cli-overlay.rr-in-term > .cli-output, #cli-overlay.rr-in-term > .cli-chips, #cli-overlay.rr-in-term > .cli-input-line { display: none !important; }
+#cli-overlay.rr-in-term::after { display: none !important; }
+#cli-overlay.rr-in-term .cli-bar { margin: -10px -10px 10px; }
+.rr-overlay { position: relative; display: flex; flex-direction: column; align-items: center; background: #0d0c1d;
+    color: #f1f0f7; font-family: system-ui, sans-serif; touch-action: none; border-radius: 6px; overflow: hidden; }
+.rr-canvas { display: block; width: min(100%, calc((100dvh - 150px) * 16 / 9)); height: auto; aspect-ratio: 16 / 9; image-rendering: auto; }
+.rr-status { position: absolute; top: 0; left: 0; right: 0; aspect-ratio: 16 / 9; display: flex; align-items: center;
+    justify-content: center; font-size: 15px; letter-spacing: 1px; pointer-events: none; }
+.rr-pad { display: none; }
+/* A phone held upright: the terminal's window takes the whole screen, the world sits on top and the touch area fills the rest */
+@media (orientation: portrait) {
+    #cli-overlay.rr-in-term { width: calc(100vw - 20px) !important; height: calc(100dvh - env(safe-area-inset-top) - 20px) !important;
+        top: calc(env(safe-area-inset-top) + 10px) !important; left: 50% !important; transform: translateX(-50%) !important; }
+    .rr-overlay { flex: 1; min-height: 0; }
+    .rr-canvas { width: 100%; }
+    .rr-pad { display: block; flex: 1; width: 100%; min-height: 120px; padding-bottom: env(safe-area-inset-bottom);
+        background: linear-gradient(180deg, #15132e, #0d0c1d); border-top: 1px solid rgba(34, 211, 238, 0.25); }
+}
 `;
 
 let game = null;           // the one running game, or null
@@ -57,7 +77,11 @@ function drawLayer(ctx, img, factor, h, bottom, distance) {
 
 export async function open() {
     if (game) return game;
+    const cli = document.getElementById('cli-overlay');
+    if (!cli) throw new Error('RAM RUSH: no terminal window to run in');
     const opener = document.activeElement;
+    // Opened from the page (the r-a-m shortcut) the terminal is not open yet: open it, the game lives in it
+    if (!cli.classList.contains('active') && window.toggleCLI) window.toggleCLI();
 
     const style = document.createElement('style');
     style.id = 'rr-style';
@@ -67,25 +91,37 @@ export async function open() {
     const overlay = document.createElement('div');
     overlay.id = 'rr-overlay';
     overlay.className = 'rr-overlay';
-    overlay.setAttribute('role', 'dialog');
-    overlay.setAttribute('aria-modal', 'true');
+    overlay.setAttribute('role', 'group');
     overlay.setAttribute('aria-label', txt().title);
     overlay.innerHTML = `<canvas class="rr-canvas" width="${W}" height="${H}"></canvas>
-        <p class="rr-status" aria-live="polite">${txt().loading}</p>
-        <button type="button" class="rr-close" aria-label="${txt().close}">✕</button>`;
-    document.body.appendChild(overlay);
+        <div class="rr-pad" aria-hidden="true"></div>
+        <p class="rr-status" aria-live="polite">${txt().loading}</p>`;
+    cli.appendChild(overlay);
+    cli.classList.add('rr-in-term');
     // js/ui/ui-lock.js sees this class: it locks the page behind and pauses the site's background video
     document.body.classList.add('rr-playing');
+
+    // The title bar says what is running, and its ✕ now ends the game (back to the prompt), not the terminal
+    const titleEl = cli.querySelector('.cli-bar-title');
+    const closeBtn = cli.querySelector('.cli-close');
+    const wasTitle = titleEl ? titleEl.innerHTML : '';
+    const wasLabel = closeBtn ? closeBtn.getAttribute('aria-label') : null;
+    if (titleEl) titleEl.innerHTML = '<i class="ph-bold ph-terminal-window"></i> codex@terminal — ramrush';
+    if (closeBtn) closeBtn.setAttribute('aria-label', txt().close);
+    const onBarClose = (e) => { e.preventDefault(); e.stopImmediatePropagation(); close(); };
+    if (closeBtn) closeBtn.addEventListener('click', onBarClose, true);
+    // The terminal closed some other way (the ` key): the game goes with it
+    const watch = new MutationObserver(() => { if (!cli.classList.contains('active')) close(); });
+    watch.observe(cli, { attributes: true, attributeFilter: ['class'] });
 
     const canvas = overlay.querySelector('canvas');
     const ctx = canvas.getContext('2d');
     const status = overlay.querySelector('.rr-status');
-    const closeBtn = overlay.querySelector('.rr-close');
     const sky = ctx.createLinearGradient(0, 0, 0, H);
     sky.addColorStop(0, '#1e1b4b');
     sky.addColorStop(1, '#0d0c1d');
 
-    const g = { overlay, style, raf: 0, last: 0, distance: 0, paused: false, images: null, closed: false };
+    const g = { overlay, style, raf: 0, last: 0, distance: 0, paused: false, images: null, hero: null, closed: false };
     game = g;
 
     function frame(t) {
@@ -96,7 +132,9 @@ export async function open() {
         g.distance += SPEED * dt;
         ctx.fillStyle = sky;
         ctx.fillRect(0, 0, W, H);
+        g.hero.update(dt);
         for (const [name, factor, h, bottom] of LAYERS) drawLayer(ctx, g.images[name], factor, h, bottom, g.distance);
+        g.hero.draw(ctx);
     }
 
     function onKey(e) {
@@ -106,25 +144,36 @@ export async function open() {
         g.paused = document.visibilityState !== 'visible';
         g.last = 0;   // no jump on return
     }
-    closeBtn.addEventListener('click', close);
     document.addEventListener('keydown', onKey);
     document.addEventListener('visibilitychange', onVisibility);
 
     g.teardown = () => {
         cancelAnimationFrame(g.raf);
+        watch.disconnect();
         document.removeEventListener('keydown', onKey);
         document.removeEventListener('visibilitychange', onVisibility);
+        if (closeBtn) { closeBtn.removeEventListener('click', onBarClose, true); if (wasLabel !== null) closeBtn.setAttribute('aria-label', wasLabel); }
+        if (titleEl) titleEl.innerHTML = wasTitle;
         overlay.remove();
         style.remove();
+        cli.classList.remove('rr-in-term');
         document.body.classList.remove('rr-playing');
-        if (opener && typeof opener.focus === 'function' && opener.isConnected) opener.focus();
+        // Back to the prompt if the terminal is still open (no keyboard pop-up on a phone), else to where the visitor was
+        const input = document.getElementById('cli-input');
+        if (cli.classList.contains('active')) { if (input && !matchMedia('(max-width: 768px)').matches) input.focus(); }
+        else if (opener && typeof opener.focus === 'function' && opener.isConnected) opener.focus();
     };
 
-    closeBtn.focus();
+    if (closeBtn) closeBtn.focus();
     g.raf = requestAnimationFrame(frame);
     try {
-        const imgs = await Promise.all(LAYERS.map(([name]) => loadImage(name)));
+        const [imgs, sheet, frames] = await Promise.all([
+            Promise.all(LAYERS.map(([name]) => loadImage(name))),
+            loadImage('sprites'),
+            fetch(new URL('sprites.json', ASSETS)).then(r => { if (!r.ok) throw new Error('RAM RUSH: sprites.json'); return r.json(); })
+        ]);
         if (g.closed) return g;
+        g.hero = createHero(sheet, frames);
         g.images = Object.fromEntries(LAYERS.map(([name], i) => [name, imgs[i]]));
         status.textContent = '';
     } catch (e) {
@@ -141,3 +190,9 @@ export function close() {
 }
 
 export const isOpen = () => !!game;
+
+// A read-only look at the running game, for the tests (tests/ramrush.test.js)
+export const state = () => game && game.hero && {
+    hero: { x: game.hero.x, y: game.hero.y, bob: game.hero.bob, frame: game.hero.frame },
+    drone: { x: game.hero.drone.x, y: game.hero.drone.y }
+};
