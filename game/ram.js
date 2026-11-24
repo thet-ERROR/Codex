@@ -16,6 +16,7 @@ export const STATS = {
     range: 1100        // px a stick flies before it is spent
 };
 const POOL = 8;
+const BOLTS = 4;                         // the drone's shots (power-up Drone Assist): their own small pool
 const THROW_CONE = 35 * Math.PI / 180;   // how far up or down a click may send it
 const AIM_CONE = 30 * Math.PI / 180;     // auto-aim looks this far either side of the heading
 const AIM_RANGE = 520;                   // … and this far ahead
@@ -30,7 +31,18 @@ export function createRams() {
         on: false, x: 0, y: 0, vx: 0, vy: 0, a: 0, flown: 0, damage: 0,
         trail: Array.from({ length: TRAIL }, () => ({ x: 0, y: 0 })), tn: 0
     }));
-    const r = { cooldown: 0, thrown: 0 };
+    const bolts = Array.from({ length: BOLTS }, () => ({ on: false, x: 0, y: 0, vx: 0, vy: 0, damage: 0, flown: 0, spent: false }));
+    const r = { cooldown: 0, thrown: 0, bolted: 0 };
+
+    // The drone's shot: from (x, y) straight at (tx, ty). False with no bolt free.
+    r.bolt = (x, y, tx, ty, speed, damage) => {
+        const b = bolts.find(q => !q.on);
+        if (!b) return false;
+        const d = Math.hypot(tx - x, ty - y) || 1;
+        Object.assign(b, { on: true, x, y, vx: (tx - x) / d * speed, vy: (ty - y) / d * speed, damage, flown: 0, spent: false });
+        r.bolted++;
+        return true;
+    };
 
     // Throws one from (x, y), straight or toward (tx, ty). False while cooling down or with no stick free.
     r.throw = (x, y, tx, ty, mult = {}) => {
@@ -50,6 +62,12 @@ export function createRams() {
     // targets: [{ x, y }] centres of what may be hit (the enemies, from step 6)
     r.update = (dt, targets = []) => {
         r.cooldown = Math.max(0, r.cooldown - dt);
+        for (const b of bolts) {
+            if (!b.on) continue;
+            if (b.spent) b.vy += DEFLECT.gravity * dt;
+            b.x += b.vx * dt; b.y += b.vy * dt; b.flown += Math.hypot(b.vx, b.vy) * dt;
+            if (b.flown > 900 || b.x > W + 40 || b.x < -40 || b.y < -40 || b.y > H + 40) b.on = false;
+        }
         for (const s of pool) {
             if (!s.on) continue;
             const v = Math.hypot(s.vx, s.vy);
@@ -79,7 +97,11 @@ export function createRams() {
     };
 
     // Step 6: the first live stick inside the box is spent on it; returns its damage, or 0
+    const inBox = (s, box) => s.x > box.x - 10 && s.x < box.x + box.w + 10 && s.y > box.y - 6 && s.y < box.y + box.h + 6;
     r.hit = (box) => {
+        for (const b of bolts) {
+            if (b.on && !b.spent && inBox(b, box)) { b.on = false; return b.damage; }
+        }
         for (const s of pool) {
             if (s.on && !s.spent && s.x > box.x - 10 && s.x < box.x + box.w + 10 && s.y > box.y - 6 && s.y < box.y + box.h + 6) {
                 s.on = false;
@@ -92,6 +114,9 @@ export function createRams() {
     // Step 5b: armour (the Orange Bot's ball in the air). The first live stick inside the box glances off:
     // it flies back and drops, spent, and can hit nothing more. Returns where it struck, or null.
     r.deflect = (box) => {
+        for (const b of bolts) {
+            if (b.on && !b.spent && inBox(b, box)) { b.spent = true; b.vx = -Math.abs(b.vx) * DEFLECT.back; b.vy = -DEFLECT.up; return { x: b.x, y: b.y }; }
+        }
         for (const s of pool) {
             if (s.on && !s.spent && s.x > box.x - 10 && s.x < box.x + box.w + 10 && s.y > box.y - 6 && s.y < box.y + box.h + 6) {
                 s.spent = true;
@@ -104,9 +129,25 @@ export function createRams() {
     };
 
     r.active = () => pool.filter(s => s.on).map(s => ({ x: s.x, y: s.y, vx: s.vx, vy: s.vy, damage: s.damage, hot: s.hot, spent: !!s.spent }));
-    r.clear = () => { for (const s of pool) s.on = false; r.cooldown = 0; };
+    r.bolts = () => bolts.filter(b => b.on).map(b => ({ x: b.x, y: b.y, vx: b.vx, vy: b.vy, damage: b.damage }));
+    r.clear = () => { for (const s of pool) s.on = false; for (const b of bolts) b.on = false; r.cooldown = 0; };
 
     r.draw = (ctx) => {
+        // the drone's bolts: a short bright streak, lime
+        if (bolts.some(b => b.on)) {
+            ctx.save();
+            ctx.globalCompositeOperation = 'lighter';
+            ctx.lineCap = 'round';
+            for (const b of bolts) {
+                if (!b.on) continue;
+                const v = Math.hypot(b.vx, b.vy) || 1, ux = b.vx / v, uy = b.vy / v;
+                ctx.strokeStyle = 'rgba(163, 230, 53, 0.5)'; ctx.lineWidth = 9;
+                ctx.beginPath(); ctx.moveTo(b.x - ux * 26, b.y - uy * 26); ctx.lineTo(b.x, b.y); ctx.stroke();
+                ctx.strokeStyle = 'rgba(247, 254, 231, 0.95)'; ctx.lineWidth = 3.5;
+                ctx.beginPath(); ctx.moveTo(b.x - ux * 14, b.y - uy * 14); ctx.lineTo(b.x, b.y); ctx.stroke();
+            }
+            ctx.restore();
+        }
         for (const s of pool) {
             if (!s.on) continue;
             // the trail first, under the stick: oldest faintest. Added light ('lighter'), so it glows even

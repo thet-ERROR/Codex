@@ -27,6 +27,19 @@ export const POWERUPS = {
         color: '#60a5fa',
         dropChance: 0.06,
         road: 2
+    },
+    // the drone fires by itself at the nearest enemy ahead of it
+    drone: {
+        name: 'Drone Assist', label: 'DRONE',
+        duration: 8,
+        mults: {},
+        color: '#a3e635',
+        dropChance: 0.05,
+        road: 2,
+        every: 0.8,                   // s between its shots
+        range: 620,                   // px: how far from the drone it looks for a target
+        speed: 1000,                  // px/s of its bolt
+        damage: 1
     }
 };
 export const POWERUP_WARN = 2;       // s: the last seconds blink

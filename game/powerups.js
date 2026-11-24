@@ -10,6 +10,7 @@
 // one comes is weighed by its `road` number. A small fixed pool; icons and glow drawn in code, no images.
 //
 // Liquid Cooling: a shield. While it is on, the next hit is taken by it instead (absorb()), and it breaks.
+// Drone Assist: while it is on, the drone fires by itself at the nearest enemy ahead (droneStep()).
 
 import { POWERUPS, POWERUP_WARN, STAT_CAPS, PICKUPS, PX_PER_M } from './config.js';
 
@@ -23,7 +24,8 @@ export function createPowerups({ rng = Math.random, reducedMotion = false } = {}
         mhz: POWERUPS.xmp.mhz[0],
         taken: 0,
         t: 0,
-        breakT: 0                          // the shield's shatter, drawn for a moment
+        breakT: 0,                         // the shield's shatter, drawn for a moment
+        droneCool: 0, droneFlash: 0        // the drone's time to its next shot, and its muzzle flash
     };
     const ids = Object.keys(POWERUPS);
     // one of them, weighed by `key` (road: on the road; dropChance: from an enemy)
@@ -76,6 +78,7 @@ export function createPowerups({ rng = Math.random, reducedMotion = false } = {}
     p.update = (dt, scroll, distM, heroBox, rams) => {
         p.t += dt;
         p.breakT = Math.max(0, p.breakT - dt);
+        p.droneFlash = Math.max(0, p.droneFlash - dt);
         for (const a of [...p.active.values()]) {
             a.remaining -= dt;
             if (a.remaining <= 0) p.active.delete(a.id);
@@ -107,6 +110,37 @@ export function createPowerups({ rng = Math.random, reducedMotion = false } = {}
         }
     };
 
+    // Drone Assist: every POWERUPS.drone.every s, one bolt at the nearest target ahead of the drone and within
+    // its range. targets: [{ x, y }] (the enemies' centres); rams.bolt() puts the shot in flight.
+    p.droneStep = (dt, drone, targets, rams) => {
+        if (!p.isOn('drone')) { p.droneCool = 0; return; }
+        const d = POWERUPS.drone;
+        p.droneCool = Math.max(0, p.droneCool - dt);
+        if (p.droneCool > 0) return;
+        let best = null, bestD = d.range;
+        for (const t of targets) {
+            const dx = t.x - drone.x, dist = Math.hypot(dx, t.y - drone.y);
+            if (dx > 20 && dist < bestD) { best = t; bestD = dist; }
+        }
+        if (best && rams.bolt(drone.x + 12, drone.y, best.x, best.y, d.speed, d.damage)) {
+            p.droneCool = d.every; p.droneFlash = 0.12; p.droneShots = (p.droneShots || 0) + 1;
+        }
+    };
+
+    // The drone glows while the power-up is on, and flashes as it fires
+    p.drawDrone = (ctx, drone) => {
+        if (!p.isOn('drone') || blinkOff(p.remaining('drone'))) return;
+        ctx.save();
+        ctx.globalCompositeOperation = 'lighter';
+        const r = 34 + (p.droneFlash > 0 ? 16 : 0);
+        const g = ctx.createRadialGradient(drone.x, drone.y, 2, drone.x, drone.y, r);
+        g.addColorStop(0, `rgba(190, 242, 100, ${p.droneFlash > 0 ? 0.8 : reducedMotion ? 0.3 : 0.4})`);
+        g.addColorStop(1, 'rgba(163, 230, 53, 0)');
+        ctx.fillStyle = g;
+        ctx.fillRect(drone.x - r, drone.y - r, r * 2, r * 2);
+        ctx.restore();
+    };
+
     p.pickups = () => pool.filter(s => s.on).map(s => ({ id: s.id, x: s.x, y: s.y }));
     p.clear = () => { for (const s of pool) s.on = false; p.active.clear(); };
 
@@ -122,6 +156,14 @@ export function createPowerups({ rng = Math.random, reducedMotion = false } = {}
             for (let c = 0; c < 3; c++) ctx.fillRect((-12 + c * 8.5) * s, -4 * s, 6 * s, 5 * s);
             ctx.fillStyle = '#e3b341';
             ctx.fillRect(-13 * s, 2.5 * s, 26 * s, 2.5 * s);
+        },
+        drone(ctx, s) {
+            ctx.fillStyle = '#a3e635';
+            ctx.beginPath(); ctx.arc(0, 0, 8 * s, 0, Math.PI * 2); ctx.fill();
+            ctx.fillStyle = '#1a2e05';
+            ctx.beginPath(); ctx.arc(0, 0, 3.6 * s, 0, Math.PI * 2); ctx.fill();
+            ctx.strokeStyle = '#a3e635'; ctx.lineWidth = 2.5 * s;
+            ctx.beginPath(); ctx.moveTo(-14 * s, -9 * s); ctx.lineTo(-6 * s, -5 * s); ctx.moveTo(14 * s, -9 * s); ctx.lineTo(6 * s, -5 * s); ctx.stroke();
         },
         cooling(ctx, s) {
             ctx.fillStyle = '#60a5fa';

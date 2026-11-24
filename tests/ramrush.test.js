@@ -1411,9 +1411,12 @@ describe('RAM RUSH: power-ups, Liquid Cooling (4b)', () => {
             const p = createPowerups({ rng });
             const road = { xmp: 0, cooling: 0 };
             for (let k = 0; k < 500; k++) road[p.pick('road')]++;
-            // an enemy that falls with the dice: 0.5 (it walks), 0 (it drops), 0.99 (which: the last one)
+            // an enemy that falls with the dice: 0.5 (it walks), 0 (it drops), then which one: a die just past
+            // XMP's share of the chances is Liquid Cooling, whatever comes after in the list
+            const { POWERUPS } = await import('/game/config.js');
+            const total = Object.values(POWERUPS).reduce((a, d) => a + d.dropChance, 0);
             const frames = await (await fetch('/game/assets/enemies.json')).json();
-            const dice = [0.5, 0, 0.99]; let n = 0;
+            const dice = [0.5, 0, (POWERUPS.xmp.dropChance + 0.001) / total]; let n = 0;
             const e = createEnemies(null, frames, { rng: () => dice[n++ % dice.length] });
             e.natural = false;
             e.spawn('orangeBot', 500);
@@ -1438,5 +1441,82 @@ describe('RAM RUSH: power-ups, Liquid Cooling (4b)', () => {
         await spawnEnemy(page, 'orangeBot', 300);
         await waitState(page, (s) => s.hp === 2, 2000);
         assert.deepEqual(page.problems, []);
+    }));
+});
+
+describe('RAM RUSH: power-ups, Drone Assist (4b)', () => {
+    it('8 s: every 0.8 s one bolt at the nearest target ahead of the drone and in range; none behind it, none out of range, none when off', () => withPage(DESK, async (page) => {
+        await openGame(page);
+        const out = await page.evaluate(async () => {
+            const { createPowerups } = await import('/game/powerups.js');
+            const { createRams } = await import('/game/ram.js');
+            const drone = { x: 150, y: 310 };
+            const run = (targets, secs, on = true) => {
+                const p = createPowerups(), r = createRams();
+                if (on) p.activate('drone');
+                const seen = [];
+                for (let f = 0; f < secs * 60; f++) {
+                    p.update(1 / 60, 0, 0);
+                    p.droneStep(1 / 60, drone, targets, r);
+                    r.update(1 / 60, []);
+                    for (const b of r.bolts()) if (!seen.some(q => Math.abs(q.vx - b.vx) < 1e-6 && Math.abs(q.vy - b.vy) < 1e-6 && q.x > b.x - 200)) seen.push(b);
+                }
+                return { shots: p.droneShots || 0, first: r.bolts()[0] || null, p };
+            };
+            const near = { x: 450, y: 400 }, far = { x: 700, y: 400 }, behind = { x: 60, y: 400 }, tooFar = { x: 900, y: 400 };
+            const a = run([far, near], 2.5);       // 3 shots in 2.5 s (at 0, 0.8, 1.6, and 2.4)
+            const b = run([behind, tooFar], 2);
+            const c = run([near], 2, false);
+            // the aim: the nearest one
+            const p = createPowerups(), r = createRams(); p.activate('drone');
+            p.droneStep(0.016, drone, [far, near], r);
+            const bolt = r.bolts()[0];
+            return { shots: [a.shots, b.shots, c.shots], aim: [Math.sign(bolt.vx), Math.sign(bolt.vy), Math.round(Math.atan2(bolt.vy, bolt.vx) * 100) / 100,
+                Math.round(Math.atan2(near.y - drone.y, near.x - (drone.x + 12)) * 100) / 100] };
+        });
+        assert.deepEqual(out.shots, [4, 0, 0]);
+        assert.equal(out.aim[2], out.aim[3], 'at the nearest');
+    }));
+
+    it('its bolt hurts an enemy like a RAM, and glances off the Orange Bot ball in the air', () => withPage(DESK, async (page) => {
+        await openGame(page);
+        const out = await page.evaluate(async () => {
+            const { createRams } = await import('/game/ram.js');
+            const r = createRams();
+            r.bolt(100, 300, 300, 300, 1000, 1);
+            r.update(0.15, []);
+            const dmg = r.hit({ x: 230, y: 280, w: 40, h: 40 });
+            r.bolt(100, 300, 300, 300, 1000, 1);
+            r.update(0.15, []);
+            const at = r.deflect({ x: 230, y: 280, w: 40, h: 40 });
+            const after = r.bolts()[0];
+            return { dmg, spark: !!at, back: after.vx < 0, nothing: r.hit({ x: 230, y: 200, w: 60, h: 160 }) };
+        });
+        assert.deepEqual(out, { dmg: 1, spark: true, back: true, nothing: 0 });
+    }));
+
+    it('in the game: run into it, the drone glows and brings down an Orange Bot on its own; the hero threw nothing', () => withPage(DESK, async (page) => {
+        await openSettled(page);
+        await page.evaluate(async () => (await import('/game/main.js')).testSpawnPickup('drone', 330, 400));
+        await waitState(page, (s) => s.powerups.some(p => p.id === 'drone'), 3000);
+        await spawnEnemy(page, 'orangeBot', 820);
+        await waitState(page, (s) => s.killed === 1, 6000);
+        const s = await gameState(page);
+        assert.ok(s.droneShots >= 2, `shots ${s.droneShots}`);
+        assert.equal(s.thrown, 0, 'not a throw of his');
+        assert.deepEqual(page.problems, []);
+    }));
+
+    it('on the road it comes too, with its own look (a lime ring)', () => withPage(DESK, async (page) => {
+        await openGame(page);
+        const out = await page.evaluate(async () => {
+            const { createPowerups } = await import('/game/powerups.js');
+            let seed = 8; const rng = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+            const p = createPowerups({ rng });
+            const n = { xmp: 0, cooling: 0, drone: 0 };
+            for (let k = 0; k < 600; k++) n[p.pick('road')]++;
+            return n;
+        });
+        assert.ok(out.drone > 100 && out.xmp > out.drone, JSON.stringify(out));
     }));
 });
