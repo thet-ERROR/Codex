@@ -18,12 +18,12 @@ import { createRams } from './ram.js';
 import { createPowerups } from './powerups.js';
 import { createEnemies } from './enemies.js';
 import { createProgression, saveRecords, readRecords } from './progression.js';
-import { PX_PER_M, HERO, PARRY } from './config.js';
+import { PX_PER_M, HERO, PARRY, difficulty } from './config.js';
 import { createInput } from './input.js';
 
 const ASSETS = new URL('./assets/', import.meta.url);
 const W = 960, H = 540;                       // the game's own coordinates; the canvas is scaled to fit
-const SPEED = 300;                            // px per second at parallax 1 (the road)
+// the road's speed (px per second at parallax 1) comes from config DIFFICULTY: it rises with the distance
 // Back to front: file, parallax factor, drawn height, y of the bottom edge (from parallax-preview.html)
 const LAYERS = [
     ['sky', 0.03, 440, 440],
@@ -328,7 +328,8 @@ export async function open() {
         // the hit-stop: for a blink the world holds still (the picture is still drawn)
         const wdt = g.stop > 0 ? 0 : dt;
         g.stop = Math.max(0, g.stop - dt);
-        g.distance += SPEED * wdt;
+        g.speed = difficulty(g.distance / PX_PER_M).speed;
+        g.distance += g.speed * wdt;
         ctx.fillStyle = sky;
         ctx.fillRect(0, 0, W, H);
         g.hero.update(wdt, i);
@@ -348,8 +349,8 @@ export async function open() {
         g.powerups.droneStep(wdt, g.hero.drone, g.enemies.targets(), g.rams);
         g.rams.update(wdt, g.enemies.targets());
         g.heroLink.box = g.hero.box();
-        g.enemies.update(wdt, SPEED * wdt, g.distance / PX_PER_M, g.heroLink, g.rams, g.powerups);
-        g.powerups.update(wdt, SPEED * wdt, g.distance / PX_PER_M, g.heroLink.box, g.rams);
+        g.enemies.update(wdt, g.speed * wdt, g.distance / PX_PER_M, g.heroLink, g.rams, g.powerups);
+        g.powerups.update(wdt, g.speed * wdt, g.distance / PX_PER_M, g.heroLink.box, g.rams);
         for (const [name, factor, h, bottom] of LAYERS) drawLayer(ctx, g.images[name], factor, h, bottom, g.distance);
         g.powerups.draw(ctx);
         g.enemies.draw(ctx);
@@ -464,6 +465,7 @@ export const state = () => {
         hp: h.hp, invuln: h.invuln, over: !!game.over,
         enemies: game.enemies.list(), spikes: game.enemies.spikes(), killed: game.enemies.killed, score: game.enemies.score, xp: game.enemies.xp,
         parryCool: game.parryCool, parries: game.enemies.parries,
+        speed: game.speed || 0,
         level: game.prog.level, xpTotal: game.prog.total, xpInto: game.prog.into, xpNeed: game.prog.need, tier: game.prog.tier().name,
         records: readRecords(),
         distance: game.distance, paused: game.userPaused
@@ -479,3 +481,5 @@ export const testSpawnEnemy = (id, x, opts = {}) => !!(game && game.enemies && g
 export const testQuiet = () => { if (game) { game.quiet = true; if (game.enemies) game.enemies.natural = false; } };
 // … and XP, as if enemies had given it (the level ups come at their own pace otherwise)
 export const testXp = (n) => { if (game && game.enemies) game.enemies.xp += n; };
+// … and further along the road at once (the difficulty follows the distance)
+export const testWarp = (m) => { if (game) game.distance = m * PX_PER_M; };

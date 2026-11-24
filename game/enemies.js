@@ -13,7 +13,7 @@
 // attack at a time. Here: what that means on screen (the curl and its blinking eye, the bouncing ball,
 // the dust where it lands, the spark when a RAM glances off the armour).
 
-import { ENEMIES, SPAWNS, HIT_FLASH, POWERUPS, ATTACKS, PARRY } from './config.js';
+import { ENEMIES, SPAWNS, HIT_FLASH, POWERUPS, ATTACKS, PARRY, difficulty } from './config.js';
 import { GROUND } from './hero.js';
 import { PATROL, TELEGRAPH, ATTACK, RECOVER, STUNNED, createDirector, step, vulnerable, animOf, damageOf, chanceOf, hurt, landsIn, stun } from './attacks.js';
 
@@ -54,7 +54,8 @@ export function createEnemies(sheet, frames, { rng = Math.random, reducedMotion 
             for (let n = 0; n < SP.count; n++) {
                 const p = spikePool.find(q => !q.on);
                 if (!p) return;
-                Object.assign(p, { on: true, x: heroX + SP.ahead + n * SP.gap, t: 0, owner, hit: false });
+                // where the first comes up (SP.erupt), plus what the road runs in the warning at this speed
+                Object.assign(p, { on: true, x: heroX + SP.erupt + link.speed * SP.telegraph + n * SP.gap, t: 0, owner, hit: false });
             }
         },
         // its crawler died before they came out: the cracks close
@@ -106,7 +107,7 @@ export function createEnemies(sheet, frames, { rng = Math.random, reducedMotion 
         muzzleAt.y = s.y - h * f.anchor[1] + h * s.def.muzzle[1];
         return muzzleAt;
     };
-    const link = { dt: 0, scroll: 0, heroX: null, heroBox: null, hero: null, rng, director, eyeOf, muzzleOf, spikes };   // handed to the attacks, reused
+    const link = { dt: 0, scroll: 0, speed: 0, heroX: null, heroBox: null, hero: null, rng, director, eyeOf, muzzleOf, spikes };   // handed to the attacks, reused
     const e = {
         nextAtM: SPAWNS.firstM,
         bossAtM: SPAWNS.boss.firstM,
@@ -119,7 +120,8 @@ export function createEnemies(sheet, frames, { rng = Math.random, reducedMotion 
         for (const [id, d] of Object.entries(POWERUPS)) { r -= d.dropChance || 0; if (r < 0) return id; }
         return 'xmp';
     };
-    const gap = () => SPAWNS.gapM[0] + rng() * (SPAWNS.gapM[1] - SPAWNS.gapM[0]);
+    // the metres to the next one: closer together the further it goes (config DIFFICULTY)
+    const gap = (distM) => (SPAWNS.gapM[0] + rng() * (SPAWNS.gapM[1] - SPAWNS.gapM[0])) * difficulty(distM).gapScale;
 
     // attacks: whether this one will attack at all (left out, the chance in config.js decides)
     e.spawn = (id, x, attacks) => {
@@ -157,7 +159,7 @@ export function createEnemies(sheet, frames, { rng = Math.random, reducedMotion 
     // deflect(box); powerups: spawn(id, x, y) for the drops
     e.update = (dt, scroll, distM, hero, rams, powerups) => {
         director.update(dt);
-        link.dt = dt; link.scroll = scroll;
+        link.dt = dt; link.scroll = scroll; link.speed = dt > 0 ? scroll / dt : 0;
         link.heroX = hero && hero.box ? hero.box.x + hero.box.w / 2 : null;
         link.heroBox = hero ? hero.box : null; link.hero = hero;
         spikes.update(dt, scroll, hero);
@@ -166,7 +168,7 @@ export function createEnemies(sheet, frames, { rng = Math.random, reducedMotion 
         if (e.natural && !boss && distM >= e.bossAtM && e.spawn('mechBoss', W + 120, true)) e.bossAtM += SPAWNS.boss.everyM;
         else if (e.natural && !boss && distM >= e.nextAtM) {
             const zone = SPAWNS.zones[Math.min(SPAWNS.zones.length - 1, Math.floor(distM / SPAWNS.zoneM))];
-            if (e.spawn(zone[Math.floor(rng() * zone.length)], W + 60)) e.nextAtM = distM + gap();
+            if (e.spawn(zone[Math.floor(rng() * zone.length)], W + 60)) e.nextAtM = distM + gap(distM);
         }
         for (const s of pool) {
             if (!s.on) continue;

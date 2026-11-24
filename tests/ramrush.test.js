@@ -745,7 +745,8 @@ describe('RAM RUSH: enemies, the Orange Bot first, and the hero\'s life', () => 
             return { at, drops, ids: e.list().map(x => x.id) };
         });
         assert.ok(out.at[0] >= 60, `first at ${out.at[0]}`);
-        for (let k = 1; k < out.at.length; k++) assert.ok(out.at[k] - out.at[k - 1] >= 25, out.at.join());
+        // never closer than 25 m, times the difficulty's gap scale at that distance (1 at the start, 0.75 from 3000 m)
+        for (let k = 1; k < out.at.length; k++) assert.ok(out.at[k] - out.at[k - 1] >= 25 * (1 - 0.25 * Math.min(1, out.at[k - 1] / 3000)) - 1e-9, out.at.join());
         assert.ok(out.at.length > 20, 'they keep coming');
         assert.deepEqual(out.drops, ['xmp']);
     }));
@@ -1618,5 +1619,84 @@ describe('RAM RUSH: XP, levels and the RAM tier (step 7)', () => {
         });
         assert.deepEqual(out.read, { score: 0, level: 0, distance: 0 });
         assert.deepEqual(out.saved, { score: 5, level: 1, distance: 10 });
+    }));
+});
+
+describe('RAM RUSH: difficulty that rises (step 8)', () => {
+    it('over 3000 m the road goes from 300 to 450 px/s and the enemies come 25 % closer together; then it holds', () => withPage(DESK, async (page) => {
+        await openGame(page);
+        const out = await page.evaluate(async () => {
+            const { difficulty } = await import('/game/config.js');
+            return [0, 1500, 3000, 9000].map(m => { const d = difficulty(m); return [d.speed, d.gapScale]; });
+        });
+        assert.deepEqual(out, [[300, 1], [375, 0.875], [450, 0.75], [450, 0.75]]);
+    }));
+
+    it('in the game: far along, the road really runs faster', () => withPage(DESK, async (page) => {
+        await openSettled(page);
+        const speedNow = () => page.evaluate(async () => {
+            const m = await import('/game/main.js');
+            const t0 = performance.now(), d0 = m.state().distance;
+            await new Promise(r => setTimeout(r, 500));
+            return (m.state().distance - d0) / ((performance.now() - t0) / 1000);
+        });
+        const start = await speedNow();
+        await page.evaluate(async () => (await import('/game/main.js')).testWarp(3200));
+        const late = await speedNow();
+        assert.ok(start > 260 && start < 340, `at the start ${start.toFixed(0)}`);
+        assert.ok(late > 400 && late < 500, `far along ${late.toFixed(0)}`);
+        assert.equal((await gameState(page)).speed, 450);
+    }));
+
+    it('the enemies come closer together in time far along than at the start', () => withPage(DESK, async (page) => {
+        await openGame(page);
+        const out = await page.evaluate(async () => {
+            const { createEnemies } = await import('/game/enemies.js');
+            const { difficulty, PX_PER_M } = await import('/game/config.js');
+            const frames = await (await fetch('/game/assets/enemies.json')).json();
+            const secondsApart = (from) => {
+                let seed = 6; const rng = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+                const e = createEnemies(null, frames, { rng });
+                e.bossAtM = Infinity; e.nextAtM = from;
+                let m = from, t = 0; const at = [];
+                while (at.length < 30) {
+                    const sp = difficulty(m).speed, dt = 1 / 60;
+                    const before = e.nextAtM;
+                    e.update(dt, 2000, m, null, null, null);
+                    if (e.nextAtM !== before) at.push(t);
+                    m += sp * dt / PX_PER_M; t += dt;
+                }
+                return (at.at(-1) - at[0]) / (at.length - 1);
+            };
+            return [secondsApart(60), secondsApart(4000)];
+        });
+        assert.ok(out[1] < out[0] * 0.6, `seconds between two: ${out.map(x => x.toFixed(2)).join(' → ')}`);
+    }));
+
+    it('fair at full speed: the spikes still come up ~220 px ahead of the hero, and every warning lasts as long', () => withPage(DESK, async (page) => {
+        await openGame(page);
+        const out = await page.evaluate(async () => {
+            const { createEnemies } = await import('/game/enemies.js');
+            const frames = await (await fetch('/game/assets/enemies.json')).json();
+            const run = (scroll) => {
+                const e = createEnemies(null, frames, { rng: () => 0 });
+                e.natural = false;
+                const hero = { box: { x: 204, y: 342, w: 52, h: 118 }, hit: () => true };
+                e.spawn('fireCrawler', 960, true);
+                let warn = 0, upAt = null;
+                for (let f = 0; f < 240 && upAt === null; f++) {
+                    e.update(1 / 60, scroll, 0, hero, null, null);
+                    if (e.list()[0]?.state === 'telegraph') warn++;
+                    const sp = e.spikes();
+                    if (sp.length && sp[0].up > 0) upAt = sp[0].x;
+                }
+                return { warn, upAt };
+            };
+            return [run(5), run(7.5)];
+        });
+        for (const r of out) {
+            assert.ok(Math.abs(r.warn - 36) <= 1, `warning frames ${r.warn}`);
+            assert.ok(r.upAt - 230 > 190 && r.upAt - 230 < 240, `comes up ${(r.upAt - 230).toFixed(0)} px ahead`);
+        }
     }));
 });
