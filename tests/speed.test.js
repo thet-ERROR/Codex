@@ -142,6 +142,14 @@ describe('speed — in the browser', () => {
         for (const i of out.icons) { assert.ok(i.w > 8, `an icon has width (${i.w})`); assert.notEqual(i.c, 'none'); }
     }));
 
+    // The mini game (game/) is loaded only when it is opened: a visit that never opens it fetches none of it
+    it('nothing of the mini game is fetched with the page', () => withPage({}, async (page) => {
+        await page.waitForTimeout(800);
+        const fetched = await page.evaluate(() => performance.getEntriesByType('resource').map(r => new URL(r.name).pathname).filter(p => p.startsWith('/game/')));
+        assert.deepEqual(fetched, []);
+        assert.doesNotMatch(HTML, /["'(]\/?game\//, 'index.html names no game file');
+    }));
+
     it('the background video starts once the intro has gone', () => withPage({}, async (page) => {
         await page.waitForFunction(() => !document.querySelector('.bg-video').paused, null, { timeout: 5000 });
     }));

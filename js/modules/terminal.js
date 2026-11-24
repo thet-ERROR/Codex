@@ -151,6 +151,12 @@ const COMMANDS = {
     exit() {
         toggleCLI();
     },
+    // Hidden (not in `help`): the RAM RUSH mini game
+    ramrush() {
+        // Close the terminal if it is open (a run from elsewhere must not open it instead)
+        if (document.getElementById('cli-overlay')?.classList.contains('active')) toggleCLI();
+        openRamRush();
+    },
     theme(arg) {
         // With no argument it steps through the three modes: night → day → auto → night …
         const order = ['night', 'day', 'auto'];
@@ -339,3 +345,35 @@ export function initTerminal() {
 // Εξαγωγή στο global scope (χρησιμοποιείται στο onclick="toggleCLI()")
 window.toggleCLI = toggleCLI;
 window.runTerminalCommand = runCommand;
+
+// RAM RUSH (game/): imported only now, when someone opens it, so the site never downloads the game for a
+// visit that doesn't play. A dynamic import is not preloaded (index.html preloads the static imports only).
+let ramRushLoading = null;
+export function openRamRush() {
+    if (ramRushLoading) return ramRushLoading;
+    ramRushLoading = import('../../game/main.js')
+        .then(m => m.open())
+        .catch(() => { if (window.showToast) window.showToast(T('ramRushFailed'), 'error'); })
+        .finally(() => { ramRushLoading = null; });
+    return ramRushLoading;
+}
+window.openRamRush = openRamRush;
+
+// The easter egg: typing r-a-m anywhere outside a text field opens it. Read by key position (e.code), so it
+// works the same on a Greek layout (where the same keys type ρ-α-μ). Never inside an input, never with a modifier.
+const RAM_KEYS = ['KeyR', 'KeyA', 'KeyM'];
+let ramKeyAt = 0;
+document.addEventListener('keydown', (e) => {
+    if (e.ctrlKey || e.metaKey || e.altKey || e.repeat) return;
+    const el = e.target;
+    if (el && (el.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(el.tagName))) { ramKeyAt = 0; return; }
+    if (e.code === RAM_KEYS[ramKeyAt]) {
+        ramKeyAt++;
+        if (ramKeyAt === RAM_KEYS.length) {
+            ramKeyAt = 0;
+            if (!document.getElementById('rr-overlay')) openRamRush();
+        }
+    } else {
+        ramKeyAt = e.code === RAM_KEYS[0] ? 1 : 0;
+    }
+});
