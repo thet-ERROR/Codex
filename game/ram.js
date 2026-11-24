@@ -40,7 +40,7 @@ export function createRams() {
         if (tx !== undefined && tx > x) ang = Math.max(-THROW_CONE, Math.min(THROW_CONE, Math.atan2(ty - y, tx - x)));
         const v = STATS.speed * (mult.speed || 1);
         Object.assign(s, { on: true, x, y, vx: Math.cos(ang) * v, vy: Math.sin(ang) * v, a: 0, flown: 0, tn: 0,
-            damage: STATS.damage * (mult.damage || 1) });
+            damage: STATS.damage * (mult.damage || 1), hot: !!mult.hot });
         r.cooldown = STATS.cooldown * (mult.cooldown || 1);
         r.thrown++;
         return true;
@@ -86,7 +86,7 @@ export function createRams() {
         return 0;
     };
 
-    r.active = () => pool.filter(s => s.on).map(s => ({ x: s.x, y: s.y, vx: s.vx, vy: s.vy }));
+    r.active = () => pool.filter(s => s.on).map(s => ({ x: s.x, y: s.y, vx: s.vx, vy: s.vy, damage: s.damage, hot: s.hot }));
     r.clear = () => { for (const s of pool) s.on = false; r.cooldown = 0; };
 
     r.draw = (ctx) => {
@@ -100,9 +100,11 @@ export function createRams() {
             for (let k = 0; k < n; k++) {
                 const p = s.trail[(s.tn - 1 - k) % TRAIL];
                 const f = 1 - k / TRAIL;
-                ctx.fillStyle = `rgba(217, 70, 239, ${0.6 * f})`;
+                // overclocked (XMP): a hotter trail, cyan into white, and wider
+                ctx.fillStyle = s.hot ? (k < 3 ? `rgba(240, 253, 255, ${0.75 * f})` : `rgba(34, 211, 238, ${0.65 * f})`)
+                    : `rgba(217, 70, 239, ${0.6 * f})`;
                 ctx.beginPath();
-                ctx.arc(p.x, p.y, 3 + 8 * f, 0, Math.PI * 2);
+                ctx.arc(p.x, p.y, (s.hot ? 4 : 3) + (s.hot ? 10 : 8) * f, 0, Math.PI * 2);
                 ctx.fill();
             }
             ctx.restore();

@@ -495,3 +495,103 @@ describe('RAM RUSH: the RAM throw', () => {
         assert.deepEqual(out, { miss: 0, hit: 1, left: 0 });
     }));
 });
+
+describe('RAM RUSH: power-ups, XMP first', () => {
+    it('XMP: faster, more often, harder for 10s; the same again refills the time, never stacks; then it ends', () => withPage(DESK, async (page) => {
+        const out = await page.evaluate(async () => {
+            const { createPowerups } = await import('/game/powerups.js');
+            const p = createPowerups();
+            const stats = () => ['speedMult', 'rofMult', 'damageMult'].map(n => p.getStat(n));
+            const off = stats();
+            p.activate('xmp');
+            const on = stats();
+            p.update(6, 0, 0);
+            const left = p.remaining('xmp');
+            p.activate('xmp');
+            const again = { stats: stats(), remaining: p.remaining('xmp'), count: p.active.size };
+            p.update(10.1, 0, 0);
+            return { off, on, left, again, after: stats(), isOn: p.isOn('xmp') };
+        });
+        assert.deepEqual(out.off, [1, 1, 1]);
+        assert.deepEqual(out.on, [1.6, 0.6, 1.5]);
+        assert.ok(Math.abs(out.left - 4) < 1e-9);
+        assert.deepEqual(out.again, { stats: [1.6, 0.6, 1.5], remaining: 10, count: 1 });
+        assert.deepEqual(out.after, [1, 1, 1]);
+        assert.equal(out.isOn, false);
+    }));
+
+    it('whatever multiplies a stat, it stays inside its cap', () => withPage(DESK, async (page) => {
+        const v = await page.evaluate(async () => {
+            const { createPowerups } = await import('/game/powerups.js');
+            const { POWERUPS } = await import('/game/config.js');
+            POWERUPS.xmp.mults.speedMult = 99;           // a runaway upgrade, say
+            const p = createPowerups(); p.activate('xmp');
+            const s = p.getStat('speedMult');
+            POWERUPS.xmp.mults.speedMult = 1.6;
+            return s;
+        });
+        assert.equal(v, 2.2);
+    }));
+
+    it('pickups come along the road no closer than 400 m apart', () => withPage(DESK, async (page) => {
+        const out = await page.evaluate(async () => {
+            const { createPowerups } = await import('/game/powerups.js');
+            let seed = 1; const rng = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+            const p = createPowerups({ rng });
+            const at = [];
+            for (let m = 0; m < 3000; m += 1) {
+                const next = p.nextAtM;
+                p.update(0.1, 2000, m);                  // a big scroll: each pickup leaves before the next
+                if (p.nextAtM !== next) at.push(m);       // one was put on the road at this metre
+            }
+            return at;
+        });
+        assert.ok(out.length >= 4, out.join());
+        assert.ok(out[0] >= 400, `first at ${out[0]}`);
+        for (let i = 1; i < out.length; i++) assert.ok(out[i] - out[i - 1] >= 400, out.join());
+    }));
+
+    it('running into a pickup turns XMP on: the throws fly 1.6× faster, come 0.6× as often, hit 1.5× harder, with the hot trail', () => withPage(DESK, async (page) => {
+        await openSettled(page);
+        await page.evaluate(async () => (await import('/game/main.js')).testSpawnPickup('xmp', 330, 400));
+        await page.waitForTimeout(500);
+        let s = await gameState(page);
+        assert.equal(s.taken, 1);
+        assert.equal(s.powerups[0].id, 'xmp');
+        assert.equal(s.pickups.length, 0, 'taken off the road');
+        await page.keyboard.press('KeyJ');
+        await page.waitForTimeout(40);
+        s = await gameState(page);
+        const r = s.rams[0];
+        assert.ok(Math.abs(r.vx - 1440) < 1, `speed ${r.vx}`);
+        assert.equal(r.damage, 1.5);
+        assert.equal(r.hot, true);
+        assert.ok(s.cooldown <= 0.24 && s.cooldown > 0.15, `cooldown ${s.cooldown}`);
+    }));
+
+    it('a RAM that hits a pickup takes it too', () => withPage(DESK, async (page) => {
+        await openSettled(page);
+        await page.evaluate(async () => (await import('/game/main.js')).testSpawnPickup('xmp', 700, 380));
+        await page.keyboard.press('KeyJ');
+        await page.waitForTimeout(600);
+        const s = await gameState(page);
+        assert.equal(s.taken, 1);
+        assert.equal(s.rams.length, 0, 'the stick was spent on it');
+    }));
+
+    it('P freezes its time; the MHz meter climbs while on', () => withPage(DESK, async (page) => {
+        await openSettled(page);
+        await page.evaluate(async () => (await import('/game/main.js')).testSpawnPickup('xmp', 300, 400));
+        await page.waitForTimeout(900);
+        await page.keyboard.press('KeyP');
+        await page.waitForTimeout(50);
+        const a = await gameState(page);
+        await page.waitForTimeout(500);
+        const b = await gameState(page);
+        assert.equal(a.powerups[0].remaining, b.powerups[0].remaining, 'frozen while paused');
+        assert.ok(a.mhz > 4500, `mhz ${a.mhz}`);
+        await page.keyboard.press('KeyP');
+        await page.waitForTimeout(300);
+        assert.ok((await gameState(page)).powerups[0].remaining < b.powerups[0].remaining, 'runs again');
+    }));
+});

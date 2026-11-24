@@ -10,10 +10,12 @@
 // prompt step aside, the title bar says `ramrush`), and on a phone held upright the world sits on top with a
 // touch area below it. Step 4: the controls (input.js) and the moves (hero.js), P pauses, and a short
 // reminder of the keys (or of the swipes, on a phone) shows at the start. Step 5: the RAM throw (ram.js), by
-// key, click or tap. The enemies come next.
+// key, click or tap. Plan §4b: the power-ups (powerups.js, numbers in config.js), XMP first. The enemies next.
 
 import { createHero } from './hero.js';
 import { createRams } from './ram.js';
+import { createPowerups } from './powerups.js';
+import { PX_PER_M } from './config.js';
 import { createInput } from './input.js';
 
 const ASSETS = new URL('./assets/', import.meta.url);
@@ -194,12 +196,19 @@ export async function open() {
                 const r = canvas.getBoundingClientRect();
                 if (i.aim.y <= r.bottom && i.aim.y >= r.top) { tx = (i.aim.x - r.left) * W / r.width; ty = (i.aim.y - r.top) * H / r.height; }
             }
-            g.rams.throw(hand.x, hand.y, tx, ty);
+            const pu = g.powerups;
+            g.rams.throw(hand.x, hand.y, tx, ty, {
+                speed: pu.getStat('speedMult'), cooldown: pu.getStat('rofMult'), damage: pu.getStat('damageMult'), hot: pu.isOn('xmp')
+            });
         }
         g.rams.update(dt, []);
+        g.powerups.update(dt, SPEED * dt, g.distance / PX_PER_M, g.hero.box(), g.rams);
         for (const [name, factor, h, bottom] of LAYERS) drawLayer(ctx, g.images[name], factor, h, bottom, g.distance);
+        g.powerups.draw(ctx);
+        g.powerups.drawAura(ctx, g.hero.box());
         g.hero.draw(ctx);
         g.rams.draw(ctx);
+        g.powerups.drawHud(ctx);
         if (g.hintT > 0) { g.hintT -= dt; drawHint(); }
     }
 
@@ -242,6 +251,7 @@ export async function open() {
         if (g.closed) return g;
         g.hero = createHero(sheet, frames);
         g.rams = createRams();
+        g.powerups = createPowerups({ reducedMotion: matchMedia('(prefers-reduced-motion: reduce)').matches });
         g.images = Object.fromEntries(LAYERS.map(([name], i) => [name, imgs[i]]));
         status.textContent = '';
     } catch (e) {
@@ -266,7 +276,12 @@ export const state = () => {
     return {
         hero: { x: h.x, y: h.y, vy: h.vy, bob: h.bob, frame: h.frame, onGround: h.onGround, jumps: h.jumps, box: h.box() },
         drone: { x: h.drone.x, y: h.drone.y },
-        rams: game.rams.active(), thrown: game.rams.thrown,
+        rams: game.rams.active(), thrown: game.rams.thrown, cooldown: game.rams.cooldown,
+        powerups: [...game.powerups.active.values()].map(a => ({ ...a })), pickups: game.powerups.pickups(),
+        mhz: game.powerups.mhz, taken: game.powerups.taken,
         distance: game.distance, paused: game.userPaused
     };
 };
+
+// For the tests only: put a pickup on the road (the natural ones come every 400–700 m, ~40 s apart)
+export const testSpawnPickup = (id, x, y) => !!(game && game.powerups && game.powerups.spawn(id, x, y));
