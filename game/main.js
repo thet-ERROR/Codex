@@ -18,8 +18,9 @@ import { createRams } from './ram.js';
 import { createPowerups } from './powerups.js';
 import { createEnemies } from './enemies.js';
 import { createProgression, saveRecords, readRecords } from './progression.js';
-import { PX_PER_M, HERO, PARRY, difficulty } from './config.js';
+import { PX_PER_M, PARRY, difficulty } from './config.js';
 import { createInput } from './input.js';
+import { createHud } from './hud.js';
 
 const ASSETS = new URL('./assets/', import.meta.url);
 const W = 960, H = 540;                       // the game's own coordinates; the canvas is scaled to fit
@@ -158,109 +159,9 @@ export async function open() {
     };
     const input = createInput(overlay, { isParry: onParryButton });
     let newRun = () => {};
+    const hud = createHud(ctx, g, { txt, touchUI });
 
-    function drawHint() {
-        const a = Math.min(1, g.hintT / 1.2);   // fades out over its last second
-        ctx.save();
-        ctx.globalAlpha = a;
-        ctx.font = '600 15px system-ui, sans-serif';
-        const w = ctx.measureText(txt().keys).width + 32;
-        ctx.fillStyle = 'rgba(13, 12, 29, 0.72)';
-        ctx.beginPath();
-        ctx.roundRect((W - w) / 2, H - 46, w, 30, 15);
-        ctx.fill();
-        ctx.fillStyle = '#f1f0f7';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.fillText(txt().keys, W / 2, H - 31);
-        ctx.restore();
-    }
-    function drawPause() {
-        ctx.save();
-        ctx.fillStyle = 'rgba(13, 12, 29, 0.6)';
-        ctx.fillRect(0, 0, W, H);
-        ctx.fillStyle = '#f1f0f7';
-        ctx.textAlign = 'center';
-        ctx.font = '800 44px system-ui, sans-serif';
-        ctx.fillText(txt().paused, W / 2, H / 2 - 6);
-        ctx.font = '500 17px system-ui, sans-serif';
-        ctx.fillStyle = 'rgba(241, 240, 247, 0.75)';
-        ctx.fillText(txt().resume, W / 2, H / 2 + 30);
-        ctx.restore();
-    }
-
-    // The hero's life, top left (the HUD of plan §8c will dress it up): full and empty hearts
-    function heart(x, y, r, full) {
-        ctx.beginPath();
-        ctx.moveTo(x, y + r * 0.9);
-        ctx.bezierCurveTo(x - r * 1.6, y - r * 0.2, x - r * 0.6, y - r * 1.3, x, y - r * 0.45);
-        ctx.bezierCurveTo(x + r * 0.6, y - r * 1.3, x + r * 1.6, y - r * 0.2, x, y + r * 0.9);
-        ctx.fillStyle = full ? '#ef4444' : 'rgba(13, 12, 29, 0.7)';
-        ctx.fill();
-        ctx.lineWidth = 2;
-        ctx.strokeStyle = full ? '#fecaca' : 'rgba(241, 240, 247, 0.45)';
-        ctx.stroke();
-    }
-    function drawLife() {
-        ctx.save();
-        for (let k = 0; k < HERO.maxHp; k++) heart(30 + k * 32, 30, 11, k < g.hero.hp);
-        ctx.restore();
-    }
-    // Under the hearts: the level and his RAM tier, and the XP bar to the next level (the HUD of §8c will
-    // dress it up); it fills smoothly, not in jumps
-    function drawXp(dt) {
-        const pr = g.prog, target = pr.into / pr.need;
-        g.xpShown += (target - g.xpShown) * (1 - Math.exp(-8 * dt));
-        if (target < g.xpShown - 0.5) g.xpShown = target;           // a level up: it starts again from the bottom
-        ctx.save();
-        ctx.font = '800 12px system-ui, sans-serif';
-        ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
-        ctx.lineWidth = 3; ctx.strokeStyle = 'rgba(13, 12, 29, 0.85)';
-        const label = `LV ${pr.level} · ${pr.tier().name}`;
-        ctx.strokeText(label, 19, 56); ctx.fillStyle = '#f1f0f7'; ctx.fillText(label, 19, 56);
-        ctx.fillStyle = 'rgba(13, 12, 29, 0.7)';
-        ctx.fillRect(19, 66, 150, 7);
-        ctx.fillStyle = '#d946ef';
-        ctx.fillRect(19, 66, 150 * Math.max(0, Math.min(1, g.xpShown)), 7);
-        ctx.restore();
-    }
-    // LEVEL UP!: a banner with the new tier, fading out over its time
-    function drawLevelUp() {
-        const k = g.levelT / 1.2;
-        ctx.save();
-        ctx.globalAlpha = Math.min(1, k * 2);
-        ctx.textAlign = 'center';
-        ctx.font = '900 40px system-ui, sans-serif';
-        ctx.lineWidth = 6; ctx.strokeStyle = 'rgba(13, 12, 29, 0.85)';
-        ctx.strokeText(txt().levelUp, W / 2, 150); ctx.fillStyle = '#f0abfc'; ctx.fillText(txt().levelUp, W / 2, 150);
-        ctx.font = '800 20px system-ui, sans-serif';
-        ctx.strokeText(`LV ${g.prog.level} · ${g.prog.tier().name}`, W / 2, 182);
-        ctx.fillStyle = '#f1f0f7'; ctx.fillText(`LV ${g.prog.level} · ${g.prog.tier().name}`, W / 2, 182);
-        ctx.restore();
-    }
-    function drawOver() {
-        ctx.save();
-        ctx.fillStyle = 'rgba(13, 12, 29, 0.72)';
-        ctx.fillRect(0, 0, W, H);
-        ctx.textAlign = 'center';
-        ctx.fillStyle = '#f1f0f7';
-        ctx.font = '800 52px system-ui, sans-serif';
-        ctx.fillText(txt().over, W / 2, H / 2 - 30);
-        ctx.font = '600 20px system-ui, sans-serif';
-        ctx.fillStyle = '#22d3ee';
-        ctx.fillText(`${txt().score} ${g.enemies.score} · ${Math.floor(g.distance / PX_PER_M)} m · ${g.enemies.killed} ${txt().kills} · LV ${g.prog.level}`, W / 2, H / 2 + 12);
-        const r = g.records;
-        ctx.font = '600 15px system-ui, sans-serif';
-        ctx.fillStyle = r.beat.score || r.beat.distance ? '#f0abfc' : 'rgba(241, 240, 247, 0.6)';
-        ctx.fillText(`${r.beat.score || r.beat.distance ? txt().newBest + ' ' : ''}${txt().best}: ${r.best.score} · ${r.best.distance} m · LV ${r.best.level}`, W / 2, H / 2 + 40);
-        ctx.font = '500 17px system-ui, sans-serif';
-        ctx.fillStyle = 'rgba(241, 240, 247, 0.75)';
-        ctx.fillText(txt().again, W / 2, H / 2 + 74);
-        ctx.restore();
-    }
-
-    // The parry: a shield arc before the hero; bright and wide on a perfect one. The button (touch) shows
-    // its rest as a ring that fills back.
+    // The parry: a shield arc before the hero; bright and wide on a perfect one (its touch button is in hud.js)
     function drawParry() {
         if (g.parryFx > 0) {
             const k = g.parryFx / 0.25, b = g.heroLink.box, perfect = g.parryPerfect;
@@ -280,22 +181,6 @@ export async function open() {
             ctx.fillRect(0, 0, W, H);
             ctx.restore();
         }
-        if (touchUI) {
-            const b = PARRY.button, ready = g.parryCool <= 0;
-            ctx.save();
-            ctx.fillStyle = ready ? 'rgba(13, 12, 29, 0.55)' : 'rgba(13, 12, 29, 0.35)';
-            ctx.beginPath(); ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2); ctx.fill();
-            ctx.lineWidth = 3;
-            ctx.strokeStyle = 'rgba(34, 211, 238, 0.35)';
-            ctx.stroke();
-            ctx.strokeStyle = '#22d3ee';
-            ctx.beginPath(); ctx.arc(b.x, b.y, b.r, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * (1 - g.parryCool / PARRY.cooldown)); ctx.stroke();
-            ctx.fillStyle = ready ? '#f1f0f7' : 'rgba(241, 240, 247, 0.45)';
-            ctx.font = '800 15px system-ui, sans-serif';
-            ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-            ctx.fillText('PARRY', b.x, b.y);
-            ctx.restore();
-        }
     }
 
     function frame(t) {
@@ -306,7 +191,7 @@ export async function open() {
         if (g.paused || !g.images) return;
         if (i.pause) {
             g.userPaused = !g.userPaused;
-            if (g.userPaused) drawPause();   // drawn once over the last picture; the loop then waits
+            if (g.userPaused) hud.pause();   // drawn once over the last picture; the loop then waits
         }
         if (g.userPaused) return;
         if (g.over) {
@@ -359,21 +244,22 @@ export async function open() {
         g.powerups.drawDrone(ctx, g.hero.drone);
         g.rams.draw(ctx);
         drawParry();
+        hud.parryButton();
         // XP: the enemies' and the distance's; a level up raises his RAM tier (the throws hit harder)
         if (g.prog.set(g.prog.fromRun(g.enemies.xp, g.distance / PX_PER_M))) {
             g.levelT = 1.2;
             g.powerups.base.damageMult = g.prog.tier().damage;
         }
         g.levelT = Math.max(0, g.levelT - dt);
-        drawLife();
-        drawXp(dt);
-        g.powerups.drawHud(ctx, 104);
-        if (g.levelT > 0) drawLevelUp();
-        if (g.hintT > 0) { g.hintT -= dt; drawHint(); }
+        hud.life();
+        hud.xp(dt);
+        hud.powerups(g.powerups, 104);
+        if (g.levelT > 0) hud.levelUp();
+        if (g.hintT > 0) { g.hintT -= dt; hud.hint(); }
         if (g.hero.hp <= 0) {
             g.over = true; g.overT = 0;
             g.records = saveRecords({ score: g.enemies.score, level: g.prog.level, distance: Math.floor(g.distance / PX_PER_M) });
-            drawOver();
+            hud.over();
         }
     }
 
