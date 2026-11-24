@@ -13,9 +13,9 @@
 // attack at a time. Here: what that means on screen (the curl and its blinking eye, the bouncing ball,
 // the dust where it lands, the spark when a RAM glances off the armour).
 
-import { ENEMIES, SPAWNS, HIT_FLASH, POWERUPS, ATTACKS } from './config.js';
+import { ENEMIES, SPAWNS, HIT_FLASH, POWERUPS, ATTACKS, PARRY } from './config.js';
 import { GROUND } from './hero.js';
-import { PATROL, TELEGRAPH, ATTACK, RECOVER, createDirector, step, vulnerable, animOf, damageOf, chanceOf, hurt } from './attacks.js';
+import { PATROL, TELEGRAPH, ATTACK, RECOVER, STUNNED, createDirector, step, vulnerable, animOf, damageOf, chanceOf, hurt, landsIn, stun } from './attacks.js';
 
 const W = 960;
 const DIE_T = 0.25;                    // the death pop
@@ -108,6 +108,7 @@ export function createEnemies(sheet, frames, { rng = Math.random, reducedMotion 
     const e = {
         nextAtM: SPAWNS.firstM,
         bossAtM: SPAWNS.boss.firstM,
+        parries: 0,
         killed: 0, score: 0, xp: 0,
         natural: true                  // the tests can turn the spawner off
     };
@@ -184,7 +185,7 @@ export function createEnemies(sheet, frames, { rng = Math.random, reducedMotion 
             }
             const dmg = rams && open ? rams.hit(box) : 0;
             if (dmg) {
-                s.hp -= dmg;
+                s.hp -= dmg * (s.state === STUNNED ? PARRY.stunMult : 1);   // dazed by a parry: it takes double
                 s.flash = HIT_FLASH;
                 if (s.hp <= 0) {
                     s.dying = DIE_T;
@@ -208,6 +209,19 @@ export function createEnemies(sheet, frames, { rng = Math.random, reducedMotion 
         if (pool.some(s => s.on && s.def.boss && s.dying <= 0)) e.nextAtM = Math.max(e.nextAtM, distM + SPAWNS.gapM[0]);
     };
 
+    // A parry: 'perfect' if an attack lands within the window (it is stunned, flashes, bonus XP), else 'miss'
+    e.parry = () => {
+        for (const s of pool) {
+            if (!s.on || s.dying > 0 || landsIn(s) > PARRY.window) continue;
+            stun(s, link);
+            s.flash = 0.15;
+            e.xp += PARRY.xp;
+            e.parries++;
+            return 'perfect';
+        }
+        return 'miss';
+    };
+
     // Centres of what can be hit, for the RAMs' auto-aim (not the armoured ball in the air: aiming at it
     // would only waste the throw)
     e.targets = () => pool.filter(s => s.on && s.dying <= 0 && vulnerable(s)).map(s => { const b = e.box(s); return { x: b.x + b.w / 2, y: b.y + b.h / 2 }; });
@@ -215,7 +229,7 @@ export function createEnemies(sheet, frames, { rng = Math.random, reducedMotion 
         box: e.box(s), state: s.state, attacks: s.attacks, h: s.h, hop: s.hop, hops: s.hops, vulnerable: vulnerable(s),
         clink: s.clink, st: s.st, ax: s.ax, ay: s.ay, lane: s.lane }));
     e.spikes = () => spikePool.filter(p => p.on).map(p => ({ x: p.x, t: p.t, up: spikes.up(p), box: spikes.box(p) }));
-    e.clear = () => { for (const s of pool) s.on = false; for (const p of spikePool) p.on = false; director.clear(); e.nextAtM = SPAWNS.firstM; e.bossAtM = SPAWNS.boss.firstM; e.killed = e.score = e.xp = 0; };
+    e.clear = () => { for (const s of pool) s.on = false; for (const p of spikePool) p.on = false; director.clear(); e.nextAtM = SPAWNS.firstM; e.bossAtM = SPAWNS.boss.firstM; e.killed = e.score = e.xp = e.parries = 0; };
 
     e.draw = (ctx) => {
         drawSpikes(ctx);
@@ -235,7 +249,8 @@ export function createEnemies(sheet, frames, { rng = Math.random, reducedMotion 
             if (s.state === RECOVER && s.def.attack === 'charge' && !reducedMotion) sy = 1 - 0.04 * Math.abs(Math.sin(s.st * 9));
             if (s.dying > 0) { const k = 1 - s.dying / DIE_T; sc *= 1 + 0.35 * k; alpha = 1 - k; bob = 0; }
             const w = f.w * sc * sx, h = f.h * sc * sy;
-            const shake = s.state === TELEGRAPH && !reducedMotion && !s.def.fly && !s.def.boss ? Math.sin(s.t * 70) * 1.5 : 0;   // and trembles
+            const shake = reducedMotion ? 0 : s.state === TELEGRAPH && !s.def.fly && !s.def.boss ? Math.sin(s.t * 70) * 1.5
+                : s.state === STUNNED ? Math.sin(s.t * 18) * 3 : 0;   // a dazed boss sways   // and trembles
             ctx.save();
             ctx.globalAlpha = alpha;
             // shadow: smaller and fainter the higher the ball is

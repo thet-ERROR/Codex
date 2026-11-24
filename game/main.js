@@ -17,7 +17,7 @@ import { createHero } from './hero.js';
 import { createRams } from './ram.js';
 import { createPowerups } from './powerups.js';
 import { createEnemies } from './enemies.js';
-import { PX_PER_M, HERO } from './config.js';
+import { PX_PER_M, HERO, PARRY } from './config.js';
 import { createInput } from './input.js';
 
 const ASSETS = new URL('./assets/', import.meta.url);
@@ -36,12 +36,12 @@ const TEXT = {
     el: { title: 'RAM RUSH', close: 'Κλείσιμο παιχνιδιού', loading: 'Φόρτωση…', failed: 'Το παιχνίδι δεν φόρτωσε. Δοκίμασε ξανά.',
         paused: 'ΠΑΥΣΗ', resume: 'P για συνέχεια',
         over: 'GAME OVER', again: 'Space / J / πάτα για νέο παιχνίδι', score: 'Σκορ', kills: 'εχθροί',
-        keys: '↑ / W / Space άλμα (ξανά στον αέρα: διπλό)   ↓ / S slide   ← → κίνηση   J / X / κλικ RAM   P παύση   Esc έξοδος',
+        keys: '↑ / W / Space άλμα (ξανά στον αέρα: διπλό)   ↓ / S slide   ← → κίνηση   J / X / κλικ RAM   E / δεξί κλικ parry   P παύση   Esc έξοδος',
         swipes: ['Πάτα για ρίψη RAM', 'Σύρε ↑ για άλμα (ξανά στον αέρα: διπλό)', 'Σύρε ↓ για slide', 'Σύρε ← → για κίνηση'] },
     en: { title: 'RAM RUSH', close: 'Close the game', loading: 'Loading…', failed: 'The game did not load. Try again.',
         paused: 'PAUSED', resume: 'P to resume',
         over: 'GAME OVER', again: 'Space / J / tap for a new run', score: 'Score', kills: 'enemies',
-        keys: '↑ / W / Space jump (again in the air: double)   ↓ / S slide   ← → move   J / X / click RAM   P pause   Esc exit',
+        keys: '↑ / W / Space jump (again in the air: double)   ↓ / S slide   ← → move   J / X / click RAM   E / right click parry   P pause   Esc exit',
         swipes: ['Tap to throw a RAM', 'Swipe ↑ to jump (again in the air: double)', 'Swipe ↓ to slide', 'Swipe ← → to move'] }
 };
 const txt = () => TEXT[document.documentElement.lang === 'en' ? 'en' : 'el'];
@@ -145,7 +145,15 @@ export async function open() {
     const g = { overlay, style, raf: 0, last: 0, distance: 0, paused: false, userPaused: false, images: null, hero: null, closed: false,
         hintT: matchMedia('(pointer: fine)').matches ? 7 : 0 };   // the keys reminder (a phone has it in the touch area)
     game = g;
-    const input = createInput(overlay);
+    // The parry button on a touch screen, bottom right of the world (plan §5b; the HUD step will dress it)
+    const touchUI = matchMedia('(pointer: coarse)').matches;
+    const onParryButton = (cx, cy) => {
+        if (!touchUI) return false;
+        const r = canvas.getBoundingClientRect(), b = PARRY.button;
+        const x = (cx - r.left) * W / r.width, y = (cy - r.top) * H / r.height;
+        return Math.hypot(x - b.x, y - b.y) <= b.hit;
+    };
+    const input = createInput(overlay, { isParry: onParryButton });
     let newRun = () => {};
 
     function drawHint() {
@@ -212,6 +220,45 @@ export async function open() {
         ctx.restore();
     }
 
+    // The parry: a shield arc before the hero; bright and wide on a perfect one. The button (touch) shows
+    // its rest as a ring that fills back.
+    function drawParry() {
+        if (g.parryFx > 0) {
+            const k = g.parryFx / 0.25, b = g.heroLink.box, perfect = g.parryPerfect;
+            ctx.save();
+            ctx.globalCompositeOperation = 'lighter';
+            ctx.strokeStyle = perfect ? `rgba(240, 253, 255, ${k})` : `rgba(34, 211, 238, ${0.6 * k})`;
+            ctx.shadowColor = '#22d3ee'; ctx.shadowBlur = perfect ? 24 : 10;
+            ctx.lineWidth = perfect ? 6 : 3;
+            ctx.beginPath();
+            ctx.arc(b.x + b.w / 2, b.y + b.h / 2, (perfect ? 78 : 64) + (1 - k) * 12, -1.1, 1.1);
+            ctx.stroke();
+            ctx.restore();
+        }
+        if (g.flashT > 0) {                            // the perfect parry's flash over the world
+            ctx.save();
+            ctx.fillStyle = `rgba(240, 253, 255, ${0.35 * g.flashT / 0.12})`;
+            ctx.fillRect(0, 0, W, H);
+            ctx.restore();
+        }
+        if (touchUI) {
+            const b = PARRY.button, ready = g.parryCool <= 0;
+            ctx.save();
+            ctx.fillStyle = ready ? 'rgba(13, 12, 29, 0.55)' : 'rgba(13, 12, 29, 0.35)';
+            ctx.beginPath(); ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2); ctx.fill();
+            ctx.lineWidth = 3;
+            ctx.strokeStyle = 'rgba(34, 211, 238, 0.35)';
+            ctx.stroke();
+            ctx.strokeStyle = '#22d3ee';
+            ctx.beginPath(); ctx.arc(b.x, b.y, b.r, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * (1 - g.parryCool / PARRY.cooldown)); ctx.stroke();
+            ctx.fillStyle = ready ? '#f1f0f7' : 'rgba(241, 240, 247, 0.45)';
+            ctx.font = '800 15px system-ui, sans-serif';
+            ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+            ctx.fillText('PARRY', b.x, b.y);
+            ctx.restore();
+        }
+    }
+
     function frame(t) {
         g.raf = requestAnimationFrame(frame);
         const dt = Math.min((t - (g.last || t)) / 1000, 0.05);   // capped, so a hiccup never jumps the world
@@ -230,10 +277,22 @@ export async function open() {
             if (g.overT > 0.7 && (i.jump || i.throw)) newRun();
             return;
         }
-        g.distance += SPEED * dt;
+        // the parry: perfect (the boss's shot never comes) or a miss (it rests a while)
+        g.parryCool = Math.max(0, g.parryCool - dt);
+        g.parryFx = Math.max(0, g.parryFx - dt);
+        g.flashT = Math.max(0, g.flashT - dt);
+        if (i.parry && g.parryCool <= 0) {
+            g.parryPerfect = g.enemies.parry() === 'perfect';
+            g.parryFx = 0.25;
+            if (g.parryPerfect) { g.stop = PARRY.hitStop; g.flashT = 0.12; } else g.parryCool = PARRY.cooldown;
+        }
+        // the hit-stop: for a blink the world holds still (the picture is still drawn)
+        const wdt = g.stop > 0 ? 0 : dt;
+        g.stop = Math.max(0, g.stop - dt);
+        g.distance += SPEED * wdt;
         ctx.fillStyle = sky;
         ctx.fillRect(0, 0, W, H);
-        g.hero.update(dt, i);
+        g.hero.update(wdt, i);
         if (i.throw) {
             // a click or tap on the world aims there; on the touch area below it (or by key) straight ahead
             const hand = g.hero.hand();
@@ -247,16 +306,17 @@ export async function open() {
                 speed: pu.getStat('speedMult'), cooldown: pu.getStat('rofMult'), damage: pu.getStat('damageMult'), hot: pu.isOn('xmp')
             });
         }
-        g.rams.update(dt, g.enemies.targets());
+        g.rams.update(wdt, g.enemies.targets());
         g.heroLink.box = g.hero.box();
-        g.enemies.update(dt, SPEED * dt, g.distance / PX_PER_M, g.heroLink, g.rams, g.powerups);
-        g.powerups.update(dt, SPEED * dt, g.distance / PX_PER_M, g.heroLink.box, g.rams);
+        g.enemies.update(wdt, SPEED * wdt, g.distance / PX_PER_M, g.heroLink, g.rams, g.powerups);
+        g.powerups.update(wdt, SPEED * wdt, g.distance / PX_PER_M, g.heroLink.box, g.rams);
         for (const [name, factor, h, bottom] of LAYERS) drawLayer(ctx, g.images[name], factor, h, bottom, g.distance);
         g.powerups.draw(ctx);
         g.enemies.draw(ctx);
         g.powerups.drawAura(ctx, g.heroLink.box);
         g.hero.draw(ctx);
         g.rams.draw(ctx);
+        drawParry();
         drawLife();
         g.powerups.drawHud(ctx, 78);
         if (g.hintT > 0) { g.hintT -= dt; drawHint(); }
@@ -311,6 +371,7 @@ export async function open() {
             g.enemies.natural = !g.quiet;
             g.heroLink = { box: g.hero.box(), hit: (d) => g.hero.hit(d) };
             g.distance = 0; g.over = false; g.overT = 0;
+            g.parryCool = 0; g.parryFx = 0; g.parryPerfect = false; g.stop = 0; g.flashT = 0;
         };
         newRun();
         g.images = Object.fromEntries(LAYERS.map(([name], i) => [name, imgs[i]]));
@@ -342,6 +403,7 @@ export const state = () => {
         mhz: game.powerups.mhz, taken: game.powerups.taken,
         hp: h.hp, invuln: h.invuln, over: !!game.over,
         enemies: game.enemies.list(), spikes: game.enemies.spikes(), killed: game.enemies.killed, score: game.enemies.score, xp: game.enemies.xp,
+        parryCool: game.parryCool, parries: game.enemies.parries,
         distance: game.distance, paused: game.userPaused
     };
 };

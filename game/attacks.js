@@ -9,10 +9,10 @@
 // An attack only moves its enemy (x, height above the road, spin) and says when it may be hurt; touching
 // the hero, the RAMs and the drawing stay in enemies.js.
 
-import { ATTACKS, DIRECTOR } from './config.js';
+import { ATTACKS, DIRECTOR, PARRY } from './config.js';
 import { GROUND } from './hero.js';
 
-export const PATROL = 'patrol', TELEGRAPH = 'telegraph', ATTACK = 'attack', RECOVER = 'recover';
+export const PATROL = 'patrol', TELEGRAPH = 'telegraph', ATTACK = 'attack', RECOVER = 'recover', STUNNED = 'stunned';
 
 export function createDirector() {
     const d = { holder: null, rest: 0 };
@@ -225,6 +225,12 @@ const beam = {
 
     recover(s) { if (s.st >= this.cfg.recover) { s.state = PATROL; s.st = 0; s.cool = this.cfg.cooldown; } },
 
+    // A perfect parry: the shot that was coming never comes; dazed, it takes double from RAMs, then goes on
+    stun(s, c) { s.state = STUNNED; s.st = 0; c.director.release(s); },
+    stunned(s) { if (s.st >= PARRY.stun) { s.state = PATROL; s.st = 0; s.cool = this.cfg.cooldown; } },
+    // how long until its beam lands, or Infinity
+    landsIn(s) { return s.state === TELEGRAPH ? this.cfg.telegraph - s.st : Infinity; },
+
     // the beam ends where it meets the road
     reach(s, m) {
         const toRoad = s.ay > 0 ? (GROUND - m.y) / s.ay : this.cfg.length;
@@ -234,7 +240,7 @@ const beam = {
     _reach: { width: 0, length: 0 },
 
     vulnerable() { return true; },
-    anim(s) { return s.state === TELEGRAPH ? s.def.anims.charge : s.state === ATTACK ? s.def.anims.fire : s.def.anims.walk; },
+    anim(s) { return s.state === TELEGRAPH ? s.def.anims.charge : s.state === ATTACK ? s.def.anims.fire : s.state === STUNNED ? s.def.anims.stunned : s.def.anims.walk; },
     damage(s) { return s.def.damage; },
     hurt() {}
 };
@@ -250,6 +256,7 @@ export function step(s, c) {
     else if (s.state === TELEGRAPH) k.telegraph(s, c);
     else if (s.state === ATTACK) return k.attack(s, c);
     else if (s.state === RECOVER) k.recover(s, c);
+    else if (s.state === STUNNED && k.stunned) k.stunned(s, c);
     return false;
 }
 
@@ -259,3 +266,6 @@ export const damageOf = (s) => { const k = KINDS[s.def.attack]; return k ? k.dam
 // A RAM hit it (and it lives on): what that does to its attack
 export const hurt = (s, c) => { const k = KINDS[s.def.attack]; if (k) k.hurt(s, c); };
 export const chanceOf = (def) => (ATTACKS[def.attack] ? ATTACKS[def.attack].chance : 0);
+// Parry (the boss only, for now): whose attack lands within the window, and stunning it
+export const landsIn = (s) => { const k = KINDS[s.def.attack]; return k && k.landsIn ? k.landsIn(s) : Infinity; };
+export const stun = (s, c) => { const k = KINDS[s.def.attack]; if (k && k.stun) k.stun(s, c); };

@@ -181,6 +181,19 @@ export const ATTACKS = {
         damage: 2
     }
 };
+// Parry (plan §5b): E or the right mouse button (on a touch screen, the button at the bottom right).
+// Pressed in the last WINDOW seconds before the boss's beam: the shot never comes, the boss is stunned
+// (RAMs hurt it STUN_MULT times), a short freeze, a flash, bonus XP. Pressed at any other time: the parry
+// rests for COOLDOWN, so it cannot be spammed. Parry alone never kills it: it does no damage.
+export const PARRY = {
+    window: 0.25,
+    cooldown: 1,
+    stun: 1.5,
+    stunMult: 2,
+    hitStop: 0.08,
+    xp: 20,
+    button: { x: 888, y: 440, r: 46, hit: 80 }   // the touch button, in the game's 960×540 (hit: its reach)
+};
 export const DIRECTOR = {
     rest: 0.8                         // s after one attack ends before another may start (one at a time)
 };

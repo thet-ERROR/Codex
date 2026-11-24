@@ -1254,3 +1254,125 @@ describe('RAM RUSH: the Malware Core (mini-boss) and its Beam (5b)', () => {
         assert.deepEqual(page.problems, []);
     }));
 });
+
+// Parry (5b): the logic on its own (a boss in the page, 60 fps), then the keys, the mouse and the touch button
+const parryRun = (page, opts) => page.evaluate(async (opts) => {
+    const { createEnemies } = await import('/game/enemies.js');
+    const { ATTACKS } = await import('/game/config.js');
+    const frames = await (await fetch('/game/assets/enemies.json')).json();
+    const e = createEnemies(null, frames, { rng: () => 0.3 });
+    e.natural = false;
+    const hits = [];
+    const hero = { box: { x: 204, y: 342, w: 52, h: 118 }, hit: (d) => { hits.push(d); return true; } };
+    e.spawn('mechBoss', 760, true);
+    const log = [];
+    let result = null, f = 0, hpAfterRam = null;
+    for (; f < 60 * 5; f++) {
+        const b = e.list()[0];
+        // pressed `before` seconds before the beam would land
+        if (result === null && b.state === 'telegraph' && ATTACKS.beam.telegraph - b.st <= opts.before) result = e.parry();
+        if (opts.ram && result === 'perfect' && hpAfterRam === null && b.state === 'stunned') {
+            e.update(0, 0, 0, null, { hit: () => 1 }, null); hpAfterRam = e.list()[0].hp;
+        }
+        e.update(1 / 60, 5, 0, hero, null, null);
+        log.push(e.list()[0].state);
+    }
+    return { result, hits, log, xp: e.xp, parries: e.parries, hpAfterRam, none: (() => { const n = createEnemies(null, frames); return n.parry(); })() };
+}, opts);
+
+describe('RAM RUSH: Parry (5b)', () => {
+    it('pressed in the last 0.25 s before the beam: perfect, the shot never comes, the boss is stunned 1.5 s, bonus XP', () => withPage(DESK, async (page) => {
+        await openGame(page);
+        const r = await parryRun(page, { before: 0.2 });
+        assert.equal(r.result, 'perfect');
+        assert.deepEqual(r.hits, [], 'no beam on him');
+        const stunned = runsOf(r.log.map(s => [{ state: s }])).find(x => x.state === 'stunned');
+        assert.ok(stunned && Math.abs(stunned.frames - 90) <= 1, JSON.stringify(stunned));
+        assert.deepEqual([r.xp, r.parries], [20, 1]);
+        assert.ok(r.log.lastIndexOf('telegraph') > r.log.indexOf('stunned'), 'and then it fights on');
+    }));
+
+    it('stunned, a RAM hurts it twice as much (and the parry itself did it no harm)', () => withPage(DESK, async (page) => {
+        await openGame(page);
+        const r = await parryRun(page, { before: 0.2, ram: true });
+        assert.equal(r.hpAfterRam, 16 - 2);
+    }));
+
+    it('too early (0.4 s before) or with no boss there: a miss, and the beam lands as ever', () => withPage(DESK, async (page) => {
+        await openGame(page);
+        const r = await parryRun(page, { before: 0.4 });
+        assert.equal(r.result, 'miss');
+        assert.ok(r.hits.length >= 1 && r.hits[0] === 2);
+        assert.ok(!r.log.includes('stunned'));
+        assert.equal(r.none, 'miss');
+    }));
+
+    it('in the game: E at the right moment parries; a miss rests the parry 1 s, and pressing again then does nothing', () => withPage(DESK, async (page) => {
+        await openSettled(page);
+        await page.evaluate(async () => (await import('/game/main.js')).testSpawnEnemy('mechBoss', 1060, { attack: true }));
+        await waitState(page, (s) => s.enemies[0] && s.enemies[0].state === 'telegraph' && s.enemies[0].st > 0.12 && s.enemies[0].st < 0.3, 6000);
+        await page.keyboard.press('KeyE');                  // far too early
+        let s = await gameState(page);
+        assert.ok(s.parryCool > 0.8, `resting: ${s.parryCool}`);
+        await waitState(page, (s) => s.enemies[0].state === 'telegraph' && s.enemies[0].st > 0.72, 3000);
+        await page.keyboard.press('KeyE');                  // the right moment, but still resting: nothing
+        await waitState(page, (s) => s.enemies[0].state !== 'telegraph', 2000);
+        s = await gameState(page);
+        assert.deepEqual([s.enemies[0].state, s.parries], ['attack', 0]);
+        await waitState(page, (s) => s.enemies[0].state === 'telegraph' && s.enemies[0].st > 0.72, 6000);
+        await page.keyboard.press('KeyE');
+        await waitState(page, (s) => s.enemies[0].state !== 'telegraph', 2000);
+        s = await gameState(page);
+        assert.deepEqual([s.enemies[0].state, s.parries], ['stunned', 1]);
+        assert.deepEqual(page.problems, []);
+    }));
+
+    it('a perfect parry freezes the world for a blink (hit-stop)', () => withPage(DESK, async (page) => {
+        await openSettled(page);
+        await page.evaluate(async () => (await import('/game/main.js')).testSpawnEnemy('mechBoss', 1060, { attack: true }));
+        await waitState(page, (s) => s.enemies[0] && s.enemies[0].state === 'telegraph' && s.enemies[0].st > 0.72, 6000);
+        const d = await page.evaluate(async () => {
+            const m = await import('/game/main.js');
+            window.dispatchEvent(new KeyboardEvent('keydown', { code: 'KeyE', key: 'e', bubbles: true }));
+            window.dispatchEvent(new KeyboardEvent('keyup', { code: 'KeyE', key: 'e', bubbles: true }));
+            // by time, not by frames (the test browser may draw faster than 60 fps)
+            const t0 = performance.now(), d0 = m.state().distance;
+            let still = null;
+            while (performance.now() - t0 < 300) {
+                await new Promise(r => requestAnimationFrame(r));
+                if (still === null && m.state().distance !== d0) still = performance.now() - t0;
+            }
+            return { still, moved: m.state().distance - d0 };
+        });
+        assert.ok(d.still >= 50 && d.still <= 200, `held still ${d.still} ms`);
+        assert.ok(d.moved > 0, 'then on');
+    }));
+
+    it('the right mouse button parries, and its menu does not open over the game', () => withPage(DESK, async (page) => {
+        await openSettled(page);
+        await page.evaluate(async () => (await import('/game/main.js')).testSpawnEnemy('mechBoss', 1060, { attack: true }));
+        await waitState(page, (s) => s.enemies[0] && s.enemies[0].state === 'telegraph' && s.enemies[0].st > 0.72, 6000);
+        const box = await page.locator('.rr-canvas').boundingBox();
+        await page.mouse.click(box.x + box.width / 2, box.y + box.height / 2, { button: 'right' });
+        await waitState(page, (s) => s.enemies[0].state === 'stunned', 1000);
+        assert.equal((await gameState(page)).thrown, 0, 'not a throw');
+        const blocked = await page.evaluate(() => !document.querySelector('.rr-canvas').dispatchEvent(new MouseEvent('contextmenu', { bubbles: true, cancelable: true })));
+        assert.equal(blocked, true);
+    }));
+
+    it('on a touch screen: a PARRY button at the bottom right; a touch on it parries and throws nothing', () => withPage({ width: 844, height: 390, mobile: true }, async (page) => {
+        await openSettled(page);
+        await page.evaluate(async () => (await import('/game/main.js')).testSpawnEnemy('mechBoss', 1060, { attack: true }));
+        await waitState(page, (s) => s.enemies[0] && s.enemies[0].state === 'telegraph' && s.enemies[0].st > 0.72, 6000);
+        await page.evaluate(async () => {
+            const { PARRY } = await import('/game/config.js');
+            const c = document.querySelector('.rr-canvas'), r = c.getBoundingClientRect();
+            const o = { bubbles: true, pointerId: 11, pointerType: 'touch', isPrimary: true,
+                clientX: r.left + PARRY.button.x * r.width / 960, clientY: r.top + PARRY.button.y * r.height / 540 };
+            c.dispatchEvent(new PointerEvent('pointerdown', o));
+            c.dispatchEvent(new PointerEvent('pointerup', o));
+        });
+        await waitState(page, (s) => s.enemies[0].state === 'stunned', 1000);
+        assert.equal((await gameState(page)).thrown, 0);
+    }));
+});
