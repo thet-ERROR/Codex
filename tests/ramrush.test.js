@@ -226,3 +226,172 @@ describe('RAM RUSH: on a phone', () => {
         assert.equal(over, true, 'the game is on top');
     }));
 });
+
+// Records the game's state every ~16ms while the keys are pressed, then hands the whole run back
+const startRec = (page) => page.evaluate(async () => {
+    const m = await import('/game/main.js');
+    window.__rec = [];
+    window.__recId = setInterval(() => { const s = m.state(); if (s) window.__rec.push(s); }, 16);
+});
+const stopRec = (page) => page.evaluate(() => { clearInterval(window.__recId); return window.__rec; });
+const gameState = (page) => page.evaluate(async () => (await import('/game/main.js')).state());
+// Timing tests start once the frames flow evenly: opened the instant the page loads, the site's own start-up
+// (its intro, the catalog) can hold a frame back for a moment, which a jump timed in ms would feel
+const settle = (page) => page.waitForFunction(() => new Promise(r => {
+    let worst = 0, last = performance.now(); const t0 = last;
+    const f = (t) => { worst = Math.max(worst, t - last); last = t; if (t - t0 < 250) requestAnimationFrame(f); else r(worst < 40); };
+    requestAnimationFrame(f);
+}), null, { timeout: 10000, polling: 300 });
+const openSettled = async (page) => { await openGame(page); await settle(page); };
+const apex = (rec) => 460 - Math.min(...rec.map(s => s.hero.y));
+const airTime = (rec) => rec.filter(s => !s.hero.onGround).length;
+const DESK = { width: 1440, height: 900 };
+
+describe('RAM RUSH: the controls', () => {
+    it('↑ held: a full jump, well over his height, and he lands back on the road', () => withPage(DESK, async (page) => {
+        await openSettled(page);
+        await startRec(page);
+        await page.keyboard.down('ArrowUp'); await page.waitForTimeout(450); await page.keyboard.up('ArrowUp');
+        await page.waitForTimeout(600);
+        const rec = await stopRec(page);
+        assert.ok(apex(rec) > 150 && apex(rec) < 230, `apex ${apex(rec)}`);
+        const frames = new Set(rec.map(s => s.hero.frame));
+        assert.ok(frames.has('jump') && frames.has('land'), [...frames].join());
+        const last = rec.at(-1).hero;
+        assert.deepEqual([last.y, last.onGround, last.jumps], [460, true, 0]);
+    }));
+
+    it('a quick tap is a hop: letting go early cuts the jump short', () => withPage(DESK, async (page) => {
+        await openSettled(page);
+        await startRec(page);
+        await page.keyboard.press('ArrowUp');
+        await page.waitForTimeout(700);
+        const rec = await stopRec(page);
+        assert.ok(apex(rec) > 10 && apex(rec) < 110, `hop ${apex(rec)}`);
+    }));
+
+    it('↑ again in the air: the double jump, higher, with the boost flames; a third press does nothing', () => withPage(DESK, async (page) => {
+        await openSettled(page);
+        await startRec(page);
+        await page.keyboard.down('ArrowUp'); await page.waitForTimeout(200); await page.keyboard.up('ArrowUp');
+        await page.keyboard.down('ArrowUp'); await page.waitForTimeout(250); await page.keyboard.up('ArrowUp');
+        await page.keyboard.press('ArrowUp');
+        await page.waitForTimeout(1200);
+        const rec = await stopRec(page);
+        assert.ok(apex(rec) > 240, `apex ${apex(rec)}`);
+        assert.ok(rec.some(s => s.hero.frame === 'boost'), 'boost frame');
+        assert.equal(Math.max(...rec.map(s => s.hero.jumps)), 2);
+        assert.equal(rec.at(-1).hero.onGround, true);
+    }));
+
+    it('↓ on the road: a slide, low (under head-height things) and then back to running', () => withPage(DESK, async (page) => {
+        await openSettled(page);
+        await startRec(page);
+        await page.keyboard.press('ArrowDown');
+        await page.waitForTimeout(900);
+        const rec = await stopRec(page);
+        const sliding = rec.filter(s => s.hero.frame === 'slide');
+        assert.ok(sliding.length > 5, 'slides');
+        assert.ok(sliding.every(s => s.hero.box.h < 70), 'low while sliding');
+        assert.ok(/^run/.test(rec.at(-1).hero.frame) && rec.at(-1).hero.box.h > 100, 'running again');
+    }));
+
+    it('↓ in the air: a fast fall, back on the road sooner', () => withPage(DESK, async (page) => {
+        await openSettled(page);
+        await startRec(page);
+        await page.keyboard.down('ArrowUp'); await page.waitForTimeout(450); await page.keyboard.up('ArrowUp');
+        await page.waitForTimeout(700);
+        const plain = airTime(await stopRec(page));
+        await startRec(page);
+        await page.keyboard.down('ArrowUp'); await page.waitForTimeout(150); await page.keyboard.press('ArrowDown'); await page.keyboard.up('ArrowUp');
+        await page.waitForTimeout(700);
+        const fast = airTime(await stopRec(page));
+        assert.ok(fast < plain * 0.75, `fast ${fast} vs plain ${plain}`);
+    }));
+
+    it('← / → move him along the road, never off it', () => withPage(DESK, async (page) => {
+        await openSettled(page);
+        await page.keyboard.down('ArrowRight'); await page.waitForTimeout(500); await page.keyboard.up('ArrowRight');
+        await page.waitForTimeout(300);
+        let s = await gameState(page);
+        assert.ok(s.hero.x > 330, `forward to ${s.hero.x}`);
+        await page.keyboard.down('KeyA'); await page.waitForTimeout(2500); await page.keyboard.up('KeyA');
+        await page.waitForTimeout(300);
+        s = await gameState(page);
+        assert.ok(s.hero.x >= 109 && s.hero.x < 125, `back to ${s.hero.x}`);
+    }));
+
+    it("the game's keys stay in the game: Space jumps (never presses the ✕), the page hears nothing, and after closing it hears them again", () => withPage(DESK, async (page) => {
+        await openSettled(page);
+        await page.evaluate(() => { window.__pageKeys = 0; document.addEventListener('keydown', (e) => { if (/^Arrow|Space/.test(e.code)) window.__pageKeys++; }); });
+        await startRec(page);
+        await page.keyboard.press('Space');
+        await page.keyboard.press('ArrowRight');
+        await page.waitForTimeout(400);
+        const rec = await stopRec(page);
+        assert.ok(rec.some(s => !s.hero.onGround), 'Space jumped');
+        assert.equal(await page.locator('#rr-overlay').count(), 1, 'still playing');
+        assert.equal(await page.evaluate(() => window.__pageKeys), 0);
+        await page.keyboard.press('Escape');
+        await page.keyboard.press('ArrowRight');
+        assert.equal(await page.evaluate(() => window.__pageKeys), 1);
+    }));
+
+    it('P pauses the world, P again carries on', () => withPage(DESK, async (page) => {
+        await openSettled(page);
+        await page.keyboard.press('KeyP');
+        await page.waitForTimeout(100);
+        const a = await gameState(page);
+        await page.waitForTimeout(300);
+        const b = await gameState(page);
+        assert.equal(a.paused, true);
+        assert.equal(a.distance, b.distance, 'frozen');
+        await page.keyboard.press('KeyP');
+        await page.waitForTimeout(300);
+        const c = await gameState(page);
+        assert.equal(c.paused, false);
+        assert.ok(c.distance > b.distance, 'moving again');
+    }));
+});
+
+describe('RAM RUSH: the swipes, on a phone', () => {
+    const PHONE = { width: 390, height: 844, mobile: true };
+    // A finger on the touch area: down, a few moves along (dx, dy), up
+    const swipe = (page, dx, dy) => page.evaluate(([dx, dy]) => {
+        const pad = document.querySelector('.rr-pad');
+        const r = pad.getBoundingClientRect();
+        const x = r.left + r.width / 2, y = r.top + r.height / 2;
+        const ev = (type, k) => pad.dispatchEvent(new PointerEvent(type, { bubbles: true, pointerId: 7, pointerType: 'touch', isPrimary: true, clientX: x + dx * k, clientY: y + dy * k }));
+        ev('pointerdown', 0); ev('pointermove', 0.3); ev('pointermove', 0.7); ev('pointermove', 1); ev('pointerup', 1);
+    }, [dx, dy]);
+
+    it('the touch area tells what the swipes do', () => withPage(PHONE, async (page) => {
+        await openSettled(page);
+        assert.equal((await page.locator('.rr-hint span').allTextContents()).length, 3);
+        assert.ok(await page.locator('.rr-hint').isVisible());
+    }));
+
+    it('swipe up jumps, twice is the double jump; swipe down slides; sideways steps him over', () => withPage(PHONE, async (page) => {
+        await openSettled(page);
+        await startRec(page);
+        await swipe(page, 0, -90);
+        await page.waitForTimeout(180);
+        await swipe(page, 0, -90);
+        await page.waitForTimeout(1400);
+        let rec = await stopRec(page);
+        assert.equal(Math.max(...rec.map(s => s.hero.jumps)), 2, 'double jump');
+        assert.ok(apex(rec) > 240, `apex ${apex(rec)}`);
+
+        await startRec(page);
+        await swipe(page, 0, 90);
+        await page.waitForTimeout(250);
+        rec = await stopRec(page);
+        assert.ok(rec.some(s => s.hero.frame === 'slide'), 'slide');
+
+        const x0 = rec.at(-1).hero.x;
+        await swipe(page, 100, 0);
+        await page.waitForTimeout(500);
+        const x1 = (await gameState(page)).hero.x;
+        assert.ok(x1 - x0 > 120, `stepped ${x1 - x0}`);
+    }));
+});
