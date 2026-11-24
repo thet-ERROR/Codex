@@ -53,6 +53,19 @@ export const PICKUPS = {
     radius: 22
 };
 
+// XP and levels (plan §4, step 7), per run. To go from level L to the next: base × L^power XP.
+// XP comes from the enemies and parries (their numbers above / below) and perM for each metre run.
+export const XP = { base: 100, power: 1.5, perM: 0.1 };
+// Each level up raises his RAM one tier: its damage multiplies the throws (under XMP's, and the result
+// stays inside STAT_CAPS). The last tier holds for every level after it.
+export const RAM_TIERS = [
+    { name: 'DDR3', damage: 1 },
+    { name: 'DDR4', damage: 1.25 },
+    { name: 'DDR5', damage: 1.5 },
+    { name: 'DDR5-6400', damage: 1.75 },
+    { name: 'DDR5-8000', damage: 2 }
+];
+
 // The hero's life (plan §6, §5b)
 export const HERO = {
     maxHp: 3,
@@ -181,8 +194,9 @@ export const ATTACKS = {
         triggerAhead: [420, 620],
         telegraph: 0.6,               // s the cracks glow
         count: 3,
-        ahead: 400,                   // px ahead of the hero the first crack opens: they come up ~220px ahead
-                                      // of him, and the road brings them to him (seen coming: time to jump)
+        erupt: 220,                   // px ahead of the hero the first spike comes up, at any speed: the crack
+                                      // opens that much further on as the road runs during the warning, and
+                                      // the road brings them to him (seen coming: time to jump)
         gap: 50,                      // px between two
         rise: 0.12,                   // s to come up
         stay: 1.5,                    // s up
@@ -237,4 +251,21 @@ export const SPAWNS = {
     boss: { firstM: 1000, everyM: 1000 },   // a Malware Core every 1000 m; while it stands, nothing else comes
     spikes: 6                       // spikes on the road at once (two rows)
 };
-export const HIT_FLASH = 0.08;        // s an enemy shows white when hit
+export const HIT_FLASH = 0.08;
+
+// Difficulty (plan §5, step 8): over the first rampM metres the road speeds up and the enemies come closer
+// together, then it holds (the zones above bring the new kinds). Every warning stays as long in seconds,
+// and the spikes keep their distance whatever the speed, so it gets faster, never unfair.
+export const DIFFICULTY = {
+    speed: [300, 450],                // px/s of the road: at the start, at its fastest
+    rampM: 3000,
+    gapScale: [1, 0.75]               // × the metres between two enemies (SPAWNS.gapM)
+};
+// How hard it is at distM metres: { speed, gapScale }; one object, reused
+const level = { speed: 0, gapScale: 1 };
+export function difficulty(distM) {
+    const k = Math.min(1, Math.max(0, distM / DIFFICULTY.rampM));
+    level.speed = DIFFICULTY.speed[0] + (DIFFICULTY.speed[1] - DIFFICULTY.speed[0]) * k;
+    level.gapScale = DIFFICULTY.gapScale[0] + (DIFFICULTY.gapScale[1] - DIFFICULTY.gapScale[0]) * k;
+    return level;
+}        // s an enemy shows white when hit

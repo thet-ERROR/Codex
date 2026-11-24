@@ -58,8 +58,10 @@ export function createPowerups({ rng = Math.random, reducedMotion = false } = {}
     p.isOn = (id) => p.active.has(id);
     p.remaining = (id) => (p.active.get(id) || { remaining: 0 }).remaining;
 
+    // What the hero has of his own (his RAM tier, from progression.js): multiplied under the power-ups
+    p.base = {};
     p.getStat = (name) => {
-        let v = 1;
+        let v = p.base[name] || 1;
         for (const { id } of p.active.values()) v *= POWERUPS[id].mults[name] || 1;
         const cap = STAT_CAPS[name];
         return cap ? Math.min(cap[1], Math.max(cap[0], v)) : v;

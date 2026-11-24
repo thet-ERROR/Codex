@@ -17,12 +17,13 @@ import { createHero } from './hero.js';
 import { createRams } from './ram.js';
 import { createPowerups } from './powerups.js';
 import { createEnemies } from './enemies.js';
-import { PX_PER_M, HERO, PARRY } from './config.js';
+import { createProgression, saveRecords, readRecords } from './progression.js';
+import { PX_PER_M, HERO, PARRY, difficulty } from './config.js';
 import { createInput } from './input.js';
 
 const ASSETS = new URL('./assets/', import.meta.url);
 const W = 960, H = 540;                       // the game's own coordinates; the canvas is scaled to fit
-const SPEED = 300;                            // px per second at parallax 1 (the road)
+// the road's speed (px per second at parallax 1) comes from config DIFFICULTY: it rises with the distance
 // Back to front: file, parallax factor, drawn height, y of the bottom edge (from parallax-preview.html)
 const LAYERS = [
     ['sky', 0.03, 440, 440],
@@ -36,11 +37,13 @@ const TEXT = {
     el: { title: 'RAM RUSH', close: 'Κλείσιμο παιχνιδιού', loading: 'Φόρτωση…', failed: 'Το παιχνίδι δεν φόρτωσε. Δοκίμασε ξανά.',
         paused: 'ΠΑΥΣΗ', resume: 'P για συνέχεια',
         over: 'GAME OVER', again: 'Space / J / πάτα για νέο παιχνίδι', score: 'Σκορ', kills: 'εχθροί',
+        levelUp: 'LEVEL UP!', best: 'Ρεκόρ', newBest: 'ΝΕΟ ΡΕΚΟΡ!',
         keys: '↑ / W / Space άλμα (ξανά στον αέρα: διπλό)   ↓ / S slide   ← → κίνηση   J / X / κλικ RAM   E / δεξί κλικ parry   P παύση   Esc έξοδος',
         swipes: ['Πάτα για ρίψη RAM', 'Σύρε ↑ για άλμα (ξανά στον αέρα: διπλό)', 'Σύρε ↓ για slide', 'Σύρε ← → για κίνηση'] },
     en: { title: 'RAM RUSH', close: 'Close the game', loading: 'Loading…', failed: 'The game did not load. Try again.',
         paused: 'PAUSED', resume: 'P to resume',
         over: 'GAME OVER', again: 'Space / J / tap for a new run', score: 'Score', kills: 'enemies',
+        levelUp: 'LEVEL UP!', best: 'Best', newBest: 'NEW RECORD!',
         keys: '↑ / W / Space jump (again in the air: double)   ↓ / S slide   ← → move   J / X / click RAM   E / right click parry   P pause   Esc exit',
         swipes: ['Tap to throw a RAM', 'Swipe ↑ to jump (again in the air: double)', 'Swipe ↓ to slide', 'Swipe ← → to move'] }
 };
@@ -203,6 +206,38 @@ export async function open() {
         for (let k = 0; k < HERO.maxHp; k++) heart(30 + k * 32, 30, 11, k < g.hero.hp);
         ctx.restore();
     }
+    // Under the hearts: the level and his RAM tier, and the XP bar to the next level (the HUD of §8c will
+    // dress it up); it fills smoothly, not in jumps
+    function drawXp(dt) {
+        const pr = g.prog, target = pr.into / pr.need;
+        g.xpShown += (target - g.xpShown) * (1 - Math.exp(-8 * dt));
+        if (target < g.xpShown - 0.5) g.xpShown = target;           // a level up: it starts again from the bottom
+        ctx.save();
+        ctx.font = '800 12px system-ui, sans-serif';
+        ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
+        ctx.lineWidth = 3; ctx.strokeStyle = 'rgba(13, 12, 29, 0.85)';
+        const label = `LV ${pr.level} · ${pr.tier().name}`;
+        ctx.strokeText(label, 19, 56); ctx.fillStyle = '#f1f0f7'; ctx.fillText(label, 19, 56);
+        ctx.fillStyle = 'rgba(13, 12, 29, 0.7)';
+        ctx.fillRect(19, 66, 150, 7);
+        ctx.fillStyle = '#d946ef';
+        ctx.fillRect(19, 66, 150 * Math.max(0, Math.min(1, g.xpShown)), 7);
+        ctx.restore();
+    }
+    // LEVEL UP!: a banner with the new tier, fading out over its time
+    function drawLevelUp() {
+        const k = g.levelT / 1.2;
+        ctx.save();
+        ctx.globalAlpha = Math.min(1, k * 2);
+        ctx.textAlign = 'center';
+        ctx.font = '900 40px system-ui, sans-serif';
+        ctx.lineWidth = 6; ctx.strokeStyle = 'rgba(13, 12, 29, 0.85)';
+        ctx.strokeText(txt().levelUp, W / 2, 150); ctx.fillStyle = '#f0abfc'; ctx.fillText(txt().levelUp, W / 2, 150);
+        ctx.font = '800 20px system-ui, sans-serif';
+        ctx.strokeText(`LV ${g.prog.level} · ${g.prog.tier().name}`, W / 2, 182);
+        ctx.fillStyle = '#f1f0f7'; ctx.fillText(`LV ${g.prog.level} · ${g.prog.tier().name}`, W / 2, 182);
+        ctx.restore();
+    }
     function drawOver() {
         ctx.save();
         ctx.fillStyle = 'rgba(13, 12, 29, 0.72)';
@@ -213,10 +248,14 @@ export async function open() {
         ctx.fillText(txt().over, W / 2, H / 2 - 30);
         ctx.font = '600 20px system-ui, sans-serif';
         ctx.fillStyle = '#22d3ee';
-        ctx.fillText(`${txt().score} ${g.enemies.score} · ${Math.floor(g.distance / PX_PER_M)} m · ${g.enemies.killed} ${txt().kills}`, W / 2, H / 2 + 12);
+        ctx.fillText(`${txt().score} ${g.enemies.score} · ${Math.floor(g.distance / PX_PER_M)} m · ${g.enemies.killed} ${txt().kills} · LV ${g.prog.level}`, W / 2, H / 2 + 12);
+        const r = g.records;
+        ctx.font = '600 15px system-ui, sans-serif';
+        ctx.fillStyle = r.beat.score || r.beat.distance ? '#f0abfc' : 'rgba(241, 240, 247, 0.6)';
+        ctx.fillText(`${r.beat.score || r.beat.distance ? txt().newBest + ' ' : ''}${txt().best}: ${r.best.score} · ${r.best.distance} m · LV ${r.best.level}`, W / 2, H / 2 + 40);
         ctx.font = '500 17px system-ui, sans-serif';
         ctx.fillStyle = 'rgba(241, 240, 247, 0.75)';
-        ctx.fillText(txt().again, W / 2, H / 2 + 48);
+        ctx.fillText(txt().again, W / 2, H / 2 + 74);
         ctx.restore();
     }
 
@@ -289,7 +328,8 @@ export async function open() {
         // the hit-stop: for a blink the world holds still (the picture is still drawn)
         const wdt = g.stop > 0 ? 0 : dt;
         g.stop = Math.max(0, g.stop - dt);
-        g.distance += SPEED * wdt;
+        g.speed = difficulty(g.distance / PX_PER_M).speed;
+        g.distance += g.speed * wdt;
         ctx.fillStyle = sky;
         ctx.fillRect(0, 0, W, H);
         g.hero.update(wdt, i);
@@ -309,8 +349,8 @@ export async function open() {
         g.powerups.droneStep(wdt, g.hero.drone, g.enemies.targets(), g.rams);
         g.rams.update(wdt, g.enemies.targets());
         g.heroLink.box = g.hero.box();
-        g.enemies.update(wdt, SPEED * wdt, g.distance / PX_PER_M, g.heroLink, g.rams, g.powerups);
-        g.powerups.update(wdt, SPEED * wdt, g.distance / PX_PER_M, g.heroLink.box, g.rams);
+        g.enemies.update(wdt, g.speed * wdt, g.distance / PX_PER_M, g.heroLink, g.rams, g.powerups);
+        g.powerups.update(wdt, g.speed * wdt, g.distance / PX_PER_M, g.heroLink.box, g.rams);
         for (const [name, factor, h, bottom] of LAYERS) drawLayer(ctx, g.images[name], factor, h, bottom, g.distance);
         g.powerups.draw(ctx);
         g.enemies.draw(ctx);
@@ -319,10 +359,22 @@ export async function open() {
         g.powerups.drawDrone(ctx, g.hero.drone);
         g.rams.draw(ctx);
         drawParry();
+        // XP: the enemies' and the distance's; a level up raises his RAM tier (the throws hit harder)
+        if (g.prog.set(g.prog.fromRun(g.enemies.xp, g.distance / PX_PER_M))) {
+            g.levelT = 1.2;
+            g.powerups.base.damageMult = g.prog.tier().damage;
+        }
+        g.levelT = Math.max(0, g.levelT - dt);
         drawLife();
-        g.powerups.drawHud(ctx, 78);
+        drawXp(dt);
+        g.powerups.drawHud(ctx, 104);
+        if (g.levelT > 0) drawLevelUp();
         if (g.hintT > 0) { g.hintT -= dt; drawHint(); }
-        if (g.hero.hp <= 0) { g.over = true; g.overT = 0; drawOver(); }
+        if (g.hero.hp <= 0) {
+            g.over = true; g.overT = 0;
+            g.records = saveRecords({ score: g.enemies.score, level: g.prog.level, distance: Math.floor(g.distance / PX_PER_M) });
+            drawOver();
+        }
     }
 
     function onKey(e) {
@@ -380,6 +432,7 @@ export async function open() {
             } };
             g.distance = 0; g.over = false; g.overT = 0;
             g.parryCool = 0; g.parryFx = 0; g.parryPerfect = false; g.stop = 0; g.flashT = 0;
+            g.prog = createProgression(); g.xpShown = 0; g.levelT = 0;
         };
         newRun();
         g.images = Object.fromEntries(LAYERS.map(([name], i) => [name, imgs[i]]));
@@ -412,6 +465,9 @@ export const state = () => {
         hp: h.hp, invuln: h.invuln, over: !!game.over,
         enemies: game.enemies.list(), spikes: game.enemies.spikes(), killed: game.enemies.killed, score: game.enemies.score, xp: game.enemies.xp,
         parryCool: game.parryCool, parries: game.enemies.parries,
+        speed: game.speed || 0,
+        level: game.prog.level, xpTotal: game.prog.total, xpInto: game.prog.into, xpNeed: game.prog.need, tier: game.prog.tier().name,
+        records: readRecords(),
         distance: game.distance, paused: game.userPaused
     };
 };
@@ -423,3 +479,7 @@ export const testSpawnPickup = (id, x, y) => !!(game && game.powerups && game.po
 export const testSpawnEnemy = (id, x, opts = {}) => !!(game && game.enemies && game.enemies.spawn(id, x, !!opts.attack));
 // … and a quiet road: no enemies of their own, so a test about something else is not disturbed
 export const testQuiet = () => { if (game) { game.quiet = true; if (game.enemies) game.enemies.natural = false; } };
+// … and XP, as if enemies had given it (the level ups come at their own pace otherwise)
+export const testXp = (n) => { if (game && game.enemies) game.enemies.xp += n; };
+// … and further along the road at once (the difficulty follows the distance)
+export const testWarp = (m) => { if (game) game.distance = m * PX_PER_M; };
