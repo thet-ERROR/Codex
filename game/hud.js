@@ -6,7 +6,7 @@
 //
 // createHud(ctx, g, { txt, touchUI }): g is the running game (main.js), read as the code always read it.
 
-import { HERO, PX_PER_M, PARRY, POWERUPS } from './config.js';
+import { HERO, PX_PER_M, PARRY, POWERUPS, PAUSE_BUTTON } from './config.js';
 
 const W = 960, H = 540;
 
@@ -160,6 +160,25 @@ export function createHud(ctx, g, { txt, touchUI }) {
 
     h.hint = drawHint;
     h.pause = drawPause;
+
+    // The pause button, top right (8c.2): two bars, or a play triangle while paused (it resumes too)
+    h.pauseButton = (paused) => {
+        const b = PAUSE_BUTTON, r = b.size / 2;
+        ctx.save();
+        // solid while paused: it is drawn over the button of the last frame, whose bars must not show through
+        ctx.fillStyle = paused ? '#15132e' : 'rgba(13, 12, 29, 0.6)';
+        ctx.strokeStyle = 'rgba(241, 240, 247, 0.55)';
+        ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.roundRect(b.x - r, b.y - r, b.size, b.size, 8); ctx.fill(); ctx.stroke();
+        ctx.fillStyle = '#f1f0f7';
+        if (paused) {
+            ctx.beginPath(); ctx.moveTo(b.x - 5, b.y - 8); ctx.lineTo(b.x + 9, b.y); ctx.lineTo(b.x - 5, b.y + 8); ctx.closePath(); ctx.fill();
+        } else {
+            ctx.fillRect(b.x - 8, b.y - 8, 5.5, 16);
+            ctx.fillRect(b.x + 2.5, b.y - 8, 5.5, 16);
+        }
+        ctx.restore();
+    };
     h.life = drawLife;
     h.xp = drawXp;
     h.levelUp = drawLevelUp;

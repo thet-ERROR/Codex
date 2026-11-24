@@ -18,7 +18,7 @@ import { createRams } from './ram.js';
 import { createPowerups } from './powerups.js';
 import { createEnemies } from './enemies.js';
 import { createProgression, saveRecords, readRecords } from './progression.js';
-import { PX_PER_M, PARRY, difficulty } from './config.js';
+import { PX_PER_M, PARRY, PAUSE_BUTTON, difficulty } from './config.js';
 import { createInput } from './input.js';
 import { createHud } from './hud.js';
 
@@ -157,7 +157,14 @@ export async function open() {
         const x = (cx - r.left) * W / r.width, y = (cy - r.top) * H / r.height;
         return Math.hypot(x - b.x, y - b.y) <= b.hit;
     };
-    const input = createInput(overlay, { isParry: onParryButton });
+    // The pause button: its reach on the screen is never under minHit CSS px, however small the canvas shows
+    const onPauseButton = (cx, cy) => {
+        const r = canvas.getBoundingClientRect(), b = PAUSE_BUTTON, scale = r.width / W;
+        const half = Math.max(b.size, b.minHit / scale) / 2;
+        const x = (cx - r.left) / scale, y = (cy - r.top) / scale;
+        return Math.abs(x - b.x) <= half && Math.abs(y - b.y) <= half;
+    };
+    const input = createInput(overlay, { isParry: onParryButton, isPause: onPauseButton });
     let newRun = () => {};
     const hud = createHud(ctx, g, { txt, touchUI });
 
@@ -191,7 +198,7 @@ export async function open() {
         if (g.paused || !g.images) return;
         if (i.pause) {
             g.userPaused = !g.userPaused;
-            if (g.userPaused) hud.pause();   // drawn once over the last picture; the loop then waits
+            if (g.userPaused) { hud.pause(); hud.pauseButton(true); }   // drawn once over the last picture; the loop then waits
         }
         if (g.userPaused) return;
         if (g.over) {
@@ -245,6 +252,7 @@ export async function open() {
         g.rams.draw(ctx);
         drawParry();
         hud.parryButton();
+        hud.pauseButton(false);
         // XP: the enemies' and the distance's; a level up raises his RAM tier (the throws hit harder)
         if (g.prog.set(g.prog.fromRun(g.enemies.xp, g.distance / PX_PER_M))) {
             g.levelT = 1.2;

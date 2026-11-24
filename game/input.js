@@ -17,8 +17,9 @@ const KEYS = {
 const SWIPE = 28;          // CSS px a finger travels before it counts as a swipe
 const TAP_MS = 300;        // a touch shorter than this that did not travel is a tap
 
-// isParry(clientX, clientY): whether a touch there is on the parry button (main.js knows where it is)
-export function createInput(surface, { isParry = () => false } = {}) {
+// isParry / isPause (clientX, clientY): whether a press there is on the parry / the pause button (main.js
+// knows where they are); a press on a button is only that: no throw, no swipe
+export function createInput(surface, { isParry = () => false, isPause = () => false } = {}) {
     const held = { left: false, right: false };
     let ev = fresh();
     // jumpUp: a release before this frame's press (it ends the jump already under way); jumpUpAfter: a
@@ -59,6 +60,7 @@ export function createInput(surface, { isParry = () => false } = {}) {
     function onPointerDown(e) {
         if (e.pointerType === 'mouse' && e.button === 2) { ev.parry++; return; }
         if (e.button > 0) return;
+        if (isPause(e.clientX, e.clientY)) { ev.pause++; return; }
         if (e.pointerType === 'mouse') { ev.throw++; ev.aim = { x: e.clientX, y: e.clientY }; return; }
         if (isParry(e.clientX, e.clientY)) { ev.parry++; return; }
         touch = { id: e.pointerId, x: e.clientX, y: e.clientY, t: performance.now(), fired: false };
