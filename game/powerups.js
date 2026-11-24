@@ -150,8 +150,8 @@ export function createPowerups({ rng = Math.random, reducedMotion = false } = {}
     };
 
     // Top left: each power-up on, its icon and a bar that empties; under XMP the MHz meter
-    p.drawHud = (ctx) => {
-        let y = 34;
+    p.drawHud = (ctx, top = 34) => {
+        let y = top;
         for (const a of p.active.values()) {
             const def = POWERUPS[a.id];
             if (!blinkOff(a.remaining)) icon(ctx, 34, y, 18, def.color);

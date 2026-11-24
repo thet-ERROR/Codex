@@ -11,6 +11,11 @@
 //               — pressed a moment before landing, it still counts (jump buffer)
 //   down        — on the road a slide (low, under head-height things); in the air a fast fall
 //   left/right  — held keys move him along the road; a sideways swipe steps him over
+//
+// Step 6, his life: HERO.maxHp hits (config.js); after one he is safe for HERO.invuln seconds and blinks
+// (with reduced motion he is only dimmed, no blinking).
+
+import { HERO } from './config.js';
 
 export const GROUND = 460;            // y of the hero's feet (from parallax-preview.html)
 const HOME_X = 230;                   // where the hero runs, in the game's 960-wide coordinates
@@ -38,8 +43,9 @@ const MOVE_V = 320;                   // held left/right
 const NUDGE = 150;                    // one sideways swipe
 const FOLLOW = 14;                    // how fast he reaches where the controls put him
 
-export function createHero(sheet, frames) {
+export function createHero(sheet, frames, { reducedMotion = false } = {}) {
     const h = {
+        hp: HERO.maxHp, invuln: 0,
         x: HOME_X, targetX: HOME_X, y: GROUND, vy: 0, t: 0, bob: 0, frame: 'run0',
         onGround: true, jumps: 0, buffer: 0, slideT: 0, landT: 0, boostT: 0, fastFall: false,
         drone: { x: HOME_X + DRONE_OFFSET.x, y: GROUND + DRONE_OFFSET.y, t: 0 }
@@ -55,9 +61,18 @@ export function createHero(sheet, frames) {
         return true;
     }
 
+    // A hit: false while he is still safe from the last one (or already down)
+    h.hit = (damage) => {
+        if (h.invuln > 0 || h.hp <= 0) return false;
+        h.hp = Math.max(0, h.hp - damage);
+        h.invuln = HERO.invuln;
+        return true;
+    };
+
     h.update = (dt, input) => {
         const i = input || {};
         h.t += dt;
+        h.invuln = Math.max(0, h.invuln - dt);
 
         // along the road: held keys move the target, a swipe steps it; he eases to it
         const dir = (i.right ? 1 : 0) - (i.left ? 1 : 0);
@@ -135,7 +150,10 @@ export function createHero(sheet, frames) {
         ctx.fill();
         ctx.restore();
 
+        ctx.save();
+        if (h.invuln > 0) ctx.globalAlpha = reducedMotion ? 0.55 : (Math.floor(h.invuln * 12) % 2 ? 0.3 : 1);
         drawFrame(ctx, h.frame, h.x, h.y - h.bob, HERO_SCALE);
+        ctx.restore();
         drawFrame(ctx, 'drone', h.drone.x, h.drone.y, DRONE_SCALE);
     };
 

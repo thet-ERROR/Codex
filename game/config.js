@@ -26,3 +26,34 @@ export const PICKUPS = {
     heights: [70, 175],               // px above the road: reached running, or with a jump
     radius: 22
 };
+
+// The hero's life (plan §6, §5b)
+export const HERO = {
+    maxHp: 3,
+    invuln: 1.2                       // s of safety after a hit; he blinks meanwhile
+};
+
+// Enemies (plan §6). Each one's numbers live here; enemies.js only reads them. The hitbox is a share of
+// the drawn sprite (smaller, so a touch is a fair one).
+export const ENEMIES = {
+    orangeBot: {
+        hp: 2, speed: 70,             // px/s it walks toward the hero, on top of the road's own scroll
+        damage: 1, score: 10, xp: 5,
+        scale: 0.8,                   // the frames are ~111px tall: drawn ~89px, about 2/3 of the hero
+        hitbox: 0.7,
+        frameTime: 0.14,              // s per walk frame
+        behaviour: 'walk',
+        anim: 'orangeBot.walk'
+    }
+};
+
+// What comes, and when. Zones every zoneM metres; each zone lists who may appear in it (the last entry
+// holds for every later zone). Spawns never closer than gapM[0] metres, and not before firstM.
+export const SPAWNS = {
+    firstM: 60,
+    gapM: [25, 45],
+    zoneM: 500,
+    zones: [['orangeBot']],
+    pool: 6
+};
+export const HIT_FLASH = 0.08;        // s an enemy shows white when hit

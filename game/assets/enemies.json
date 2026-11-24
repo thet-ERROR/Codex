@@ -1,0 +1,57 @@
+{
+ "orangeBot.walk.0": {
+  "x": 0,
+  "y": 0,
+  "w": 96,
+  "h": 111,
+  "anchor": [
+   0.5,
+   1.0
+  ],
+  "faces": "left"
+ },
+ "orangeBot.walk.1": {
+  "x": 98,
+  "y": 0,
+  "w": 96,
+  "h": 111,
+  "anchor": [
+   0.5,
+   1.0
+  ],
+  "faces": "left"
+ },
+ "orangeBot.walk.2": {
+  "x": 196,
+  "y": 0,
+  "w": 96,
+  "h": 111,
+  "anchor": [
+   0.5,
+   1.0
+  ],
+  "faces": "left"
+ },
+ "orangeBot.curl.0": {
+  "x": 294,
+  "y": 0,
+  "w": 104,
+  "h": 92,
+  "anchor": [
+   0.5,
+   1.0
+  ],
+  "faces": "left"
+ },
+ "orangeBot.ball.0": {
+  "x": 400,
+  "y": 0,
+  "w": 101,
+  "h": 98,
+  "anchor": [
+   0.5,
+   1.0
+  ],
+  "faces": "left"
+ }
+}

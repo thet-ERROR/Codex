@@ -35,6 +35,7 @@ describe('RAM RUSH: open and close', () => {
         assert.ok(files.includes('/game/main.js'), files.join());
         for (const l of ['sky', 'far', 'mid', 'rail', 'road', 'sprites']) assert.ok(files.includes(`/game/assets/${l}.webp`), l);
         assert.ok(files.includes('/game/hero.js') && files.includes('/game/assets/sprites.json'), files.join());
+        assert.ok(files.includes('/game/assets/enemies.webp') && files.includes('/game/assets/enemies.json'), files.join());
         assert.deepEqual(page.problems, []);
     }));
 
@@ -236,13 +237,34 @@ const startRec = (page) => page.evaluate(async () => {
 const stopRec = (page) => page.evaluate(() => { clearInterval(window.__recId); return window.__rec; });
 const gameState = (page) => page.evaluate(async () => (await import('/game/main.js')).state());
 // Timing tests start once the frames flow evenly: opened the instant the page loads, the site's own start-up
-// (its intro, the catalog) can hold a frame back for a moment, which a jump timed in ms would feel
-const settle = (page) => page.waitForFunction(() => new Promise(r => {
-    let worst = 0, last = performance.now(); const t0 = last;
-    const f = (t) => { worst = Math.max(worst, t - last); last = t; if (t - t0 < 250) requestAnimationFrame(f); else r(worst < 40); };
-    requestAnimationFrame(f);
-}), null, { timeout: 10000, polling: 300 });
-const openSettled = async (page) => { await openGame(page); await settle(page); };
+// (its intro, the catalog) can hold a frame back for a moment, which a jump timed in ms would feel.
+// (A loop inside the page: page.waitForFunction does not wait for a promise, it takes it as "true" at once.)
+const settle = (page) => page.evaluate(async () => {
+    const window250 = () => new Promise(r => {
+        let worst = 0, last = performance.now(); const t0 = last;
+        const f = (t) => { worst = Math.max(worst, t - last); last = t; if (t - t0 < 250) requestAnimationFrame(f); else r(worst); };
+        requestAnimationFrame(f);
+    });
+    for (const t0 = performance.now(); performance.now() - t0 < 10000;) if (await window250() < 40) return;
+    throw new Error('the frames never flowed evenly');
+});
+// Waits (in the page, frame by frame) until the game's state passes the test; fails after `ms`
+// (Sent as source text: Playwright runs it through DevTools, so the page's CSP, which forbids eval, has no say.)
+const waitState = (page, test, ms = 3000) => page.evaluate(`(async () => {
+    const m = await import('/game/main.js');
+    const ok = ${test.toString()};
+    for (const t0 = performance.now(); performance.now() - t0 < ${ms};) {
+        if (ok(m.state())) return;
+        await new Promise(r => requestAnimationFrame(r));
+    }
+    throw new Error('waited ${ms} ms for ' + ${JSON.stringify(test.toString())});
+})()`);
+// … on a quiet road: no enemies of the game's own, so a test about the moves is not disturbed by one
+const openSettled = async (page) => {
+    await openGame(page);
+    await page.evaluate(async () => (await import('/game/main.js')).testQuiet());
+    await settle(page);
+};
 const apex = (rec) => 460 - Math.min(...rec.map(s => s.hero.y));
 const airTime = (rec) => rec.filter(s => !s.hero.onGround).length;
 const DESK = { width: 1440, height: 900 };
@@ -593,5 +615,137 @@ describe('RAM RUSH: power-ups, XMP first', () => {
         await page.keyboard.press('KeyP');
         await page.waitForTimeout(300);
         assert.ok((await gameState(page)).powerups[0].remaining < b.powerups[0].remaining, 'runs again');
+    }));
+});
+
+const spawnEnemy = (page, id, x) => page.evaluate(async ([id, x]) => (await import('/game/main.js')).testSpawnEnemy(id, x), [id, x]);
+
+describe('RAM RUSH: enemies, the Orange Bot first, and the hero\'s life', () => {
+    it('the sheet: every frame has its box, stands on its feet and faces left', () => withPage(DESK, async (page) => {
+        await openGame(page);
+        const f = await page.evaluate(async () => (await fetch('/game/assets/enemies.json')).json());
+        for (const k of ['orangeBot.walk.0', 'orangeBot.walk.1', 'orangeBot.walk.2']) {
+            assert.ok(f[k], k);
+            assert.deepEqual([f[k].anchor, f[k].faces], [[0.5, 1], 'left']);
+        }
+        const walk = ['0', '1', '2'].map(n => f[`orangeBot.walk.${n}`]);
+        assert.ok(walk.every(w => w.w === walk[0].w && w.h === walk[0].h), 'one box for the walk: the feet do not jump');
+    }));
+
+    it('an Orange Bot walks in from the right toward the hero, faster than the road, its legs moving', () => withPage(DESK, async (page) => {
+        await openSettled(page);
+        await spawnEnemy(page, 'orangeBot', 900);
+        await startRec(page);
+        await page.waitForTimeout(500);
+        const rec = await stopRec(page);
+        const xs = rec.map(s => s.enemies[0]?.x).filter(x => x !== undefined);
+        const speed = (xs[0] - xs.at(-1)) / ((xs.length - 1) * 0.016);
+        assert.ok(speed > 300, `moves left at ${speed.toFixed(0)} px/s, more than the road's 300`);
+        assert.ok(rec.every(s => !s.enemies[0] || s.enemies[0].y === 460), 'on the road');
+    }));
+
+    it('two RAMs bring it down: the first makes it flash white, the second ends it, the score counts it, the pool takes it back', () => withPage(DESK, async (page) => {
+        await openSettled(page);
+        await spawnEnemy(page, 'orangeBot', 760);
+        await page.keyboard.press('KeyJ');
+        // read at the moment of the hit: the flash lasts only 80 ms
+        const flash = await page.evaluate(async () => {
+            const m = await import('/game/main.js');
+            for (const t0 = performance.now(); performance.now() - t0 < 2000;) {
+                const e = m.state().enemies[0];
+                if (e && e.hp === 1) return { flash: e.flash };
+                await new Promise(r => requestAnimationFrame(r));
+            }
+            return { flash: 'never hit' };
+        });
+        assert.ok(flash.flash > 0, 'flashes when hit');
+        let s;
+        await page.waitForTimeout(420);
+        await page.keyboard.press('KeyJ');
+        await waitState(page, (s) => s.killed === 1, 2000);
+        s = await gameState(page);
+        assert.deepEqual([s.score, s.xp], [10, 5]);
+        await page.waitForTimeout(400);
+        assert.equal((await gameState(page)).enemies.length, 0, 'gone after its pop');
+        assert.equal((await gameState(page)).hp, 3, 'never touched him');
+    }));
+
+    it('the auto-aim now follows the enemies: a throw a bit too high still bends toward one ahead', () => withPage(DESK, async (page) => {
+        await openSettled(page);
+        await spawnEnemy(page, 'orangeBot', 900);
+        const box = await page.locator('.rr-canvas').boundingBox();
+        await page.mouse.click(box.x + 900 * box.width / 960, box.y + 330 * box.height / 540);   // above its head
+        await page.waitForTimeout(250);
+        const r = (await gameState(page)).rams[0];
+        assert.ok(!r || r.vy > -30, `bent down toward it: ${JSON.stringify(r)}`);
+    }));
+
+    it('touching it costs one heart, then he blinks and is safe for 1.2 s; a second one in that time does no harm', () => withPage(DESK, async (page) => {
+        await openSettled(page);
+        await spawnEnemy(page, 'orangeBot', 300);
+        await page.waitForTimeout(250);
+        let s = await gameState(page);
+        assert.equal(s.hp, 2);
+        assert.ok(s.invuln > 0.8, `safe for a while: ${s.invuln}`);
+        await spawnEnemy(page, 'orangeBot', 280);
+        await page.waitForTimeout(250);
+        assert.equal((await gameState(page)).hp, 2, 'safe');
+    }));
+
+    it('jumped over, it does no harm', () => withPage(DESK, async (page) => {
+        await openSettled(page);
+        await page.keyboard.down('ArrowUp');
+        await page.waitForTimeout(250);                 // high in the air now
+        await spawnEnemy(page, 'orangeBot', 260);       // right under him
+        await page.waitForTimeout(200);
+        await page.keyboard.up('ArrowUp');
+        await page.waitForTimeout(600);
+        assert.equal((await gameState(page)).hp, 3);
+    }));
+
+    it('at the last heart lost: GAME OVER, the world stops; a jump starts a new run with full life', () => withPage(DESK, async (page) => {
+        await openSettled(page);
+        for (let k = 0; k < 3; k++) {
+            await spawnEnemy(page, 'orangeBot', 300);
+            await page.waitForTimeout(1350);
+        }
+        let s = await gameState(page);
+        assert.equal(s.hp, 0);
+        assert.equal(s.over, true);
+        await page.waitForTimeout(300);
+        assert.equal((await gameState(page)).distance, s.distance, 'the world stopped');
+        await page.waitForTimeout(500);
+        await page.keyboard.press('Space');
+        await page.waitForTimeout(200);
+        s = await gameState(page);
+        assert.deepEqual([s.over, s.hp, s.enemies.length, s.score], [false, 3, 0, 0]);
+        assert.ok(s.distance < 200, 'from the start');
+    }));
+
+    it('the spawner: nothing before 60 m, then only Orange Bots, never closer than 25 m apart; a kill may drop an XMP', () => withPage(DESK, async (page) => {
+        const out = await page.evaluate(async () => {
+            const { createEnemies } = await import('/game/enemies.js');
+            const frames = await (await fetch('/game/assets/enemies.json')).json();
+            let seed = 7; const rng = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+            const e = createEnemies(null, frames, { rng });
+            const at = [];
+            for (let m = 0; m < 1200; m++) {
+                const before = e.nextAtM;
+                e.update(0.016, 2000, m, null, null, null);   // a big scroll clears each one before the next
+                if (e.nextAtM !== before) at.push(m);
+            }
+            // a sure drop: rng always 0
+            const drops = [];
+            const sure = createEnemies(null, frames, { rng: () => 0 });
+            sure.natural = false;
+            sure.spawn('orangeBot', 500);
+            const rams = { hit: () => 5 };
+            sure.update(0.016, 0, 0, null, rams, { spawn: (id, x, y) => drops.push(id) });
+            return { at, drops, ids: e.list().map(x => x.id) };
+        });
+        assert.ok(out.at[0] >= 60, `first at ${out.at[0]}`);
+        for (let k = 1; k < out.at.length; k++) assert.ok(out.at[k] - out.at[k - 1] >= 25, out.at.join());
+        assert.ok(out.at.length > 20, 'they keep coming');
+        assert.deepEqual(out.drops, ['xmp']);
     }));
 });
