@@ -151,10 +151,8 @@ const COMMANDS = {
     exit() {
         toggleCLI();
     },
-    // Hidden (not in `help`): the RAM RUSH mini game
+    // Hidden (not in `help`): the RAM RUSH mini game. It runs inside this very window (game/main.js)
     ramrush() {
-        // Close the terminal if it is open (a run from elsewhere must not open it instead)
-        if (document.getElementById('cli-overlay')?.classList.contains('active')) toggleCLI();
         openRamRush();
     },
     theme(arg) {
