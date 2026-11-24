@@ -70,6 +70,17 @@ export const ENEMIES = {
         anims: { walk: 'spyDrone.fly' },
         attack: 'laser',
         eye: [0.36, 0.55]             // its red eye (share of the frame): where the laser leaves from
+    },
+    fireCrawler: {
+        hp: 2, speed: 60,             // slow, low, burning
+        damage: 1, score: 25, xp: 12,
+        scale: 0.7,                   // the frames are 170×115: drawn ~119×80
+        hitbox: 0.7,
+        frameTime: 0.09,
+        behaviour: 'crawl',
+        anims: { walk: 'fireCrawler.crawl' },
+        attack: 'spikes',
+        eye: [0.26, 0.57]
     }
 };
 
@@ -120,6 +131,26 @@ export const ATTACKS = {
         length: 1200,
         recover: 0.6,
         damage: 1
+    },
+    // Fire Crawler: stops, and the road cracks and glows orange where spikes will come up, in a row ahead
+    // of the hero; then they burst out and stay a while, riding the road toward him. Jump them (the row is
+    // long: a double jump, or step forward); a slide does not help. They are part of the road: RAMs do
+    // nothing to them, and they hurt no enemy.
+    spikes: {
+        chance: 0.85,
+        triggerAhead: [420, 620],
+        telegraph: 0.6,               // s the cracks glow
+        count: 3,
+        ahead: 400,                   // px ahead of the hero the first crack opens: they come up ~220px ahead
+                                      // of him, and the road brings them to him (seen coming: time to jump)
+        gap: 50,                      // px between two
+        rise: 0.12,                   // s to come up
+        stay: 1.5,                    // s up
+        sink: 0.2,                    // s back down
+        scale: 0.6,                   // the frames are up to 112px tall: ~67px
+        hitbox: [0.6, 0.7],           // share of the drawn frame: width, height (from the road up)
+        recover: 1.4,                 // s it stays while its spikes are up, open to RAMs; then it crawls on
+        damage: 1
     }
 };
 export const DIRECTOR = {
@@ -133,7 +164,9 @@ export const SPAWNS = {
     gapM: [25, 45],
     zoneM: 500,
     // from 500 m one in three a Blue Runner; from 1000 m the Spy Drones too
-    zones: [['orangeBot'], ['orangeBot', 'orangeBot', 'blueRunner'], ['orangeBot', 'orangeBot', 'blueRunner', 'spyDrone']],
-    pool: 6
+    zones: [['orangeBot'], ['orangeBot', 'orangeBot', 'blueRunner'], ['orangeBot', 'orangeBot', 'blueRunner', 'spyDrone'],
+        ['orangeBot', 'blueRunner', 'spyDrone', 'fireCrawler']],      // from 1500 m the Fire Crawlers
+    pool: 6,
+    spikes: 6                       // spikes on the road at once (two rows)
 };
 export const HIT_FLASH = 0.08;        // s an enemy shows white when hit

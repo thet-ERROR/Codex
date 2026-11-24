@@ -341,7 +341,7 @@ export const state = () => {
         powerups: [...game.powerups.active.values()].map(a => ({ ...a })), pickups: game.powerups.pickups(),
         mhz: game.powerups.mhz, taken: game.powerups.taken,
         hp: h.hp, invuln: h.invuln, over: !!game.over,
-        enemies: game.enemies.list(), killed: game.enemies.killed, score: game.enemies.score, xp: game.enemies.xp,
+        enemies: game.enemies.list(), spikes: game.enemies.spikes(), killed: game.enemies.killed, score: game.enemies.score, xp: game.enemies.xp,
         distance: game.distance, paused: game.userPaused
     };
 };

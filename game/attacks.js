@@ -163,7 +163,39 @@ export function beamHits(e, ax, ay, cfg, b) {
     return true;
 }
 
-export const KINDS = { roll, charge, laser };
+// The Fire Crawler's Spikes. It stops; the cracks open in a row ahead of the hero (enemies.js keeps the
+// spikes: they belong to the road, and outlive it); when the warning is over they burst out. It stays
+// while they are up, then moves on.
+const spikes = {
+    cfg: ATTACKS.spikes,
+
+    patrol(s, c) { roll.patrol.call(this, s, c); },
+
+    telegraph(s, c) {
+        s.x -= c.scroll;
+        if (!s.placed) { s.placed = true; c.spikes.place(s, c.heroX === null ? 230 : c.heroX); }
+        if (s.st >= this.cfg.telegraph) { s.state = ATTACK; s.st = 0; }
+    },
+
+    attack(s, c) {
+        s.x -= c.scroll;
+        if (s.st >= this.cfg.rise) { s.state = RECOVER; s.st = 0; }
+        return false;
+    },
+
+    // it lets the next attack come only once its spikes have had their time (one at a time)
+    recover(s, c) {
+        s.x -= c.scroll;
+        if (s.st >= this.cfg.recover) { s.state = PATROL; s.st = 0; s.attacks = false; c.director.release(s); }
+    },
+
+    vulnerable() { return true; },
+    anim(s) { return s.def.anims.walk; },
+    damage(s) { return s.def.damage; },
+    hurt() {}
+};
+
+export const KINDS = { roll, charge, laser, spikes };
 
 // One step of the enemy's machine; returns true when a bounce touched the road
 export function step(s, c) {

@@ -1027,3 +1027,113 @@ describe('RAM RUSH: the Spy Drone and its Laser (5b)', () => {
         assert.deepEqual(page.problems, []);
     }));
 });
+
+// The Fire Crawler, in the page on its own at 60 fps. hero: 'stand', 'slide', or 'jump' (in the air, 130px
+// up, while a spike that is up is near him); opts.ram: a RAM on it during its warning; opts.bot: an Orange
+// Bot walking through the spikes
+const fireRun = (page, opts = {}) => page.evaluate(async (opts) => {
+    const { createEnemies } = await import('/game/enemies.js');
+    const frames = await (await fetch('/game/assets/enemies.json')).json();
+    const e = createEnemies(null, frames, { rng: () => 0 });
+    e.natural = false;
+    const stand = { x: 204, y: 342, w: 52, h: 118 }, slide = { x: 175, y: 398, w: 110, h: 62 };
+    const up = { x: 204, y: 342 - 130, w: 52, h: 118 };
+    const hits = [];
+    let f = 0;
+    const hero = { box: opts.hero === 'slide' ? slide : stand, hit: () => { hits.push(f); return true; } };
+    e.spawn('fireCrawler', 900, true);
+    const log = [];
+    let rammed = false;
+    for (; f < 60 * 4; f++) {
+        const c = e.list().find(s => s.id === 'fireCrawler');
+        if (opts.ram && c && c.state === 'telegraph' && !rammed) {
+            rammed = true; e.update(0, 0, 0, null, { hit: () => 5 }, null);
+        }
+        if (opts.bot && f === 60) e.spawn('orangeBot', 520, false);
+        if (opts.hero === 'jump') hero.box = e.spikes().some(p => p.up > 0 && Math.abs(p.x - 230) < 120) ? up : stand;
+        e.update(1 / 60, 5, 0, hero, null, null);
+        log.push({ c: e.list().find(s => s.id === 'fireCrawler') || null, bot: e.list().find(s => s.id === 'orangeBot') || null,
+            spikes: e.spikes().map(p => ({ x: p.x, up: p.up })) });
+    }
+    return { log, hits };
+}, opts);
+
+describe('RAM RUSH: the Fire Crawler and its Spikes (5b)', () => {
+    it('the sheet: four crawl frames in one box; three spike frames, each taller, standing on the road', () => withPage(DESK, async (page) => {
+        await openGame(page);
+        const f = await page.evaluate(async () => (await fetch('/game/assets/enemies.json')).json());
+        const crawl = ['0', '1', '2', '3'].map(n => f[`fireCrawler.crawl.${n}`]);
+        assert.ok(crawl.every(r => r && r.w === crawl[0].w && r.h === crawl[0].h && r.faces === 'left'));
+        const sp = ['0', '1', '2'].map(n => f[`spikes.rise.${n}`]);
+        assert.ok(sp[0].h < sp[1].h && sp[1].h < sp[2].h, sp.map(r => r.h).join());
+        assert.ok(sp.every(r => r.anchor[1] === 1));
+    }));
+
+    it('it stops; for 0.6 s the road cracks and glows in a row ahead of the hero; then three spikes burst out ~200px ahead and ride the road to him; it stays, then crawls on', () => withPage(DESK, async (page) => {
+        await openGame(page);
+        const { log } = await fireRun(page);
+        const runs = runsOf(log.map(l => [l.c].filter(Boolean)));
+        assert.deepEqual(runs.map(r => r.state).slice(0, 5), ['patrol', 'telegraph', 'attack', 'recover', 'patrol'], JSON.stringify(runs));
+        assert.ok(runs[1].frames >= 36, `warning ${runs[1].frames} frames`);
+        const cracks = log.filter(l => l.c?.state === 'telegraph').slice(1);   // they open on its second frame
+        assert.ok(cracks.every(l => l.spikes.length === 3 && l.spikes.every(p => p.up === 0)), 'three cracks, nothing up yet');
+        const xs = cracks[0].spikes.map(p => p.x);
+        assert.ok(xs[1] - xs[0] === 50 && xs[2] - xs[1] === 50, xs.join());
+        const out = log.find(l => l.spikes.some(p => p.up === 1));
+        assert.ok(out.spikes[0].x > 230 + 150, `they come up well ahead of him: ${out.spikes[0].x}`);
+        const riding = log.filter(l => l.spikes.length).map(l => l.spikes[0].x);
+        assert.ok(riding.every((x, i) => i === 0 || Math.abs(riding[i - 1] - x - 5) < 1e-6), 'they ride the road');
+        assert.ok(log.at(-1).spikes.length === 0, 'and go back down');
+    }));
+
+    it('standing still they hurt; a slide does not help; a jump over them does', () => withPage(DESK, async (page) => {
+        await openGame(page);
+        // only the spikes' hits (the crawler itself, riding the road behind them, comes to him after)
+        const before = (r) => r.hits.filter(f => r.log[f - 1]?.spikes.some(p => p.up > 0.5 && Math.abs(p.x - 230) < 60)).length;
+        const stand = await fireRun(page, { hero: 'stand' });
+        const slide = await fireRun(page, { hero: 'slide' });
+        const jump = await fireRun(page, { hero: 'jump' });
+        assert.deepEqual([before(stand) > 0, before(slide) > 0, before(jump)], [true, true, 0]);
+    }));
+
+    it('a RAM kill in its warning closes the cracks: no spikes', () => withPage(DESK, async (page) => {
+        await openGame(page);
+        const { log } = await fireRun(page, { ram: true });
+        assert.ok(log.every(l => l.spikes.every(p => p.up === 0)));
+        assert.ok(log.at(-1).spikes.length === 0);
+    }));
+
+    it('they are the road\'s, not a weapon against enemies: an Orange Bot walks through them unharmed', () => withPage(DESK, async (page) => {
+        await openGame(page);
+        const { log } = await fireRun(page, { bot: true });
+        const met = log.filter(l => l.bot && l.spikes.some(p => p.up > 0.5 && Math.abs(p.x - l.bot.x) < 30));
+        assert.ok(met.length > 0, 'it did cross them');
+        assert.ok(log.every(l => !l.bot || l.bot.hp === 2));
+    }));
+
+    it('from 1500 m on: not before', () => withPage(DESK, async (page) => {
+        await openGame(page);
+        const out = await page.evaluate(async () => {
+            const { createEnemies } = await import('/game/enemies.js');
+            const frames = await (await fetch('/game/assets/enemies.json')).json();
+            let seed = 9; const rng = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+            const e = createEnemies(null, frames, { rng });
+            const seen = [];
+            let m = 0;
+            const spawn = e.spawn;
+            e.spawn = (id, x, a) => { seen.push([m, id]); return spawn(id, x, a); };
+            for (; m < 3500; m++) e.update(0.016, 2000, m, null, null, null);
+            return seen;
+        });
+        assert.ok(out.filter(([m]) => m < 1500).every(([, id]) => id !== 'fireCrawler'));
+        assert.ok(out.some(([m, id]) => m >= 1500 && id === 'fireCrawler'));
+    }));
+
+    it('in the game: standing still, the spikes cost a heart', () => withPage(DESK, async (page) => {
+        await openSettled(page);
+        await page.evaluate(async () => (await import('/game/main.js')).testSpawnEnemy('fireCrawler', 980, { attack: true }));
+        await waitState(page, (s) => s.spikes.some(p => p.up === 1), 4000);
+        await waitState(page, (s) => s.hp === 2, 3000);
+        assert.deepEqual(page.problems, []);
+    }));
+});

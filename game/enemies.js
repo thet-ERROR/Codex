@@ -41,8 +41,49 @@ export function createEnemies(sheet, frames, { rng = Math.random, reducedMotion 
     const pool = Array.from({ length: SPAWNS.pool }, () => ({
         on: false, id: '', def: null, x: 0, y: GROUND, hp: 0, t: 0, flash: 0, dying: 0, hitHero: false,
         state: PATROL, st: 0, attacks: false, h: 0, vx: 0, hop: 0, hops: 0, spin: 0, goal: 0,
-        clink: 0, clinkX: 0, clinkY: 0, dust: 0, dustX: 0, ax: -1, ay: 0, zapped: false
+        clink: 0, clinkX: 0, clinkY: 0, dust: 0, dustX: 0, ax: -1, ay: 0, zapped: false, placed: false
     }));
+    // The Fire Crawler's spikes: part of the road (they ride it, outlive their crawler, hurt no enemy).
+    // t counts from the crack opening: crack until the warning ends, then rise, stay, sink.
+    const SP = ATTACKS.spikes;
+    const spikePool = Array.from({ length: SPAWNS.spikes }, () => ({ on: false, x: 0, t: 0, owner: null, hit: false }));
+    const spikes = {
+        place(owner, heroX) {
+            for (let n = 0; n < SP.count; n++) {
+                const p = spikePool.find(q => !q.on);
+                if (!p) return;
+                Object.assign(p, { on: true, x: heroX + SP.ahead + n * SP.gap, t: 0, owner, hit: false });
+            }
+        },
+        // its crawler died before they came out: the cracks close
+        cancel(owner) { for (const p of spikePool) if (p.on && p.owner === owner && p.t < SP.telegraph) p.on = false; },
+        // how far up, 0..1
+        up(p) {
+            const t = p.t - SP.telegraph;
+            if (t < 0) return 0;
+            if (t < SP.rise) return t / SP.rise;
+            if (t < SP.rise + SP.stay) return 1;
+            return Math.max(0, 1 - (t - SP.rise - SP.stay) / SP.sink);
+        },
+        box(p) {
+            const k = spikes.up(p), f = frames[spikeFrame(k)];
+            const w = f.w * SP.scale * SP.hitbox[0], h = f.h * SP.scale * SP.hitbox[1] * Math.min(1, k * 1.5);
+            return { x: p.x - w / 2, y: GROUND - h, w, h };
+        },
+        update(dt, scroll, hero) {
+            for (const p of spikePool) {
+                if (!p.on) continue;
+                p.t += dt; p.x -= scroll;
+                if (p.t > SP.telegraph + SP.rise + SP.stay + SP.sink || p.x < -120) { p.on = false; continue; }
+                // up past half: it hurts (once each)
+                if (hero && !p.hit && spikes.up(p) > 0.5) {
+                    const b = spikes.box(p), h = hero.box;
+                    if (h.x < b.x + b.w && h.x + h.w > b.x && h.y < b.y + b.h && h.y + h.h > b.y && hero.hit(SP.damage)) p.hit = true;
+                }
+            }
+        }
+    };
+    const spikeFrame = (k) => (k < 0.4 ? 'spikes.rise.0' : k < 0.8 ? 'spikes.rise.1' : 'spikes.rise.2');
     const director = createDirector();
     const eyeAt = { x: 0, y: 0 };
     // where its eye is now (the Spy Drone's laser leaves from it); one object, reused
@@ -54,7 +95,7 @@ export function createEnemies(sheet, frames, { rng = Math.random, reducedMotion 
     };
     // a flyer hovers up and down a little (drawn, and its eye with it; not its hitbox)
     const bobOf = (s) => (s.def.fly ? Math.sin(s.t * 3) * 5 : 0);
-    const link = { dt: 0, scroll: 0, heroX: null, heroBox: null, hero: null, rng, director, eyeOf };   // handed to the attacks, reused
+    const link = { dt: 0, scroll: 0, heroX: null, heroBox: null, hero: null, rng, director, eyeOf, spikes };   // handed to the attacks, reused
     const e = {
         nextAtM: SPAWNS.firstM,
         killed: 0, score: 0, xp: 0,
@@ -69,11 +110,11 @@ export function createEnemies(sheet, frames, { rng = Math.random, reducedMotion 
         if (!def || !s) return false;
         Object.assign(s, { on: true, id, def, x, y: GROUND, hp: def.hp, t: 0, flash: 0, dying: 0, hitHero: false,
             state: PATROL, st: 0, attacks: attacks === undefined ? rng() < chanceOf(def) : !!attacks,
-            h: def.fly || 0, vx: 0, hop: 0, hops: 0, spin: 0, clink: 0, dust: 0, ax: -1, ay: 0, zapped: false });
+            h: def.fly || 0, vx: 0, hop: 0, hops: 0, spin: 0, clink: 0, dust: 0, ax: -1, ay: 0, zapped: false, placed: false });
         s.y = GROUND - s.h;
         return true;
     };
-    const free = (s) => { s.on = false; director.release(s); };
+    const free = (s) => { s.on = false; director.release(s); spikes.cancel(s); };
 
     // how many frames each animation has, counted once ('orangeBot.walk' → 3)
     const count = {};
@@ -101,6 +142,7 @@ export function createEnemies(sheet, frames, { rng = Math.random, reducedMotion 
         link.dt = dt; link.scroll = scroll;
         link.heroX = hero && hero.box ? hero.box.x + hero.box.w / 2 : null;
         link.heroBox = hero ? hero.box : null; link.hero = hero;
+        spikes.update(dt, scroll, hero);
         if (e.natural && distM >= e.nextAtM) {
             const zone = SPAWNS.zones[Math.min(SPAWNS.zones.length - 1, Math.floor(distM / SPAWNS.zoneM))];
             if (e.spawn(zone[Math.floor(rng() * zone.length)], W + 60)) e.nextAtM = distM + gap();
@@ -134,6 +176,7 @@ export function createEnemies(sheet, frames, { rng = Math.random, reducedMotion 
                 if (s.hp <= 0) {
                     s.dying = DIE_T;
                     director.release(s);
+                    spikes.cancel(s);
                     e.killed++; e.score += s.def.score; e.xp += s.def.xp;
                     if (powerups && rng() < POWERUPS.xmp.dropChance) powerups.spawn('xmp', s.x, GROUND - 70);
                     continue;
@@ -157,9 +200,11 @@ export function createEnemies(sheet, frames, { rng = Math.random, reducedMotion 
     e.list = () => pool.filter(s => s.on).map(s => ({ id: s.id, x: s.x, y: s.y, hp: s.hp, flash: s.flash, dying: s.dying,
         box: e.box(s), state: s.state, attacks: s.attacks, h: s.h, hop: s.hop, hops: s.hops, vulnerable: vulnerable(s),
         clink: s.clink, st: s.st, ax: s.ax, ay: s.ay }));
-    e.clear = () => { for (const s of pool) s.on = false; director.clear(); e.nextAtM = SPAWNS.firstM; e.killed = e.score = e.xp = 0; };
+    e.spikes = () => spikePool.filter(p => p.on).map(p => ({ x: p.x, t: p.t, up: spikes.up(p), box: spikes.box(p) }));
+    e.clear = () => { for (const s of pool) s.on = false; for (const p of spikePool) p.on = false; director.clear(); e.nextAtM = SPAWNS.firstM; e.killed = e.score = e.xp = 0; };
 
     e.draw = (ctx) => {
+        drawSpikes(ctx);
         for (const s of pool) {
             if (!s.on) continue;
             const f = frameOf(s);
@@ -280,6 +325,42 @@ export function createEnemies(sheet, frames, { rng = Math.random, reducedMotion 
         g.addColorStop(1, 'rgba(255, 0, 0, 0)');
         ctx.fillStyle = g;
         ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill();
+    }
+
+    // The spikes: first a crack in the road that glows hotter and pulses, then the spikes out of it
+    function drawSpikes(ctx) {
+        for (const p of spikePool) {
+            if (!p.on) continue;
+            const k = spikes.up(p);
+            // hot from the first moment, hotter as they come; fading while they are up
+            const heat = p.t < SP.telegraph ? 0.55 + 0.45 * p.t / SP.telegraph : Math.max(0, 1 - (p.t - SP.telegraph) / (SP.rise + SP.stay + SP.sink));
+            const pulse = reducedMotion ? 1 : 0.7 + 0.3 * Math.sin(p.t * 30);
+            ctx.save();
+            ctx.globalCompositeOperation = 'lighter';
+            const g = ctx.createRadialGradient(p.x, GROUND, 0, p.x, GROUND, 56);
+            g.addColorStop(0, `rgba(255, 200, 80, ${heat * pulse})`);
+            g.addColorStop(0.5, `rgba(255, 110, 20, ${0.7 * heat * pulse})`);
+            g.addColorStop(1, 'rgba(255, 60, 0, 0)');
+            ctx.fillStyle = g;
+            ctx.beginPath(); ctx.ellipse(p.x, GROUND, 56, 18, 0, 0, Math.PI * 2); ctx.fill();
+            // the crack: a jagged line across the road (fixed shape)
+            ctx.strokeStyle = `rgba(255, 235, 150, ${heat})`;
+            ctx.lineWidth = 3.5;
+            ctx.beginPath();
+            ctx.moveTo(p.x - 34, GROUND + 1); ctx.lineTo(p.x - 18, GROUND - 3); ctx.lineTo(p.x - 6, GROUND + 3);
+            ctx.lineTo(p.x + 8, GROUND - 2); ctx.lineTo(p.x + 20, GROUND + 2); ctx.lineTo(p.x + 34, GROUND - 1);
+            ctx.stroke();
+            ctx.restore();
+            if (k > 0 && sheet) {
+                const f = frames[spikeFrame(k)];
+                const w = f.w * SP.scale, h = f.h * SP.scale;
+                ctx.save();
+                // rising out of the road: what is still under it is cut off
+                ctx.beginPath(); ctx.rect(p.x - w, 0, w * 2, GROUND + 4); ctx.clip();
+                ctx.drawImage(sheet, f.x, f.y, f.w, f.h, p.x - w / 2, GROUND + 4 - h * Math.min(1, k * 1.2), w, h);
+                ctx.restore();
+            }
+        }
     }
 
     // The dust where a bounce landed, and the spark where a RAM glanced off the ball
