@@ -1756,3 +1756,79 @@ describe('RAM RUSH: the pause button (8c.2)', () => {
         assert.deepEqual([s.paused, s.thrown], [false, 1], 'a tap on the world: it threw');
     }));
 });
+
+describe('RAM RUSH: the hearts (8c.3)', () => {
+    const setHp = (page, n) => page.evaluate(async (n) => (await import('/game/main.js')).testHp(n), n);
+    // count the coloured pixels of the heart row (the full hearts' red, the flash, the pulse's glow)
+    const redPixels = (page) => page.evaluate(() => {
+        const d = document.querySelector('.rr-canvas').getContext('2d').getImageData(10, 12, 170, 36).data;
+        let n = 0; for (let i = 0; i < d.length; i += 4) if (d[i] > 200 && d[i + 1] < 110 && d[i + 2] < 110) n++;
+        return n;
+    });
+
+    it('losing one: the row shakes for 0.3 s, the heart that went flashes and drains, then it is empty; the others stay full', () => withPage(DESK, async (page) => {
+        await openSettled(page);
+        let s = await gameState(page);
+        assert.deepEqual([s.hp, s.hearts.shake, s.hearts.last], [3, 0, false]);
+        const full = await redPixels(page);
+        await setHp(page, 2);
+        await waitState(page, (s) => s.hearts.shake > 0.2, 1000);
+        s = await gameState(page);
+        assert.equal(s.hearts.lost, 2, 'the third heart went');
+        await waitState(page, (s) => s.hearts.shake === 0, 1000);
+        const two = await redPixels(page);
+        assert.ok(two < full * 0.75 && two > full * 0.5, `two full hearts of three: ${two} of ${full} red pixels`);
+        assert.deepEqual(page.problems, []);
+    }));
+
+    it('gaining one: it pops, 1.3 → 1, over 0.3 s', () => withPage(DESK, async (page) => {
+        await openSettled(page);
+        await setHp(page, 1);
+        await waitState(page, (s) => s.hearts.lost === 1 && s.hearts.shake === 0, 1000);   // the loss, seen and over
+        await setHp(page, 2);
+        await waitState(page, (s) => s.hearts.pop > 0.2, 1000);
+        await waitState(page, (s) => s.hearts.pop === 0, 1000);
+    }));
+
+    it('the last heart: a slow pulse (it keeps changing), and a red outline; with two it is still', () => withPage(DESK, async (page) => {
+        await openSettled(page);
+        await setHp(page, 1);
+        await waitState(page, (s) => s.hearts.lost === 1 && s.hearts.shake === 0, 1000);   // the loss (its shake and flash) over
+        const seen = new Set();
+        for (let k = 0; k < 14; k++) { seen.add(await redPixels(page)); await page.waitForTimeout(90); }
+        const v = [...seen];
+        assert.ok((Math.max(...v) - Math.min(...v)) / Math.max(...v) > 0.15, `it pulses: ${v.join()}`);
+        await setHp(page, 2);
+        await waitState(page, (s) => s.hearts.pop === 0 && !s.hearts.last, 1500);
+        const still = new Set();
+        for (let k = 0; k < 6; k++) { still.add(await redPixels(page)); await page.waitForTimeout(90); }
+        assert.equal(still.size, 1, `no pulse with two: ${[...still].join()}`);
+    }));
+
+    it('with reduced motion: no shake, no pop, no pulse; the colours still change', () => withPage(DESK, async (page) => {
+        await page.emulateMedia({ reducedMotion: 'reduce' });
+        await openSettled(page);
+        await setHp(page, 1);
+        await waitState(page, (s) => s.hearts.last, 1000);
+        await page.waitForTimeout(400);
+        const seen = new Set();
+        for (let k = 0; k < 8; k++) { seen.add(await redPixels(page)); await page.waitForTimeout(80); }
+        const v = [...seen];
+        // (a few pixels of its glow blend with the road scrolling behind: a pulse would change it by far more)
+        assert.ok((Math.max(...v) - Math.min(...v)) / Math.max(...v) < 0.05, `a still last heart: ${v.join()}`);
+        assert.ok(Math.min(...v) > 100, 'but red');
+        // the row does not move while it loses one: the left edge of the first heart stays where it was
+        const edge = () => page.evaluate(() => {
+            const d = document.querySelector('.rr-canvas').getContext('2d').getImageData(0, 14, 40, 30).data;
+            for (let x = 0; x < 40; x++) for (let y = 0; y < 30; y++) { const i = (y * 40 + x) * 4; if (d[i] > 200 && d[i + 1] < 120) return x; }
+            return -1;
+        });
+        await setHp(page, 2);
+        await waitState(page, (s) => s.hearts.pop === 0 && !s.hearts.last, 1000);
+        await setHp(page, 1);
+        await waitState(page, (s) => s.hearts.shake > 0.1, 1000);
+        const xs = [];
+        for (let k = 0; k < 6; k++) { xs.push(await edge()); await page.waitForTimeout(40); }
+        assert.equal(new Set(xs).size, 1, `it does not shake: ${xs.join()}`);
+    }));
+});

@@ -68,7 +68,7 @@ export const RAM_TIERS = [
 
 // The hero's life (plan §6, §5b)
 export const HERO = {
-    maxHp: 3,
+    maxHp: 3,                         // hearts: 1 each; the HUD lays out up to 5
     invuln: 1.2                       // s of safety after a hit; he blinks meanwhile
 };
 
@@ -234,6 +234,9 @@ export const PARRY = {
     xp: 20,
     button: { x: 888, y: 440, r: 46, hit: 80 }   // the touch button, in the game's 960×540 (hit: its reach)
 };
+// The hearts (plan §8c.3): how long they shake when he loses one, pop when he gains one, and the pace of
+// the pulse of the last heart (turns per second). With reduced motion none of them moves: only colours change.
+export const HEARTS = { shake: 0.3, pop: 0.3, popScale: 1.3, pulse: 0.8, spacing: 32, radius: 11 };
 // The pause button (plan §8c.2), top right of the world: its size in the game's 960×540, and the least its
 // reach may be on the screen in CSS px (a finger needs 44), whatever the size the canvas is shown at.
 export const PAUSE_BUTTON = { x: 927, y: 33, size: 34, minHit: 44 };

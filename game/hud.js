@@ -6,12 +6,15 @@
 //
 // createHud(ctx, g, { txt, touchUI }): g is the running game (main.js), read as the code always read it.
 
-import { HERO, PX_PER_M, PARRY, POWERUPS, PAUSE_BUTTON } from './config.js';
+import { HERO, HEARTS, PX_PER_M, PARRY, POWERUPS, PAUSE_BUTTON } from './config.js';
 
 const W = 960, H = 540;
 
-export function createHud(ctx, g, { txt, touchUI }) {
+export function createHud(ctx, g, { txt, touchUI, reducedMotion = false }) {
     const h = {};
+    // The hearts' own state: the life last seen (a change starts an animation), the shake and the pop
+    // running, which heart just went, the time for the pulse
+    const life = { hp: -1, shake: 0, pop: 0, lost: -1, gained: 0, t: 0 };
 
     function drawHint() {
         const a = Math.min(1, g.hintT / 1.2);   // fades out over its last second
@@ -44,20 +47,52 @@ export function createHud(ctx, g, { txt, touchUI }) {
     }
 
     // The hero's life, top left (the HUD of plan §8c will dress it up): full and empty hearts
-    function heart(x, y, r, full) {
+    // fill / stroke: colours, overriding the full and empty ones (a heart going, or the last one)
+    function heart(x, y, r, full, fill, stroke) {
         ctx.beginPath();
         ctx.moveTo(x, y + r * 0.9);
         ctx.bezierCurveTo(x - r * 1.6, y - r * 0.2, x - r * 0.6, y - r * 1.3, x, y - r * 0.45);
         ctx.bezierCurveTo(x + r * 0.6, y - r * 1.3, x + r * 1.6, y - r * 0.2, x, y + r * 0.9);
-        ctx.fillStyle = full ? '#ef4444' : 'rgba(13, 12, 29, 0.7)';
+        ctx.fillStyle = fill || (full ? '#ef4444' : 'rgba(13, 12, 29, 0.7)');
         ctx.fill();
         ctx.lineWidth = 2;
-        ctx.strokeStyle = full ? '#fecaca' : 'rgba(241, 240, 247, 0.45)';
+        ctx.strokeStyle = stroke || (full ? '#fecaca' : 'rgba(241, 240, 247, 0.45)');
         ctx.stroke();
     }
-    function drawLife() {
+    // The hearts (8c.3): one per point of life. Losing one: the row shakes, and the heart that went
+    // flashes bright red and drains to empty. Gaining one: it pops (1.3 → 1). The last heart: a slow pulse
+    // and a red outline. With reduced motion: no shake, pop or pulse; the flash and the outline remain.
+    function drawLife(dt = 0) {
+        const hp = g.hero.hp;
+        life.t += dt;
+        if (life.hp >= 0 && hp < life.hp) { life.shake = HEARTS.shake; life.lost = hp; }
+        if (life.hp >= 0 && hp > life.hp) { life.pop = HEARTS.pop; life.gained = life.hp; }
+        life.hp = hp;
+        life.shake = Math.max(0, life.shake - dt);
+        life.pop = Math.max(0, life.pop - dt);
+        const sx = reducedMotion ? 0 : Math.sin(life.t * 70) * 3 * (life.shake / HEARTS.shake);
+        const r0 = HEARTS.radius;
         ctx.save();
-        for (let k = 0; k < HERO.maxHp; k++) heart(30 + k * 32, 30, 11, k < g.hero.hp);
+        for (let k = 0; k < HERO.maxHp; k++) {
+            const x = 30 + k * HEARTS.spacing + sx, y = 30;
+            let r = r0, fill, stroke;
+            if (k === life.lost && life.shake > 0) {
+                // the one that went: bright red, draining to the empty colour
+                const f = life.shake / HEARTS.shake;
+                fill = `rgba(255, 90, 90, ${0.2 + 0.8 * f})`; stroke = '#ffffff';
+            } else if (k >= life.gained && k < hp && life.pop > 0 && !reducedMotion) {
+                r = r0 * (1 + (HEARTS.popScale - 1) * life.pop / HEARTS.pop);
+            }
+            if (hp === 1 && k === 0) {
+                stroke = '#ff2d2d';
+                if (!reducedMotion) r = r0 * (1 + 0.1 * Math.sin(life.t * Math.PI * 2 * HEARTS.pulse));
+                ctx.save(); ctx.shadowColor = '#ff2d2d'; ctx.shadowBlur = 10;
+                heart(x, y, r, true, fill, stroke);
+                ctx.restore();
+                continue;
+            }
+            heart(x, y, r, k < hp, fill, stroke);
+        }
         ctx.restore();
     }
     // Under the hearts: the level and his RAM tier, and the XP bar to the next level (the HUD of §8c will
@@ -180,6 +215,8 @@ export function createHud(ctx, g, { txt, touchUI }) {
         ctx.restore();
     };
     h.life = drawLife;
+    // For the tests: what the hearts are doing now
+    h.info = () => ({ shake: life.shake, pop: life.pop, lost: life.lost, last: g.hero.hp === 1 });
     h.xp = drawXp;
     h.levelUp = drawLevelUp;
     h.over = drawOver;
