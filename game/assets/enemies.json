@@ -97,5 +97,38 @@
    1.0
   ],
   "faces": "left"
+ },
+ "spyDrone.fly.0": {
+  "x": 1169,
+  "y": 0,
+  "w": 155,
+  "h": 115,
+  "anchor": [
+   0.5,
+   1.0
+  ],
+  "faces": "left"
+ },
+ "spyDrone.fly.1": {
+  "x": 1326,
+  "y": 0,
+  "w": 155,
+  "h": 115,
+  "anchor": [
+   0.5,
+   1.0
+  ],
+  "faces": "left"
+ },
+ "spyDrone.fly.2": {
+  "x": 1483,
+  "y": 0,
+  "w": 155,
+  "h": 115,
+  "anchor": [
+   0.5,
+   1.0
+  ],
+  "faces": "left"
  }
 }

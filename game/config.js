@@ -57,6 +57,19 @@ export const ENEMIES = {
         anims: { walk: 'blueRunner.run', crouch: 'blueRunner.run', charge: 'blueRunner.charge' },
         attack: 'charge',
         eye: [0.25, 0.25]             // its visor (share of the run frame)
+    },
+    spyDrone: {
+        hp: 1, speed: 90,
+        damage: 1, score: 15, xp: 8,
+        scale: 0.6,                   // the frames are 155×115: drawn ~93×69
+        hitbox: 0.65,
+        frameTime: 0.06,              // the propellers: they spin whatever it does
+        loop: true,
+        behaviour: 'fly',
+        fly: 150,                     // px above the road it flies (its bottom): over the hero's head
+        anims: { walk: 'spyDrone.fly' },
+        attack: 'laser',
+        eye: [0.36, 0.55]             // its red eye (share of the frame): where the laser leaves from
     }
 };
 
@@ -92,6 +105,21 @@ export const ATTACKS = {
         recover: 0.7,                 // s it stands panting after, open to RAMs
         knock: 40,                    // px a RAM that stops the charge throws it back
         damage: 1
+    },
+    // Spy Drone: stops in the air, its eye charges (a red dot that grows, a thin aiming line on the hero),
+    // the aim locks a moment before it fires a straight laser. Slide under it, jump, step aside, or RAM it
+    // first.
+    laser: {
+        chance: 0.85,
+        triggerAhead: [380, 560],
+        telegraph: 0.7,               // s the eye charges
+        lock: 0.25,                   // s before firing the aim stops following the hero: the time to dodge
+        aimAt: 0.2,                   // where on the hero it aims, from the top: his head, so a slide passes under
+        fire: 0.35,                   // s the beam lasts
+        width: 14,                    // px, the beam (what hurts)
+        length: 1200,
+        recover: 0.6,
+        damage: 1
     }
 };
 export const DIRECTOR = {
@@ -104,7 +132,8 @@ export const SPAWNS = {
     firstM: 60,
     gapM: [25, 45],
     zoneM: 500,
-    zones: [['orangeBot'], ['orangeBot', 'orangeBot', 'blueRunner']],   // from 500 m: one in three a Blue Runner
+    // from 500 m one in three a Blue Runner; from 1000 m the Spy Drones too
+    zones: [['orangeBot'], ['orangeBot', 'orangeBot', 'blueRunner'], ['orangeBot', 'orangeBot', 'blueRunner', 'spyDrone']],
     pool: 6
 };
 export const HIT_FLASH = 0.08;        // s an enemy shows white when hit

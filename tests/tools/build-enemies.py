@@ -20,6 +20,7 @@ GROUPS = {
     'orangeBot.ball': ['orange-bot-ball'],
     'blueRunner.run': ['blue-runner-1', 'blue-runner-2', 'blue-runner-3'],
     'blueRunner.charge': ['blue-runner-charge'],
+    'spyDrone.fly': ['spy-drone-1', 'spy-drone-2', 'spy-drone-3'],
 }
 
 pieces = {}

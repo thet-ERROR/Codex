@@ -41,10 +41,20 @@ export function createEnemies(sheet, frames, { rng = Math.random, reducedMotion 
     const pool = Array.from({ length: SPAWNS.pool }, () => ({
         on: false, id: '', def: null, x: 0, y: GROUND, hp: 0, t: 0, flash: 0, dying: 0, hitHero: false,
         state: PATROL, st: 0, attacks: false, h: 0, vx: 0, hop: 0, hops: 0, spin: 0, goal: 0,
-        clink: 0, clinkX: 0, clinkY: 0, dust: 0, dustX: 0
+        clink: 0, clinkX: 0, clinkY: 0, dust: 0, dustX: 0, ax: -1, ay: 0, zapped: false
     }));
     const director = createDirector();
-    const link = { dt: 0, scroll: 0, heroX: null, rng, director };   // handed to the attacks, reused
+    const eyeAt = { x: 0, y: 0 };
+    // where its eye is now (the Spy Drone's laser leaves from it); one object, reused
+    const eyeOf = (s) => {
+        const f = frameOf(s), w = f.w * s.def.scale, h = f.h * s.def.scale;
+        eyeAt.x = s.x - w * f.anchor[0] + w * s.def.eye[0];
+        eyeAt.y = s.y + bobOf(s) - h * f.anchor[1] + h * s.def.eye[1];
+        return eyeAt;
+    };
+    // a flyer hovers up and down a little (drawn, and its eye with it; not its hitbox)
+    const bobOf = (s) => (s.def.fly ? Math.sin(s.t * 3) * 5 : 0);
+    const link = { dt: 0, scroll: 0, heroX: null, heroBox: null, hero: null, rng, director, eyeOf };   // handed to the attacks, reused
     const e = {
         nextAtM: SPAWNS.firstM,
         killed: 0, score: 0, xp: 0,
@@ -59,7 +69,8 @@ export function createEnemies(sheet, frames, { rng = Math.random, reducedMotion 
         if (!def || !s) return false;
         Object.assign(s, { on: true, id, def, x, y: GROUND, hp: def.hp, t: 0, flash: 0, dying: 0, hitHero: false,
             state: PATROL, st: 0, attacks: attacks === undefined ? rng() < chanceOf(def) : !!attacks,
-            h: 0, vx: 0, hop: 0, hops: 0, spin: 0, clink: 0, dust: 0 });
+            h: def.fly || 0, vx: 0, hop: 0, hops: 0, spin: 0, clink: 0, dust: 0, ax: -1, ay: 0, zapped: false });
+        s.y = GROUND - s.h;
         return true;
     };
     const free = (s) => { s.on = false; director.release(s); };
@@ -72,7 +83,7 @@ export function createEnemies(sheet, frames, { rng = Math.random, reducedMotion 
     function frameOf(s) {
         const list = names[animOf(s)];
         // only on the move does it step through its frames; warning, attack pose and rest hold the first
-        return frames[list[s.state === PATROL ? Math.floor(s.t / s.def.frameTime) % list.length : 0]];
+        return frames[list[s.state === PATROL || s.def.loop ? Math.floor(s.t / s.def.frameTime) % list.length : 0]];
     }
 
     // The hitbox: a share of the drawn frame, centred on it, standing on its feet (the ball: centred on it)
@@ -89,6 +100,7 @@ export function createEnemies(sheet, frames, { rng = Math.random, reducedMotion 
         director.update(dt);
         link.dt = dt; link.scroll = scroll;
         link.heroX = hero && hero.box ? hero.box.x + hero.box.w / 2 : null;
+        link.heroBox = hero ? hero.box : null; link.hero = hero;
         if (e.natural && distM >= e.nextAtM) {
             const zone = SPAWNS.zones[Math.min(SPAWNS.zones.length - 1, Math.floor(distM / SPAWNS.zoneM))];
             if (e.spawn(zone[Math.floor(rng() * zone.length)], W + 60)) e.nextAtM = distM + gap();
@@ -144,7 +156,7 @@ export function createEnemies(sheet, frames, { rng = Math.random, reducedMotion 
     e.targets = () => pool.filter(s => s.on && s.dying <= 0 && vulnerable(s)).map(s => { const b = e.box(s); return { x: b.x + b.w / 2, y: b.y + b.h / 2 }; });
     e.list = () => pool.filter(s => s.on).map(s => ({ id: s.id, x: s.x, y: s.y, hp: s.hp, flash: s.flash, dying: s.dying,
         box: e.box(s), state: s.state, attacks: s.attacks, h: s.h, hop: s.hop, hops: s.hops, vulnerable: vulnerable(s),
-        clink: s.clink }));
+        clink: s.clink, st: s.st, ax: s.ax, ay: s.ay }));
     e.clear = () => { for (const s of pool) s.on = false; director.clear(); e.nextAtM = SPAWNS.firstM; e.killed = e.score = e.xp = 0; };
 
     e.draw = (ctx) => {
@@ -153,8 +165,8 @@ export function createEnemies(sheet, frames, { rng = Math.random, reducedMotion 
             const f = frameOf(s);
             let sc = s.def.scale, alpha = 1, sx = 1, sy = 1;
             // a small step bob while walking, the pop when it dies
-            let bob = s.state === PATROL ? Math.abs(Math.sin(s.t / s.def.frameTime * Math.PI)) * 3 : 0;
-            if (s.state === TELEGRAPH && !reducedMotion) {
+            let bob = s.def.fly ? -bobOf(s) : s.state === PATROL ? Math.abs(Math.sin(s.t / s.def.frameTime * Math.PI)) * 3 : 0;
+            if (s.state === TELEGRAPH && !reducedMotion && !s.def.fly) {
                 // winding up: it squashes lower and lower
                 const k = Math.min(1, s.st / 0.5);
                 sx = 1 + 0.12 * k; sy = 1 - 0.14 * k;
@@ -164,7 +176,7 @@ export function createEnemies(sheet, frames, { rng = Math.random, reducedMotion 
             if (s.state === RECOVER && s.def.attack === 'charge' && !reducedMotion) sy = 1 - 0.04 * Math.abs(Math.sin(s.st * 9));
             if (s.dying > 0) { const k = 1 - s.dying / DIE_T; sc *= 1 + 0.35 * k; alpha = 1 - k; bob = 0; }
             const w = f.w * sc * sx, h = f.h * sc * sy;
-            const shake = s.state === TELEGRAPH && !reducedMotion ? Math.sin(s.t * 70) * 1.5 : 0;   // and trembles
+            const shake = s.state === TELEGRAPH && !reducedMotion && !s.def.fly ? Math.sin(s.t * 70) * 1.5 : 0;   // and trembles
             ctx.save();
             ctx.globalAlpha = alpha;
             // shadow: smaller and fainter the higher the ball is
@@ -187,7 +199,7 @@ export function createEnemies(sheet, frames, { rng = Math.random, reducedMotion 
                 const dx = s.x + shake - w * f.anchor[0], dy = s.y - bob - h * f.anchor[1];
                 ctx.drawImage(img, f.x, f.y, f.w, f.h, dx, dy, w, h);
                 // the warning: the eye (the visor) blinks red-hot while it winds up (steady with reduced motion)
-                if (s.state === TELEGRAPH && s.dying <= 0 && s.def.eye && (reducedMotion || Math.floor(s.st * 12) % 2 === 0)) {
+                if (s.state === TELEGRAPH && s.dying <= 0 && s.def.eye && s.def.attack !== 'laser' && (reducedMotion || Math.floor(s.st * 12) % 2 === 0)) {
                     const ex = dx + w * s.def.eye[0], ey = dy + h * s.def.eye[1];
                     ctx.globalCompositeOperation = 'lighter';
                     const g = ctx.createRadialGradient(ex, ey, 0, ex, ey, 22);
@@ -199,6 +211,7 @@ export function createEnemies(sheet, frames, { rng = Math.random, reducedMotion 
                 }
             }
             ctx.restore();
+            if (s.def.attack === 'laser' && s.dying <= 0) drawLaser(ctx, s);
             drawBits(ctx, s);
         }
     };
@@ -221,6 +234,52 @@ export function createEnemies(sheet, frames, { rng = Math.random, reducedMotion 
             ctx.beginPath(); ctx.moveTo(x0, y); ctx.lineTo(x0 + len, y); ctx.stroke();
         }
         ctx.restore();
+    }
+
+    // The Spy Drone's laser: while it charges, a red dot in its eye that grows and a thin aiming line
+    // (dashed while it still follows the hero, solid once locked: now dodge); then the beam, a white core
+    // in a red glow; after, the eye cools down.
+    function drawLaser(ctx, s) {
+        const cfg = ATTACKS.laser;
+        const e = eyeOf(s);
+        ctx.save();
+        ctx.globalCompositeOperation = 'lighter';
+        if (s.state === TELEGRAPH) {
+            const k = Math.min(1, s.st / cfg.telegraph);
+            const locked = s.st > cfg.telegraph - cfg.lock;
+            ctx.strokeStyle = locked ? 'rgba(255, 70, 70, 0.85)' : 'rgba(255, 60, 60, 0.45)';
+            ctx.lineWidth = locked ? 2 : 1.2;
+            if (!locked) ctx.setLineDash([10, 8]);
+            ctx.beginPath(); ctx.moveTo(e.x, e.y); ctx.lineTo(e.x + s.ax * cfg.length, e.y + s.ay * cfg.length); ctx.stroke();
+            ctx.setLineDash([]);
+            glow(ctx, e.x, e.y, 4 + 14 * k, 0.6 + 0.4 * k);
+        } else if (s.state === ATTACK) {
+            const x1 = e.x + s.ax * cfg.length, y1 = e.y + s.ay * cfg.length;
+            const fade = reducedMotion ? 1 : 1 - 0.3 * Math.sin(s.st * 60) ** 2;   // a slight flicker
+            ctx.lineCap = 'round';
+            ctx.strokeStyle = `rgba(255, 40, 60, ${0.45 * fade})`;
+            ctx.lineWidth = cfg.width * 2.2;
+            ctx.beginPath(); ctx.moveTo(e.x, e.y); ctx.lineTo(x1, y1); ctx.stroke();
+            ctx.strokeStyle = `rgba(255, 120, 120, ${0.8 * fade})`;
+            ctx.lineWidth = cfg.width;
+            ctx.stroke();
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.95)';
+            ctx.lineWidth = cfg.width * 0.35;
+            ctx.stroke();
+            glow(ctx, e.x, e.y, 20, 1);
+        } else if (s.state === RECOVER) {
+            glow(ctx, e.x, e.y, 10 * (1 - s.st / cfg.recover), 0.5);
+        }
+        ctx.restore();
+    }
+    function glow(ctx, x, y, r, a) {
+        if (r <= 0) return;
+        const g = ctx.createRadialGradient(x, y, 0, x, y, r);
+        g.addColorStop(0, `rgba(255, 235, 235, ${a})`);
+        g.addColorStop(0.4, `rgba(255, 40, 40, ${0.8 * a})`);
+        g.addColorStop(1, 'rgba(255, 0, 0, 0)');
+        ctx.fillStyle = g;
+        ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill();
     }
 
     // The dust where a bounce landed, and the spark where a RAM glanced off the ball

@@ -898,7 +898,7 @@ describe('RAM RUSH: the Blue Runner and its Charge (5b)', () => {
         assert.ok(log[stopped][0].x > 300, `stopped well before the hero: ${log[stopped][0].x}`);
     }));
 
-    it('it comes from 500 m on: before that only Orange Bots, after it both', () => withPage(DESK, async (page) => {
+    it('it comes from 500 m on: before that only Orange Bots, from 500 to 1000 m both', () => withPage(DESK, async (page) => {
         await openGame(page);
         const out = await page.evaluate(async () => {
             const { createEnemies } = await import('/game/enemies.js');
@@ -913,7 +913,7 @@ describe('RAM RUSH: the Blue Runner and its Charge (5b)', () => {
             return seen;
         });
         assert.ok(out.filter(([m]) => m < 500).every(([, id]) => id === 'orangeBot'), 'only Orange Bots first');
-        const later = new Set(out.filter(([m]) => m >= 500).map(([, id]) => id));
+        const later = new Set(out.filter(([m]) => m >= 500 && m < 1000).map(([, id]) => id));
         assert.deepEqual([...later].sort(), ['blueRunner', 'orangeBot']);
     }));
 
@@ -930,6 +930,100 @@ describe('RAM RUSH: the Blue Runner and its Charge (5b)', () => {
         await waitState(page, (s) => s.enemies[0] && s.enemies[0].state === 'recover', 3000);
         await page.keyboard.up('ArrowUp');
         assert.equal((await gameState(page)).hp, 2, 'cleared it');
+        assert.deepEqual(page.problems, []);
+    }));
+});
+
+// The Spy Drone, in the page on its own at 60 fps: hero(f) gives the hero's box for frame f
+const droneRun = (page, opts = {}) => page.evaluate(async (opts) => {
+    const { createEnemies } = await import('/game/enemies.js');
+    const { ATTACKS } = await import('/game/config.js');
+    const frames = await (await fetch('/game/assets/enemies.json')).json();
+    const e = createEnemies(null, frames, { rng: () => 0 });
+    e.natural = false;
+    const stand = { x: 204, y: 342, w: 52, h: 118 }, slide = { x: 175, y: 398, w: 110, h: 62 };
+    let hits = 0;
+    const hero = { box: stand, hit: () => { hits++; return true; } };
+    e.spawn('spyDrone', 900, true);
+    const log = [];
+    const lockAt = ATTACKS.laser.telegraph - ATTACKS.laser.lock;
+    for (let f = 0; f < 60 * 4; f++) {
+        const d = e.list()[0];
+        // the slide: started as the aim locks, it lasts 0.55 s
+        if (opts.slide && d && d.state === 'telegraph' && d.st > lockAt + 0.02 && !hero.slid) { hero.slid = f; hero.box = slide; }
+        if (hero.slid && f - hero.slid > 33) hero.box = stand;
+        if (opts.ram && d && d.state === 'telegraph' && d.st > 0.2 && !hero.rammed) {
+            hero.rammed = true;
+            e.update(0, 0, 0, null, { hit: () => 1 }, null);   // a RAM lands on it
+        }
+        e.update(1 / 60, 5, 0, hero, null, null);
+        log.push(e.list().map(s => ({ state: s.state, x: s.x, y: s.y, h: s.h, st: s.st, ax: s.ax, ay: s.ay, dying: s.dying })));
+    }
+    return { log, hits, lockAt };
+}, opts);
+
+describe('RAM RUSH: the Spy Drone and its Laser (5b)', () => {
+    it('the sheet: three frames (the propellers), one box, facing left', () => withPage(DESK, async (page) => {
+        await openGame(page);
+        const f = await page.evaluate(async () => (await fetch('/game/assets/enemies.json')).json());
+        const fly = ['0', '1', '2'].map(n => f[`spyDrone.fly.${n}`]);
+        assert.ok(fly.every(r => r && r.w === fly[0].w && r.h === fly[0].h && r.faces === 'left'));
+    }));
+
+    it('it flies over his head, stops in the air (the road goes on under it), charges 0.7 s aiming at him, locks, fires 0.35 s, cools, flies on', () => withPage(DESK, async (page) => {
+        await openGame(page);
+        const { log, hits, lockAt } = await droneRun(page);
+        const runs = runsOf(log);
+        assert.deepEqual(runs.map(r => r.state).slice(0, 5), ['patrol', 'telegraph', 'attack', 'recover', 'patrol'], JSON.stringify(runs));
+        assert.ok(Math.abs(runs[1].frames - 42) <= 1 && Math.abs(runs[2].frames - 21) <= 1, JSON.stringify(runs));
+        assert.ok(log.every(l => !l[0] || l[0].y <= 460 - 150), 'never down on the road: over his head (342)');
+        const held = log.filter(l => ['telegraph', 'attack', 'recover'].includes(l[0]?.state)).map(l => l[0].x);
+        assert.ok(held.every(x => x === held[0]), 'holds its place on screen');
+        const tele = log.filter(l => l[0]?.state === 'telegraph').map(l => l[0]);
+        const locked = tele.filter(s => s.st > lockAt + 0.02);
+        assert.ok(locked.length >= 12 && locked.every(s => s.ax === locked[0].ax && s.ay === locked[0].ay), 'the aim is locked for the last 0.25 s');
+        assert.ok(locked[0].ax < 0 && locked[0].ay > 0, 'down and back, at him');
+        assert.equal(hits, 1, 'a hero who stands still is hit, once');
+    }));
+
+    it('a slide as the aim locks: the beam passes over him', () => withPage(DESK, async (page) => {
+        await openGame(page);
+        const { log, hits } = await droneRun(page, { slide: true });
+        assert.ok(log.some(l => l[0]?.state === 'attack'), 'it did fire');
+        assert.equal(hits, 0);
+    }));
+
+    it('one RAM before it fires brings it down: no beam', () => withPage(DESK, async (page) => {
+        await openGame(page);
+        const { log, hits } = await droneRun(page, { ram: true });
+        assert.ok(log.some(l => l[0]?.dying > 0), 'it went down');
+        assert.ok(!log.some(l => l[0]?.state === 'attack' && !(l[0].dying > 0)), 'never fired');
+        assert.equal(hits, 0);
+    }));
+
+    it('from 1000 m on: before that no drones, after it they come too', () => withPage(DESK, async (page) => {
+        await openGame(page);
+        const out = await page.evaluate(async () => {
+            const { createEnemies } = await import('/game/enemies.js');
+            const frames = await (await fetch('/game/assets/enemies.json')).json();
+            let seed = 5; const rng = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+            const e = createEnemies(null, frames, { rng });
+            const seen = [];
+            let m = 0;
+            const spawn = e.spawn;
+            e.spawn = (id, x, a) => { seen.push([m, id]); return spawn(id, x, a); };
+            for (; m < 3000; m++) e.update(0.016, 2000, m, null, null, null);
+            return seen;
+        });
+        assert.ok(out.filter(([m]) => m < 1000).every(([, id]) => id !== 'spyDrone'));
+        assert.ok(out.some(([m, id]) => m >= 1000 && id === 'spyDrone'));
+    }));
+
+    it('in the game: standing still under it costs a heart', () => withPage(DESK, async (page) => {
+        await openSettled(page);
+        await page.evaluate(async () => (await import('/game/main.js')).testSpawnEnemy('spyDrone', 980, { attack: true }));
+        await waitState(page, (s) => s.enemies[0] && s.enemies[0].state === 'recover', 4000);
+        assert.equal((await gameState(page)).hp, 2);
         assert.deepEqual(page.problems, []);
     }));
 });
