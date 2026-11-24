@@ -154,8 +154,8 @@
   "faces": "left"
  },
  "fireCrawler.crawl.2": {
-  "x": 1984,
-  "y": 0,
+  "x": 0,
+  "y": 172,
   "w": 170,
   "h": 115,
   "anchor": [
@@ -165,8 +165,8 @@
   "faces": "left"
  },
  "fireCrawler.crawl.3": {
-  "x": 2156,
-  "y": 0,
+  "x": 172,
+  "y": 172,
   "w": 170,
   "h": 115,
   "anchor": [
@@ -176,8 +176,8 @@
   "faces": "left"
  },
  "spikes.rise.0": {
-  "x": 2328,
-  "y": 0,
+  "x": 344,
+  "y": 172,
   "w": 146,
   "h": 42,
   "anchor": [
@@ -187,8 +187,8 @@
   "faces": "left"
  },
  "spikes.rise.1": {
-  "x": 2476,
-  "y": 0,
+  "x": 492,
+  "y": 172,
   "w": 150,
   "h": 77,
   "anchor": [
@@ -198,12 +198,89 @@
   "faces": "left"
  },
  "spikes.rise.2": {
-  "x": 2628,
-  "y": 0,
+  "x": 644,
+  "y": 172,
   "w": 152,
   "h": 112,
   "anchor": [
    0.5,
+   1.0
+  ],
+  "faces": "left"
+ },
+ "mechBoss.walk.0": {
+  "x": 798,
+  "y": 172,
+  "w": 206,
+  "h": 223,
+  "anchor": [
+   0.427,
+   1.0
+  ],
+  "faces": "left"
+ },
+ "mechBoss.walk.1": {
+  "x": 1006,
+  "y": 172,
+  "w": 206,
+  "h": 223,
+  "anchor": [
+   0.427,
+   1.0
+  ],
+  "faces": "left"
+ },
+ "mechBoss.walk.2": {
+  "x": 1214,
+  "y": 172,
+  "w": 206,
+  "h": 223,
+  "anchor": [
+   0.427,
+   1.0
+  ],
+  "faces": "left"
+ },
+ "mechBoss.walk.3": {
+  "x": 1422,
+  "y": 172,
+  "w": 206,
+  "h": 223,
+  "anchor": [
+   0.427,
+   1.0
+  ],
+  "faces": "left"
+ },
+ "mechBoss.charge.0": {
+  "x": 1630,
+  "y": 172,
+  "w": 218,
+  "h": 241,
+  "anchor": [
+   0.5,
+   1.0
+  ],
+  "faces": "left"
+ },
+ "mechBoss.fire.0": {
+  "x": 0,
+  "y": 415,
+  "w": 283,
+  "h": 241,
+  "anchor": [
+   0.608,
+   1.0
+  ],
+  "faces": "left"
+ },
+ "mechBoss.stunned.0": {
+  "x": 285,
+  "y": 415,
+  "w": 246,
+  "h": 225,
+  "anchor": [
+   0.545,
    1.0
   ],
   "faces": "left"

@@ -728,6 +728,7 @@ describe('RAM RUSH: enemies, the Orange Bot first, and the hero\'s life', () => 
             const frames = await (await fetch('/game/assets/enemies.json')).json();
             let seed = 7; const rng = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
             const e = createEnemies(null, frames, { rng });
+            e.bossAtM = Infinity;   // the boss holds the others back: it has a test of its own
             const at = [];
             for (let m = 0; m < 1200; m++) {
                 const before = e.nextAtM;
@@ -905,6 +906,7 @@ describe('RAM RUSH: the Blue Runner and its Charge (5b)', () => {
             const frames = await (await fetch('/game/assets/enemies.json')).json();
             let seed = 11; const rng = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
             const e = createEnemies(null, frames, { rng });
+            e.bossAtM = Infinity;   // the boss holds the others back: it has a test of its own
             const seen = [];
             let m = 0;
             const spawn = e.spawn;
@@ -1008,6 +1010,7 @@ describe('RAM RUSH: the Spy Drone and its Laser (5b)', () => {
             const frames = await (await fetch('/game/assets/enemies.json')).json();
             let seed = 5; const rng = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
             const e = createEnemies(null, frames, { rng });
+            e.bossAtM = Infinity;   // the boss holds the others back: it has a test of its own
             const seen = [];
             let m = 0;
             const spawn = e.spawn;
@@ -1118,6 +1121,7 @@ describe('RAM RUSH: the Fire Crawler and its Spikes (5b)', () => {
             const frames = await (await fetch('/game/assets/enemies.json')).json();
             let seed = 9; const rng = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
             const e = createEnemies(null, frames, { rng });
+            e.bossAtM = Infinity;   // the boss holds the others back: it has a test of its own
             const seen = [];
             let m = 0;
             const spawn = e.spawn;
@@ -1134,6 +1138,119 @@ describe('RAM RUSH: the Fire Crawler and its Spikes (5b)', () => {
         await page.evaluate(async () => (await import('/game/main.js')).testSpawnEnemy('fireCrawler', 980, { attack: true }));
         await waitState(page, (s) => s.spikes.some(p => p.up === 1), 4000);
         await waitState(page, (s) => s.hp === 2, 3000);
+        assert.deepEqual(page.problems, []);
+    }));
+});
+
+// The Malware Core, in the page on its own at 60 fps. hero: 'stand', or 'dodge' (a slide under a high
+// beam, a jump over a low one, while it fires)
+const bossRun = (page, opts = {}) => page.evaluate(async (opts) => {
+    const { createEnemies } = await import('/game/enemies.js');
+    const frames = await (await fetch('/game/assets/enemies.json')).json();
+    const e = createEnemies(null, frames, { rng: () => 0.3 });
+    e.natural = false;
+    const stand = { x: 204, y: 342, w: 52, h: 118 }, slide = { x: 175, y: 398, w: 110, h: 62 }, jump = { x: 204, y: 342 - 110, w: 52, h: 118 };
+    const hits = [];
+    let f = 0;
+    const hero = { box: stand, hit: (d) => { hits.push([f, d]); return true; } };
+    e.spawn('mechBoss', 1020, true);
+    const log = [];
+    for (; f < 60 * (opts.secs || 8); f++) {
+        const b = e.list()[0];
+        hero.box = opts.hero === 'dodge' && b && (b.state === 'attack' || (b.state === 'telegraph' && b.st > 0.75)) ? (b.lane === 'high' ? slide : jump) : stand;
+        e.update(1 / 60, 5, 0, hero, null, null);
+        const s = e.list()[0];
+        log.push(s ? { state: s.state, x: s.x, lane: s.lane, st: s.st } : null);
+    }
+    return { log, hits };
+}, opts);
+
+describe('RAM RUSH: the Malware Core (mini-boss) and its Beam (5b)', () => {
+    it('the sheet: its four steps share one box; charge, shot and stunned are in; the sheet fits a phone (2048px)', () => withPage(DESK, async (page) => {
+        await openGame(page);
+        const f = await page.evaluate(async () => (await fetch('/game/assets/enemies.json')).json());
+        const walk = ['0', '1', '2', '3'].map(n => f[`mechBoss.walk.${n}`]);
+        assert.ok(walk.every(r => r && r.w === walk[0].w && r.h === walk[0].h));
+        for (const k of ['mechBoss.charge.0', 'mechBoss.fire.0', 'mechBoss.stunned.0']) assert.ok(f[k], k);
+        const img = await page.evaluate(async () => { const i = new Image(); i.src = '/game/assets/enemies.webp'; await i.decode(); return [i.width, i.height]; });
+        assert.ok(img[0] <= 2048, `no wider than 2048px: ${img[0]}`);
+    }));
+
+    it('it walks in, holds its place (the road runs under it), and fires again and again: 0.9 s warning, 0.5 s beam, high and low in turn', () => withPage(DESK, async (page) => {
+        await openGame(page);
+        const { log } = await bossRun(page);
+        const held = log.filter(l => l && l.x <= 760);
+        assert.ok(held.length > 300 && held.every(l => l.x === 760), 'stands at 760');
+        const runs = runsOf(log.map(l => [l].filter(Boolean)));
+        const teles = runs.filter(r => r.state === 'telegraph'), shots = runs.filter(r => r.state === 'attack');
+        assert.ok(teles.length >= 2, JSON.stringify(runs));
+        assert.ok(teles.every(r => Math.abs(r.frames - 54) <= 1) && shots.every(r => Math.abs(r.frames - 30) <= 1), JSON.stringify(runs));
+        const order = log.filter((l, i) => l?.state === 'telegraph' && log[i - 1]?.state !== 'telegraph').map(l => l.lane);
+        assert.ok(order.length >= 2 && order.every((x, i) => i === 0 || x !== order[i - 1]), order.join());
+    }));
+
+    it('its beam takes two hearts from a hero who stands; a slide under the high one and a jump over the low one take none', () => withPage(DESK, async (page) => {
+        await openGame(page);
+        const stand = await bossRun(page, { hero: 'stand' });
+        const dodge = await bossRun(page, { hero: 'dodge' });
+        assert.ok(stand.hits.length >= 2 && stand.hits.every(([, d]) => d === 2), JSON.stringify(stand.hits));
+        assert.deepEqual(dodge.hits, []);
+    }));
+
+    it('RAMs bring it down (16 hits): the score, and the director is free again', () => withPage(DESK, async (page) => {
+        await openGame(page);
+        const out = await page.evaluate(async () => {
+            const { createEnemies } = await import('/game/enemies.js');
+            const frames = await (await fetch('/game/assets/enemies.json')).json();
+            const e = createEnemies(null, frames, { rng: () => 0.99 });
+            e.natural = false;
+            e.spawn('mechBoss', 760, true);
+            const hero = { box: { x: 204, y: 342, w: 52, h: 118 }, hit: () => true };
+            for (let f = 0; f < 80; f++) e.update(1 / 60, 5, 0, hero, null, null);   // into its warning
+            const busy = e.list()[0].state;
+            for (let k = 0; k < 16; k++) e.update(1 / 60, 5, 0, hero, { hit: () => 1 }, null);
+            for (let f = 0; f < 50; f++) e.update(1 / 60, 5, 0, hero, null, null);    // its pop, the rest after an attack
+            e.spawn('orangeBot', 800, true);
+            const states = [];
+            for (let f = 0; f < 60; f++) { e.update(1 / 60, 5, 0, hero, null, null); const b = e.list().find(s => s.id === 'orangeBot'); if (b) states.push(b.state); }
+            return { busy, killed: e.killed, score: e.score, states: [...new Set(states)] };
+        });
+        assert.equal(out.busy, 'telegraph');
+        assert.deepEqual([out.killed, out.score], [1, 200]);
+        assert.ok(out.states.includes('telegraph'), `another may attack now: ${out.states}`);
+    }));
+
+    it('it comes every 1000 m, and while it stands nothing else comes; after it, they come again', () => withPage(DESK, async (page) => {
+        await openGame(page);
+        const out = await page.evaluate(async () => {
+            const { createEnemies } = await import('/game/enemies.js');
+            const frames = await (await fetch('/game/assets/enemies.json')).json();
+            let seed = 3; const rng = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+            const e = createEnemies(null, frames, { rng });
+            const seen = [];
+            let m = 0;
+            const spawn = e.spawn;
+            e.spawn = (id, x, a) => { seen.push([m, id]); return spawn(id, x, a); };
+            const kill = { hit: () => 99 };
+            let standing = 0;
+            for (; m < 2100; m++) {
+                e.update(0.016, 30, m, null, m === 1100 || m === 2050 ? kill : null, null);   // a RAM storm at 1100 m
+                if (m === 1099) standing = e.list().filter(s => s.id === 'mechBoss').length;
+            }
+            return { seen, standing };
+        });
+        const bosses = out.seen.filter(([, id]) => id === 'mechBoss').map(([m]) => m);
+        assert.deepEqual(bosses, [1000, 2000]);
+        assert.equal(out.standing, 1);
+        assert.ok(!out.seen.some(([m]) => m > 1000 && m < 1100), 'nothing while it stands');
+        assert.ok(out.seen.some(([m, id]) => m > 1100 && m < 2000 && id !== 'mechBoss'), 'they come again after it');
+    }));
+
+    it('in the game: it walks in, and a beam on a hero who stands takes two hearts', () => withPage(DESK, async (page) => {
+        await openSettled(page);
+        await page.evaluate(async () => (await import('/game/main.js')).testSpawnEnemy('mechBoss', 1060, { attack: true }));
+        await waitState(page, (s) => s.enemies[0] && s.enemies[0].state === 'recover', 6000);
+        assert.equal((await gameState(page)).hp, 1);
         assert.deepEqual(page.problems, []);
     }));
 });

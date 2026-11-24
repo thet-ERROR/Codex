@@ -95,9 +95,19 @@ export function createEnemies(sheet, frames, { rng = Math.random, reducedMotion 
     };
     // a flyer hovers up and down a little (drawn, and its eye with it; not its hitbox)
     const bobOf = (s) => (s.def.fly ? Math.sin(s.t * 3) * 5 : 0);
-    const link = { dt: 0, scroll: 0, heroX: null, heroBox: null, hero: null, rng, director, eyeOf, spikes };   // handed to the attacks, reused
+    // where the boss's front cannon is (its beam leaves from it): from the charge frame, which the shot is
+    // lined up with in the sheet; one object, reused
+    const muzzleAt = { x: 0, y: 0 };
+    const muzzleOf = (s) => {
+        const f = frames[`${s.def.anims.charge}.0`], w = f.w * s.def.scale, h = f.h * s.def.scale;
+        muzzleAt.x = s.x - w * f.anchor[0] + w * s.def.muzzle[0];
+        muzzleAt.y = s.y - h * f.anchor[1] + h * s.def.muzzle[1];
+        return muzzleAt;
+    };
+    const link = { dt: 0, scroll: 0, heroX: null, heroBox: null, hero: null, rng, director, eyeOf, muzzleOf, spikes };   // handed to the attacks, reused
     const e = {
         nextAtM: SPAWNS.firstM,
+        bossAtM: SPAWNS.boss.firstM,
         killed: 0, score: 0, xp: 0,
         natural: true                  // the tests can turn the spawner off
     };
@@ -110,7 +120,7 @@ export function createEnemies(sheet, frames, { rng = Math.random, reducedMotion 
         if (!def || !s) return false;
         Object.assign(s, { on: true, id, def, x, y: GROUND, hp: def.hp, t: 0, flash: 0, dying: 0, hitHero: false,
             state: PATROL, st: 0, attacks: attacks === undefined ? rng() < chanceOf(def) : !!attacks,
-            h: def.fly || 0, vx: 0, hop: 0, hops: 0, spin: 0, clink: 0, dust: 0, ax: -1, ay: 0, zapped: false, placed: false });
+            h: def.fly || 0, vx: 0, hop: 0, hops: 0, spin: 0, clink: 0, dust: 0, ax: -1, ay: 0, zapped: false, placed: false, cool: ATTACKS.beam.first, lane: '' });
         s.y = GROUND - s.h;
         return true;
     };
@@ -132,7 +142,7 @@ export function createEnemies(sheet, frames, { rng = Math.random, reducedMotion 
         const f = frameOf(s);
         const w = f.w * s.def.scale, h = f.h * s.def.scale, k = s.def.hitbox, kw = s.def.hitboxW || k;
         const lift = s.state === ATTACK && s.def.attack === 'roll' ? h * (1 - k) / 2 : 0;
-        return { x: s.x - w * kw / 2, y: s.y - h * k - lift, w: w * kw, h: h * k };
+        return { x: s.x - w * f.anchor[0] + w * (1 - kw) / 2, y: s.y - h * k - lift, w: w * kw, h: h * k };
     };
 
     // dt: s; scroll: px the road moved; distM: metres run; hero: { box, hit(damage) }; rams: hit(box),
@@ -143,7 +153,10 @@ export function createEnemies(sheet, frames, { rng = Math.random, reducedMotion 
         link.heroX = hero && hero.box ? hero.box.x + hero.box.w / 2 : null;
         link.heroBox = hero ? hero.box : null; link.hero = hero;
         spikes.update(dt, scroll, hero);
-        if (e.natural && distM >= e.nextAtM) {
+        // the boss: every so many metres; while it stands nothing else comes
+        const boss = pool.some(s => s.on && s.def.boss && s.dying <= 0);
+        if (e.natural && !boss && distM >= e.bossAtM && e.spawn('mechBoss', W + 120, true)) e.bossAtM += SPAWNS.boss.everyM;
+        else if (e.natural && !boss && distM >= e.nextAtM) {
             const zone = SPAWNS.zones[Math.min(SPAWNS.zones.length - 1, Math.floor(distM / SPAWNS.zoneM))];
             if (e.spawn(zone[Math.floor(rng() * zone.length)], W + 60)) e.nextAtM = distM + gap();
         }
@@ -192,6 +205,7 @@ export function createEnemies(sheet, frames, { rng = Math.random, reducedMotion 
             }
             if (s.x < -120) free(s);
         }
+        if (pool.some(s => s.on && s.def.boss && s.dying <= 0)) e.nextAtM = Math.max(e.nextAtM, distM + SPAWNS.gapM[0]);
     };
 
     // Centres of what can be hit, for the RAMs' auto-aim (not the armoured ball in the air: aiming at it
@@ -199,9 +213,9 @@ export function createEnemies(sheet, frames, { rng = Math.random, reducedMotion 
     e.targets = () => pool.filter(s => s.on && s.dying <= 0 && vulnerable(s)).map(s => { const b = e.box(s); return { x: b.x + b.w / 2, y: b.y + b.h / 2 }; });
     e.list = () => pool.filter(s => s.on).map(s => ({ id: s.id, x: s.x, y: s.y, hp: s.hp, flash: s.flash, dying: s.dying,
         box: e.box(s), state: s.state, attacks: s.attacks, h: s.h, hop: s.hop, hops: s.hops, vulnerable: vulnerable(s),
-        clink: s.clink, st: s.st, ax: s.ax, ay: s.ay }));
+        clink: s.clink, st: s.st, ax: s.ax, ay: s.ay, lane: s.lane }));
     e.spikes = () => spikePool.filter(p => p.on).map(p => ({ x: p.x, t: p.t, up: spikes.up(p), box: spikes.box(p) }));
-    e.clear = () => { for (const s of pool) s.on = false; for (const p of spikePool) p.on = false; director.clear(); e.nextAtM = SPAWNS.firstM; e.killed = e.score = e.xp = 0; };
+    e.clear = () => { for (const s of pool) s.on = false; for (const p of spikePool) p.on = false; director.clear(); e.nextAtM = SPAWNS.firstM; e.bossAtM = SPAWNS.boss.firstM; e.killed = e.score = e.xp = 0; };
 
     e.draw = (ctx) => {
         drawSpikes(ctx);
@@ -211,7 +225,7 @@ export function createEnemies(sheet, frames, { rng = Math.random, reducedMotion 
             let sc = s.def.scale, alpha = 1, sx = 1, sy = 1;
             // a small step bob while walking, the pop when it dies
             let bob = s.def.fly ? -bobOf(s) : s.state === PATROL ? Math.abs(Math.sin(s.t / s.def.frameTime * Math.PI)) * 3 : 0;
-            if (s.state === TELEGRAPH && !reducedMotion && !s.def.fly) {
+            if (s.state === TELEGRAPH && !reducedMotion && !s.def.fly && !s.def.boss) {
                 // winding up: it squashes lower and lower
                 const k = Math.min(1, s.st / 0.5);
                 sx = 1 + 0.12 * k; sy = 1 - 0.14 * k;
@@ -221,7 +235,7 @@ export function createEnemies(sheet, frames, { rng = Math.random, reducedMotion 
             if (s.state === RECOVER && s.def.attack === 'charge' && !reducedMotion) sy = 1 - 0.04 * Math.abs(Math.sin(s.st * 9));
             if (s.dying > 0) { const k = 1 - s.dying / DIE_T; sc *= 1 + 0.35 * k; alpha = 1 - k; bob = 0; }
             const w = f.w * sc * sx, h = f.h * sc * sy;
-            const shake = s.state === TELEGRAPH && !reducedMotion && !s.def.fly ? Math.sin(s.t * 70) * 1.5 : 0;   // and trembles
+            const shake = s.state === TELEGRAPH && !reducedMotion && !s.def.fly && !s.def.boss ? Math.sin(s.t * 70) * 1.5 : 0;   // and trembles
             ctx.save();
             ctx.globalAlpha = alpha;
             // shadow: smaller and fainter the higher the ball is
@@ -257,6 +271,7 @@ export function createEnemies(sheet, frames, { rng = Math.random, reducedMotion 
             }
             ctx.restore();
             if (s.def.attack === 'laser' && s.dying <= 0) drawLaser(ctx, s);
+            if (s.def.boss && s.dying <= 0) { drawBeam(ctx, s); drawBossBar(ctx, s, h); }
             drawBits(ctx, s);
         }
     };
@@ -317,12 +332,12 @@ export function createEnemies(sheet, frames, { rng = Math.random, reducedMotion 
         }
         ctx.restore();
     }
-    function glow(ctx, x, y, r, a) {
+    function glow(ctx, x, y, r, a, [cr, cg, cb] = [255, 40, 40]) {
         if (r <= 0) return;
         const g = ctx.createRadialGradient(x, y, 0, x, y, r);
-        g.addColorStop(0, `rgba(255, 235, 235, ${a})`);
-        g.addColorStop(0.4, `rgba(255, 40, 40, ${0.8 * a})`);
-        g.addColorStop(1, 'rgba(255, 0, 0, 0)');
+        g.addColorStop(0, `rgba(255, 235, 245, ${a})`);
+        g.addColorStop(0.4, `rgba(${cr}, ${cg}, ${cb}, ${0.8 * a})`);
+        g.addColorStop(1, `rgba(${cr}, ${cg}, ${cb}, 0)`);
         ctx.fillStyle = g;
         ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill();
     }
@@ -361,6 +376,52 @@ export function createEnemies(sheet, frames, { rng = Math.random, reducedMotion 
                 ctx.restore();
             }
         }
+    }
+
+    // The Malware Core's beam: while the cannons charge, a magenta warning line along the path (pulsing,
+    // brighter as it comes); then the thick beam, white in a magenta glow, to where it meets the road
+    function drawBeam(ctx, s) {
+        if (s.state !== TELEGRAPH && s.state !== ATTACK) return;
+        const cfg = ATTACKS.beam, m = muzzleOf(s);
+        const len = s.ay > 0 ? Math.min(cfg.length, (GROUND - m.y) / s.ay) : cfg.length;
+        const x1 = m.x + s.ax * len, y1 = m.y + s.ay * len;
+        ctx.save();
+        ctx.globalCompositeOperation = 'lighter';
+        ctx.lineCap = 'round';
+        if (s.state === TELEGRAPH) {
+            const k = Math.min(1, s.st / cfg.telegraph);
+            const pulse = reducedMotion ? 1 : 0.6 + 0.4 * Math.abs(Math.sin(s.st * 14));
+            // the lane the beam will fill, faint, and a bright dashed line down its middle
+            ctx.strokeStyle = `rgba(236, 72, 255, ${(0.12 + 0.18 * k) * pulse})`;
+            ctx.lineWidth = cfg.width;
+            ctx.beginPath(); ctx.moveTo(m.x, m.y); ctx.lineTo(x1, y1); ctx.stroke();
+            ctx.strokeStyle = `rgba(250, 170, 255, ${(0.6 + 0.4 * k) * pulse})`;
+            ctx.lineWidth = 2.5 + 2 * k;
+            ctx.setLineDash([16, 10]);
+            ctx.stroke();
+            ctx.setLineDash([]);
+            glow(ctx, m.x, m.y, 10 + 22 * k, 0.9, [236, 72, 255]);
+        } else {
+            const fade = reducedMotion ? 1 : 1 - 0.25 * Math.sin(s.st * 50) ** 2;
+            for (const [wk, col] of [[2.2, `rgba(217, 70, 239, ${0.45 * fade})`], [1, `rgba(244, 140, 255, ${0.85 * fade})`], [0.35, 'rgba(255, 255, 255, 0.95)']]) {
+                ctx.strokeStyle = col; ctx.lineWidth = cfg.width * wk;
+                ctx.beginPath(); ctx.moveTo(m.x, m.y); ctx.lineTo(x1, y1); ctx.stroke();
+            }
+            glow(ctx, m.x, m.y, 34, 1, [236, 72, 255]);
+            glow(ctx, x1, y1, 30, 0.8, [236, 72, 255]);           // where it burns the road
+        }
+        ctx.restore();
+    }
+
+    // Its life, over its head while it stands (the HUD step will dress it)
+    function drawBossBar(ctx, s, h) {
+        const w = 120, x = s.x - w / 2, y = s.y - h - 18;
+        ctx.save();
+        ctx.fillStyle = 'rgba(10, 6, 24, 0.75)';
+        ctx.fillRect(x - 2, y - 2, w + 4, 10);
+        ctx.fillStyle = '#e11d48';
+        ctx.fillRect(x, y, w * Math.max(0, s.hp) / s.def.hp, 6);
+        ctx.restore();
     }
 
     // The dust where a bounce landed, and the spark where a RAM glanced off the ball

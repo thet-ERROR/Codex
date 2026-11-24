@@ -10,6 +10,7 @@
 // the hero, the RAMs and the drawing stay in enemies.js.
 
 import { ATTACKS, DIRECTOR } from './config.js';
+import { GROUND } from './hero.js';
 
 export const PATROL = 'patrol', TELEGRAPH = 'telegraph', ATTACK = 'attack', RECOVER = 'recover';
 
@@ -195,7 +196,50 @@ const spikes = {
     hurt() {}
 };
 
-export const KINDS = { roll, charge, laser, spikes };
+// The Malware Core's Beam. It walks in to its place and holds it (the road runs on under it); then, again
+// and again until it is down: the cannons charge while a warning line shows the beam's path, high or low
+// in turn; the beam; a moment's rest; a cooldown.
+const beam = {
+    cfg: ATTACKS.beam,
+
+    patrol(s, c) {
+        if (s.x > s.def.holdX) { s.x = Math.max(s.def.holdX, s.x - s.def.speed * c.dt); return; }
+        s.cool -= c.dt;
+        if (s.cool > 0 || c.heroX === null || !c.director.claim(s)) return;
+        s.lane = s.lane === 'high' ? 'low' : s.lane === 'low' ? 'high' : (c.rng() < 0.5 ? 'high' : 'low');
+        const m = c.muzzleOf(s);
+        const dx = c.heroX - m.x, dy = GROUND - this.cfg.lanes[s.lane] - m.y, d = Math.hypot(dx, dy) || 1;
+        s.ax = dx / d; s.ay = dy / d;
+        s.state = TELEGRAPH; s.st = 0;
+    },
+
+    telegraph(s) { if (s.st >= this.cfg.telegraph) { s.state = ATTACK; s.st = 0; s.zapped = false; } },
+
+    attack(s, c) {
+        if (!s.zapped && c.hero && c.heroBox && beamHits(c.muzzleOf(s), s.ax, s.ay, this.reach(s, c.muzzleOf(s)), c.heroBox)) {
+            if (c.hero.hit(this.cfg.damage)) s.zapped = true;
+        }
+        if (s.st >= this.cfg.fire) { s.state = RECOVER; s.st = 0; c.director.release(s); }
+        return false;
+    },
+
+    recover(s) { if (s.st >= this.cfg.recover) { s.state = PATROL; s.st = 0; s.cool = this.cfg.cooldown; } },
+
+    // the beam ends where it meets the road
+    reach(s, m) {
+        const toRoad = s.ay > 0 ? (GROUND - m.y) / s.ay : this.cfg.length;
+        this._reach.width = this.cfg.width; this._reach.length = Math.min(this.cfg.length, toRoad);
+        return this._reach;
+    },
+    _reach: { width: 0, length: 0 },
+
+    vulnerable() { return true; },
+    anim(s) { return s.state === TELEGRAPH ? s.def.anims.charge : s.state === ATTACK ? s.def.anims.fire : s.def.anims.walk; },
+    damage(s) { return s.def.damage; },
+    hurt() {}
+};
+
+export const KINDS = { roll, charge, laser, spikes, beam };
 
 // One step of the enemy's machine; returns true when a bounce touched the road
 export function step(s, c) {
