@@ -1520,3 +1520,103 @@ describe('RAM RUSH: power-ups, Drone Assist (4b)', () => {
         assert.ok(out.drone > 100 && out.xmp > out.drone, JSON.stringify(out));
     }));
 });
+
+describe('RAM RUSH: XP, levels and the RAM tier (step 7)', () => {
+    it('xpNeeded = 100 × level^1.5; the level follows the total; each level is one RAM tier up, the last one holds', () => withPage(DESK, async (page) => {
+        await openGame(page);
+        const out = await page.evaluate(async () => {
+            const { createProgression, xpNeeded } = await import('/game/progression.js');
+            const p = createProgression();
+            const steps = [];
+            for (const total of [99, 100, 100 + 283 - 1, 100 + 283, 100 + 283 + 520 + 800 + 1118, 99999]) {
+                const up = p.set(total);
+                steps.push([p.level, p.into, up, p.tier().name]);
+            }
+            return { need: [1, 2, 3, 4].map(xpNeeded), steps, run: p.fromRun(10, 95), back: p.set(5) };
+        });
+        assert.deepEqual(out.need, [100, 283, 520, 800]);
+        assert.deepEqual(out.steps.slice(0, 4), [[1, 99, 0, 'DDR3'], [2, 0, 1, 'DDR4'], [2, 282, 0, 'DDR4'], [3, 0, 1, 'DDR5']]);
+        assert.deepEqual(out.steps[4].slice(0, 2), [6, 0], 'several levels at once');
+        assert.equal(out.steps[4][2], 3);
+        assert.equal(out.steps[5][3], 'DDR5-8000', 'the last tier holds');
+        assert.equal(out.run, 10 + 9, 'enemies + 1 per 10 m');
+        assert.equal(out.back, 0, 'XP never goes down');
+    }));
+
+    it('his tier multiplies under XMP, and the two together stay inside the cap', () => withPage(DESK, async (page) => {
+        await openGame(page);
+        const v = await page.evaluate(async () => {
+            const { createPowerups } = await import('/game/powerups.js');
+            const p = createPowerups();
+            p.base.damageMult = 1.5;
+            const ddr5 = p.getStat('damageMult');
+            p.activate('xmp');
+            const both = p.getStat('damageMult');
+            p.base.damageMult = 2;
+            return [ddr5, both, p.getStat('damageMult')];
+        });
+        assert.deepEqual(v, [1.5, 2.25, 2.5]);
+    }));
+
+    it('in the game: running gives XP; enough of it is a level up to DDR4, and the throws hit 1.25×', () => withPage(DESK, async (page) => {
+        await openSettled(page);
+        let s = await gameState(page);
+        assert.deepEqual([s.level, s.tier], [1, 'DDR3']);
+        await page.waitForTimeout(2500);
+        s = await gameState(page);
+        assert.ok(s.xpTotal >= 2, `from the distance: ${s.xpTotal}`);
+        await page.evaluate(async () => (await import('/game/main.js')).testXp(100));
+        await waitState(page, (s) => s.level === 2, 1000);
+        await page.keyboard.press('KeyJ');
+        await waitState(page, (s) => s.rams.length > 0, 1000);
+        s = await gameState(page);
+        assert.deepEqual([s.tier, s.rams[0].damage], ['DDR4', 1.25]);
+        assert.deepEqual(page.problems, []);
+    }));
+
+    it('game over keeps the records (score, distance, level); a new run starts again at level 1 with DDR3', () => withPage(DESK, async (page) => {
+        await openSettled(page);
+        await page.evaluate(async () => (await import('/game/main.js')).testXp(100));
+        await waitState(page, (s) => s.level === 2, 1000);
+        for (let k = 0; k < 3; k++) {
+            await spawnEnemy(page, 'orangeBot', 300);
+            await page.waitForTimeout(1350);
+        }
+        let s = await gameState(page);
+        assert.equal(s.over, true);
+        assert.equal(s.records.level, 2);
+        assert.ok(s.records.distance > 0);
+        const stored = await page.evaluate(() => JSON.parse(localStorage.getItem('ramrush-records')));
+        assert.deepEqual(stored, s.records);
+        await page.waitForTimeout(500);
+        await page.keyboard.press('Space');
+        await waitState(page, (s) => !s.over, 1000);
+        s = await gameState(page);
+        assert.deepEqual([s.level, s.tier, s.records.level], [1, 'DDR3', 2]);
+    }));
+
+    it('a record is only ever raised: a worse run leaves it as it was', () => withPage(DESK, async (page) => {
+        await openGame(page);
+        const out = await page.evaluate(async () => {
+            const { saveRecords, readRecords } = await import('/game/progression.js');
+            localStorage.removeItem('ramrush-records');
+            const a = saveRecords({ score: 50, level: 3, distance: 400 });
+            const b = saveRecords({ score: 20, level: 4, distance: 100 });
+            return { a: a.beat, b: b.beat, now: readRecords() };
+        });
+        assert.deepEqual(out.a, { score: true, level: true, distance: true });
+        assert.deepEqual(out.b, { score: false, level: true, distance: false });
+        assert.deepEqual(out.now, { score: 50, level: 4, distance: 400 });
+    }));
+
+    it('with storage refused (a private window), it plays the same and only forgets', () => withPage(DESK, async (page) => {
+        await openGame(page);
+        const out = await page.evaluate(async () => {
+            const { saveRecords, readRecords } = await import('/game/progression.js');
+            Object.defineProperty(window, 'localStorage', { configurable: true, get() { throw new Error('denied'); } });
+            return { saved: saveRecords({ score: 5, level: 1, distance: 10 }).best, read: readRecords() };
+        });
+        assert.deepEqual(out.read, { score: 0, level: 0, distance: 0 });
+        assert.deepEqual(out.saved, { score: 5, level: 1, distance: 10 });
+    }));
+});

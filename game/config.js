@@ -53,6 +53,19 @@ export const PICKUPS = {
     radius: 22
 };
 
+// XP and levels (plan §4, step 7), per run. To go from level L to the next: base × L^power XP.
+// XP comes from the enemies and parries (their numbers above / below) and perM for each metre run.
+export const XP = { base: 100, power: 1.5, perM: 0.1 };
+// Each level up raises his RAM one tier: its damage multiplies the throws (under XMP's, and the result
+// stays inside STAT_CAPS). The last tier holds for every level after it.
+export const RAM_TIERS = [
+    { name: 'DDR3', damage: 1 },
+    { name: 'DDR4', damage: 1.25 },
+    { name: 'DDR5', damage: 1.5 },
+    { name: 'DDR5-6400', damage: 1.75 },
+    { name: 'DDR5-8000', damage: 2 }
+];
+
 // The hero's life (plan §6, §5b)
 export const HERO = {
     maxHp: 3,
