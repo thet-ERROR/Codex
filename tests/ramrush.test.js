@@ -39,7 +39,7 @@ describe('RAM RUSH: open and close', () => {
         assert.deepEqual(page.problems, []);
     }));
 
-    it('the city moves: the picture changes from one moment to the next', () => withPage({}, async (page) => {
+    it('the city moves: the picture changes from one moment to the next', () => withPage(DESK, async (page) => {
         await openGame(page);
         const shot = () => page.evaluate(() => document.querySelector('.rr-canvas').toDataURL('image/png'));
         const a = await shot();
@@ -154,7 +154,7 @@ const samples = (page, n, gapMs) => page.evaluate(async ([n, gapMs]) => {
 }, [n, gapMs]);
 
 describe('RAM RUSH: the hero and his drone', () => {
-    it('the hero runs on the road: feet on the ground line, the two run frames take turns, a small bob', () => withPage({}, async (page) => {
+    it('the hero runs on the road: feet on the ground line, the two run frames take turns, a small bob', () => withPage(DESK, async (page) => {
         await openGame(page);
         const s = await samples(page, 24, 40);
         assert.ok(s.every(x => x.hero.y === 460), 'feet on the road');
@@ -163,7 +163,7 @@ describe('RAM RUSH: the hero and his drone', () => {
         assert.ok(s.some(x => x.hero.bob > 1), 'and it does lift');
     }));
 
-    it('the drone follows him smoothly: behind and above, no jumps', () => withPage({}, async (page) => {
+    it('the drone follows him smoothly: behind and above, no jumps', () => withPage(DESK, async (page) => {
         await openGame(page);
         const s = await samples(page, 30, 30);
         for (const x of s) {
@@ -195,25 +195,23 @@ describe('RAM RUSH: the hero and his drone', () => {
     }));
 });
 
-describe('RAM RUSH: on a phone', () => {
-    const box = (page, sel) => page.locator(sel).evaluate(el => { const r = el.getBoundingClientRect(); return { top: r.top, bottom: r.bottom, w: r.width, h: r.height, shown: getComputedStyle(el).display !== 'none' }; });
+describe('RAM RUSH: on a phone, held sideways only (8c.6)', () => {
+    const UP = { width: 390, height: 844, mobile: true }, SIDE = { width: 844, height: 390, mobile: true };
+    const box = (page, sel) => page.locator(sel).evaluate(el => { const r = el.getBoundingClientRect(); return { left: r.left, top: r.top, bottom: r.bottom, w: r.width, h: r.height }; });
+    // the cyan of the phone drawn in the request to turn (its top edge, in the middle)
+    const rotateShown = (page) => page.evaluate(() => {
+        const [r, g, b] = document.querySelector('.rr-canvas').getContext('2d').getImageData(480, 125, 1, 1).data;
+        return Math.abs(r - 34) < 30 && Math.abs(g - 211) < 30 && Math.abs(b - 238) < 30;
+    });
 
-    it('held upright: the terminal window fills the screen, the world on top under the title bar, a touch area below it', () => withPage({ width: 390, height: 844, mobile: true }, async (page) => {
+    it('held sideways: the window is the whole screen, the world as big as the height allows (16:9), nothing of the page over it, no touch area', () => withPage(SIDE, async (page) => {
         await openGame(page);
-        const [cli, canvas, pad, bar] = [await box(page, '#cli-overlay'), await box(page, '.rr-canvas'), await box(page, '.rr-pad'), await box(page, '.cli-bar')];
-        assert.ok(cli.h > 780 && cli.bottom <= 844, JSON.stringify(cli));
-        assert.ok(canvas.w >= 340 && canvas.w <= 370, `canvas ${canvas.w}`);
-        assert.ok(canvas.top >= bar.bottom, 'the title bar does not cover the world');
-        assert.ok(pad.shown && pad.top >= canvas.bottom - 1 && pad.bottom <= cli.bottom && pad.h > 300, JSON.stringify(pad));
-        assert.ok(cli.bottom - pad.bottom < 16, "the pad runs to the window's bottom");
-    }));
-
-    it('held sideways (or on a desktop): the world fills the screen and there is no touch area', () => withPage({ width: 844, height: 390, mobile: true }, async (page) => {
-        await openGame(page);
-        const [canvas, pad] = [await box(page, '.rr-canvas'), await box(page, '.rr-pad')];
-        assert.equal(pad.shown, false);
-        assert.ok(canvas.top >= 0 && canvas.bottom <= 390, JSON.stringify(canvas));
+        const [cli, canvas, bar] = [await box(page, '#cli-overlay'), await box(page, '.rr-canvas'), await box(page, '.cli-bar')];
+        assert.deepEqual([cli.left, cli.top, cli.w, cli.h], [0, 0, 844, 390]);
+        assert.ok(canvas.top >= bar.bottom - 1 && canvas.bottom <= 390.5, JSON.stringify(canvas));
+        assert.ok(canvas.h > 390 - bar.h - 3, `the world takes the height: ${canvas.h}`);
         assert.ok(Math.abs(canvas.w / canvas.h - 16 / 9) < 0.02);
+        assert.equal(await page.locator('.rr-pad').count(), 0, 'no touch area under it any more');
         // nothing from the page (the header's buttons) is drawn over the game
         const over = await page.evaluate(() => {
             const r = document.querySelector('.rr-canvas').getBoundingClientRect();
@@ -226,6 +224,113 @@ describe('RAM RUSH: on a phone', () => {
         });
         assert.equal(over, true, 'the game is on top');
     }));
+
+    it('turned upright while playing: it asks to turn the phone back and waits; sideways again it waits on the pause screen, and a tap on ▶ goes on', () => withPage(SIDE, async (page) => {
+        await openSettled(page);
+        await page.setViewportSize({ width: 390, height: 844 });
+        await waitState(page, (s) => s.upright === true, 3000);
+        const d0 = (await gameState(page)).distance;
+        await page.waitForTimeout(400);
+        assert.equal((await gameState(page)).distance, d0, 'the world waits');
+        assert.equal(await rotateShown(page), true, 'the request to turn is drawn');
+        await page.setViewportSize({ width: 844, height: 390 });
+        await waitState(page, (s) => s.upright === false && s.paused === true, 3000);
+        assert.equal(await rotateShown(page), false, 'the picture of the game is back, under the pause screen');
+        await page.waitForTimeout(300);
+        assert.equal((await gameState(page)).distance, d0, 'still waiting');
+        const b = await page.evaluate(async () => {
+            const { PAUSE_BUTTON: b } = await import('/game/config.js');
+            const s = (await import('/game/main.js')).state().hudScale;
+            const r = document.querySelector('.rr-canvas').getBoundingClientRect(), k = r.width / 960;
+            return { x: r.left + (960 - (960 - b.x) * s) * k, y: r.top + b.y * s * k };
+        });
+        await page.evaluate(([x, y]) => {
+            const c = document.querySelector('.rr-canvas');
+            const o = { bubbles: true, pointerId: 31, pointerType: 'touch', isPrimary: true, clientX: x, clientY: y };
+            c.dispatchEvent(new PointerEvent('pointerdown', o)); c.dispatchEvent(new PointerEvent('pointerup', o));
+        }, [b.x, b.y]);
+        await waitState(page, (s) => s.paused === false && s.distance > 0, 2000);
+        await page.waitForTimeout(200);
+        assert.ok((await gameState(page)).distance > d0, 'on its way again');
+        assert.deepEqual(page.problems, []);
+    }));
+
+    it('opened held upright, nothing has run yet: it asks to turn, and turned sideways the run simply starts', () => withPage(UP, async (page) => {
+        await openGame(page);
+        await waitState(page, (s) => s.upright === true, 3000);
+        assert.equal((await gameState(page)).distance, 0);
+        assert.equal(await rotateShown(page), true);
+        await page.setViewportSize({ width: 844, height: 390 });
+        await waitState(page, (s) => s.upright === false && s.paused === false && s.distance > 0, 3000);
+    }));
+
+    it('a desktop window narrower than tall is not a phone: it plays', () => withPage({ width: 700, height: 900, mobile: false }, async (page) => {
+        await openGame(page);
+        await waitState(page, (s) => s.distance > 0, 3000);
+        assert.equal((await gameState(page)).upright, false);
+    }));
+});
+
+describe('RAM RUSH: the HUD on a phone (8c.6)', () => {
+    const SIDE = { width: 844, height: 390, mobile: true };
+
+    it('it grows so its text is at least 14 px on the screen (never past 2.2×); a desktop keeps it as it was', () => withPage(SIDE, async (page) => {
+        await openGame(page);
+        const r = await page.evaluate(async () => {
+            const { HUD_SCALE } = await import('/game/config.js');
+            const s = (await import('/game/main.js')).state(), k = document.querySelector('.rr-canvas').getBoundingClientRect().width / 960;
+            return { s: s.hudScale, compact: s.compact, px: HUD_SCALE.baseFont * k * s.hudScale, max: HUD_SCALE.max };
+        });
+        assert.ok(r.s > 1 && r.s <= r.max, `scale ${r.s}`);
+        assert.ok(r.px >= 13.99, `${r.px.toFixed(1)} px on the screen`);
+        assert.equal(r.compact, true, 'a phone canvas is small: the secondary parts hide');
+    }).then(() => withPage(DESK, async (page) => {
+        await openGame(page);
+        const s = await gameState(page);
+        assert.deepEqual([s.hudScale, s.compact], [1, false]);
+    })));
+
+    it('small: a power-up row is its icon and time bar only (no name, no effect, no MHz); and on a touch screen the pause screen says "tap ▶"', () => withPage(DESK, async (page) => {
+        await openGame(page);
+        const out = await page.evaluate(async () => {
+            const { createHud } = await import('/game/hud.js');
+            const { createPowerups } = await import('/game/powerups.js');
+            const { POWERUPS } = await import('/game/config.js');
+            // a drawing surface that only notes the words written on it
+            const words = [];
+            const ctx = new Proxy({}, {
+                get: (t, k) => k === 'fillText' ? (w) => words.push(w) : k === 'measureText' ? () => ({ width: 10 }) : (k in t ? t[k] : () => {}),
+                set: (t, k, v) => { t[k] = v; return true; }
+            });
+            const fx = { speed: 'speed', rate: 'rate', damage: 'damage', shield: () => 'shield', drone: () => 'drone' };
+            const txt = () => ({ fx, paused: 'PAUSED', resume: 'P to resume', resumeTouch: 'Tap ▶ to resume' });
+            const p = createPowerups();
+            p.activate('xmp');
+            const seen = {};
+            for (const compact of [false, true]) {
+                const h = createHud(ctx, { hudScale: compact ? 1.9 : 1, compact }, { txt, touchUI: compact });
+                words.length = 0;
+                h.powerups(p, 104);
+                seen[compact ? 'small' : 'big'] = [...words];
+                words.length = 0;
+                h.pause();
+                seen[compact ? 'pauseTouch' : 'pause'] = [...words];
+            }
+            return { seen, name: POWERUPS.xmp.name };
+        });
+        assert.ok(out.seen.big.includes(out.name) && out.seen.big.some(w => /^RAM ×/.test(w)) && out.seen.big.some(w => /MHz/.test(w)), out.seen.big.join(' | '));
+        assert.deepEqual(out.seen.small, []);
+        assert.deepEqual([out.seen.pause[1], out.seen.pauseTouch[1]], ['P to resume', 'Tap ▶ to resume']);
+    }));
+
+    it('the reminder at the start tells the swipes, on the world (a desktop: the keys)', () => withPage(SIDE, async (page) => {
+        await openGame(page);
+        assert.deepEqual((await gameState(page)).hint, ['Πάτα: RAM   Σύρε ↑ άλμα, ξανά: διπλό', 'Σύρε ↓ slide   Σύρε ← → κίνηση']);
+    }).then(() => withPage(DESK, async (page) => {
+        await openGame(page);
+        const h = (await gameState(page)).hint;
+        assert.ok(h.length === 1 && /Esc/.test(h[0]), JSON.stringify(h));
+    })));
 });
 
 // Records the game's state every ~16ms while the keys are pressed, then hands the whole run back
@@ -376,22 +481,16 @@ describe('RAM RUSH: the controls', () => {
     }));
 });
 
-describe('RAM RUSH: the swipes, on a phone', () => {
-    const PHONE = { width: 390, height: 844, mobile: true };
-    // A finger on the touch area: down, a few moves along (dx, dy), up
+describe('RAM RUSH: the swipes, on a phone held sideways', () => {
+    const PHONE = { width: 844, height: 390, mobile: true };
+    // A finger on the world: down, a few moves along (dx, dy), up
     const swipe = (page, dx, dy) => page.evaluate(([dx, dy]) => {
-        const pad = document.querySelector('.rr-pad');
-        const r = pad.getBoundingClientRect();
+        const c = document.querySelector('.rr-canvas');
+        const r = c.getBoundingClientRect();
         const x = r.left + r.width / 2, y = r.top + r.height / 2;
-        const ev = (type, k) => pad.dispatchEvent(new PointerEvent(type, { bubbles: true, pointerId: 7, pointerType: 'touch', isPrimary: true, clientX: x + dx * k, clientY: y + dy * k }));
+        const ev = (type, k) => c.dispatchEvent(new PointerEvent(type, { bubbles: true, pointerId: 7, pointerType: 'touch', isPrimary: true, clientX: x + dx * k, clientY: y + dy * k }));
         ev('pointerdown', 0); ev('pointermove', 0.3); ev('pointermove', 0.7); ev('pointermove', 1); ev('pointerup', 1);
     }, [dx, dy]);
-
-    it('the touch area tells what the swipes do', () => withPage(PHONE, async (page) => {
-        await openSettled(page);
-        assert.equal((await page.locator('.rr-hint span').allTextContents()).length, 4);
-        assert.ok(await page.locator('.rr-hint').isVisible());
-    }));
 
     it('swipe up jumps, twice is the double jump; swipe down slides; sideways steps him over', () => withPage(PHONE, async (page) => {
         await openSettled(page);
@@ -418,19 +517,19 @@ describe('RAM RUSH: the swipes, on a phone', () => {
         assert.equal((await gameState(page)).thrown, 0, 'a swipe never throws');
     }));
 
-    it('a tap on the touch area throws a RAM straight ahead', () => withPage(PHONE, async (page) => {
+    it('a tap on the world throws a RAM toward it', () => withPage(PHONE, async (page) => {
         await openSettled(page);
         await page.evaluate(() => {
-            const pad = document.querySelector('.rr-pad');
-            const r = pad.getBoundingClientRect();
-            const o = { bubbles: true, pointerId: 9, pointerType: 'touch', isPrimary: true, clientX: r.left + 50, clientY: r.top + 50 };
-            pad.dispatchEvent(new PointerEvent('pointerdown', o));
-            pad.dispatchEvent(new PointerEvent('pointerup', o));
+            const c = document.querySelector('.rr-canvas');
+            const r = c.getBoundingClientRect(), k = r.width / 960;
+            const o = { bubbles: true, pointerId: 9, pointerType: 'touch', isPrimary: true, clientX: r.left + 600 * k, clientY: r.top + 220 * k };
+            c.dispatchEvent(new PointerEvent('pointerdown', o));
+            c.dispatchEvent(new PointerEvent('pointerup', o));
         });
         await page.waitForTimeout(150);
         const s = await gameState(page);
         assert.equal(s.thrown, 1);
-        assert.ok(s.rams.length === 1 && s.rams[0].vx > 0 && Math.abs(s.rams[0].vy) < 1, JSON.stringify(s.rams));
+        assert.ok(s.rams.length === 1 && s.rams[0].vx > 0 && s.rams[0].vy < -1, `up and ahead, toward the tap: ${JSON.stringify(s.rams)}`);
     }));
 });
 
@@ -1367,9 +1466,11 @@ describe('RAM RUSH: Parry (5b)', () => {
         await waitState(page, (s) => s.enemies[0] && s.enemies[0].state === 'telegraph' && s.enemies[0].st > 0.72, 6000);
         await page.evaluate(async () => {
             const { PARRY } = await import('/game/config.js');
+            // it grows with the HUD from the bottom right corner, by at most maxScale
+            const b = PARRY.button, s = Math.min((await import('/game/main.js')).state().hudScale, b.maxScale);
             const c = document.querySelector('.rr-canvas'), r = c.getBoundingClientRect();
             const o = { bubbles: true, pointerId: 11, pointerType: 'touch', isPrimary: true,
-                clientX: r.left + PARRY.button.x * r.width / 960, clientY: r.top + PARRY.button.y * r.height / 540 };
+                clientX: r.left + (960 - (960 - b.x) * s) * r.width / 960, clientY: r.top + (540 - (540 - b.y) * s) * r.height / 540 };
             c.dispatchEvent(new PointerEvent('pointerdown', o));
             c.dispatchEvent(new PointerEvent('pointerup', o));
         });
@@ -1703,11 +1804,13 @@ describe('RAM RUSH: difficulty that rises (step 8)', () => {
 
 describe('RAM RUSH: the pause button (8c.2)', () => {
     const PHONE_L = { width: 844, height: 390, mobile: true };
-    // where the button is on the screen, and how many CSS px a game px is
+    // where the button is on the screen (it grows with the HUD from the top right corner: s), and how many
+    // CSS px a game px is
     const btn = (page) => page.evaluate(async () => {
         const { PAUSE_BUTTON: b } = await import('/game/config.js');
+        const s = (await import('/game/main.js')).state().hudScale;
         const r = document.querySelector('.rr-canvas').getBoundingClientRect(), k = r.width / 960;
-        return { x: r.left + b.x * k, y: r.top + b.y * k, k };
+        return { x: r.left + (960 - (960 - b.x) * s) * k, y: r.top + b.y * s * k, k, s };
     });
     const touchAt = (page, x, y) => page.evaluate(([x, y]) => {
         const c = document.querySelector('.rr-canvas');
@@ -1745,7 +1848,7 @@ describe('RAM RUSH: the pause button (8c.2)', () => {
     it('its reach is at least 44 CSS px on the screen, even on a small canvas; just outside, it is only a tap on the world', () => withPage(PHONE_L, async (page) => {
         await openSettled(page);
         const b = await btn(page);
-        assert.ok(b.k * 34 < 44, `the drawn button is smaller than a finger here: ${(b.k * 34).toFixed(0)} px`);
+        assert.ok(b.k * b.s * 34 < 44, `the drawn button is smaller than a finger here: ${(b.k * b.s * 34).toFixed(0)} px`);
         await touchAt(page, b.x - 20, b.y + 20);            // 20 px off each way: inside 44 × 44
         await waitState(page, (s) => s.paused === true, 2000);
         await touchAt(page, b.x - 20, b.y + 20);
