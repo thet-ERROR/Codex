@@ -1832,3 +1832,66 @@ describe('RAM RUSH: the hearts (8c.3)', () => {
         assert.equal(new Set(xs).size, 1, `it does not shake: ${xs.join()}`);
     }));
 });
+
+describe('RAM RUSH: the XP bar and the level (8c.4)', () => {
+    const addXp = (page, n) => page.evaluate(async (n) => (await import('/game/main.js')).testXp(n), n);
+    const bar = async (page) => (await gameState(page)).hearts.bar;
+
+    it('it shows "LV n" and xp / xpNeeded, and fills smoothly toward it (never in one jump)', () => withPage(DESK, async (page) => {
+        await openSettled(page);
+        await addXp(page, 60);
+        await waitState(page, (s) => s.hearts.bar.nums.startsWith('6'), 1000);
+        const shown = [];
+        for (let k = 0; k < 6; k++) { shown.push((await bar(page)).shown); await page.waitForTimeout(40); }
+        assert.ok(shown[0] < 0.55 && shown.at(-1) > shown[0], `it climbs: ${shown.map(x => x.toFixed(2)).join()}`);
+        await page.waitForTimeout(700);
+        const b = await bar(page);
+        assert.match(b.nums, /^6\d \/ 100$/);
+        assert.ok(Math.abs(b.shown - 0.6) < 0.05, `settled near 60 %: ${b.shown}`);
+        assert.equal(b.level, 1);
+    }));
+
+    it('a level up: the bar runs to the end first, flashes, then starts again from the XP left over; the tier follows the bar', () => withPage(DESK, async (page) => {
+        await openSettled(page);
+        await addXp(page, 140);                                   // 100 for level 2, about 40 over
+        await waitState(page, (s) => s.level === 2, 1000);
+        let b = await bar(page);
+        assert.equal(b.level, 1, 'still showing level 1 while it fills to the end');
+        assert.equal(b.nums, '', 'no numbers while it runs to the end');
+        await waitState(page, (s) => s.hearts.bar.flash > 0, 2000);
+        b = await bar(page);
+        assert.ok(b.level === 2 && b.shown < 0.1, `then from the bottom: ${JSON.stringify(b)}`);
+        await page.waitForTimeout(800);
+        b = await bar(page);
+        const s = await gameState(page);
+        assert.equal(b.nums, `${s.xpInto} / ${s.xpNeed}`);
+        assert.ok(Math.abs(b.shown - s.xpInto / s.xpNeed) < 0.05, `the rest: ${b.shown}`);
+        assert.equal(s.xpNeed, 283);
+    }));
+
+    it('several levels at once: it runs through each, one after the other', () => withPage(DESK, async (page) => {
+        await openSettled(page);
+        await addXp(page, 100 + 283 + 10);                        // two levels
+        await waitState(page, (s) => s.level === 3, 1000);
+        const seen = new Set();
+        const t0 = Date.now();
+        while (Date.now() - t0 < 3000) {
+            const b = await bar(page); seen.add(b.level);
+            if (b.level === 3) break;
+            await page.waitForTimeout(30);
+        }
+        assert.deepEqual([...seen].sort(), [1, 2, 3]);
+    }));
+
+    it('a new run: back to level 1, an empty bar', () => withPage(DESK, async (page) => {
+        await openSettled(page);
+        await addXp(page, 140);
+        await waitState(page, (s) => s.hearts.bar.level === 2, 3000);
+        for (let k = 0; k < 3; k++) { await spawnEnemy(page, 'orangeBot', 300); await page.waitForTimeout(1350); }
+        await waitState(page, (s) => s.over, 2000);
+        await page.waitForTimeout(500);
+        await page.keyboard.press('Space');
+        await waitState(page, (s) => !s.over && s.hearts.bar.level === 1, 2000);
+        assert.ok((await bar(page)).shown < 0.05);
+    }));
+});

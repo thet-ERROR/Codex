@@ -6,7 +6,7 @@
 //
 // createHud(ctx, g, { txt, touchUI }): g is the running game (main.js), read as the code always read it.
 
-import { HERO, HEARTS, PX_PER_M, PARRY, POWERUPS, PAUSE_BUTTON } from './config.js';
+import { HERO, HEARTS, XP_BAR, RAM_TIERS, PX_PER_M, PARRY, POWERUPS, PAUSE_BUTTON } from './config.js';
 
 const W = 960, H = 540;
 
@@ -15,6 +15,9 @@ export function createHud(ctx, g, { txt, touchUI, reducedMotion = false }) {
     // The hearts' own state: the life last seen (a change starts an animation), the shake and the pop
     // running, which heart just went, the time for the pulse
     const life = { hp: -1, shake: 0, pop: 0, lost: -1, gained: 0, t: 0 };
+    // The XP bar's own state: the level it shows (it may lag behind a level up while it fills to the end),
+    // how full it is drawn, its flash, and its texts, made again only when a number changes
+    const bar = { level: 1, shown: 0, flash: 0, key: '', lv: '', nums: '', tier: '' };
 
     function drawHint() {
         const a = Math.min(1, g.hintT / 1.2);   // fades out over its last second
@@ -97,25 +100,56 @@ export function createHud(ctx, g, { txt, touchUI, reducedMotion = false }) {
     }
     // Under the hearts: the level and his RAM tier, and the XP bar to the next level (the HUD of §8c will
     // dress it up); it fills smoothly, not in jumps
+    // The XP bar (8c.4): "LV n" at its start, xp / xpNeeded in its middle, his RAM tier after it. It fills
+    // smoothly; on a level up it runs to the end first, flashes, and starts again from what is left over
+    // (several levels at once: one after the other).
     function drawXp(dt) {
-        const pr = g.prog, target = pr.into / pr.need;
-        g.xpShown += (target - g.xpShown) * (1 - Math.exp(-8 * dt));
-        if (target < g.xpShown - 0.5) g.xpShown = target;           // a level up: it starts again from the bottom
+        const pr = g.prog, B = XP_BAR;
+        if (pr.level < bar.level) { bar.level = pr.level; bar.shown = 0; }      // a new run
+        const behind = bar.level < pr.level;
+        const target = behind ? 1 : pr.into / pr.need;
+        bar.shown += (target - bar.shown) * (1 - Math.exp(-B.fill * dt));
+        if (behind && bar.shown > 0.985) { bar.level++; bar.shown = 0; bar.flash = B.flash; }
+        bar.flash = Math.max(0, bar.flash - dt);
+        g.xpShown = bar.shown;
+        // the texts, only when a number changes (no new strings each frame)
+        const level = bar.level, into = behind ? pr.need : pr.into, need = behind ? into : pr.need;
+        const key = level * 1e9 + into * 1e4 + need;
+        if (key !== bar.key) {
+            bar.key = key;
+            bar.lv = `LV ${level}`;
+            bar.nums = behind ? '' : `${into} / ${need}`;
+            bar.tier = RAM_TIERS[Math.min(RAM_TIERS.length - 1, level - 1)].name;   // the tier of the level shown
+        }
         ctx.save();
-        ctx.font = '800 12px system-ui, sans-serif';
-        ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
-        ctx.lineWidth = 3; ctx.strokeStyle = 'rgba(13, 12, 29, 0.85)';
-        const label = `LV ${pr.level} · ${pr.tier().name}`;
-        ctx.strokeText(label, 19, 56); ctx.fillStyle = '#f1f0f7'; ctx.fillText(label, 19, 56);
-        ctx.fillStyle = 'rgba(13, 12, 29, 0.7)';
-        ctx.fillRect(19, 66, 150, 7);
-        ctx.fillStyle = '#d946ef';
-        ctx.fillRect(19, 66, 150 * Math.max(0, Math.min(1, g.xpShown)), 7);
+        ctx.fillStyle = 'rgba(13, 12, 29, 0.75)';
+        ctx.beginPath(); ctx.roundRect(B.x, B.y, B.w, B.h, B.h / 2); ctx.fill();
+        // the fill, clipped to the bar's round ends
+        ctx.save();
+        ctx.beginPath(); ctx.roundRect(B.x, B.y, B.w, B.h, B.h / 2); ctx.clip();
+        ctx.fillStyle = bar.flash > 0 ? `rgba(255, 240, 255, ${0.6 + 0.4 * bar.flash / B.flash})` : B.color;
+        ctx.fillRect(B.x, B.y, B.w * Math.max(0, Math.min(1, bar.shown)), B.h);
+        ctx.restore();
+        ctx.lineWidth = 1.5;
+        ctx.strokeStyle = 'rgba(241, 240, 247, 0.35)';
+        ctx.beginPath(); ctx.roundRect(B.x, B.y, B.w, B.h, B.h / 2); ctx.stroke();
+        ctx.font = '800 11px system-ui, sans-serif';
+        ctx.textBaseline = 'middle';
+        ctx.lineWidth = 3; ctx.strokeStyle = 'rgba(13, 12, 29, 0.9)';
+        ctx.fillStyle = '#f1f0f7';
+        const cy = B.y + B.h / 2 + 0.5;
+        ctx.textAlign = 'left';
+        ctx.strokeText(bar.lv, B.x + 7, cy); ctx.fillText(bar.lv, B.x + 7, cy);
+        ctx.textAlign = 'center';
+        if (bar.nums) { ctx.strokeText(bar.nums, B.x + B.w / 2 + 12, cy); ctx.fillText(bar.nums, B.x + B.w / 2 + 12, cy); }
+        ctx.textAlign = 'left';
+        ctx.fillStyle = '#f0abfc';
+        ctx.strokeText(bar.tier, B.x + B.w + 8, cy); ctx.fillText(bar.tier, B.x + B.w + 8, cy);
         ctx.restore();
     }
-    // LEVEL UP!: a banner with the new tier, fading out over its time
+    // LEVEL UP!: a banner with the new tier, fading out over its time (XP_BAR.banner)
     function drawLevelUp() {
-        const k = g.levelT / 1.2;
+        const k = g.levelT / XP_BAR.banner;
         ctx.save();
         ctx.globalAlpha = Math.min(1, k * 2);
         ctx.textAlign = 'center';
@@ -216,7 +250,8 @@ export function createHud(ctx, g, { txt, touchUI, reducedMotion = false }) {
     };
     h.life = drawLife;
     // For the tests: what the hearts are doing now
-    h.info = () => ({ shake: life.shake, pop: life.pop, lost: life.lost, last: g.hero.hp === 1 });
+    h.info = () => ({ shake: life.shake, pop: life.pop, lost: life.lost, last: g.hero.hp === 1,
+        bar: { level: bar.level, shown: bar.shown, flash: bar.flash, nums: bar.nums } });
     h.xp = drawXp;
     h.levelUp = drawLevelUp;
     h.over = drawOver;

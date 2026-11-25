@@ -18,7 +18,7 @@ import { createRams } from './ram.js';
 import { createPowerups } from './powerups.js';
 import { createEnemies } from './enemies.js';
 import { createProgression, saveRecords, readRecords } from './progression.js';
-import { PX_PER_M, PARRY, PAUSE_BUTTON, difficulty } from './config.js';
+import { PX_PER_M, PARRY, PAUSE_BUTTON, XP_BAR, difficulty } from './config.js';
 import { createInput } from './input.js';
 import { createHud } from './hud.js';
 
@@ -256,7 +256,7 @@ export async function open() {
         hud.pauseButton(false);
         // XP: the enemies' and the distance's; a level up raises his RAM tier (the throws hit harder)
         if (g.prog.set(g.prog.fromRun(g.enemies.xp, g.distance / PX_PER_M))) {
-            g.levelT = 1.2;
+            g.levelT = XP_BAR.banner;
             g.powerups.base.damageMult = g.prog.tier().damage;
         }
         g.levelT = Math.max(0, g.levelT - dt);
