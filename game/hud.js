@@ -10,7 +10,7 @@
 // corner or centre, so its text is never under 14 px on the screen; with g.compact the secondary parts hide.
 // A desktop draws at scale 1, exactly as before.
 
-import { HERO, HEARTS, XP_BAR, RAM_TIERS, PX_PER_M, PARRY, POWERUPS, POWERUP_ROW, PAUSE_BUTTON } from './config.js';
+import { HERO, HEARTS, XP_BAR, XP_FLOAT, BOSS_BAR, RAM_TIERS, PX_PER_M, PARRY, POWERUPS, POWERUP_ROW, PAUSE_BUTTON } from './config.js';
 
 const W = 960, H = 540;
 
@@ -344,6 +344,78 @@ export function createHud(ctx, g, { txt, touchUI, reducedMotion = false }) {
         ctx.restore();
     }
     h.life = (dt) => at(0, 0, scale(), drawLife, dt);
+
+    // The floating "+XP" (8c.7): a fixed pool, nothing made per frame (each text is made once, when it is
+    // won). Full, the oldest gives way. It rises and fades, and drifts back with the road (dx).
+    const floats = Array.from({ length: XP_FLOAT.max }, () => ({ on: false, x: 0, y: 0, t: 0, text: '' }));
+    h.floatXp = (x, y, n) => {
+        let f = floats.find(o => !o.on);
+        if (!f) f = floats.reduce((a, b) => (b.t > a.t ? b : a));
+        f.on = true; f.x = x; f.y = y; f.t = 0; f.text = `+${n} XP`;
+    };
+    h.clearFloats = () => { for (const f of floats) f.on = false; };
+    function drawFloat(f) {
+        const k = f.t / XP_FLOAT.life;
+        ctx.globalAlpha = k < 0.6 ? 1 : 1 - (k - 0.6) / 0.4;
+        const y = f.y - (reducedMotion ? 0 : XP_FLOAT.rise * (1 - (1 - k) * (1 - k)));
+        ctx.strokeText(f.text, f.x, y);
+        ctx.fillText(f.text, f.x, y);
+    }
+    h.floats = (dt, dx) => {
+        ctx.save();
+        ctx.font = `900 ${XP_FLOAT.font}px system-ui, sans-serif`;
+        ctx.textAlign = 'center'; ctx.textBaseline = 'bottom';
+        ctx.lineWidth = 4; ctx.strokeStyle = 'rgba(13, 12, 29, 0.85)'; ctx.fillStyle = XP_FLOAT.color;
+        for (const f of floats) {
+            if (!f.on) continue;
+            f.t += dt; f.x -= dx;
+            if (f.t >= XP_FLOAT.life) { f.on = false; continue; }
+            at(f.x, f.y, scale(), drawFloat, f);
+        }
+        ctx.restore();
+    };
+    h.floatInfo = () => floats.filter(f => f.on).map(f => ({ x: f.x, y: f.y, t: f.t, text: f.text }));
+
+    // The boss's life bar (8c.7), over its head while it stands: its name, the red of its life, and the pale
+    // trail of the damage just done, which waits a moment and then drains down to it. A hit flashes it.
+    const boss = { who: null, trail: 1, hold: 0 };
+    let bossNow = null;
+    function drawBossBar() {
+        const s = bossNow, B = BOSS_BAR, life = Math.max(0, s.hp) / s.def.hp;
+        const x = s.x - B.w / 2, y = s.y - s.drawH - B.gap - B.h;
+        ctx.save();
+        ctx.fillStyle = 'rgba(10, 6, 24, 0.8)';
+        ctx.beginPath(); ctx.roundRect(x - 3, y - 3, B.w + 6, B.h + 6, (B.h + 6) / 2); ctx.fill();
+        ctx.save();
+        ctx.beginPath(); ctx.roundRect(x, y, B.w, B.h, B.h / 2); ctx.clip();
+        ctx.fillStyle = B.trail;
+        ctx.fillRect(x, y, B.w * boss.trail, B.h);
+        ctx.fillStyle = s.flash > 0 ? '#ffffff' : B.color;
+        ctx.fillRect(x, y, B.w * life, B.h);
+        ctx.restore();
+        ctx.lineWidth = 1.5; ctx.strokeStyle = 'rgba(241, 240, 247, 0.4)';
+        ctx.beginPath(); ctx.roundRect(x, y, B.w, B.h, B.h / 2); ctx.stroke();
+        ctx.font = '800 11px system-ui, sans-serif';
+        ctx.textAlign = 'center'; ctx.textBaseline = 'bottom';
+        ctx.lineWidth = 3; ctx.strokeStyle = 'rgba(13, 12, 29, 0.9)';
+        ctx.strokeText(txt().boss, s.x, y - 5);
+        ctx.fillStyle = '#fecdd3';
+        ctx.fillText(txt().boss, s.x, y - 5);
+        ctx.restore();
+    }
+    h.bossBar = (s, dt) => {
+        bossNow = s;
+        if (!s) { boss.who = null; return; }
+        const life = Math.max(0, s.hp) / s.def.hp;
+        if (boss.who !== s) { boss.who = s; boss.trail = life; boss.hold = 0; boss.hp = s.hp; }
+        if (s.hp < boss.hp) boss.hold = BOSS_BAR.hold;          // a new blow: the trail waits again
+        boss.hp = s.hp;
+        boss.hold = Math.max(0, boss.hold - dt);
+        if (boss.hold <= 0) boss.trail = Math.max(life, boss.trail - BOSS_BAR.drain * dt);
+        boss.trail = Math.max(boss.trail, life);
+        at(s.x, s.y - s.drawH - BOSS_BAR.gap, scale(), drawBossBar);
+    };
+    h.bossInfo = () => (boss.who ? { trail: boss.trail, hold: boss.hold, life: Math.max(0, boss.who.hp) / boss.who.def.hp } : null);
     // For the tests: what the hearts are doing now
     h.info = () => ({ shake: life.shake, pop: life.pop, lost: life.lost, last: g.hero.hp === 1,
         bar: { level: bar.level, shown: bar.shown, flash: bar.flash, nums: bar.nums } });

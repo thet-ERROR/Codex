@@ -40,7 +40,7 @@ const TEXT = {
         paused: 'ΠΑΥΣΗ', resume: 'P για συνέχεια', resumeTouch: 'Πάτα ▶ για συνέχεια',
         over: 'GAME OVER', again: 'Space / J / πάτα για νέο παιχνίδι', againTouch: 'Πάτα για νέο παιχνίδι', score: 'Σκορ', kills: 'εχθροί',
         rotate: 'Γύρισε το κινητό', rotateSub: 'Το RAM RUSH παίζεται οριζόντια',
-        levelUp: 'LEVEL UP!', best: 'Ρεκόρ', newBest: 'ΝΕΟ ΡΕΚΟΡ!',
+        levelUp: 'LEVEL UP!', best: 'Ρεκόρ', newBest: 'ΝΕΟ ΡΕΚΟΡ!', boss: 'MALWARE CORE',
         fx: { speed: 'ταχύτητα', rate: 'ρυθμός', damage: 'ζημιά', shield: (n) => `ασπίδα · ${n} χτύπημα`, drone: (s) => `drone · βολή ανά ${s} s` },
         keys: '↑ / W / Space άλμα (ξανά στον αέρα: διπλό)   ↓ / S slide   ← → κίνηση   J / X / κλικ RAM   E / δεξί κλικ parry   P παύση   Esc έξοδος',
         swipes: ['Πάτα: RAM   Σύρε ↑ άλμα, ξανά: διπλό', 'Σύρε ↓ slide   Σύρε ← → κίνηση'] },
@@ -48,7 +48,7 @@ const TEXT = {
         paused: 'PAUSED', resume: 'P to resume', resumeTouch: 'Tap ▶ to resume',
         over: 'GAME OVER', again: 'Space / J / tap for a new run', againTouch: 'Tap for a new run', score: 'Score', kills: 'enemies',
         rotate: 'Turn your phone sideways', rotateSub: 'RAM RUSH is played in landscape',
-        levelUp: 'LEVEL UP!', best: 'Best', newBest: 'NEW RECORD!',
+        levelUp: 'LEVEL UP!', best: 'Best', newBest: 'NEW RECORD!', boss: 'MALWARE CORE',
         fx: { speed: 'speed', rate: 'rate', damage: 'damage', shield: (n) => `shield · ${n} hit${n > 1 ? 's' : ''}`, drone: (s) => `drone · a shot every ${s} s` },
         keys: '↑ / W / Space jump (again in the air: double)   ↓ / S slide   ← → move   J / X / click RAM   E / right click parry   P pause   Esc exit',
         swipes: ['Tap: RAM   Swipe ↑ jump, again: double', 'Swipe ↓ slide   Swipe ← → move'] }
@@ -288,6 +288,8 @@ export async function open() {
         g.hero.draw(ctx);
         g.powerups.drawDrone(ctx, g.hero.drone);
         g.rams.draw(ctx);
+        hud.bossBar(g.enemies.boss(), dt);
+        hud.floats(wdt, g.speed * wdt);
         drawParry();
         hud.parryButton();
         hud.pauseButton(false);
@@ -354,7 +356,8 @@ export async function open() {
             g.hero = createHero(sheet, frames, { reducedMotion });
             g.rams = createRams();
             g.powerups = createPowerups({ reducedMotion });
-            g.enemies = createEnemies(enemySheet, enemyFrames, { reducedMotion });
+            g.enemies = createEnemies(enemySheet, enemyFrames, { reducedMotion, onXp: (x, y, n) => hud.floatXp(x, y, n) });
+            hud.clearFloats();
             g.enemies.natural = !g.quiet;
             // a blow goes to the shield first (Liquid Cooling), then to his life
             g.heroLink = { box: g.hero.box(), hit: (d) => {
@@ -399,6 +402,7 @@ export const state = () => {
         hudScale: game.hudScale, compact: game.compact, upright: game.upright,
         hint: game.hintT > 0 && game.hud ? game.hud.hintLines() : null,
         rows: game.hud && game.powerups ? game.hud.rows(game.powerups) : [],
+        floats: game.hud ? game.hud.floatInfo() : [], bossBar: game.hud ? game.hud.bossInfo() : null,
         hp: h.hp, invuln: h.invuln, over: !!game.over,
         enemies: game.enemies.list(), spikes: game.enemies.spikes(), killed: game.enemies.killed, score: game.enemies.score, xp: game.enemies.xp,
         parryCool: game.parryCool, parries: game.enemies.parries,

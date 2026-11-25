@@ -38,7 +38,8 @@ function whiten(sheet) {
     return c;
 }
 
-export function createEnemies(sheet, frames, { rng = Math.random, reducedMotion = false } = {}) {
+// onXp(x, y, n): told where XP was won and how much (a kill, a perfect parry), for the HUD's floating "+XP"
+export function createEnemies(sheet, frames, { rng = Math.random, reducedMotion = false, onXp = null } = {}) {
     const white = sheet ? whiten(sheet) : null;
     const pool = Array.from({ length: SPAWNS.pool }, () => ({
         on: false, id: '', def: null, x: 0, y: GROUND, hp: 0, t: 0, flash: 0, dying: 0, hitHero: false,
@@ -201,6 +202,7 @@ export function createEnemies(sheet, frames, { rng = Math.random, reducedMotion 
                     director.release(s);
                     spikes.cancel(s);
                     e.killed++; e.score += s.def.score; e.xp += s.def.xp;
+                    if (onXp) onXp(box.x + box.w / 2, box.y, s.def.xp);
                     if (powerups && rng() < DROP_TOTAL) powerups.spawn(dropOf(), s.x, GROUND - 70);
                     continue;
                 }
@@ -226,6 +228,7 @@ export function createEnemies(sheet, frames, { rng = Math.random, reducedMotion 
             s.flash = 0.15;
             e.xp += PARRY.xp;
             e.parries++;
+            if (onXp) { const b = e.box(s); onXp(b.x + b.w / 2, b.y, PARRY.xp); }
             return 'perfect';
         }
         return 'miss';
@@ -237,6 +240,9 @@ export function createEnemies(sheet, frames, { rng = Math.random, reducedMotion 
     e.list = () => pool.filter(s => s.on).map(s => ({ id: s.id, x: s.x, y: s.y, hp: s.hp, flash: s.flash, dying: s.dying,
         box: e.box(s), state: s.state, attacks: s.attacks, h: s.h, hop: s.hop, hops: s.hops, vulnerable: vulnerable(s),
         clink: s.clink, st: s.st, ax: s.ax, ay: s.ay, lane: s.lane }));
+    // The boss standing now (not dying), or null: the HUD draws its life bar over its head (s.drawH: how
+    // tall it was drawn this frame)
+    e.boss = () => { for (const s of pool) if (s.on && s.def.boss && s.dying <= 0) return s; return null; };
     e.spikes = () => spikePool.filter(p => p.on).map(p => ({ x: p.x, t: p.t, up: spikes.up(p), box: spikes.box(p) }));
     e.clear = () => { for (const s of pool) s.on = false; for (const p of spikePool) p.on = false; director.clear(); e.nextAtM = SPAWNS.firstM; e.bossAtM = SPAWNS.boss.firstM; e.killed = e.score = e.xp = e.parries = 0; };
 
@@ -258,6 +264,7 @@ export function createEnemies(sheet, frames, { rng = Math.random, reducedMotion 
             if (s.state === RECOVER && s.def.attack === 'charge' && !reducedMotion) sy = 1 - 0.04 * Math.abs(Math.sin(s.st * 9));
             if (s.dying > 0) { const k = 1 - s.dying / DIE_T; sc *= 1 + 0.35 * k; alpha = 1 - k; bob = 0; }
             const w = f.w * sc * sx, h = f.h * sc * sy;
+            s.drawH = h + bob;
             const shake = reducedMotion ? 0 : s.state === TELEGRAPH && !s.def.fly && !s.def.boss ? Math.sin(s.t * 70) * 1.5
                 : s.state === STUNNED ? Math.sin(s.t * 18) * 3 : 0;   // a dazed boss sways   // and trembles
             ctx.save();
@@ -295,7 +302,7 @@ export function createEnemies(sheet, frames, { rng = Math.random, reducedMotion 
             }
             ctx.restore();
             if (s.def.attack === 'laser' && s.dying <= 0) drawLaser(ctx, s);
-            if (s.def.boss && s.dying <= 0) { drawBeam(ctx, s); drawBossBar(ctx, s, h); }
+            if (s.def.boss && s.dying <= 0) drawBeam(ctx, s);
             drawBits(ctx, s);
         }
     };
@@ -434,17 +441,6 @@ export function createEnemies(sheet, frames, { rng = Math.random, reducedMotion 
             glow(ctx, m.x, m.y, 34, 1, [236, 72, 255]);
             glow(ctx, x1, y1, 30, 0.8, [236, 72, 255]);           // where it burns the road
         }
-        ctx.restore();
-    }
-
-    // Its life, over its head while it stands (the HUD step will dress it)
-    function drawBossBar(ctx, s, h) {
-        const w = 120, x = s.x - w / 2, y = s.y - h - 18;
-        ctx.save();
-        ctx.fillStyle = 'rgba(10, 6, 24, 0.75)';
-        ctx.fillRect(x - 2, y - 2, w + 4, 10);
-        ctx.fillStyle = '#e11d48';
-        ctx.fillRect(x, y, w * Math.max(0, s.hp) / s.def.hp, 6);
         ctx.restore();
     }
 

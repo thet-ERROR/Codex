@@ -2053,3 +2053,79 @@ describe('RAM RUSH: the power-up rows (8c.5)', () => {
         assert.deepEqual(blinks.reduced, { early: [false], late: [false] });
     }));
 });
+
+describe('RAM RUSH: the floating +XP and the boss bar (8c.7)', () => {
+    it('an enemy beaten: "+XP" rises over it, drifts back with the road, and is gone in under a second', () => withPage(DESK, async (page) => {
+        await openSettled(page);
+        await spawnEnemy(page, 'orangeBot', 760);
+        await page.keyboard.press('KeyJ');
+        await page.waitForTimeout(420);
+        await page.keyboard.press('KeyJ');
+        // read at the moment it falls: where it was, and the float that came up
+        const seen = await page.evaluate(async () => {
+            const m = await import('/game/main.js');
+            let lastX = null;
+            for (const t0 = performance.now(); performance.now() - t0 < 2500;) {
+                const s = m.state();
+                if (s.enemies[0] && s.enemies[0].dying <= 0) lastX = s.enemies[0].x;
+                if (s.floats.length) return { f: s.floats[0], lastX };
+                await new Promise(r => requestAnimationFrame(r));
+            }
+            return null;
+        });
+        assert.ok(seen, 'a float came up');
+        assert.equal(seen.f.text, '+5 XP');
+        assert.ok(Math.abs(seen.f.x - seen.lastX) < 60, `over it: ${seen.f.x} vs ${seen.lastX}`);
+        assert.ok(seen.f.y < 460 - 40, 'at the top of it, not at its feet');
+        await page.waitForTimeout(300);
+        const later = (await gameState(page)).floats[0];
+        assert.ok(later && later.t > seen.f.t && later.x < seen.f.x, 'it ages and drifts back with the road');
+        await waitState(page, (s) => s.floats.length === 0, 1500);
+    }));
+
+    it('at most 8 at once: the oldest gives way to the newest', () => withPage(DESK, async (page) => {
+        await openGame(page);
+        const texts = await page.evaluate(async () => {
+            const { createHud } = await import('/game/hud.js');
+            const ctx = new Proxy({}, { get: (t, k) => (k in t ? t[k] : () => {}), set: (t, k, v) => { t[k] = v; return true; } });
+            const fx = { shield: () => '', drone: () => '' };
+            const h = createHud(ctx, { hudScale: 1 }, { txt: () => ({ fx }) });
+            for (let n = 1; n <= 10; n++) { h.floatXp(100, 200, n); h.floats(0.01, 0); }
+            return h.floatInfo().map(f => f.text).sort();
+        });
+        assert.equal(texts.length, 8);
+        assert.ok(!texts.includes('+1 XP') && !texts.includes('+2 XP') && texts.includes('+10 XP'), texts.join());
+    }));
+
+    it('the boss: a life bar over its head only while it stands; a blow leaves a pale trail that waits, then drains down to the life; a perfect parry floats its XP too', () => withPage(DESK, async (page) => {
+        await openSettled(page);
+        assert.equal((await gameState(page)).bossBar, null, 'no boss, no bar');
+        await page.evaluate(async () => (await import('/game/main.js')).testSpawnEnemy('mechBoss', 900));
+        await waitState(page, (s) => s.bossBar && s.bossBar.life === 1, 2000);
+        // RAMs until one lands; read the bar right after the blow
+        const hit = await page.evaluate(async () => {
+            const m = await import('/game/main.js');
+            for (const t0 = performance.now(); performance.now() - t0 < 6000;) {
+                const b = m.state().bossBar;
+                if (b && b.life < 1) return b;
+                window.dispatchEvent(new KeyboardEvent('keydown', { code: 'KeyJ', bubbles: true }));
+                window.dispatchEvent(new KeyboardEvent('keyup', { code: 'KeyJ', bubbles: true }));
+                await new Promise(r => setTimeout(r, 50));
+            }
+            return null;
+        });
+        assert.ok(hit, 'a RAM landed');
+        assert.ok(hit.trail > hit.life + 0.02 && hit.hold > 0, `the trail waits above the life: ${JSON.stringify(hit)}`);
+        await page.waitForTimeout(1200);
+        const b = (await gameState(page)).bossBar;
+        assert.ok(Math.abs(b.trail - b.life) < 0.001, `drained down to it: ${JSON.stringify(b)}`);
+
+        // a perfect parry: its XP floats over the boss
+        await waitState(page, (s) => s.enemies[0] && s.enemies[0].state === 'telegraph' && s.enemies[0].st > 0.72, 8000);
+        await page.keyboard.press('KeyE');
+        await waitState(page, (s) => s.enemies[0].state === 'stunned', 1000);
+        const { xp } = await page.evaluate(async () => (await import('/game/config.js')).PARRY);
+        const f = (await gameState(page)).floats;
+        assert.ok(f.some(o => o.text === `+${xp} XP`), JSON.stringify(f));
+    }));
+});
