@@ -7,9 +7,10 @@
 //
 // Step 2 of the plan: the window, the loop and the moving city. Step 3: the hero runs on the road with his
 // drone (hero.js). Step 3b: the game runs inside the terminal's own window (the output, the chips and the
-// prompt step aside, the title bar says `ramrush`), and on a phone held upright the world sits on top with a
-// touch area below it. Step 4: the controls (input.js) and the moves (hero.js), P pauses, and a short
-// reminder of the keys (or of the swipes, on a phone) shows at the start. Step 5: the RAM throw (ram.js), by
+// prompt step aside, the title bar says `ramrush`). Plan §8c.6: a phone plays it held sideways only, the
+// window then the whole screen (held upright, it is asked to turn and the game waits). Step 4: the controls
+// (input.js) and the moves (hero.js), P pauses, and a short reminder of the keys (or of the swipes, on a
+// phone) shows at the start. Step 5: the RAM throw (ram.js), by
 // key, click or tap. Plan §4b: the power-ups (powerups.js, numbers in config.js), XMP first. Step 6: the
 // enemies (enemies.js, the Orange Bot first), the hero's life, and a plain game over that starts a new run.
 
@@ -18,7 +19,7 @@ import { createRams } from './ram.js';
 import { createPowerups } from './powerups.js';
 import { createEnemies } from './enemies.js';
 import { createProgression, saveRecords, readRecords } from './progression.js';
-import { PX_PER_M, PARRY, PAUSE_BUTTON, XP_BAR, difficulty } from './config.js';
+import { PX_PER_M, PARRY, PAUSE_BUTTON, XP_BAR, HUD_SCALE, difficulty } from './config.js';
 import { createInput } from './input.js';
 import { createHud } from './hud.js';
 
@@ -36,17 +37,21 @@ const LAYERS = [
 
 const TEXT = {
     el: { title: 'RAM RUSH', close: 'Κλείσιμο παιχνιδιού', loading: 'Φόρτωση…', failed: 'Το παιχνίδι δεν φόρτωσε. Δοκίμασε ξανά.',
-        paused: 'ΠΑΥΣΗ', resume: 'P για συνέχεια',
-        over: 'GAME OVER', again: 'Space / J / πάτα για νέο παιχνίδι', score: 'Σκορ', kills: 'εχθροί',
+        paused: 'ΠΑΥΣΗ', resume: 'P για συνέχεια', resumeTouch: 'Πάτα ▶ για συνέχεια',
+        over: 'GAME OVER', again: 'Space / J / πάτα για νέο παιχνίδι', againTouch: 'Πάτα για νέο παιχνίδι', score: 'Σκορ', kills: 'εχθροί',
+        rotate: 'Γύρισε το κινητό', rotateSub: 'Το RAM RUSH παίζεται οριζόντια',
         levelUp: 'LEVEL UP!', best: 'Ρεκόρ', newBest: 'ΝΕΟ ΡΕΚΟΡ!',
+        fx: { speed: 'ταχύτητα', rate: 'ρυθμός', damage: 'ζημιά', shield: (n) => `ασπίδα · ${n} χτύπημα`, drone: (s) => `drone · βολή ανά ${s} s` },
         keys: '↑ / W / Space άλμα (ξανά στον αέρα: διπλό)   ↓ / S slide   ← → κίνηση   J / X / κλικ RAM   E / δεξί κλικ parry   P παύση   Esc έξοδος',
-        swipes: ['Πάτα για ρίψη RAM', 'Σύρε ↑ για άλμα (ξανά στον αέρα: διπλό)', 'Σύρε ↓ για slide', 'Σύρε ← → για κίνηση'] },
+        swipes: ['Πάτα: RAM   Σύρε ↑ άλμα, ξανά: διπλό', 'Σύρε ↓ slide   Σύρε ← → κίνηση'] },
     en: { title: 'RAM RUSH', close: 'Close the game', loading: 'Loading…', failed: 'The game did not load. Try again.',
-        paused: 'PAUSED', resume: 'P to resume',
-        over: 'GAME OVER', again: 'Space / J / tap for a new run', score: 'Score', kills: 'enemies',
+        paused: 'PAUSED', resume: 'P to resume', resumeTouch: 'Tap ▶ to resume',
+        over: 'GAME OVER', again: 'Space / J / tap for a new run', againTouch: 'Tap for a new run', score: 'Score', kills: 'enemies',
+        rotate: 'Turn your phone sideways', rotateSub: 'RAM RUSH is played in landscape',
         levelUp: 'LEVEL UP!', best: 'Best', newBest: 'NEW RECORD!',
+        fx: { speed: 'speed', rate: 'rate', damage: 'damage', shield: (n) => `shield · ${n} hit${n > 1 ? 's' : ''}`, drone: (s) => `drone · a shot every ${s} s` },
         keys: '↑ / W / Space jump (again in the air: double)   ↓ / S slide   ← → move   J / X / click RAM   E / right click parry   P pause   Esc exit',
-        swipes: ['Tap to throw a RAM', 'Swipe ↑ to jump (again in the air: double)', 'Swipe ↓ to slide', 'Swipe ← → to move'] }
+        swipes: ['Tap: RAM   Swipe ↑ jump, again: double', 'Swipe ↓ slide   Swipe ← → move'] }
 };
 const txt = () => TEXT[document.documentElement.lang === 'en' ? 'en' : 'el'];
 
@@ -65,17 +70,20 @@ const CSS = `
 .rr-status { position: absolute; top: 0; left: 0; right: 0; aspect-ratio: 16 / 9; display: flex; align-items: center;
     justify-content: center; font-size: 15px; letter-spacing: 1px; pointer-events: none; }
 .rr-overlay:focus { outline: none; }
-.rr-pad { display: none; }
-.rr-hint { margin: 0; padding: 18px 16px; display: flex; flex-direction: column; gap: 10px; align-items: center;
-    color: rgba(241, 240, 247, 0.55); font-size: 14px; letter-spacing: 0.5px; text-align: center; pointer-events: none; user-select: none; }
-/* A phone held upright: the terminal's window takes the whole screen, the world sits on top and the touch area fills the rest */
-@media (orientation: portrait) {
-    #cli-overlay.rr-in-term { width: calc(100vw - 20px) !important; height: calc(100dvh - env(safe-area-inset-top) - 20px) !important;
-        top: calc(env(safe-area-inset-top) + 10px) !important; left: 50% !important; transform: translateX(-50%) !important; }
-    .rr-overlay { flex: 1; min-height: 0; }
-    .rr-canvas { width: 100%; }
-    .rr-pad { display: block; flex: 1; width: 100%; min-height: 120px; padding-bottom: env(safe-area-inset-bottom);
-        background: linear-gradient(180deg, #15132e, #0d0c1d); border-top: 1px solid rgba(34, 211, 238, 0.25); }
+/* A phone held sideways (plan §8c.6): the terminal's window is the whole screen, its title bar slim (its ✕
+   still a thumb's size), and the world as big as the height allows; the swipes and taps land on the world */
+@media (pointer: coarse) and (orientation: landscape) {
+    #cli-overlay.rr-in-term { width: 100vw !important; height: 100dvh !important; max-height: none !important; top: 0 !important; left: 0 !important;
+        transform: none !important; border-radius: 0 !important; border: none !important;
+        padding: 0 env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left) !important; }
+    #cli-overlay.rr-in-term .cli-bar { margin: 0; height: 44px; box-sizing: border-box; padding: 0 0 0 12px; border-radius: 0; }
+    #cli-overlay.rr-in-term .cli-close { width: 44px; height: 44px; }
+    .rr-overlay { flex: 1; min-height: 0; width: 100%; justify-content: center; border-radius: 0; }
+    .rr-canvas { width: min(100%, calc((100dvh - 44px - env(safe-area-inset-bottom)) * 16 / 9)); }
+}
+/* Held upright it is asked to turn (drawn on the canvas): the window in the middle of the screen */
+@media (pointer: coarse) and (orientation: portrait) {
+    #cli-overlay.rr-in-term { top: 50% !important; transform: translate(-50%, -50%) !important; }
 }
 `;
 
@@ -119,7 +127,6 @@ export async function open() {
     overlay.setAttribute('aria-label', txt().title);
     overlay.tabIndex = -1;           // it takes the focus, so Space can never "click" the bar's ✕
     overlay.innerHTML = `<canvas class="rr-canvas" width="${W}" height="${H}"></canvas>
-        <div class="rr-pad" aria-hidden="true"><p class="rr-hint">${txt().swipes.map(l => `<span>${l}</span>`).join('')}</p></div>
         <p class="rr-status" aria-live="polite">${txt().loading}</p>`;
     cli.appendChild(overlay);
     cli.classList.add('rr-in-term');
@@ -147,23 +154,40 @@ export async function open() {
     sky.addColorStop(1, '#0d0c1d');
 
     const g = { overlay, style, raf: 0, last: 0, distance: 0, paused: false, userPaused: false, images: null, hero: null, closed: false,
-        hintT: matchMedia('(pointer: fine)').matches ? 7 : 0 };   // the keys reminder (a phone has it in the touch area)
+        hintT: 7,                    // the keys reminder (on a phone: the swipes)
+        hudScale: 1, compact: false, upright: false, drawn: false };
     game = g;
-    // The parry button on a touch screen, bottom right of the world (plan §5b; the HUD step will dress it)
     const touchUI = matchMedia('(pointer: coarse)').matches;
+    // A phone plays it held sideways only (plan §8c.6): held upright it is asked to turn, and waits
+    const portrait = matchMedia('(orientation: portrait)');
+    // The HUD's size on a touch screen (plan §8c.6): its text never under HUD_SCALE.minFont px on the screen;
+    // on a small canvas the secondary parts hide. Measured when the canvas changes size, not each frame.
+    const fit = () => {
+        const w = canvas.getBoundingClientRect().width, k = w / W, S = HUD_SCALE;
+        g.hudScale = touchUI && k > 0 ? Math.min(S.max, Math.max(1, S.minFont / (S.baseFont * k))) : 1;
+        g.compact = touchUI && w > 0 && w < S.compactBelow;
+    };
+    const sizes = new ResizeObserver(fit);
+    sizes.observe(canvas);
+    fit();
+    // The parry button on a touch screen, bottom right of the world (it grows with the HUD, from that corner)
     const onParryButton = (cx, cy) => {
         if (!touchUI) return false;
-        const r = canvas.getBoundingClientRect(), b = PARRY.button;
+        const r = canvas.getBoundingClientRect(), b = PARRY.button, s = Math.min(g.hudScale, b.maxScale);
         const x = (cx - r.left) * W / r.width, y = (cy - r.top) * H / r.height;
-        return Math.hypot(x - b.x, y - b.y) <= b.hit;
+        return Math.hypot(x - (W - (W - b.x) * s), y - (H - (H - b.y) * s)) <= b.hit * s;
     };
-    // The pause button: its reach on the screen is never under minHit CSS px, however small the canvas shows
+    // The pause button (it grows with the HUD, from the top right corner): its reach on the screen is never
+    // under minHit CSS px, however small the canvas shows
     const onPauseButton = (cx, cy) => {
-        const r = canvas.getBoundingClientRect(), b = PAUSE_BUTTON, scale = r.width / W;
-        const half = Math.max(b.size, b.minHit / scale) / 2;
+        const r = canvas.getBoundingClientRect(), b = PAUSE_BUTTON, scale = r.width / W, s = g.hudScale;
+        const half = Math.max(b.size * s, b.minHit / scale) / 2;
         const x = (cx - r.left) / scale, y = (cy - r.top) / scale;
-        return Math.abs(x - b.x) <= half && Math.abs(y - b.y) <= half;
+        return Math.abs(x - (W - (W - b.x) * s)) <= half && Math.abs(y - b.y * s) <= half;
     };
+    // Held upright the picture of the moment is kept aside, under the request to turn, and put back after
+    const shot = document.createElement('canvas');
+    shot.width = W; shot.height = H;
     const input = createInput(overlay, { isParry: onParryButton, isPause: onPauseButton });
     let newRun = () => {};
     const hud = createHud(ctx, g, { txt, touchUI, reducedMotion: matchMedia('(prefers-reduced-motion: reduce)').matches });
@@ -197,6 +221,18 @@ export async function open() {
         g.last = t;
         const i = input.consume();   // read every frame, so nothing pressed while loading or paused piles up
         if (g.paused || !g.images) return;
+        // a phone held upright: the request to turn, and the game waits. Turned back, it waits on the pause
+        // screen (a tap on ▶ goes on), so play never starts by surprise; a run not yet begun simply starts.
+        const upright = touchUI && portrait.matches;
+        if (upright !== g.upright) {
+            g.upright = upright;
+            if (upright) { shot.getContext('2d').drawImage(canvas, 0, 0); hud.rotate(); }
+            else {
+                ctx.drawImage(shot, 0, 0);
+                if (g.drawn && !g.over && !g.userPaused) { g.userPaused = true; hud.pause(); hud.pauseButton(true); }
+            }
+        }
+        if (upright) return;
         if (i.pause) {
             g.userPaused = !g.userPaused;
             if (g.userPaused) { hud.pause(); hud.pauseButton(true); }   // drawn once over the last picture; the loop then waits
@@ -225,9 +261,10 @@ export async function open() {
         g.distance += g.speed * wdt;
         ctx.fillStyle = sky;
         ctx.fillRect(0, 0, W, H);
+        g.drawn = true;
         g.hero.update(wdt, i);
         if (i.throw) {
-            // a click or tap on the world aims there; on the touch area below it (or by key) straight ahead
+            // a click or tap on the world aims there; by key straight ahead
             const hand = g.hero.hand();
             let tx, ty;
             if (i.aim) {
@@ -285,6 +322,7 @@ export async function open() {
     g.teardown = () => {
         cancelAnimationFrame(g.raf);
         input.destroy();
+        sizes.disconnect();
         watch.disconnect();
         document.removeEventListener('keydown', onKey);
         document.removeEventListener('visibilitychange', onVisibility);
@@ -358,6 +396,9 @@ export const state = () => {
         powerups: [...game.powerups.active.values()].map(a => ({ ...a })), pickups: game.powerups.pickups(),
         mhz: game.powerups.mhz, taken: game.powerups.taken,
         hearts: game.hud && game.hud.info(),
+        hudScale: game.hudScale, compact: game.compact, upright: game.upright,
+        hint: game.hintT > 0 && game.hud ? game.hud.hintLines() : null,
+        rows: game.hud && game.powerups ? game.hud.rows(game.powerups) : [],
         hp: h.hp, invuln: h.invuln, over: !!game.over,
         enemies: game.enemies.list(), spikes: game.enemies.spikes(), killed: game.enemies.killed, score: game.enemies.score, xp: game.enemies.xp,
         parryCool: game.parryCool, parries: game.enemies.parries,
@@ -381,3 +422,5 @@ export const testXp = (n) => { if (game && game.enemies) game.enemies.xp += n; }
 export const testWarp = (m) => { if (game) game.distance = m * PX_PER_M; };
 // … and his life set, as if he had taken a blow or been healed (nothing heals him yet)
 export const testHp = (n) => { if (game && game.hero) game.hero.hp = n; };
+// … and what the HUD writes under each power-up (made from config.js)
+export const hudEffects = () => (game && game.hud ? { ...game.hud.effects } : null);

@@ -42,8 +42,9 @@ export function createPowerups({ rng = Math.random, reducedMotion = false } = {}
         const def = POWERUPS[id];
         if (!def) return;
         const cur = p.active.get(id);
-        if (cur) { cur.remaining = def.duration; cur.shield = def.shield || 0; }   // the same again: more time, no more effect
-        else p.active.set(id, { id, remaining: def.duration, shield: def.shield || 0 });
+        // the same again: more time, no more effect (at: when it was taken, for the HUD's pop)
+        if (cur) { cur.remaining = def.duration; cur.shield = def.shield || 0; cur.at = p.t; }
+        else p.active.set(id, { id, remaining: def.duration, shield: def.shield || 0, at: p.t });
     };
     // A blow is coming: if a shield is on, it takes it (and breaks when it has taken all it can)
     p.absorb = () => {

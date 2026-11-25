@@ -42,7 +42,14 @@ export const POWERUPS = {
         damage: 1
     }
 };
-export const POWERUP_WARN = 2;       // s: the last seconds blink
+export const POWERUP_WARN = 3;       // s: the last seconds blink (plan §8c.5)
+// Its HUD row (plan §8c.5): picked up, the icon pops (scale → 1) and the name shines for `shine` s
+export const POWERUP_ROW = { gap: 50, compactGap: 32, pop: 0.35, popScale: 1.45, shine: 1 };
+// The HUD on a touch screen (plan §8c.6): its text (baseFont, in game px) is never under minFont px on the
+// screen, so it grows: hudScale = clamp(minFont / (baseFont × canvas-to-screen), 1, max). A desktop keeps 1.
+// Under compactBelow CSS px of canvas width the secondary parts hide (the MHz meter, the power-up names and
+// what they do: an icon and its time bar remain).
+export const HUD_SCALE = { minFont: 14, baseFont: 12, max: 2.2, compactBelow: 700 };
 // However many things multiply a stat later (upgrades × power-up), it never goes past these
 export const STAT_CAPS = { speedMult: [0.5, 2.2], rofMult: [0.4, 2], damageMult: [0.5, 2.5] };
 
@@ -232,7 +239,9 @@ export const PARRY = {
     stunMult: 2,
     hitStop: 0.08,
     xp: 20,
-    button: { x: 888, y: 440, r: 46, hit: 80 }   // the touch button, in the game's 960×540 (hit: its reach)
+    // the touch button, in the game's 960×540 (hit: its reach). With the HUD grown on a phone it grows
+    // less (maxScale), so it never hides the road ahead; its label still grows to full size
+    button: { x: 888, y: 440, r: 46, hit: 80, maxScale: 1.3 }
 };
 // The hearts (plan §8c.3): how long they shake when he loses one, pop when he gains one, and the pace of
 // the pulse of the last heart (turns per second). With reduced motion none of them moves: only colours change.

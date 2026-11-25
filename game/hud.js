@@ -5,8 +5,12 @@
 // power-up on, with the MHz meter). Not redrawn, not restyled: the next steps of §8c change it here.
 //
 // createHud(ctx, g, { txt, touchUI }): g is the running game (main.js), read as the code always read it.
+//
+// Step 8c.6: on a touch screen the HUD grows by g.hudScale (main.js measures it), each part from its own
+// corner or centre, so its text is never under 14 px on the screen; with g.compact the secondary parts hide.
+// A desktop draws at scale 1, exactly as before.
 
-import { HERO, HEARTS, XP_BAR, RAM_TIERS, PX_PER_M, PARRY, POWERUPS, PAUSE_BUTTON } from './config.js';
+import { HERO, HEARTS, XP_BAR, RAM_TIERS, PX_PER_M, PARRY, POWERUPS, POWERUP_ROW, PAUSE_BUTTON } from './config.js';
 
 const W = 960, H = 540;
 
@@ -19,33 +23,80 @@ export function createHud(ctx, g, { txt, touchUI, reducedMotion = false }) {
     // how full it is drawn, its flash, and its texts, made again only when a number changes
     const bar = { level: 1, shown: 0, flash: 0, key: '', lv: '', nums: '', tier: '' };
 
+    // Draws fn grown by k around (ax, ay): a corner or a centre of the screen stays put, the part grows
+    // inward from it. At 1 (a desktop) it is drawn as it always was.
+    const scale = () => g.hudScale || 1;
+    function at(ax, ay, k, fn, arg) {
+        if (k === 1) { fn(arg); return; }
+        ctx.save();
+        ctx.translate(ax, ay); ctx.scale(k, k); ctx.translate(-ax, -ay);
+        fn(arg);
+        ctx.restore();
+    }
+
+    // The reminder at the start, bottom centre: the keys, or on a touch screen the swipes (two lines)
+    const hintLines = () => (touchUI ? txt().swipes : [txt().keys]);
     function drawHint() {
         const a = Math.min(1, g.hintT / 1.2);   // fades out over its last second
+        const lines = hintLines(), lh = 22, bh = lines.length * lh + 8, top = H - 16 - bh;
         ctx.save();
         ctx.globalAlpha = a;
         ctx.font = '600 15px system-ui, sans-serif';
-        const w = ctx.measureText(txt().keys).width + 32;
+        let w = 0;
+        for (const l of lines) w = Math.max(w, ctx.measureText(l).width);
+        w += 32;
+        // on a touch screen at the left, clear of the PARRY button at the right
+        const left = touchUI ? 16 : (W - w) / 2, cx = left + w / 2;
         ctx.fillStyle = 'rgba(13, 12, 29, 0.72)';
         ctx.beginPath();
-        ctx.roundRect((W - w) / 2, H - 46, w, 30, 15);
+        ctx.roundRect(left, top, w, bh, 15);
         ctx.fill();
         ctx.fillStyle = '#f1f0f7';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
-        ctx.fillText(txt().keys, W / 2, H - 31);
+        lines.forEach((l, n) => ctx.fillText(l, cx, top + 4 + lh * (n + 0.5)));
         ctx.restore();
     }
-    function drawPause() {
-        ctx.save();
-        ctx.fillStyle = 'rgba(13, 12, 29, 0.6)';
-        ctx.fillRect(0, 0, W, H);
+    function pauseText() {
         ctx.fillStyle = '#f1f0f7';
         ctx.textAlign = 'center';
         ctx.font = '800 44px system-ui, sans-serif';
         ctx.fillText(txt().paused, W / 2, H / 2 - 6);
         ctx.font = '500 17px system-ui, sans-serif';
         ctx.fillStyle = 'rgba(241, 240, 247, 0.75)';
-        ctx.fillText(txt().resume, W / 2, H / 2 + 30);
+        ctx.fillText(touchUI ? txt().resumeTouch : txt().resume, W / 2, H / 2 + 30);
+    }
+    function drawPause() {
+        ctx.save();
+        ctx.fillStyle = 'rgba(13, 12, 29, 0.6)';
+        ctx.fillRect(0, 0, W, H);
+        at(W / 2, H / 2, scale(), pauseText);
+        ctx.restore();
+    }
+    // A phone held upright (plan §8c.6): the request to turn it, over the whole picture. Its own sizes:
+    // the canvas is at its smallest then (about 0.37 of a screen px per game px).
+    function drawRotate() {
+        ctx.save();
+        ctx.fillStyle = '#0d0c1d';
+        ctx.fillRect(0, 0, W, H);
+        const cx = W / 2, cy = 170;
+        // a phone lying sideways, and an arrow turning round it
+        ctx.lineWidth = 6; ctx.strokeStyle = '#22d3ee';
+        ctx.beginPath(); ctx.roundRect(cx - 80, cy - 45, 160, 90, 16); ctx.stroke();
+        ctx.fillStyle = '#22d3ee';
+        ctx.beginPath(); ctx.arc(cx + 62, cy, 5, 0, Math.PI * 2); ctx.fill();
+        ctx.lineWidth = 5; ctx.strokeStyle = 'rgba(240, 171, 252, 0.9)';
+        ctx.beginPath(); ctx.arc(cx, cy, 120, -Math.PI * 0.85, -Math.PI * 0.2); ctx.stroke();
+        const ex = cx + 120 * Math.cos(-Math.PI * 0.2), ey = cy + 120 * Math.sin(-Math.PI * 0.2);
+        ctx.fillStyle = 'rgba(240, 171, 252, 0.9)';
+        ctx.beginPath(); ctx.moveTo(ex + 16, ey - 6); ctx.lineTo(ex - 6, ey - 14); ctx.lineTo(ex + 2, ey + 14); ctx.closePath(); ctx.fill();
+        ctx.textAlign = 'center';
+        ctx.fillStyle = '#f1f0f7';
+        ctx.font = '800 56px system-ui, sans-serif';
+        ctx.fillText(txt().rotate, cx, 360);
+        ctx.font = '500 40px system-ui, sans-serif';
+        ctx.fillStyle = 'rgba(241, 240, 247, 0.75)';
+        ctx.fillText(txt().rotateSub, cx, 425);
         ctx.restore();
     }
 
@@ -148,7 +199,7 @@ export function createHud(ctx, g, { txt, touchUI, reducedMotion = false }) {
         ctx.restore();
     }
     // LEVEL UP!: a banner with the new tier, fading out over its time (XP_BAR.banner)
-    function drawLevelUp() {
+    function levelUpText() {
         const k = g.levelT / XP_BAR.banner;
         ctx.save();
         ctx.globalAlpha = Math.min(1, k * 2);
@@ -161,10 +212,7 @@ export function createHud(ctx, g, { txt, touchUI, reducedMotion = false }) {
         ctx.fillStyle = '#f1f0f7'; ctx.fillText(`LV ${g.prog.level} · ${g.prog.tier().name}`, W / 2, 182);
         ctx.restore();
     }
-    function drawOver() {
-        ctx.save();
-        ctx.fillStyle = 'rgba(13, 12, 29, 0.72)';
-        ctx.fillRect(0, 0, W, H);
+    function overText() {
         ctx.textAlign = 'center';
         ctx.fillStyle = '#f1f0f7';
         ctx.font = '800 52px system-ui, sans-serif';
@@ -178,13 +226,26 @@ export function createHud(ctx, g, { txt, touchUI, reducedMotion = false }) {
         ctx.fillText(`${r.beat.score || r.beat.distance ? txt().newBest + ' ' : ''}${txt().best}: ${r.best.score} · ${r.best.distance} m · LV ${r.best.level}`, W / 2, H / 2 + 40);
         ctx.font = '500 17px system-ui, sans-serif';
         ctx.fillStyle = 'rgba(241, 240, 247, 0.75)';
-        ctx.fillText(txt().again, W / 2, H / 2 + 74);
+        ctx.fillText(touchUI ? txt().againTouch : txt().again, W / 2, H / 2 + 74);
+    }
+    function drawOver() {
+        ctx.save();
+        ctx.fillStyle = 'rgba(13, 12, 29, 0.72)';
+        ctx.fillRect(0, 0, W, H);
+        at(W / 2, H / 2, scale(), overText);
         ctx.restore();
     }
 
-    // The PARRY button on a touch screen: its rest as a ring that fills back
+    // The PARRY button on a touch screen: its rest as a ring that fills back. It grows with the HUD from the
+    // bottom right corner, but at most by b.maxScale (the road ahead stays seen); its label grows in full.
+    let parryLabel = 1;
     h.parryButton = () => {
-    if (touchUI) {
+        if (!touchUI) return;
+        const k = Math.min(scale(), PARRY.button.maxScale);
+        parryLabel = scale() / k;
+        at(W, H, k, drawParryButton);
+    };
+    function drawParryButton() {
         const b = PARRY.button, ready = g.parryCool <= 0;
         ctx.save();
         ctx.fillStyle = ready ? 'rgba(13, 12, 29, 0.55)' : 'rgba(13, 12, 29, 0.35)';
@@ -195,43 +256,77 @@ export function createHud(ctx, g, { txt, touchUI, reducedMotion = false }) {
         ctx.strokeStyle = '#22d3ee';
         ctx.beginPath(); ctx.arc(b.x, b.y, b.r, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * (1 - g.parryCool / PARRY.cooldown)); ctx.stroke();
         ctx.fillStyle = ready ? '#f1f0f7' : 'rgba(241, 240, 247, 0.45)';
-        ctx.font = '800 15px system-ui, sans-serif';
+        ctx.font = `800 ${Math.round(15 * parryLabel)}px system-ui, sans-serif`;
         ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
         ctx.fillText('PARRY', b.x, b.y);
         ctx.restore();
     }
-    };
 
     // Top left: each power-up on, its icon and a bar that empties; under XMP the MHz meter
-    h.powerups = (p, top = 34) => {
-        let y = top;
+    // What each power-up does, in words built from its numbers in config.js (8c.5), made once: e.g. XMP
+    // "RAM ×1.6 speed · ×1.7 rate · ×1.5 damage" (a rate is how often: 1 / its cooldown multiplier)
+    const x1 = (v) => `×${Math.round(v * 10) / 10}`;
+    function effect(id) {
+        const d = POWERUPS[id], f = txt().fx, m = d.mults || {}, parts = [];
+        if (m.speedMult) parts.push(`${x1(m.speedMult)} ${f.speed}`);
+        if (m.rofMult) parts.push(`${x1(1 / m.rofMult)} ${f.rate}`);
+        if (m.damageMult) parts.push(`${x1(m.damageMult)} ${f.damage}`);
+        if (parts.length) return `RAM ${parts.join(' · ')}`;
+        if (d.shield) return f.shield(d.shield);
+        if (d.every) return f.drone(d.every);
+        return '';
+    }
+    const effects = {};
+    for (const id of Object.keys(POWERUPS)) effects[id] = effect(id);
+    h.effects = effects;
+
+    // One row per power-up on (8c.5): its icon, its name, a bar of the time left, what it does. Taken (or
+    // taken again): the icon pops and the name shines in its colour for a moment. The last seconds blink.
+    // On a small canvas (g.compact) only the icon and the time bar: no name, no effect, no MHz meter
+    let rowsTop = 34;
+    h.powerups = (p, top = 34) => { rowsTop = top; at(0, 0, scale(), drawRows, p); };
+    function drawRows(p) {
+        let y = rowsTop;
+        const R = POWERUP_ROW, compact = !!g.compact;
         for (const a of p.active.values()) {
             const def = POWERUPS[a.id];
-            if (!p.blinkOff(a.remaining)) p.icon(ctx, 34, y, 18, def.color, a.id);
+            const since = p.t - (a.at ?? -99);
+            const pop = !reducedMotion && since < R.pop ? 1 + (R.popScale - 1) * (1 - since / R.pop) : 1;
+            if (!p.blinkOff(a.remaining)) p.icon(ctx, 34, y, 18 * pop, def.color, a.id);
             ctx.fillStyle = 'rgba(13, 12, 29, 0.7)';
             ctx.fillRect(60, y - 5, 120, 10);
             ctx.fillStyle = def.color;
             ctx.fillRect(60, y - 5, 120 * Math.max(0, a.remaining / def.duration), 10);
+            if (compact) { y += R.compactGap; continue; }
             ctx.font = '700 12px system-ui, sans-serif';
-            ctx.fillStyle = '#f1f0f7';
             ctx.textAlign = 'left';
+            const shine = since < R.shine;
+            ctx.lineWidth = 3; ctx.strokeStyle = 'rgba(13, 12, 29, 0.85)';
+            ctx.strokeText(def.name, 60, y - 10);
+            ctx.fillStyle = shine ? def.color : '#f1f0f7';
             ctx.fillText(def.name, 60, y - 10);
-            y += 46;
+            ctx.font = '600 10px system-ui, sans-serif';
+            ctx.strokeText(effects[a.id], 60, y + 15);
+            ctx.fillStyle = 'rgba(241, 240, 247, 0.8)';
+            ctx.fillText(effects[a.id], 60, y + 15);
+            y += R.gap;
         }
-        if (p.isOn('xmp') || p.mhz > POWERUPS.xmp.mhz[0] + 5) {
+        if (!compact && (p.isOn('xmp') || p.mhz > POWERUPS.xmp.mhz[0] + 5)) {
             ctx.font = '800 15px ui-monospace, monospace';
             ctx.fillStyle = POWERUPS.xmp.color;
             ctx.textAlign = 'left';
             ctx.fillText(`${Math.round(p.mhz)} MHz`, 60, y - 18);
         }
-    };
+    }
 
-
-    h.hint = drawHint;
+    h.hint = () => at(touchUI ? 0 : W / 2, H, scale(), drawHint);
+    h.hintLines = hintLines;
     h.pause = drawPause;
+    h.rotate = drawRotate;
 
     // The pause button, top right (8c.2): two bars, or a play triangle while paused (it resumes too)
-    h.pauseButton = (paused) => {
+    h.pauseButton = (paused) => at(W, 0, scale(), drawPauseButton, paused);
+    function drawPauseButton(paused) {
         const b = PAUSE_BUTTON, r = b.size / 2;
         ctx.save();
         // solid while paused: it is drawn over the button of the last frame, whose bars must not show through
@@ -247,13 +342,14 @@ export function createHud(ctx, g, { txt, touchUI, reducedMotion = false }) {
             ctx.fillRect(b.x + 2.5, b.y - 8, 5.5, 16);
         }
         ctx.restore();
-    };
-    h.life = drawLife;
+    }
+    h.life = (dt) => at(0, 0, scale(), drawLife, dt);
     // For the tests: what the hearts are doing now
     h.info = () => ({ shake: life.shake, pop: life.pop, lost: life.lost, last: g.hero.hp === 1,
         bar: { level: bar.level, shown: bar.shown, flash: bar.flash, nums: bar.nums } });
-    h.xp = drawXp;
-    h.levelUp = drawLevelUp;
+    h.rows = (p) => [...p.active.values()].map(a => ({ id: a.id, remaining: a.remaining, since: p.t - (a.at ?? -99), blinkOff: p.blinkOff(a.remaining) }));
+    h.xp = (dt) => at(0, 0, scale(), drawXp, dt);
+    h.levelUp = () => at(W / 2, 150, scale(), levelUpText);
     h.over = drawOver;
     return h;
 }
