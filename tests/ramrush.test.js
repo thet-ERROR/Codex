@@ -1799,7 +1799,8 @@ describe('RAM RUSH: the hearts (8c.3)', () => {
         const v = [...seen];
         assert.ok((Math.max(...v) - Math.min(...v)) / Math.max(...v) > 0.15, `it pulses: ${v.join()}`);
         await setHp(page, 2);
-        await waitState(page, (s) => s.hearts.pop === 0 && !s.hearts.last, 1500);
+        await waitState(page, (s) => s.hearts.pop > 0, 1000);              // the HUD has seen the new heart …
+        await waitState(page, (s) => s.hearts.pop === 0 && !s.hearts.last, 1500);   // … and its pop is over
         const still = new Set();
         for (let k = 0; k < 6; k++) { still.add(await redPixels(page)); await page.waitForTimeout(90); }
         assert.equal(still.size, 1, `no pulse with two: ${[...still].join()}`);
@@ -1824,7 +1825,8 @@ describe('RAM RUSH: the hearts (8c.3)', () => {
             return -1;
         });
         await setHp(page, 2);
-        await waitState(page, (s) => s.hearts.pop === 0 && !s.hearts.last, 1000);
+        await waitState(page, (s) => !s.hearts.last && s.hearts.lost === 1, 1000);
+        await page.waitForTimeout(100);                                        // its pop (none: reduced motion) has had its frame
         await setHp(page, 1);
         await waitState(page, (s) => s.hearts.shake > 0.1, 1000);
         const xs = [];
@@ -1893,5 +1895,58 @@ describe('RAM RUSH: the XP bar and the level (8c.4)', () => {
         await page.keyboard.press('Space');
         await waitState(page, (s) => !s.over && s.hearts.bar.level === 1, 2000);
         assert.ok((await bar(page)).shown < 0.05);
+    }));
+});
+
+describe('RAM RUSH: the power-up rows (8c.5)', () => {
+    const take = (page, ids) => page.evaluate(async (ids) => {
+        const m = await import('/game/main.js');
+        ids.forEach((id, k) => m.testSpawnPickup(id, 250 + k * 15, 400));
+    }, ids);
+
+    it('what each does is written from its numbers in config.js, in the page language', () => withPage(DESK, async (page) => {
+        await openSettled(page);
+        const fx = await page.evaluate(async () => (await import('/game/main.js')).hudEffects());
+        assert.deepEqual(fx, { xmp: 'RAM ×1.6 ταχύτητα · ×1.7 ρυθμός · ×1.5 ζημιά', cooling: 'ασπίδα · 1 χτύπημα', drone: 'drone · βολή ανά 0.8 s' });
+    }));
+
+    it('a row per power-up on, in the order taken; taken, its icon pops and its name shines for 1 s; taken again, it does so again', () => withPage(DESK, async (page) => {
+        await openSettled(page);
+        await take(page, ['cooling', 'drone']);
+        await waitState(page, (s) => s.rows.length === 2, 3000);
+        let s = await gameState(page);
+        assert.deepEqual(s.rows.map(r => r.id), ['cooling', 'drone']);
+        assert.ok(s.rows[0].since < 0.5, 'just taken');
+        await page.waitForTimeout(1200);
+        s = await gameState(page);
+        assert.ok(s.rows.every(r => r.since > 1), 'the shine is over');
+        await take(page, ['cooling']);
+        await waitState(page, (s) => s.rows[0].since < 0.5, 3000);
+        s = await gameState(page);
+        assert.deepEqual(s.rows.map(r => r.id), ['cooling', 'drone'], 'the same row, not a second one');
+        assert.ok(Math.abs(s.rows[0].remaining - 8) < 0.5, 'its time refilled');
+    }));
+
+    it('the last 3 s blink (not before); with reduced motion they do not', () => withPage(DESK, async (page) => {
+        await openSettled(page);
+        const blinks = await page.evaluate(async () => {
+            const { createPowerups } = await import('/game/powerups.js');
+            const out = {};
+            for (const rm of [false, true]) {
+                const p = createPowerups({ reducedMotion: rm });
+                p.activate('drone');
+                const seen = { early: new Set(), late: new Set() };
+                for (let f = 0; f < 8 * 60; f++) {
+                    p.update(1 / 60, 0, 0);
+                    const left = p.remaining('drone');
+                    if (left > 3.05) seen.early.add(p.blinkOff(left));
+                    else if (left > 0.05) seen.late.add(p.blinkOff(left));
+                }
+                out[rm ? 'reduced' : 'normal'] = { early: [...seen.early], late: [...seen.late].sort() };
+            }
+            return out;
+        });
+        assert.deepEqual(blinks.normal, { early: [false], late: [false, true] });
+        assert.deepEqual(blinks.reduced, { early: [false], late: [false] });
     }));
 });

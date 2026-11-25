@@ -42,7 +42,9 @@ export const POWERUPS = {
         damage: 1
     }
 };
-export const POWERUP_WARN = 2;       // s: the last seconds blink
+export const POWERUP_WARN = 3;       // s: the last seconds blink (plan §8c.5)
+// Its HUD row (plan §8c.5): picked up, the icon pops (scale → 1) and the name shines for `shine` s
+export const POWERUP_ROW = { gap: 50, pop: 0.35, popScale: 1.45, shine: 1 };
 // However many things multiply a stat later (upgrades × power-up), it never goes past these
 export const STAT_CAPS = { speedMult: [0.5, 2.2], rofMult: [0.4, 2], damageMult: [0.5, 2.5] };
 

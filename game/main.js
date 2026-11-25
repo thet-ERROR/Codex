@@ -39,12 +39,14 @@ const TEXT = {
         paused: 'ΠΑΥΣΗ', resume: 'P για συνέχεια',
         over: 'GAME OVER', again: 'Space / J / πάτα για νέο παιχνίδι', score: 'Σκορ', kills: 'εχθροί',
         levelUp: 'LEVEL UP!', best: 'Ρεκόρ', newBest: 'ΝΕΟ ΡΕΚΟΡ!',
+        fx: { speed: 'ταχύτητα', rate: 'ρυθμός', damage: 'ζημιά', shield: (n) => `ασπίδα · ${n} χτύπημα`, drone: (s) => `drone · βολή ανά ${s} s` },
         keys: '↑ / W / Space άλμα (ξανά στον αέρα: διπλό)   ↓ / S slide   ← → κίνηση   J / X / κλικ RAM   E / δεξί κλικ parry   P παύση   Esc έξοδος',
         swipes: ['Πάτα για ρίψη RAM', 'Σύρε ↑ για άλμα (ξανά στον αέρα: διπλό)', 'Σύρε ↓ για slide', 'Σύρε ← → για κίνηση'] },
     en: { title: 'RAM RUSH', close: 'Close the game', loading: 'Loading…', failed: 'The game did not load. Try again.',
         paused: 'PAUSED', resume: 'P to resume',
         over: 'GAME OVER', again: 'Space / J / tap for a new run', score: 'Score', kills: 'enemies',
         levelUp: 'LEVEL UP!', best: 'Best', newBest: 'NEW RECORD!',
+        fx: { speed: 'speed', rate: 'rate', damage: 'damage', shield: (n) => `shield · ${n} hit${n > 1 ? 's' : ''}`, drone: (s) => `drone · a shot every ${s} s` },
         keys: '↑ / W / Space jump (again in the air: double)   ↓ / S slide   ← → move   J / X / click RAM   E / right click parry   P pause   Esc exit',
         swipes: ['Tap to throw a RAM', 'Swipe ↑ to jump (again in the air: double)', 'Swipe ↓ to slide', 'Swipe ← → to move'] }
 };
@@ -358,6 +360,7 @@ export const state = () => {
         powerups: [...game.powerups.active.values()].map(a => ({ ...a })), pickups: game.powerups.pickups(),
         mhz: game.powerups.mhz, taken: game.powerups.taken,
         hearts: game.hud && game.hud.info(),
+        rows: game.hud && game.powerups ? game.hud.rows(game.powerups) : [],
         hp: h.hp, invuln: h.invuln, over: !!game.over,
         enemies: game.enemies.list(), spikes: game.enemies.spikes(), killed: game.enemies.killed, score: game.enemies.score, xp: game.enemies.xp,
         parryCool: game.parryCool, parries: game.enemies.parries,
@@ -381,3 +384,5 @@ export const testXp = (n) => { if (game && game.enemies) game.enemies.xp += n; }
 export const testWarp = (m) => { if (game) game.distance = m * PX_PER_M; };
 // … and his life set, as if he had taken a blow or been healed (nothing heals him yet)
 export const testHp = (n) => { if (game && game.hero) game.hero.hp = n; };
+// … and what the HUD writes under each power-up (made from config.js)
+export const hudEffects = () => (game && game.hud ? { ...game.hud.effects } : null);

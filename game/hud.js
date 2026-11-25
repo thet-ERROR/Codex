@@ -6,7 +6,7 @@
 //
 // createHud(ctx, g, { txt, touchUI }): g is the running game (main.js), read as the code always read it.
 
-import { HERO, HEARTS, XP_BAR, RAM_TIERS, PX_PER_M, PARRY, POWERUPS, PAUSE_BUTTON } from './config.js';
+import { HERO, HEARTS, XP_BAR, RAM_TIERS, PX_PER_M, PARRY, POWERUPS, POWERUP_ROW, PAUSE_BUTTON } from './config.js';
 
 const W = 960, H = 540;
 
@@ -203,20 +203,49 @@ export function createHud(ctx, g, { txt, touchUI, reducedMotion = false }) {
     };
 
     // Top left: each power-up on, its icon and a bar that empties; under XMP the MHz meter
+    // What each power-up does, in words built from its numbers in config.js (8c.5), made once: e.g. XMP
+    // "RAM ×1.6 speed · ×1.7 rate · ×1.5 damage" (a rate is how often: 1 / its cooldown multiplier)
+    const x1 = (v) => `×${Math.round(v * 10) / 10}`;
+    function effect(id) {
+        const d = POWERUPS[id], f = txt().fx, m = d.mults || {}, parts = [];
+        if (m.speedMult) parts.push(`${x1(m.speedMult)} ${f.speed}`);
+        if (m.rofMult) parts.push(`${x1(1 / m.rofMult)} ${f.rate}`);
+        if (m.damageMult) parts.push(`${x1(m.damageMult)} ${f.damage}`);
+        if (parts.length) return `RAM ${parts.join(' · ')}`;
+        if (d.shield) return f.shield(d.shield);
+        if (d.every) return f.drone(d.every);
+        return '';
+    }
+    const effects = {};
+    for (const id of Object.keys(POWERUPS)) effects[id] = effect(id);
+    h.effects = effects;
+
+    // One row per power-up on (8c.5): its icon, its name, a bar of the time left, what it does. Taken (or
+    // taken again): the icon pops and the name shines in its colour for a moment. The last seconds blink.
     h.powerups = (p, top = 34) => {
         let y = top;
+        const R = POWERUP_ROW;
         for (const a of p.active.values()) {
             const def = POWERUPS[a.id];
-            if (!p.blinkOff(a.remaining)) p.icon(ctx, 34, y, 18, def.color, a.id);
+            const since = p.t - (a.at ?? -99);
+            const pop = !reducedMotion && since < R.pop ? 1 + (R.popScale - 1) * (1 - since / R.pop) : 1;
+            if (!p.blinkOff(a.remaining)) p.icon(ctx, 34, y, 18 * pop, def.color, a.id);
             ctx.fillStyle = 'rgba(13, 12, 29, 0.7)';
             ctx.fillRect(60, y - 5, 120, 10);
             ctx.fillStyle = def.color;
             ctx.fillRect(60, y - 5, 120 * Math.max(0, a.remaining / def.duration), 10);
             ctx.font = '700 12px system-ui, sans-serif';
-            ctx.fillStyle = '#f1f0f7';
             ctx.textAlign = 'left';
+            const shine = since < R.shine;
+            ctx.lineWidth = 3; ctx.strokeStyle = 'rgba(13, 12, 29, 0.85)';
+            ctx.strokeText(def.name, 60, y - 10);
+            ctx.fillStyle = shine ? def.color : '#f1f0f7';
             ctx.fillText(def.name, 60, y - 10);
-            y += 46;
+            ctx.font = '600 10px system-ui, sans-serif';
+            ctx.strokeText(effects[a.id], 60, y + 15);
+            ctx.fillStyle = 'rgba(241, 240, 247, 0.8)';
+            ctx.fillText(effects[a.id], 60, y + 15);
+            y += R.gap;
         }
         if (p.isOn('xmp') || p.mhz > POWERUPS.xmp.mhz[0] + 5) {
             ctx.font = '800 15px ui-monospace, monospace';
@@ -252,6 +281,7 @@ export function createHud(ctx, g, { txt, touchUI, reducedMotion = false }) {
     // For the tests: what the hearts are doing now
     h.info = () => ({ shake: life.shake, pop: life.pop, lost: life.lost, last: g.hero.hp === 1,
         bar: { level: bar.level, shown: bar.shown, flash: bar.flash, nums: bar.nums } });
+    h.rows = (p) => [...p.active.values()].map(a => ({ id: a.id, remaining: a.remaining, since: p.t - (a.at ?? -99), blinkOff: p.blinkOff(a.remaining) }));
     h.xp = drawXp;
     h.levelUp = drawLevelUp;
     h.over = drawOver;
