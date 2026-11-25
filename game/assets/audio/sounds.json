@@ -1,0 +1,121 @@
+{
+ "sfx": {
+  "ram_throw": {
+   "file": "sfx/ram_throw.mp3",
+   "duration": 0.2,
+   "volume": 0.5,
+   "use": "Ρίψη RAM (αριστερό κλικ)"
+  },
+  "enemy_hit": {
+   "file": "sfx/enemy_hit.mp3",
+   "duration": 0.25,
+   "volume": 0.7,
+   "use": "Χτύπημα εχθρού από RAM"
+  },
+  "enemy_pop": {
+   "file": "sfx/enemy_pop.mp3",
+   "duration": 0.55,
+   "volume": 0.8,
+   "use": "Σκάσιμο/θάνατος εχθρού"
+  },
+  "ram_ricochet": {
+   "file": "sfx/ram_ricochet.mp3",
+   "duration": 0.28,
+   "volume": 0.5,
+   "use": "Σπίθα όταν το RAM εξοστρακίζεται"
+  },
+  "laser_charge": {
+   "file": "sfx/laser_charge.mp3",
+   "duration": 0.9,
+   "volume": 0.55,
+   "use": "Φόρτιση laser Boss (0.9 s, ίδια με το telegraph)"
+  },
+  "laser_charge_short": {
+   "file": "sfx/laser_charge_short.mp3",
+   "duration": 0.7,
+   "volume": 0.55,
+   "use": "Φόρτιση laser Spy Drone (0.7 s)"
+  },
+  "laser_fire": {
+   "file": "sfx/laser_fire.mp3",
+   "duration": 0.5,
+   "volume": 0.7,
+   "use": "Βολή laser (Boss και Drone)"
+  },
+  "jump": {
+   "file": "sfx/jump.mp3",
+   "duration": 0.18,
+   "volume": 0.4,
+   "use": "Άλμα ήρωα"
+  },
+  "hero_hurt": {
+   "file": "sfx/hero_hurt.mp3",
+   "duration": 0.35,
+   "volume": 0.75,
+   "use": "Ζημιά στον ήρωα"
+  },
+  "powerup_xmp": {
+   "file": "sfx/powerup_xmp.mp3",
+   "duration": 0.65,
+   "volume": 0.6,
+   "use": "Pickup power-up (XMP και τα υπόλοιπα)"
+  },
+  "level_up": {
+   "file": "sfx/level_up.mp3",
+   "duration": 0.85,
+   "volume": 0.6,
+   "use": "Level up"
+  },
+  "game_over": {
+   "file": "sfx/game_over.mp3",
+   "duration": 1.4,
+   "volume": 0.7,
+   "use": "Game over"
+  },
+  "coin": {
+   "file": "sfx/coin.mp3",
+   "duration": 0.22,
+   "volume": 0.35,
+   "use": "Coin / pickup μικρό"
+  },
+  "parry": {
+   "file": "sfx/parry.mp3",
+   "duration": 0.35,
+   "volume": 0.7,
+   "use": "Perfect Parry"
+  },
+  "ui_click": {
+   "file": "sfx/ui_click.mp3",
+   "duration": 0.06,
+   "volume": 0.4,
+   "use": "Κλικ στα κουμπιά του μενού"
+  },
+  "spikes_erupt": {
+   "file": "sfx/spikes_erupt.mp3",
+   "duration": 0.55,
+   "volume": 0.8,
+   "use": "Καρφιά Fire Crawler (έξοδος από το έδαφος)"
+  },
+  "enemy_dash": {
+   "file": "sfx/enemy_dash.mp3",
+   "duration": 0.45,
+   "volume": 0.6,
+   "use": "Charge Blue Humanoid"
+  },
+  "ball_bounce": {
+   "file": "sfx/ball_bounce.mp3",
+   "duration": 0.2,
+   "volume": 0.6,
+   "use": "Αναπήδηση Orange Bot (μπάλα)"
+  }
+ },
+ "music": {
+  "loop_main": {
+   "file": "music/loop_main.mp3",
+   "duration": 16.0,
+   "volume": 0.3,
+   "loop": true,
+   "use": "Μουσική παιχνιδιού (120 bpm, 8 μέτρα, 16 s). Σε Web Audio βάλε loopStart=0 και loopEnd=16 για καθαρό loop."
+  }
+ }
+}

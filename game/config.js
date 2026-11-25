@@ -258,6 +258,8 @@ export const BOSS_BAR = { w: 150, h: 10, gap: 16, color: '#e11d48', trail: '#fde
 // The pause button (plan §8c.2), top right of the world: its size in the game's 960×540, and the least its
 // reach may be on the screen in CSS px (a finger needs 44), whatever the size the canvas is shown at.
 export const PAUSE_BUTTON = { x: 927, y: 33, size: 34, minHit: 44 };
+// The sound button, left of the pause button (the same size and reach): the sound on or off, like M
+export const SOUND_BUTTON = { x: 879, y: 33, size: 34, minHit: 44 };
 export const DIRECTOR = {
     rest: 0.8                         // s after one attack ends before another may start (one at a time)
 };

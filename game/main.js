@@ -19,9 +19,10 @@ import { createRams } from './ram.js';
 import { createPowerups } from './powerups.js';
 import { createEnemies } from './enemies.js';
 import { createProgression, saveRecords, readRecords } from './progression.js';
-import { PX_PER_M, PARRY, PAUSE_BUTTON, XP_BAR, HUD_SCALE, difficulty } from './config.js';
+import { PX_PER_M, PARRY, PAUSE_BUTTON, SOUND_BUTTON, XP_BAR, HUD_SCALE, difficulty } from './config.js';
 import { createInput } from './input.js';
 import { createHud } from './hud.js';
+import { createAudio } from './audio.js';
 
 const ASSETS = new URL('./assets/', import.meta.url);
 const W = 960, H = 540;                       // the game's own coordinates; the canvas is scaled to fit
@@ -37,20 +38,20 @@ const LAYERS = [
 
 const TEXT = {
     el: { title: 'RAM RUSH', close: 'Κλείσιμο παιχνιδιού', loading: 'Φόρτωση…', failed: 'Το παιχνίδι δεν φόρτωσε. Δοκίμασε ξανά.',
-        paused: 'ΠΑΥΣΗ', resume: 'P για συνέχεια', resumeTouch: 'Πάτα ▶ για συνέχεια',
+        paused: 'ΠΑΥΣΗ', resume: 'P για συνέχεια · M ήχος', resumeTouch: 'Πάτα ▶ για συνέχεια',
         over: 'GAME OVER', again: 'Space / J / πάτα για νέο παιχνίδι', againTouch: 'Πάτα για νέο παιχνίδι', score: 'Σκορ', kills: 'εχθροί',
         rotate: 'Γύρισε το κινητό', rotateSub: 'Το RAM RUSH παίζεται οριζόντια',
         levelUp: 'LEVEL UP!', best: 'Ρεκόρ', newBest: 'ΝΕΟ ΡΕΚΟΡ!', boss: 'MALWARE CORE',
         fx: { speed: 'ταχύτητα', rate: 'ρυθμός', damage: 'ζημιά', shield: (n) => `ασπίδα · ${n} χτύπημα`, drone: (s) => `drone · βολή ανά ${s} s` },
-        keys: '↑ / W / Space άλμα (ξανά στον αέρα: διπλό)   ↓ / S slide   ← → κίνηση   J / X / κλικ RAM   E / δεξί κλικ parry   P παύση   Esc έξοδος',
+        keys: '↑ / W / Space άλμα (×2 διπλό)   ↓ / S slide   ← → κίνηση   J / X / κλικ RAM   E / δεξί κλικ parry   P παύση   M ήχος   Esc έξοδος',
         swipes: ['Πάτα: RAM   Σύρε ↑ άλμα, ξανά: διπλό', 'Σύρε ↓ slide   Σύρε ← → κίνηση'] },
     en: { title: 'RAM RUSH', close: 'Close the game', loading: 'Loading…', failed: 'The game did not load. Try again.',
-        paused: 'PAUSED', resume: 'P to resume', resumeTouch: 'Tap ▶ to resume',
+        paused: 'PAUSED', resume: 'P to resume · M sound', resumeTouch: 'Tap ▶ to resume',
         over: 'GAME OVER', again: 'Space / J / tap for a new run', againTouch: 'Tap for a new run', score: 'Score', kills: 'enemies',
         rotate: 'Turn your phone sideways', rotateSub: 'RAM RUSH is played in landscape',
         levelUp: 'LEVEL UP!', best: 'Best', newBest: 'NEW RECORD!', boss: 'MALWARE CORE',
         fx: { speed: 'speed', rate: 'rate', damage: 'damage', shield: (n) => `shield · ${n} hit${n > 1 ? 's' : ''}`, drone: (s) => `drone · a shot every ${s} s` },
-        keys: '↑ / W / Space jump (again in the air: double)   ↓ / S slide   ← → move   J / X / click RAM   E / right click parry   P pause   Esc exit',
+        keys: '↑ / W / Space jump (×2 double)   ↓ / S slide   ← → move   J / X / click RAM   E / right click parry   P pause   M sound   Esc exit',
         swipes: ['Tap: RAM   Swipe ↑ jump, again: double', 'Swipe ↓ slide   Swipe ← → move'] }
 };
 const txt = () => TEXT[document.documentElement.lang === 'en' ? 'en' : 'el'];
@@ -153,7 +154,9 @@ export async function open() {
     sky.addColorStop(0, '#1e1b4b');
     sky.addColorStop(1, '#0d0c1d');
 
-    const g = { overlay, style, raf: 0, last: 0, distance: 0, paused: false, userPaused: false, images: null, hero: null, closed: false,
+    // the sound: made now, while the click, tap or key that opened the game still counts (see audio.js)
+    const audio = createAudio();
+    const g = { overlay, style, raf: 0, last: 0, distance: 0, paused: false, userPaused: false, images: null, hero: null, closed: false, audio,
         hintT: 7,                    // the keys reminder (on a phone: the swipes)
         hudScale: 1, compact: false, upright: false, drawn: false };
     game = g;
@@ -188,7 +191,14 @@ export async function open() {
     // Held upright the picture of the moment is kept aside, under the request to turn, and put back after
     const shot = document.createElement('canvas');
     shot.width = W; shot.height = H;
-    const input = createInput(overlay, { isParry: onParryButton, isPause: onPauseButton });
+    // The sound button, left of it: the same reach, the same growth from the top right corner
+    const onSoundButton = (cx, cy) => {
+        const r = canvas.getBoundingClientRect(), b = SOUND_BUTTON, scale = r.width / W, s = g.hudScale;
+        const half = Math.max(b.size * s, b.minHit / scale) / 2;
+        const x = (cx - r.left) / scale, y = (cy - r.top) / scale;
+        return Math.abs(x - (W - (W - b.x) * s)) <= half && Math.abs(y - b.y * s) <= half;
+    };
+    const input = createInput(overlay, { isParry: onParryButton, isPause: onPauseButton, isMute: onSoundButton });
     let newRun = () => {};
     const hud = createHud(ctx, g, { txt, touchUI, reducedMotion: matchMedia('(prefers-reduced-motion: reduce)').matches });
     g.hud = hud;
@@ -220,22 +230,31 @@ export async function open() {
         const dt = Math.min((t - (g.last || t)) / 1000, 0.05);   // capped, so a hiccup never jumps the world
         g.last = t;
         const i = input.consume();   // read every frame, so nothing pressed while loading or paused piles up
+        if (i.any) audio.unlock();
         if (g.paused || !g.images) return;
         // a phone held upright: the request to turn, and the game waits. Turned back, it waits on the pause
         // screen (a tap on ▶ goes on), so play never starts by surprise; a run not yet begun simply starts.
         const upright = touchUI && portrait.matches;
         if (upright !== g.upright) {
             g.upright = upright;
-            if (upright) { shot.getContext('2d').drawImage(canvas, 0, 0); hud.rotate(); }
+            if (upright) { shot.getContext('2d').drawImage(canvas, 0, 0); hud.rotate(); audio.pause(); }
             else {
                 ctx.drawImage(shot, 0, 0);
-                if (g.drawn && !g.over && !g.userPaused) { g.userPaused = true; hud.pause(); hud.pauseButton(true); }
+                if (g.drawn && !g.over && !g.userPaused) { g.userPaused = true; hud.pause(); hud.pauseButton(true); hud.soundButton(audio.muted, true); }
+                else if (!g.userPaused) audio.resume();
             }
         }
         if (upright) return;
+        if (i.mute) {
+            audio.toggle();
+            audio.play('ui_click');
+            if (g.userPaused) hud.soundButton(audio.muted, true);   // the loop waits: drawn over the pause screen now
+        }
         if (i.pause) {
             g.userPaused = !g.userPaused;
-            if (g.userPaused) { hud.pause(); hud.pauseButton(true); }   // drawn once over the last picture; the loop then waits
+            // drawn once over the last picture; the loop then waits, and so does the sound
+            if (g.userPaused) { hud.pause(); hud.pauseButton(true); hud.soundButton(audio.muted, true); audio.pause(); }
+            else { audio.resume(); audio.play('ui_click'); }
         }
         if (g.userPaused) return;
         if (g.over) {
@@ -252,7 +271,7 @@ export async function open() {
         if (i.parry && g.parryCool <= 0) {
             g.parryPerfect = g.enemies.parry() === 'perfect';
             g.parryFx = 0.25;
-            if (g.parryPerfect) { g.stop = PARRY.hitStop; g.flashT = 0.12; } else g.parryCool = PARRY.cooldown;
+            if (g.parryPerfect) { g.stop = PARRY.hitStop; g.flashT = 0.12; audio.play('parry'); } else g.parryCool = PARRY.cooldown;
         }
         // the hit-stop: for a blink the world holds still (the picture is still drawn)
         const wdt = g.stop > 0 ? 0 : dt;
@@ -262,7 +281,9 @@ export async function open() {
         ctx.fillStyle = sky;
         ctx.fillRect(0, 0, W, H);
         g.drawn = true;
+        const jumps = g.hero.jumps, thrown = g.rams.thrown, shots = g.powerups.droneShots || 0, taken = g.powerups.taken;
         g.hero.update(wdt, i);
+        if (g.hero.jumps > jumps) audio.play('jump');
         if (i.throw) {
             // a click or tap on the world aims there; by key straight ahead
             const hand = g.hero.hand();
@@ -281,6 +302,9 @@ export async function open() {
         g.heroLink.box = g.hero.box();
         g.enemies.update(wdt, g.speed * wdt, g.distance / PX_PER_M, g.heroLink, g.rams, g.powerups);
         g.powerups.update(wdt, g.speed * wdt, g.distance / PX_PER_M, g.heroLink.box, g.rams);
+        if (g.rams.thrown > thrown) audio.play('ram_throw');
+        if ((g.powerups.droneShots || 0) > shots) audio.play('ram_throw', { volume: 0.5 });   // the drone's, softer
+        if (g.powerups.taken > taken) audio.play('powerup_xmp');
         for (const [name, factor, h, bottom] of LAYERS) drawLayer(ctx, g.images[name], factor, h, bottom, g.distance);
         g.powerups.draw(ctx);
         g.enemies.draw(ctx);
@@ -293,10 +317,12 @@ export async function open() {
         drawParry();
         hud.parryButton();
         hud.pauseButton(false);
+        hud.soundButton(audio.muted);
         // XP: the enemies' and the distance's; a level up raises his RAM tier (the throws hit harder)
         if (g.prog.set(g.prog.fromRun(g.enemies.xp, g.distance / PX_PER_M))) {
             g.levelT = XP_BAR.banner;
             g.powerups.base.damageMult = g.prog.tier().damage;
+            audio.play('level_up');
         }
         g.levelT = Math.max(0, g.levelT - dt);
         hud.life(dt);
@@ -308,6 +334,8 @@ export async function open() {
             g.over = true; g.overT = 0;
             g.records = saveRecords({ score: g.enemies.score, level: g.prog.level, distance: Math.floor(g.distance / PX_PER_M) });
             hud.over();
+            audio.music(false);
+            audio.play('game_over');
         }
     }
 
@@ -317,6 +345,8 @@ export async function open() {
     function onVisibility() {
         g.paused = document.visibilityState !== 'visible';
         g.last = 0;   // no jump on return
+        // a hidden tab: silence; back: the sound again, unless the game itself is waiting
+        if (g.paused) audio.pause(); else if (!g.userPaused && !g.upright) audio.resume();
     }
     document.addEventListener('keydown', onKey);
     document.addEventListener('visibilitychange', onVisibility);
@@ -324,6 +354,7 @@ export async function open() {
     g.teardown = () => {
         cancelAnimationFrame(g.raf);
         input.destroy();
+        audio.close();
         sizes.disconnect();
         watch.disconnect();
         document.removeEventListener('keydown', onKey);
@@ -356,19 +387,22 @@ export async function open() {
             g.hero = createHero(sheet, frames, { reducedMotion });
             g.rams = createRams();
             g.powerups = createPowerups({ reducedMotion });
-            g.enemies = createEnemies(enemySheet, enemyFrames, { reducedMotion, onXp: (x, y, n) => hud.floatXp(x, y, n) });
+            g.enemies = createEnemies(enemySheet, enemyFrames, { reducedMotion, onXp: (x, y, n) => hud.floatXp(x, y, n), sound: (n) => audio.play(n) });
             hud.clearFloats();
             g.enemies.natural = !g.quiet;
             // a blow goes to the shield first (Liquid Cooling), then to his life
             g.heroLink = { box: g.hero.box(), hit: (d) => {
                 if (g.hero.invuln > 0 || g.hero.hp <= 0) return false;
                 const safe = g.powerups.absorb();
-                if (safe) { g.hero.invuln = safe; return true; }
-                return g.hero.hit(d);
+                if (safe) { g.hero.invuln = safe; audio.play('ram_ricochet'); return true; }   // it glances off the shield
+                const hurt = g.hero.hit(d);
+                if (hurt) audio.play('hero_hurt');
+                return hurt;
             } };
             g.distance = 0; g.over = false; g.overT = 0;
             g.parryCool = 0; g.parryFx = 0; g.parryPerfect = false; g.stop = 0; g.flashT = 0;
             g.prog = createProgression(); g.xpShown = 0; g.levelT = 0;
+            audio.music(true);
         };
         newRun();
         g.images = Object.fromEntries(LAYERS.map(([name], i) => [name, imgs[i]]));
@@ -403,6 +437,8 @@ export const state = () => {
         hint: game.hintT > 0 && game.hud ? game.hud.hintLines() : null,
         rows: game.hud && game.powerups ? game.hud.rows(game.powerups) : [],
         floats: game.hud ? game.hud.floatInfo() : [], bossBar: game.hud ? game.hud.bossInfo() : null,
+        sound: { muted: game.audio.muted, loaded: game.audio.loaded, ctx: game.audio.state ? game.audio.state() : 'none',
+            gain: game.audio.gain ? game.audio.gain() : 0, asked: { ...game.audio.asked }, heard: { ...game.audio.heard }, loop: game.audio.loop ? game.audio.loop() : null, music: game.audio.musicOn },
         hp: h.hp, invuln: h.invuln, over: !!game.over,
         enemies: game.enemies.list(), spikes: game.enemies.spikes(), killed: game.enemies.killed, score: game.enemies.score, xp: game.enemies.xp,
         parryCool: game.parryCool, parries: game.enemies.parries,
@@ -426,5 +462,7 @@ export const testXp = (n) => { if (game && game.enemies) game.enemies.xp += n; }
 export const testWarp = (m) => { if (game) game.distance = m * PX_PER_M; };
 // … and his life set, as if he had taken a blow or been healed (nothing heals him yet)
 export const testHp = (n) => { if (game && game.hero) game.hero.hp = n; };
+// … and the sound itself (to see it closed with the game)
+export const testAudio = () => (game ? game.audio : null);
 // … and what the HUD writes under each power-up (made from config.js)
 export const hudEffects = () => (game && game.hud ? { ...game.hud.effects } : null);

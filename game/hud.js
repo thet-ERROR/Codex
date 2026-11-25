@@ -10,7 +10,7 @@
 // corner or centre, so its text is never under 14 px on the screen; with g.compact the secondary parts hide.
 // A desktop draws at scale 1, exactly as before.
 
-import { HERO, HEARTS, XP_BAR, XP_FLOAT, BOSS_BAR, RAM_TIERS, PX_PER_M, PARRY, POWERUPS, POWERUP_ROW, PAUSE_BUTTON } from './config.js';
+import { HERO, HEARTS, XP_BAR, XP_FLOAT, BOSS_BAR, RAM_TIERS, PX_PER_M, PARRY, POWERUPS, POWERUP_ROW, PAUSE_BUTTON, SOUND_BUTTON } from './config.js';
 
 const W = 960, H = 540;
 
@@ -344,6 +344,32 @@ export function createHud(ctx, g, { txt, touchUI, reducedMotion = false }) {
         ctx.restore();
     }
     h.life = (dt) => at(0, 0, scale(), drawLife, dt);
+
+    // The sound button, left of the pause button: a speaker with its waves, or crossed out when off.
+    // solid: drawn over the pause screen (like the pause button then)
+    let soundSolid = false;
+    h.soundButton = (muted, solid = false) => { soundSolid = solid; at(W, 0, scale(), drawSoundButton, muted); };
+    function drawSoundButton(muted) {
+        const b = SOUND_BUTTON, r = b.size / 2, x = b.x, y = b.y;
+        ctx.save();
+        ctx.fillStyle = soundSolid ? '#15132e' : 'rgba(13, 12, 29, 0.6)';
+        ctx.strokeStyle = 'rgba(241, 240, 247, 0.55)';
+        ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.roundRect(x - r, y - r, b.size, b.size, 8); ctx.fill(); ctx.stroke();
+        ctx.fillStyle = '#f1f0f7';
+        ctx.beginPath();
+        ctx.moveTo(x - 10, y - 4); ctx.lineTo(x - 5, y - 4); ctx.lineTo(x + 1, y - 9); ctx.lineTo(x + 1, y + 9);
+        ctx.lineTo(x - 5, y + 4); ctx.lineTo(x - 10, y + 4); ctx.closePath(); ctx.fill();
+        ctx.strokeStyle = '#f1f0f7'; ctx.lineWidth = 2; ctx.lineCap = 'round';
+        if (muted) {
+            ctx.strokeStyle = '#fb7185';
+            ctx.beginPath(); ctx.moveTo(x + 5, y - 5); ctx.lineTo(x + 11, y + 5); ctx.moveTo(x + 11, y - 5); ctx.lineTo(x + 5, y + 5); ctx.stroke();
+        } else {
+            ctx.beginPath(); ctx.arc(x + 2, y, 5, -0.9, 0.9); ctx.stroke();
+            ctx.beginPath(); ctx.arc(x + 2, y, 9.5, -0.9, 0.9); ctx.stroke();
+        }
+        ctx.restore();
+    }
 
     // The floating "+XP" (8c.7): a fixed pool, nothing made per frame (each text is made once, when it is
     // won). Full, the oldest gives way. It rises and fades, and drifts back with the road (dx).
