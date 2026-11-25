@@ -18,7 +18,7 @@ import { createRams } from './ram.js';
 import { createPowerups } from './powerups.js';
 import { createEnemies } from './enemies.js';
 import { createProgression, saveRecords, readRecords } from './progression.js';
-import { PX_PER_M, PARRY, PAUSE_BUTTON, difficulty } from './config.js';
+import { PX_PER_M, PARRY, PAUSE_BUTTON, XP_BAR, difficulty } from './config.js';
 import { createInput } from './input.js';
 import { createHud } from './hud.js';
 
@@ -166,7 +166,8 @@ export async function open() {
     };
     const input = createInput(overlay, { isParry: onParryButton, isPause: onPauseButton });
     let newRun = () => {};
-    const hud = createHud(ctx, g, { txt, touchUI });
+    const hud = createHud(ctx, g, { txt, touchUI, reducedMotion: matchMedia('(prefers-reduced-motion: reduce)').matches });
+    g.hud = hud;
 
     // The parry: a shield arc before the hero; bright and wide on a perfect one (its touch button is in hud.js)
     function drawParry() {
@@ -255,11 +256,11 @@ export async function open() {
         hud.pauseButton(false);
         // XP: the enemies' and the distance's; a level up raises his RAM tier (the throws hit harder)
         if (g.prog.set(g.prog.fromRun(g.enemies.xp, g.distance / PX_PER_M))) {
-            g.levelT = 1.2;
+            g.levelT = XP_BAR.banner;
             g.powerups.base.damageMult = g.prog.tier().damage;
         }
         g.levelT = Math.max(0, g.levelT - dt);
-        hud.life();
+        hud.life(dt);
         hud.xp(dt);
         hud.powerups(g.powerups, 104);
         if (g.levelT > 0) hud.levelUp();
@@ -356,6 +357,7 @@ export const state = () => {
         rams: game.rams.active(), bolts: game.rams.bolts(), droneShots: game.powerups.droneShots || 0, thrown: game.rams.thrown, cooldown: game.rams.cooldown,
         powerups: [...game.powerups.active.values()].map(a => ({ ...a })), pickups: game.powerups.pickups(),
         mhz: game.powerups.mhz, taken: game.powerups.taken,
+        hearts: game.hud && game.hud.info(),
         hp: h.hp, invuln: h.invuln, over: !!game.over,
         enemies: game.enemies.list(), spikes: game.enemies.spikes(), killed: game.enemies.killed, score: game.enemies.score, xp: game.enemies.xp,
         parryCool: game.parryCool, parries: game.enemies.parries,
@@ -377,3 +379,5 @@ export const testQuiet = () => { if (game) { game.quiet = true; if (game.enemies
 export const testXp = (n) => { if (game && game.enemies) game.enemies.xp += n; };
 // … and further along the road at once (the difficulty follows the distance)
 export const testWarp = (m) => { if (game) game.distance = m * PX_PER_M; };
+// … and his life set, as if he had taken a blow or been healed (nothing heals him yet)
+export const testHp = (n) => { if (game && game.hero) game.hero.hp = n; };
