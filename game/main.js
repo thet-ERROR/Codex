@@ -21,7 +21,7 @@ import { createEnemies } from './enemies.js';
 import { createObstacles } from './obstacles.js';
 import { createPlatforms } from './platforms.js';
 import { createProgression, saveRecords, readRecords } from './progression.js';
-import { PX_PER_M, PARRY, PAUSE_BUTTON, SOUND_BUTTON, XP_BAR, HUD_SCALE, difficulty } from './config.js';
+import { PX_PER_M, POWERUPS, PARRY, PAUSE_BUTTON, SOUND_BUTTON, XP_BAR, HUD_SCALE, difficulty } from './config.js';
 import { createInput } from './input.js';
 import { createHud } from './hud.js';
 import { createAudio } from './audio.js';
@@ -44,7 +44,8 @@ const TEXT = {
         over: 'GAME OVER', again: 'Space / J / πάτα για νέο παιχνίδι', againTouch: 'Πάτα για νέο παιχνίδι', score: 'Σκορ', kills: 'εχθροί',
         rotate: 'Γύρισε το κινητό', rotateSub: 'Το RAM RUSH παίζεται οριζόντια',
         levelUp: 'LEVEL UP!', best: 'Ρεκόρ', newBest: 'ΝΕΟ ΡΕΚΟΡ!', boss: 'MALWARE CORE',
-        fx: { speed: 'ταχύτητα', rate: 'ρυθμός', damage: 'ζημιά', shield: (n) => `ασπίδα · ${n} χτύπημα`, drone: (s) => `drone · βολή ανά ${s} s` },
+        fx: { speed: 'ταχύτητα', rate: 'ρυθμός', damage: 'ζημιά', shield: (n) => `ασπίδα · ${n} χτύπημα`, drone: (s) => `drone · βολή ανά ${s} s`,
+            sprint: (x) => `sprint ${x} · ασυλία σε εμπόδια` },
         keys: '↑ / W / Space άλμα (×2 διπλό)   ↓ / S slide   ← → κίνηση   J / X / κλικ RAM   E / δεξί κλικ parry   P παύση   M ήχος   Esc έξοδος',
         swipes: ['Πάτα: RAM   Σύρε ↑ άλμα, ξανά: διπλό', 'Σύρε ↓ slide   Σύρε ← → κίνηση'] },
     en: { title: 'RAM RUSH', close: 'Close the game', loading: 'Loading…', failed: 'The game did not load. Try again.',
@@ -52,7 +53,8 @@ const TEXT = {
         over: 'GAME OVER', again: 'Space / J / tap for a new run', againTouch: 'Tap for a new run', score: 'Score', kills: 'enemies',
         rotate: 'Turn your phone sideways', rotateSub: 'RAM RUSH is played in landscape',
         levelUp: 'LEVEL UP!', best: 'Best', newBest: 'NEW RECORD!', boss: 'MALWARE CORE',
-        fx: { speed: 'speed', rate: 'rate', damage: 'damage', shield: (n) => `shield · ${n} hit${n > 1 ? 's' : ''}`, drone: (s) => `drone · a shot every ${s} s` },
+        fx: { speed: 'speed', rate: 'rate', damage: 'damage', shield: (n) => `shield · ${n} hit${n > 1 ? 's' : ''}`, drone: (s) => `drone · a shot every ${s} s`,
+            sprint: (x) => `sprint ${x} · obstacles can't touch you` },
         keys: '↑ / W / Space jump (×2 double)   ↓ / S slide   ← → move   J / X / click RAM   E / right click parry   P pause   M sound   Esc exit',
         swipes: ['Tap: RAM   Swipe ↑ jump, again: double', 'Swipe ↓ slide   Swipe ← → move'] }
 };
@@ -158,7 +160,7 @@ export async function open() {
 
     // the sound: made now, while the click, tap or key that opened the game still counts (see audio.js)
     const audio = createAudio();
-    const g = { overlay, style, raf: 0, last: 0, distance: 0, paused: false, userPaused: false, images: null, hero: null, closed: false, audio,
+    const g = { immune: { box: null, hit: () => false }, overlay, style, raf: 0, last: 0, distance: 0, paused: false, userPaused: false, images: null, hero: null, closed: false, audio,
         hintT: 7,                    // the keys reminder (on a phone: the swipes)
         hudScale: 1, compact: false, upright: false, drawn: false };
     game = g;
@@ -278,7 +280,8 @@ export async function open() {
         // the hit-stop: for a blink the world holds still (the picture is still drawn)
         const wdt = g.stop > 0 ? 0 : dt;
         g.stop = Math.max(0, g.stop - dt);
-        g.speed = difficulty(g.distance / PX_PER_M).speed;
+        // Overclock CPU: a sprint (POWERUPS.overclock.sprint × the road's speed)
+        g.speed = difficulty(g.distance / PX_PER_M).speed * (g.powerups.isOn('overclock') ? POWERUPS.overclock.sprint : 1);
         g.distance += g.speed * wdt;
         ctx.fillStyle = sky;
         ctx.fillRect(0, 0, W, H);
@@ -304,7 +307,9 @@ export async function open() {
         g.rams.update(wdt, g.enemies.targets());
         g.heroLink.box = g.hero.box();
         g.platforms.update(wdt, g.speed * wdt, g.distance / PX_PER_M, g.obstacles);
-        g.obstacles.update(wdt, g.speed * wdt, g.distance / PX_PER_M, g.heroLink, g.enemies);
+        // overclocked, the obstacles cannot touch him: they meet a link that takes no blow
+        g.immune.box = g.heroLink.box;
+        g.obstacles.update(wdt, g.speed * wdt, g.distance / PX_PER_M, g.powerups.isOn('overclock') ? g.immune : g.heroLink, g.enemies);
         g.enemies.noLasers = g.obstacles.blocksLasers();
         g.enemies.update(wdt, g.speed * wdt, g.distance / PX_PER_M, g.heroLink, g.rams, g.powerups);
         g.powerups.update(wdt, g.speed * wdt, g.distance / PX_PER_M, g.heroLink.box, g.rams);

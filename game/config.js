@@ -40,6 +40,16 @@ export const POWERUPS = {
         range: 620,                   // px: how far from the drone it looks for a target
         speed: 1000,                  // px/s of its bolt
         damage: 1
+    },
+    // a sprint: the road runs faster, and the obstacles cannot touch him (the enemies still can)
+    overclock: {
+        name: 'Overclock CPU', label: 'CPU',
+        duration: 6,
+        mults: {},
+        sprint: 1.4,                  // × the road's speed
+        color: '#fb923c',
+        dropChance: 0.04,
+        road: 2
     }
 };
 export const POWERUP_WARN = 3;       // s: the last seconds blink (plan §8c.5)

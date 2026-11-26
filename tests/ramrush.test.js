@@ -302,7 +302,7 @@ describe('RAM RUSH: the HUD on a phone (8c.6)', () => {
                 get: (t, k) => k === 'fillText' ? (w) => words.push(w) : k === 'measureText' ? () => ({ width: 10 }) : (k in t ? t[k] : () => {}),
                 set: (t, k, v) => { t[k] = v; return true; }
             });
-            const fx = { speed: 'speed', rate: 'rate', damage: 'damage', shield: () => 'shield', drone: () => 'drone' };
+            const fx = { speed: 'speed', rate: 'rate', damage: 'damage', shield: () => 'shield', drone: () => 'drone', sprint: () => 'sprint' };
             const txt = () => ({ fx, paused: 'PAUSED', resume: 'P to resume', resumeTouch: 'Tap ▶ to resume' });
             const p = createPowerups();
             p.activate('xmp');
@@ -1526,7 +1526,7 @@ describe('RAM RUSH: power-ups, Liquid Cooling (4b)', () => {
             e.update(0.016, 0, 0, null, { hit: () => 5 }, { spawn: (id) => drops.push(id) });
             return { road, drops };
         });
-        assert.ok(out.road.xmp > out.road.cooling && out.road.cooling > 100, JSON.stringify(out.road));
+        assert.ok(out.road.xmp > out.road.cooling && out.road.cooling > 70, JSON.stringify(out.road));   // its weight: 2 of 9
         assert.deepEqual(out.drops, ['cooling']);
     }));
 
@@ -2010,7 +2010,8 @@ describe('RAM RUSH: the power-up rows (8c.5)', () => {
     it('what each does is written from its numbers in config.js, in the page language', () => withPage(DESK, async (page) => {
         await openSettled(page);
         const fx = await page.evaluate(async () => (await import('/game/main.js')).hudEffects());
-        assert.deepEqual(fx, { xmp: 'RAM ×1.6 ταχύτητα · ×1.7 ρυθμός · ×1.5 ζημιά', cooling: 'ασπίδα · 1 χτύπημα', drone: 'drone · βολή ανά 0.8 s' });
+        assert.deepEqual(fx, { xmp: 'RAM ×1.6 ταχύτητα · ×1.7 ρυθμός · ×1.5 ζημιά', cooling: 'ασπίδα · 1 χτύπημα', drone: 'drone · βολή ανά 0.8 s',
+            overclock: 'sprint ×1.4 · ασυλία σε εμπόδια' });
     }));
 
     it('a row per power-up on, in the order taken; taken, its icon pops and its name shines for 1 s; taken again, it does so again', () => withPage(DESK, async (page) => {
@@ -2088,7 +2089,7 @@ describe('RAM RUSH: the floating +XP and the boss bar (8c.7)', () => {
         const texts = await page.evaluate(async () => {
             const { createHud } = await import('/game/hud.js');
             const ctx = new Proxy({}, { get: (t, k) => (k in t ? t[k] : () => {}), set: (t, k, v) => { t[k] = v; return true; } });
-            const fx = { shield: () => '', drone: () => '' };
+            const fx = { shield: () => '', drone: () => '', sprint: () => '' };
             const h = createHud(ctx, { hudScale: 1 }, { txt: () => ({ fx }) });
             for (let n = 1; n <= 10; n++) { h.floatXp(100, 200, n); h.floats(0.01, 0); }
             return h.floatInfo().map(f => f.text).sort();
@@ -2555,5 +2556,48 @@ describe('RAM RUSH: platforms in the air (6b)', () => {
         await page.keyboard.down('ArrowUp'); await page.waitForTimeout(350); await page.keyboard.up('ArrowUp');
         await waitState(page, (s) => s.hero.onGround && Math.abs(s.hero.y - 320) < 0.5, 2000);
         assert.deepEqual(page.problems, []);
+    }));
+});
+
+describe('RAM RUSH: power-ups, Overclock CPU (4b)', () => {
+    it('6 s of sprint: the road runs 1.4× as fast, then back; the obstacles cannot touch him meanwhile, the enemies still can', () => withPage(DESK, async (page) => {
+        await openSettled(page);
+        // the speed over the road's own at that distance (it rises with the distance by itself)
+        const ratio = () => page.evaluate(async () => {
+            const { difficulty, PX_PER_M } = await import('/game/config.js');
+            const s = (await import('/game/main.js')).state();
+            return s.speed / difficulty(s.distance / PX_PER_M).speed;
+        });
+        await page.evaluate(async () => (await import('/game/main.js')).testSpawnPickup('overclock', 260, 400));
+        await waitState(page, (s) => s.powerups.some(p => p.id === 'overclock'), 3000);
+        await page.waitForTimeout(100);                     // (the speed is set at the start of the next frame)
+        const r = await ratio();
+        assert.ok(Math.abs(r - 1.4) < 0.01, `sprint ×${r.toFixed(3)}`);
+        let s;
+        // a barrier and a sign: he runs through both untouched
+        await page.evaluate(async () => { const m = await import('/game/main.js'); m.testSpawnObstacle('barrier', 600); m.testSpawnObstacle('sign', 1100); });
+        await waitState(page, (s) => s.obstacles.every(o => o.hazard.x + o.hazard.w < s.hero.box.x - 5), 4000);
+        s = await gameState(page);
+        assert.deepEqual([s.hp, s.obstacleHits], [3, 0], 'untouched by the obstacles');
+        // an enemy still hurts
+        await page.evaluate(async () => (await import('/game/main.js')).testSpawnEnemy('orangeBot', 520));
+        await waitState(page, (s) => s.hp === 2, 4000);
+        await waitState(page, (s) => !s.powerups.some(p => p.id === 'overclock'), 6000);
+        await page.waitForTimeout(100);
+        const back = await ratio();
+        assert.ok(Math.abs(back - 1) < 0.01, `back to the road's own speed (×${back.toFixed(3)})`);
+    }));
+
+    it('its icon is a chip; it comes on the road and from enemies like the others', () => withPage(DESK, async (page) => {
+        await openGame(page);
+        const out = await page.evaluate(async () => {
+            const { createPowerups } = await import('/game/powerups.js');
+            let seed = 2; const rng = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+            const p = createPowerups({ rng });
+            const road = new Set(), drop = new Set();
+            for (let k = 0; k < 400; k++) { road.add(p.pick('road')); drop.add(p.pick('dropChance')); }
+            return { road: [...road].sort(), drop: [...drop].sort() };
+        });
+        assert.ok(out.road.includes('overclock') && out.drop.includes('overclock'), JSON.stringify(out));
     }));
 });

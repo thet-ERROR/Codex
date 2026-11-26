@@ -11,6 +11,8 @@
 //
 // Liquid Cooling: a shield. While it is on, the next hit is taken by it instead (absorb()), and it breaks.
 // Drone Assist: while it is on, the drone fires by itself at the nearest enemy ahead (droneStep()).
+// Overclock CPU: a sprint (main.js runs the road faster and keeps the obstacles off him); here its look:
+// orange speed streaks behind him and a hot glow.
 
 import { POWERUPS, POWERUP_WARN, STAT_CAPS, PICKUPS, PX_PER_M } from './config.js';
 
@@ -168,6 +170,17 @@ export function createPowerups({ rng = Math.random, reducedMotion = false } = {}
             ctx.strokeStyle = '#a3e635'; ctx.lineWidth = 2.5 * s;
             ctx.beginPath(); ctx.moveTo(-14 * s, -9 * s); ctx.lineTo(-6 * s, -5 * s); ctx.moveTo(14 * s, -9 * s); ctx.lineTo(6 * s, -5 * s); ctx.stroke();
         },
+        overclock(ctx, s) {
+            // a CPU: a chip with its pins
+            ctx.fillStyle = '#fb923c';
+            for (let k = -1; k <= 1; k++) {
+                ctx.fillRect((k * 6 - 1.5) * s, -14 * s, 3 * s, 4 * s); ctx.fillRect((k * 6 - 1.5) * s, 10 * s, 3 * s, 4 * s);
+                ctx.fillRect(-14 * s, (k * 6 - 1.5) * s, 4 * s, 3 * s); ctx.fillRect(10 * s, (k * 6 - 1.5) * s, 4 * s, 3 * s);
+            }
+            ctx.fillRect(-10 * s, -10 * s, 20 * s, 20 * s);
+            ctx.fillStyle = '#431407';
+            ctx.fillRect(-5 * s, -5 * s, 10 * s, 10 * s);
+        },
         cooling(ctx, s) {
             ctx.fillStyle = '#60a5fa';
             ctx.beginPath();
@@ -221,6 +234,7 @@ export function createPowerups({ rng = Math.random, reducedMotion = false } = {}
     // Around the hero: the Liquid Cooling bubble (and its shatter when it takes a blow), the XMP glow
     p.drawAura = (ctx, box) => {
         drawShield(ctx, box);
+        drawSprint(ctx, box);
         if (!p.isOn('xmp')) return;
         if (blinkOff(p.remaining('xmp'))) return;
         const cx = box.x + box.w / 2, cy = box.y + box.h / 2;
@@ -235,6 +249,34 @@ export function createPowerups({ rng = Math.random, reducedMotion = false } = {}
         ctx.fillRect(cx - R, cy - R, R * 2, R * 2);
         ctx.restore();
     };
+
+    // Overclock CPU: streaks behind him (they run at a fixed pace through fixed lanes: nothing random per
+    // frame) and a hot glow; with reduced motion only the glow
+    function drawSprint(ctx, box) {
+        if (!p.isOn('overclock') || blinkOff(p.remaining('overclock'))) return;
+        const cx = box.x + box.w / 2, cy = box.y + box.h / 2;
+        ctx.save();
+        ctx.globalCompositeOperation = 'lighter';
+        const R = Math.max(box.w, box.h) * 0.8;
+        const g = ctx.createRadialGradient(cx, cy, R * 0.2, cx, cy, R);
+        g.addColorStop(0, 'rgba(251, 146, 60, 0.3)');
+        g.addColorStop(1, 'rgba(251, 146, 60, 0)');
+        ctx.fillStyle = g;
+        ctx.fillRect(cx - R, cy - R, R * 2, R * 2);
+        if (!reducedMotion) {
+            ctx.strokeStyle = 'rgba(253, 186, 116, 0.7)';
+            ctx.lineWidth = 3; ctx.lineCap = 'round';
+            ctx.beginPath();
+            for (let n = 0; n < 5; n++) {
+                const y = box.y + box.h * (0.18 + n * 0.17);
+                const run = (p.t * 900 + n * 137) % 160;           // each streak slides back, then again
+                const x0 = box.x - 10 - run, len = 40 + (n % 2) * 25;
+                ctx.moveTo(x0, y); ctx.lineTo(x0 - len, y);
+            }
+            ctx.stroke();
+        }
+        ctx.restore();
+    }
 
     function drawShield(ctx, box) {
         const cx = box.x + box.w / 2, cy = box.y + box.h / 2, R = Math.max(box.w, box.h) * 0.62;
