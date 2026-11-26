@@ -154,13 +154,35 @@ const samples = (page, n, gapMs) => page.evaluate(async ([n, gapMs]) => {
 }, [n, gapMs]);
 
 describe('RAM RUSH: the hero and his drone', () => {
-    it('the hero runs on the road: feet on the ground line, the two run frames take turns, a small bob', () => withPage(DESK, async (page) => {
+    it('the hero runs on the road: feet on the ground line, the 8 run frames in turn (the stride is in the art: no bob in code)', () => withPage(DESK, async (page) => {
         await openGame(page);
-        const s = await samples(page, 24, 40);
-        assert.ok(s.every(x => x.hero.y === 460), 'feet on the road');
-        assert.deepEqual([...new Set(s.map(x => x.hero.frame))].sort(), ['run0', 'run1']);
-        assert.ok(s.every(x => x.hero.bob >= 0 && x.hero.bob <= 4), 'lifts, never sinks');
-        assert.ok(s.some(x => x.hero.bob > 1), 'and it does lift');
+        const s = await samples(page, 60, 23);
+        assert.ok(s.every(x => x.hero.y === 460 && x.hero.bob === 0), 'feet on the road');
+        assert.deepEqual([...new Set(s.map(x => x.hero.frame))].sort(), ['run0', 'run1', 'run2', 'run3', 'run4', 'run5', 'run6', 'run7']);
+    }));
+
+    it('the run frames share one canvas (its bottom the road), drawn as tall as the hero was; the sheet fits a phone (2048px)', () => withPage(DESK, async (page) => {
+        await openGame(page);
+        const out = await page.evaluate(async () => {
+            const f = await (await fetch('/game/assets/sprites.json')).json();
+            const img = new Image(); img.src = '/game/assets/sprites.webp'; await img.decode();
+            const run = [0, 1, 2, 3, 4, 5, 6, 7].map(k => f[`run${k}`]);
+            // how far down the feet reach in each (the lowest solid row), over the canvas height
+            const feet = run.map(r => {
+                const c = new OffscreenCanvas(r.w, r.h).getContext('2d');
+                c.drawImage(img, r.x, r.y, r.w, r.h, 0, 0, r.w, r.h);
+                const a = c.getImageData(0, 0, r.w, r.h).data;
+                for (let y = r.h - 1; y >= 0; y--) for (let x = 0; x < r.w; x++) if (a[(y * r.w + x) * 4 + 3] > 128) return (r.h - 1 - y) / r.h;
+                return 1;
+            });
+            return { sizes: [...new Set(run.map(r => `${r.w}x${r.h}`))], anchors: [...new Set(run.map(r => `${r.ax},${r.ay},${r.h}`))], feet, width: img.width };
+        });
+        assert.equal(out.sizes.length, 1, 'one canvas: ' + out.sizes);
+        const [ax, ay, h] = out.anchors[0].split(',').map(Number);
+        assert.equal(ay, h, 'anchored at its bottom: the road');
+        assert.ok(h * 0.66 > 130 && h * 0.66 < 150, `drawn ${h * 0.66} px tall (with its headroom)`);
+        assert.ok(out.feet.filter(f => f < 0.03).length >= 5, 'most frames have a foot on the road: ' + out.feet.map(f => f.toFixed(2)));
+        assert.ok(out.width <= 2048, `${out.width}px wide`);
     }));
 
     it('the drone follows him smoothly: behind and above, no jumps', () => withPage(DESK, async (page) => {
@@ -180,18 +202,25 @@ describe('RAM RUSH: the hero and his drone', () => {
             const frames = await (await fetch('/game/assets/sprites.json')).json();
             const img = new Image(); img.src = '/game/assets/sprites.webp'; await img.decode();
             const res = {};
-            for (const k of ['run0', 'run1']) {
+            // inside his outline (a pixel 2 px in from any see-through one): solid; the soft edge is the outline's own
+            for (const k of ['run0', 'run1', 'run4', 'jump', 'slide']) {
                 const f = frames[k];
                 const c = new OffscreenCanvas(f.w, f.h).getContext('2d');
                 c.drawImage(img, f.x, f.y, f.w, f.h, 0, 0, f.w, f.h);
                 const a = c.getImageData(0, 0, f.w, f.h).data;
+                const al = (x, y) => (x < 0 || y < 0 || x >= f.w || y >= f.h ? 0 : a[(y * f.w + x) * 4 + 3]);
                 let partial = 0, seen = 0;
-                for (let i = 3; i < a.length; i += 4) if (a[i] > 8) { seen++; if (a[i] < 230) partial++; }
+                for (let y = 0; y < f.h; y++) for (let x = 0; x < f.w; x++) {
+                    let inside = true;
+                    for (let dy = -2; dy <= 2 && inside; dy++) for (let dx = -2; dx <= 2; dx++) if (al(x + dx, y + dy) <= 8) { inside = false; break; }
+                    if (!inside) continue;
+                    seen++; if (al(x, y) < 230) partial++;
+                }
                 res[k] = partial / seen;
             }
             return res;
         });
-        for (const [k, v] of Object.entries(half)) assert.ok(v < 0.12, `${k}: ${(v * 100).toFixed(1)}% half-transparent`);
+        for (const [k, v] of Object.entries(half)) assert.ok(v < 0.02, `${k}: ${(v * 100).toFixed(1)}% of his inside half-transparent`);
     }));
 });
 

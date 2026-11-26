@@ -2,8 +2,9 @@
 //
 // The art is one sheet (assets/sprites.webp) with a map of frames (assets/sprites.json); each frame has its
 // rectangle and an anchor (bottom-centre for the hero, centre for the drone), so frames of different sizes
-// still stand on the same spot. The run is two frames plus a small bob drawn in code; the drone is a
-// separate piece that eases after the hero instead of being glued to him.
+// still stand on the same spot. The run is 8 drawn frames on one shared canvas (its bottom is the road), so the
+// stride's lift is in the art, not in code; the drone is a separate piece that eases after the hero instead of
+// being glued to him.
 //
 // Step 4, the moves (input.js hands them over each frame):
 //   jump        — a second press in the air is the double jump, with the boost frame (flames)
@@ -26,8 +27,8 @@ const HOME_X = 230;                   // where the hero runs, in the game's 960-
 const MIN_X = 110, MAX_X = 620;       // how far back and forward he may go
 const HERO_SCALE = 0.66;              // the sheet is drawn at 200px for run1; in the world he is ~130px
 const DRONE_SCALE = 0.62;
-const STEP = 0.12;                    // seconds per run frame
-const BOB = 4;                        // px the body lifts mid-stride
+const STEP = 0.07;                    // seconds per run frame
+const RUN = ['run0', 'run1', 'run2', 'run3', 'run4', 'run5', 'run6', 'run7'];
 const DRONE_OFFSET = { x: -78, y: -150 };   // where the drone wants to be, from the hero's feet
 const DRONE_EASE = 5;                 // how fast it catches up (per second)
 
@@ -128,9 +129,7 @@ export function createHero(sheet, frames, { reducedMotion = false } = {}) {
         else if (h.slideT > 0) h.frame = 'slide';
         else if (h.landT > 0) h.frame = 'land';
         else {
-            h.frame = Math.floor(h.t / STEP) % 2 ? 'run1' : 'run0';
-            // the bob: feet on the road at each footfall, lifted mid-stride (never sunk into the road)
-            h.bob = Math.abs(Math.sin((h.t / STEP) * Math.PI)) * BOB;
+            h.frame = RUN[Math.floor(h.t / STEP) % RUN.length];
         }
 
         const d = h.drone;
