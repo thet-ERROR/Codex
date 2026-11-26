@@ -18,8 +18,10 @@ import { createHero } from './hero.js';
 import { createRams } from './ram.js';
 import { createPowerups } from './powerups.js';
 import { createEnemies } from './enemies.js';
+import { createObstacles } from './obstacles.js';
+import { createPlatforms } from './platforms.js';
 import { createProgression, saveRecords, readRecords } from './progression.js';
-import { PX_PER_M, PARRY, PAUSE_BUTTON, SOUND_BUTTON, XP_BAR, HUD_SCALE, difficulty } from './config.js';
+import { PX_PER_M, POWERUPS, PARRY, PAUSE_BUTTON, SOUND_BUTTON, XP_BAR, HUD_SCALE, difficulty } from './config.js';
 import { createInput } from './input.js';
 import { createHud } from './hud.js';
 import { createAudio } from './audio.js';
@@ -42,7 +44,8 @@ const TEXT = {
         over: 'GAME OVER', again: 'Space / J / πάτα για νέο παιχνίδι', againTouch: 'Πάτα για νέο παιχνίδι', score: 'Σκορ', kills: 'εχθροί',
         rotate: 'Γύρισε το κινητό', rotateSub: 'Το RAM RUSH παίζεται οριζόντια',
         levelUp: 'LEVEL UP!', best: 'Ρεκόρ', newBest: 'ΝΕΟ ΡΕΚΟΡ!', boss: 'MALWARE CORE',
-        fx: { speed: 'ταχύτητα', rate: 'ρυθμός', damage: 'ζημιά', shield: (n) => `ασπίδα · ${n} χτύπημα`, drone: (s) => `drone · βολή ανά ${s} s` },
+        fx: { speed: 'ταχύτητα', rate: 'ρυθμός', damage: 'ζημιά', shield: (n) => `ασπίδα · ${n} χτύπημα`, drone: (s) => `drone · βολή ανά ${s} s`,
+            sprint: (x) => `sprint ${x} · ασυλία σε εμπόδια` },
         keys: '↑ / W / Space άλμα (×2 διπλό)   ↓ / S slide   ← → κίνηση   J / X / κλικ RAM   E / δεξί κλικ parry   P παύση   M ήχος   Esc έξοδος',
         swipes: ['Πάτα: RAM   Σύρε ↑ άλμα, ξανά: διπλό', 'Σύρε ↓ slide   Σύρε ← → κίνηση'] },
     en: { title: 'RAM RUSH', close: 'Close the game', loading: 'Loading…', failed: 'The game did not load. Try again.',
@@ -50,7 +53,8 @@ const TEXT = {
         over: 'GAME OVER', again: 'Space / J / tap for a new run', againTouch: 'Tap for a new run', score: 'Score', kills: 'enemies',
         rotate: 'Turn your phone sideways', rotateSub: 'RAM RUSH is played in landscape',
         levelUp: 'LEVEL UP!', best: 'Best', newBest: 'NEW RECORD!', boss: 'MALWARE CORE',
-        fx: { speed: 'speed', rate: 'rate', damage: 'damage', shield: (n) => `shield · ${n} hit${n > 1 ? 's' : ''}`, drone: (s) => `drone · a shot every ${s} s` },
+        fx: { speed: 'speed', rate: 'rate', damage: 'damage', shield: (n) => `shield · ${n} hit${n > 1 ? 's' : ''}`, drone: (s) => `drone · a shot every ${s} s`,
+            sprint: (x) => `sprint ${x} · obstacles can't touch you` },
         keys: '↑ / W / Space jump (×2 double)   ↓ / S slide   ← → move   J / X / click RAM   E / right click parry   P pause   M sound   Esc exit',
         swipes: ['Tap: RAM   Swipe ↑ jump, again: double', 'Swipe ↓ slide   Swipe ← → move'] }
 };
@@ -156,7 +160,7 @@ export async function open() {
 
     // the sound: made now, while the click, tap or key that opened the game still counts (see audio.js)
     const audio = createAudio();
-    const g = { overlay, style, raf: 0, last: 0, distance: 0, paused: false, userPaused: false, images: null, hero: null, closed: false, audio,
+    const g = { immune: { box: null, hit: () => false }, overlay, style, raf: 0, last: 0, distance: 0, paused: false, userPaused: false, images: null, hero: null, closed: false, audio,
         hintT: 7,                    // the keys reminder (on a phone: the swipes)
         hudScale: 1, compact: false, upright: false, drawn: false };
     game = g;
@@ -276,12 +280,14 @@ export async function open() {
         // the hit-stop: for a blink the world holds still (the picture is still drawn)
         const wdt = g.stop > 0 ? 0 : dt;
         g.stop = Math.max(0, g.stop - dt);
-        g.speed = difficulty(g.distance / PX_PER_M).speed;
+        // Overclock CPU: a sprint (POWERUPS.overclock.sprint × the road's speed)
+        g.speed = difficulty(g.distance / PX_PER_M).speed * (g.powerups.isOn('overclock') ? POWERUPS.overclock.sprint : 1);
         g.distance += g.speed * wdt;
         ctx.fillStyle = sky;
         ctx.fillRect(0, 0, W, H);
         g.drawn = true;
         const jumps = g.hero.jumps, thrown = g.rams.thrown, shots = g.powerups.droneShots || 0, taken = g.powerups.taken;
+        g.hero.ceiling = g.obstacles.overhead(g.hero.x);        // under a bar, he stays down
         g.hero.update(wdt, i);
         if (g.hero.jumps > jumps) audio.play('jump');
         if (i.throw) {
@@ -300,12 +306,22 @@ export async function open() {
         g.powerups.droneStep(wdt, g.hero.drone, g.enemies.targets(), g.rams);
         g.rams.update(wdt, g.enemies.targets());
         g.heroLink.box = g.hero.box();
+        g.platforms.update(wdt, g.speed * wdt, g.distance / PX_PER_M, g.obstacles);
+        // overclocked, the obstacles cannot touch him: they meet a link that takes no blow
+        g.immune.box = g.heroLink.box;
+        g.obstacles.update(wdt, g.speed * wdt, g.distance / PX_PER_M, g.powerups.isOn('overclock') ? g.immune : g.heroLink, g.enemies);
+        g.enemies.noLasers = g.obstacles.blocksLasers();
         g.enemies.update(wdt, g.speed * wdt, g.distance / PX_PER_M, g.heroLink, g.rams, g.powerups);
         g.powerups.update(wdt, g.speed * wdt, g.distance / PX_PER_M, g.heroLink.box, g.rams);
         if (g.rams.thrown > thrown) audio.play('ram_throw');
         if ((g.powerups.droneShots || 0) > shots) audio.play('ram_throw', { volume: 0.5 });   // the drone's, softer
         if (g.powerups.taken > taken) audio.play('powerup_xmp');
-        for (const [name, factor, h, bottom] of LAYERS) drawLayer(ctx, g.images[name], factor, h, bottom, g.distance);
+        for (const [name, factor, h, bottom] of LAYERS) {
+            drawLayer(ctx, g.images[name], factor, h, bottom, g.distance);
+            if (name === 'mid') g.obstacles.drawCars(ctx);       // the flying cars, far behind the rail
+        }
+        g.platforms.draw(ctx);
+        g.obstacles.draw(ctx);
         g.powerups.draw(ctx);
         g.enemies.draw(ctx);
         g.powerups.drawAura(ctx, g.heroLink.box);
@@ -375,10 +391,11 @@ export async function open() {
     g.raf = requestAnimationFrame(frame);
     try {
         const json = (name) => fetch(new URL(`${name}.json`, ASSETS)).then(r => { if (!r.ok) throw new Error(`RAM RUSH: ${name}.json`); return r.json(); });
-        const [imgs, sheet, frames, enemySheet, enemyFrames] = await Promise.all([
+        const [imgs, sheet, frames, enemySheet, enemyFrames, obstacleSheet, obstacleFrames] = await Promise.all([
             Promise.all(LAYERS.map(([name]) => loadImage(name))),
             loadImage('sprites'), json('sprites'),
-            loadImage('enemies'), json('enemies')
+            loadImage('enemies'), json('enemies'),
+            loadImage('obstacles'), json('obstacles')
         ]);
         if (g.closed) return g;
         const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -390,6 +407,11 @@ export async function open() {
             g.enemies = createEnemies(enemySheet, enemyFrames, { reducedMotion, onXp: (x, y, n) => hud.floatXp(x, y, n), sound: (n) => audio.play(n) });
             hud.clearFloats();
             g.enemies.natural = !g.quiet;
+            g.obstacles = createObstacles(obstacleSheet, obstacleFrames, { reducedMotion });
+            g.obstacles.natural = !g.quiet;
+            g.platforms = createPlatforms(obstacleSheet, obstacleFrames, { reducedMotion });
+            g.platforms.natural = !g.quiet;
+            g.hero.floors = g.platforms;
             // a blow goes to the shield first (Liquid Cooling), then to his life
             g.heroLink = { box: g.hero.box(), hit: (d) => {
                 if (g.hero.invuln > 0 || g.hero.hp <= 0) return false;
@@ -440,6 +462,7 @@ export const state = () => {
         sound: { muted: game.audio.muted, loaded: game.audio.loaded, ctx: game.audio.state ? game.audio.state() : 'none',
             gain: game.audio.gain ? game.audio.gain() : 0, asked: { ...game.audio.asked }, heard: { ...game.audio.heard }, loop: game.audio.loop ? game.audio.loop() : null, music: game.audio.musicOn },
         hp: h.hp, invuln: h.invuln, over: !!game.over,
+        platforms: game.platforms.list(), obstacles: game.obstacles.list(), cars: game.obstacles.cars(), obstacleHits: game.obstacles.hits, ceiling: h.ceiling,
         enemies: game.enemies.list(), spikes: game.enemies.spikes(), killed: game.enemies.killed, score: game.enemies.score, xp: game.enemies.xp,
         parryCool: game.parryCool, parries: game.enemies.parries,
         speed: game.speed || 0,
@@ -455,7 +478,11 @@ export const testSpawnPickup = (id, x, y) => !!(game && game.powerups && game.po
 // (calm, only walking, unless { attack: true })
 export const testSpawnEnemy = (id, x, opts = {}) => !!(game && game.enemies && game.enemies.spawn(id, x, !!opts.attack));
 // … and a quiet road: no enemies of their own, so a test about something else is not disturbed
-export const testQuiet = () => { if (game) { game.quiet = true; if (game.enemies) game.enemies.natural = false; } };
+export const testQuiet = () => { if (game) { game.quiet = true; if (game.enemies) game.enemies.natural = false; if (game.obstacles) game.obstacles.natural = false; if (game.platforms) game.platforms.natural = false; } };
+// … a platform: x, its height over the road, how many pieces, breakable or not
+export const testSpawnPlatform = (x, height, n, breakable) => !!(game && game.platforms && game.platforms.spawn(x, height, n, breakable));
+// … an obstacle on the road (the natural ones start at 120 m)
+export const testSpawnObstacle = (id, x) => !!(game && game.obstacles && game.obstacles.spawn(id, x));
 // … and XP, as if enemies had given it (the level ups come at their own pace otherwise)
 export const testXp = (n) => { if (game && game.enemies) game.enemies.xp += n; };
 // … and further along the road at once (the difficulty follows the distance)

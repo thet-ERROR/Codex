@@ -154,13 +154,35 @@ const samples = (page, n, gapMs) => page.evaluate(async ([n, gapMs]) => {
 }, [n, gapMs]);
 
 describe('RAM RUSH: the hero and his drone', () => {
-    it('the hero runs on the road: feet on the ground line, the two run frames take turns, a small bob', () => withPage(DESK, async (page) => {
+    it('the hero runs on the road: feet on the ground line, the 8 run frames in turn (the stride is in the art: no bob in code)', () => withPage(DESK, async (page) => {
         await openGame(page);
-        const s = await samples(page, 24, 40);
-        assert.ok(s.every(x => x.hero.y === 460), 'feet on the road');
-        assert.deepEqual([...new Set(s.map(x => x.hero.frame))].sort(), ['run0', 'run1']);
-        assert.ok(s.every(x => x.hero.bob >= 0 && x.hero.bob <= 4), 'lifts, never sinks');
-        assert.ok(s.some(x => x.hero.bob > 1), 'and it does lift');
+        const s = await samples(page, 60, 23);
+        assert.ok(s.every(x => x.hero.y === 460 && x.hero.bob === 0), 'feet on the road');
+        assert.deepEqual([...new Set(s.map(x => x.hero.frame))].sort(), ['run0', 'run1', 'run2', 'run3', 'run4', 'run5', 'run6', 'run7']);
+    }));
+
+    it('the run frames share one canvas (its bottom the road), drawn as tall as the hero was; the sheet fits a phone (2048px)', () => withPage(DESK, async (page) => {
+        await openGame(page);
+        const out = await page.evaluate(async () => {
+            const f = await (await fetch('/game/assets/sprites.json')).json();
+            const img = new Image(); img.src = '/game/assets/sprites.webp'; await img.decode();
+            const run = [0, 1, 2, 3, 4, 5, 6, 7].map(k => f[`run${k}`]);
+            // how far down the feet reach in each (the lowest solid row), over the canvas height
+            const feet = run.map(r => {
+                const c = new OffscreenCanvas(r.w, r.h).getContext('2d');
+                c.drawImage(img, r.x, r.y, r.w, r.h, 0, 0, r.w, r.h);
+                const a = c.getImageData(0, 0, r.w, r.h).data;
+                for (let y = r.h - 1; y >= 0; y--) for (let x = 0; x < r.w; x++) if (a[(y * r.w + x) * 4 + 3] > 128) return (r.h - 1 - y) / r.h;
+                return 1;
+            });
+            return { sizes: [...new Set(run.map(r => `${r.w}x${r.h}`))], anchors: [...new Set(run.map(r => `${r.ax},${r.ay},${r.h}`))], feet, width: img.width };
+        });
+        assert.equal(out.sizes.length, 1, 'one canvas: ' + out.sizes);
+        const [ax, ay, h] = out.anchors[0].split(',').map(Number);
+        assert.equal(ay, h, 'anchored at its bottom: the road');
+        assert.ok(h * 0.66 > 130 && h * 0.66 < 150, `drawn ${h * 0.66} px tall (with its headroom)`);
+        assert.ok(out.feet.filter(f => f < 0.03).length >= 5, 'most frames have a foot on the road: ' + out.feet.map(f => f.toFixed(2)));
+        assert.ok(out.width <= 2048, `${out.width}px wide`);
     }));
 
     it('the drone follows him smoothly: behind and above, no jumps', () => withPage(DESK, async (page) => {
@@ -180,18 +202,25 @@ describe('RAM RUSH: the hero and his drone', () => {
             const frames = await (await fetch('/game/assets/sprites.json')).json();
             const img = new Image(); img.src = '/game/assets/sprites.webp'; await img.decode();
             const res = {};
-            for (const k of ['run0', 'run1']) {
+            // inside his outline (a pixel 2 px in from any see-through one): solid; the soft edge is the outline's own
+            for (const k of ['run0', 'run1', 'run4', 'jump', 'slide']) {
                 const f = frames[k];
                 const c = new OffscreenCanvas(f.w, f.h).getContext('2d');
                 c.drawImage(img, f.x, f.y, f.w, f.h, 0, 0, f.w, f.h);
                 const a = c.getImageData(0, 0, f.w, f.h).data;
+                const al = (x, y) => (x < 0 || y < 0 || x >= f.w || y >= f.h ? 0 : a[(y * f.w + x) * 4 + 3]);
                 let partial = 0, seen = 0;
-                for (let i = 3; i < a.length; i += 4) if (a[i] > 8) { seen++; if (a[i] < 230) partial++; }
+                for (let y = 0; y < f.h; y++) for (let x = 0; x < f.w; x++) {
+                    let inside = true;
+                    for (let dy = -2; dy <= 2 && inside; dy++) for (let dx = -2; dx <= 2; dx++) if (al(x + dx, y + dy) <= 8) { inside = false; break; }
+                    if (!inside) continue;
+                    seen++; if (al(x, y) < 230) partial++;
+                }
                 res[k] = partial / seen;
             }
             return res;
         });
-        for (const [k, v] of Object.entries(half)) assert.ok(v < 0.12, `${k}: ${(v * 100).toFixed(1)}% half-transparent`);
+        for (const [k, v] of Object.entries(half)) assert.ok(v < 0.02, `${k}: ${(v * 100).toFixed(1)}% of his inside half-transparent`);
     }));
 });
 
@@ -302,7 +331,7 @@ describe('RAM RUSH: the HUD on a phone (8c.6)', () => {
                 get: (t, k) => k === 'fillText' ? (w) => words.push(w) : k === 'measureText' ? () => ({ width: 10 }) : (k in t ? t[k] : () => {}),
                 set: (t, k, v) => { t[k] = v; return true; }
             });
-            const fx = { speed: 'speed', rate: 'rate', damage: 'damage', shield: () => 'shield', drone: () => 'drone' };
+            const fx = { speed: 'speed', rate: 'rate', damage: 'damage', shield: () => 'shield', drone: () => 'drone', sprint: () => 'sprint' };
             const txt = () => ({ fx, paused: 'PAUSED', resume: 'P to resume', resumeTouch: 'Tap ▶ to resume' });
             const p = createPowerups();
             p.activate('xmp');
@@ -1526,7 +1555,7 @@ describe('RAM RUSH: power-ups, Liquid Cooling (4b)', () => {
             e.update(0.016, 0, 0, null, { hit: () => 5 }, { spawn: (id) => drops.push(id) });
             return { road, drops };
         });
-        assert.ok(out.road.xmp > out.road.cooling && out.road.cooling > 100, JSON.stringify(out.road));
+        assert.ok(out.road.xmp > out.road.cooling && out.road.cooling > 70, JSON.stringify(out.road));   // its weight: 2 of 9
         assert.deepEqual(out.drops, ['cooling']);
     }));
 
@@ -2010,7 +2039,8 @@ describe('RAM RUSH: the power-up rows (8c.5)', () => {
     it('what each does is written from its numbers in config.js, in the page language', () => withPage(DESK, async (page) => {
         await openSettled(page);
         const fx = await page.evaluate(async () => (await import('/game/main.js')).hudEffects());
-        assert.deepEqual(fx, { xmp: 'RAM ×1.6 ταχύτητα · ×1.7 ρυθμός · ×1.5 ζημιά', cooling: 'ασπίδα · 1 χτύπημα', drone: 'drone · βολή ανά 0.8 s' });
+        assert.deepEqual(fx, { xmp: 'RAM ×1.6 ταχύτητα · ×1.7 ρυθμός · ×1.5 ζημιά', cooling: 'ασπίδα · 1 χτύπημα', drone: 'drone · βολή ανά 0.8 s',
+            overclock: 'sprint ×1.4 · ασυλία σε εμπόδια' });
     }));
 
     it('a row per power-up on, in the order taken; taken, its icon pops and its name shines for 1 s; taken again, it does so again', () => withPage(DESK, async (page) => {
@@ -2088,7 +2118,7 @@ describe('RAM RUSH: the floating +XP and the boss bar (8c.7)', () => {
         const texts = await page.evaluate(async () => {
             const { createHud } = await import('/game/hud.js');
             const ctx = new Proxy({}, { get: (t, k) => (k in t ? t[k] : () => {}), set: (t, k, v) => { t[k] = v; return true; } });
-            const fx = { shield: () => '', drone: () => '' };
+            const fx = { shield: () => '', drone: () => '', sprint: () => '' };
             const h = createHud(ctx, { hudScale: 1 }, { txt: () => ({ fx }) });
             for (let n = 1; n <= 10; n++) { h.floatXp(100, 200, n); h.floats(0.01, 0); }
             return h.floatInfo().map(f => f.text).sort();
@@ -2262,5 +2292,341 @@ describe('RAM RUSH: the sounds', () => {
         await page.keyboard.press('KeyM');
         await waitState(page, (s) => s.sound.muted === false, 2000);
         assert.deepEqual(page.problems, []);
+    }));
+});
+
+describe('RAM RUSH: obstacles on the road (6, 6c)', () => {
+    // Presses a key the moment an obstacle's hurting part comes within `lead` px of his front (in the page,
+    // frame by frame, so the timing does not depend on the test's own pace); holds it `holdMs`
+    const pressWhenNear = (page, code, lead, holdMs = 0) => page.evaluate(async ([code, lead, holdMs]) => {
+        const m = await import('/game/main.js');
+        for (const t0 = performance.now(); performance.now() - t0 < 6000;) {
+            const s = m.state(), o = s.obstacles[0];
+            if (o && o.hazard.x < s.hero.box.x + s.hero.box.w + lead) break;
+            await new Promise(r => requestAnimationFrame(r));
+        }
+        window.dispatchEvent(new KeyboardEvent('keydown', { code, bubbles: true }));
+        await new Promise(r => setTimeout(r, holdMs));
+        window.dispatchEvent(new KeyboardEvent('keyup', { code, bubbles: true }));
+    }, [code, lead, holdMs]);
+    const spawnObstacle = (page, id, x) => page.evaluate(async ([id, x]) => (await import('/game/main.js')).testSpawnObstacle(id, x), [id, x]);
+    // until the obstacle has gone past him (its hurting part behind his back)
+    const passed = (page) => waitState(page, (s) => !s.obstacles[0] || s.obstacles[0].hazard.x + s.obstacles[0].hazard.w < s.hero.box.x - 5, 6000);
+
+    it('their art is fetched only with the game, one sheet', () => withPage(DESK, async (page) => {
+        assert.deepEqual((await gameFiles(page)).filter(f => f.includes('obstacles')), []);
+        await openGame(page);
+        const files = await gameFiles(page);
+        assert.ok(files.includes('/game/assets/obstacles.webp') && files.includes('/game/assets/obstacles.json'), files.join());
+    }));
+
+    it('a barrier: run into it and it costs a heart (once); jumped, nothing', () => withPage(DESK, async (page) => {
+        await openSettled(page);
+        await spawnObstacle(page, 'barrier', 700);
+        await passed(page);
+        let s = await gameState(page);
+        assert.deepEqual([s.hp, s.obstacleHits], [2, 1]);
+        await page.waitForTimeout(1300);                       // his safe time over
+        await spawnObstacle(page, 'barrier', 900);
+        await pressWhenNear(page, 'ArrowUp', 20, 400);
+        await passed(page);
+        s = await gameState(page);
+        assert.deepEqual([s.hp, s.obstacleHits], [2, 1], 'jumped clean over it');
+    }));
+
+    for (const id of ['boomGate', 'cables', 'sign']) {
+        it(`${id}: standing, it costs a heart; a slide just before goes under, and he stays down until he is out (longer than a slide)`, () => withPage(DESK, async (page) => {
+            await openSettled(page);
+            await spawnObstacle(page, id, 700);
+            await passed(page);
+            assert.equal((await gameState(page)).hp, 2, 'standing: hit');
+            await page.waitForTimeout(1300);
+            await spawnObstacle(page, id, 900);
+            await startRec(page);
+            await pressWhenNear(page, 'ArrowDown', 30);
+            await passed(page);
+            await page.waitForTimeout(250);
+            const rec = await stopRec(page);
+            assert.equal(rec.at(-1).hp, 2, 'slid under it');
+            const low = rec.filter(s => s.hero.frame === 'slide');
+            const ms = (low.length - 1) * 16;
+            assert.ok(ms > 700, `down for ${ms} ms, more than one slide (550)`);
+            assert.ok(rec.some(s => s.ceiling) && rec.at(-1).hero.frame !== 'slide', 'up again once out');
+        }));
+    }
+
+    it('the laser grid: off, its lenses blinking (0.3 s), then the beam on (1.2 s), and again; it hurts only while on', () => withPage(DESK, async (page) => {
+        await openGame(page);
+        const out = await page.evaluate(async () => {
+            const { createObstacles } = await import('/game/obstacles.js');
+            const frames = await (await fetch('/game/assets/obstacles.json')).json();
+            const at = (t) => { const o = createObstacles(null, frames); o.natural = false; o.spawn('laserGrid', 0); o.update(t, 0, 0, null, null); return o.list()[0].phase; };
+            const phases = [0.2, 0.6, 0.9, 1.9, 2.1, 2.6].map(at);
+            // he stands under the beam from the start: hurt only once it is on
+            const o = createObstacles(null, frames); o.natural = false; o.spawn('laserGrid', 0);
+            const b = o.list()[0].hazard;
+            let hitAt = null, t = 0;
+            const hero = { box: { x: b.x + 100, y: 460 - 118, w: 52, h: 118 }, hit: () => { if (hitAt === null) hitAt = t; return true; } };
+            for (; t < 2; t += 1 / 60) o.update(1 / 60, 0, 0, hero, null);
+            // and slid under it, never
+            const o2 = createObstacles(null, frames); o2.natural = false; o2.spawn('laserGrid', 0);
+            let low = 0;
+            const slider = { box: { x: b.x + 100, y: 460 - 62, w: 110, h: 62 }, hit: () => { low++; return true; } };
+            for (let k = 0; k < 240; k++) o2.update(1 / 60, 0, 0, slider, null);
+            return { phases, hitAt, low };
+        });
+        assert.deepEqual(out.phases, ['off', 'warn', 'on', 'on', 'off', 'warn']);
+        assert.ok(out.hitAt > 0.77 && out.hitAt < 0.85, `hurt as it lit (0.8 s): ${out.hitAt}`);
+        assert.equal(out.low, 0);
+    }));
+
+    it('where they come: from 120 m, the kinds of each zone, never closer than 400 px; none while a boss stands; only barriers while a laser is about', () => withPage(DESK, async (page) => {
+        await openGame(page);
+        const out = await page.evaluate(async () => {
+            const { createObstacles } = await import('/game/obstacles.js');
+            const { OBSTACLE_SPAWNS, SPAWNS, PX_PER_M } = await import('/game/config.js');
+            const frames = await (await fetch('/game/assets/obstacles.json')).json();
+            const run = (enemies, seed) => {
+                const rng = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+                const o = createObstacles(null, frames, { rng });
+                const seen = [];
+                let m = 0, gapOk = true;
+                const spawn = o.spawn;
+                o.spawn = (id, x) => {
+                    const before = o.list();
+                    const right = Math.max(-Infinity, ...before.map(b => b.x + b.w));
+                    if (before.length && 1000 - right < OBSTACLE_SPAWNS.minGap) gapOk = false;
+                    seen.push([m, id]);
+                    return spawn(id, x);
+                };
+                const scroll = 10;
+                for (; m < 2600; m += scroll / PX_PER_M) o.update(1 / 60, scroll, m, null, enemies);
+                return { seen, gapOk };
+            };
+            const calm = { boss: () => null, justIn: () => false, lasersAbout: () => false, hold() {} };
+            return {
+                calm: run(calm, 3), zones: OBSTACLE_SPAWNS.zones, zoneM: SPAWNS.zoneM,
+                boss: run({ ...calm, boss: () => ({}) }, 3).seen.length,
+                // even with the metres between them all but gone, the 400 px rule holds on its own
+                tight: (() => { const was = OBSTACLE_SPAWNS.gapM; OBSTACLE_SPAWNS.gapM = [1, 2]; const r = run(calm, 4); OBSTACLE_SPAWNS.gapM = was; return r; })(),
+                lasers: [...new Set(run({ ...calm, lasersAbout: () => true }, 3).seen.map(([, id]) => id))]
+            };
+        });
+        const { seen, gapOk } = out.calm;
+        assert.ok(seen.length > 15, `${seen.length} of them`);
+        assert.ok(seen[0][0] >= 120, `the first at ${seen[0][0]} m`);
+        for (const [m, id] of seen) assert.ok(out.zones[Math.min(out.zones.length - 1, Math.floor(m / out.zoneM))].includes(id), `${id} at ${m} m`);
+        assert.ok(seen.some(([, id]) => id === 'laserGrid'), 'all kinds come, in the end');
+        assert.equal(gapOk, true, 'never closer than 400 px');
+        assert.ok(out.tight.seen.length > 50 && out.tight.gapOk, `packed tight: ${out.tight.seen.length}, still 400 px apart`);
+        assert.equal(out.boss, 0);
+        assert.deepEqual(out.lasers, ['barrier']);
+    }));
+
+    it('while a slide obstacle is on the road, no laser comes: a Spy Drone gives way to an Orange Bot, the boss waits', () => withPage(DESK, async (page) => {
+        await openGame(page);
+        const out = await page.evaluate(async () => {
+            const { createEnemies } = await import('/game/enemies.js');
+            const frames = await (await fetch('/game/assets/enemies.json')).json();
+            let seed = 5; const rng = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+            const e = createEnemies(null, frames, { rng });
+            e.bossAtM = 2000;
+            e.noLasers = true;
+            const seen = [];
+            const spawn = e.spawn;
+            let m = 1000;
+            e.spawn = (id, x, a) => { seen.push(id); return spawn(id, x, a); };
+            for (; m < 3000; m++) e.update(0.016, 2000, m, null, null, null);
+            return [...new Set(seen)];
+        });
+        assert.ok(!out.includes('spyDrone') && !out.includes('mechBoss'), out.join());
+        assert.ok(out.includes('orangeBot'));
+    }));
+
+    it('flying cars pass far behind now and then, some the other way (the art faces left: those are mirrored)', () => withPage(DESK, async (page) => {
+        await openGame(page);
+        const out = await page.evaluate(async () => {
+            const { createObstacles } = await import('/game/obstacles.js');
+            const frames = await (await fetch('/game/assets/obstacles.json')).json();
+            let seed = 9; const rng = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+            const o = createObstacles(null, frames, { rng });
+            o.natural = false;
+            const ways = new Set(); let most = 0; const moved = [];
+            for (let k = 0; k < 60 * 60; k++) {
+                const before = o.cars();
+                o.update(1 / 60, 5, 0, null, null);
+                const after = o.cars();
+                most = Math.max(most, after.length);
+                for (const c of after) ways.add(c.back);
+                if (before.length === 1 && after.length === 1 && before[0].back === after[0].back) moved.push(after[0].back ? after[0].x > before[0].x : after[0].x < before[0].x);
+            }
+            return { ways: [...ways].sort(), most, moved: moved.every(Boolean) };
+        });
+        assert.deepEqual(out.ways, [false, true]);
+        assert.ok(out.most >= 1 && out.most <= 3);
+        assert.equal(out.moved, true, 'each keeps its way across');
+    }));
+});
+
+describe('RAM RUSH: platforms in the air (6b)', () => {
+    // A run of the hero over platforms, frame by frame at 60 fps (in the page, the game's own code):
+    // plan: [{ at: frame, input }], platforms: spawn args. Returns his feet's height over the road each frame,
+    // whether he stood, and the platforms each frame.
+    const sim = (page, platforms, plan, frames = 150, scroll = 5) => page.evaluate(async ([platforms, plan, frames, scroll]) => {
+        const { createHero, GROUND } = await import('/game/hero.js');
+        const { createPlatforms } = await import('/game/platforms.js');
+        const art = await (await fetch('/game/assets/obstacles.json')).json();
+        const hero = createHero(null, {});
+        const p = createPlatforms(null, art);
+        p.natural = false;
+        hero.floors = p;
+        for (const a of platforms) p.spawn(...a);
+        const log = [];
+        for (let f = 0; f < frames; f++) {
+            const step = plan.find(s => s.at === f);
+            hero.update(1 / 60, step ? step.input : {});
+            p.update(1 / 60, scroll, 0, null);
+            log.push({ up: GROUND - hero.y, ground: hero.onGround, jumps: hero.jumps, frame: hero.frame, ps: p.list() });
+        }
+        return log;
+    }, [platforms, plan, frames, scroll]);
+    const JUMP = { at: 1, input: { jump: 1 } };
+
+    it('the high one (140 px) is reached with one jump; he runs on it, and off its end he falls to the road, the double jump still his', () => withPage(DESK, async (page) => {
+        await openGame(page);
+        // 8 pieces from x 150: under him at 230 for a while
+        let log = await sim(page, [[150, 140, 8, false]], [JUMP], 200);
+        const on = log.findIndex(l => l.ground && Math.abs(l.up - 140) < 0.5);
+        assert.ok(on > 0, 'landed on it');
+        assert.ok(log.slice(on + 8, on + 28).every(l => l.ground && Math.abs(l.up - 140) < 0.5 && /run/.test(l.frame)), 'runs on it (after the landing crouch)');
+        const off = log.findIndex((l, i) => i > on && !l.ground);
+        assert.ok(off > on, 'its end passed: he falls');
+        assert.equal(log[off].jumps, 1, 'with the double jump still his');
+        assert.ok(log.at(-1).ground && log.at(-1).up === 0, 'on the road again');
+        // falling off, a jump is the double one
+        log = await sim(page, [[150, 140, 8, false]], [JUMP, { at: 102, input: { jump: 1 } }], 200, 5);
+        const off2 = log.findIndex((l, i) => i > 40 && !l.ground);
+        assert.ok(off2 > 0 && off2 < 102 && !log[101].ground && log[103].jumps === 2, `double jump in the fall (off at ${off2})`);
+    }));
+
+    it('from below he passes up through it, and lands on it on the way down; a short hop under it stays under', () => withPage(DESK, async (page) => {
+        await openGame(page);
+        const log = await sim(page, [[100, 90, 8, false]], [JUMP], 90, 2);
+        assert.ok(Math.max(...log.map(l => l.up)) > 150, 'through it, up');
+        assert.ok(log.at(-1).ground && Math.abs(log.at(-1).up - 90) < 0.5, 'then standing on it');
+        const hop = await sim(page, [[100, 90, 8, false]], [JUMP, { at: 2, input: { jumpUp: true } }], 60, 2);
+        assert.ok(Math.max(...hop.map(l => l.up)) < 90 && hop.at(-1).up === 0, 'a hop that does not reach it lands back on the road');
+    }));
+
+    it('↓ on one drops him through it to the road (no slide up there)', () => withPage(DESK, async (page) => {
+        await openGame(page);
+        const log = await sim(page, [[100, 90, 8, false]], [JUMP, { at: 70, input: { down: 1 } }], 110, 2);
+        assert.ok(log[69].ground && Math.abs(log[69].up - 90) < 0.5, 'on it first');
+        assert.ok(log.slice(70, 110).every(l => l.frame !== 'slide'), 'no slide');
+        assert.ok(log.at(-1).ground && log.at(-1).up === 0, 'down on the road');
+    }));
+
+    it('a breakable one: stepped on, it cracks; 0.6 s later it falls, and he with it', () => withPage(DESK, async (page) => {
+        await openGame(page);
+        const log = await sim(page, [[120, 90, 0, true]], [JUMP], 150, 1);
+        const on = log.findIndex(l => l.ground && Math.abs(l.up - 90) < 0.5);
+        assert.ok(on > 0, 'landed on it');
+        assert.ok(log[on].ps[0].stepped >= 0, 'cracking');
+        const falls = log.findIndex(l => l.ps[0] && l.ps[0].falling);
+        assert.ok(Math.abs((falls - on) / 60 - 0.6) < 0.05, `gave way after ${((falls - on) / 60).toFixed(2)} s`);
+        assert.ok(!log[falls + 2].ground, 'he falls with it');
+        assert.ok(log.at(-1).ground && log.at(-1).up === 0);
+    }));
+
+    it('where they come: from 300 m, low or high, 3 to 8 pieces, never over an obstacle, and an obstacle keeps off from under one', () => withPage(DESK, async (page) => {
+        await openGame(page);
+        const out = await page.evaluate(async () => {
+            const { createPlatforms } = await import('/game/platforms.js');
+            const { PLATFORMS, PX_PER_M } = await import('/game/config.js');
+            const { GROUND } = await import('/game/hero.js');
+            const art = await (await fetch('/game/assets/obstacles.json')).json();
+            let seed = 3; const rng = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+            const p = createPlatforms(null, art, { rng });
+            // an obstacle on the road now and then: none may be under the right edge when one comes
+            const obs = { nextAtM: 0, items: [], list() { return this.items; } };
+            const seen = []; let bad = 0, pushed = 0;
+            const spawn = p.spawn;
+            let m = 0;
+            p.spawn = (x, h, n, b) => {
+                if (obs.items.some(o => o.x + o.w >= 900)) bad++;
+                seen.push({ m, h, n, b });
+                const before = obs.nextAtM; const r = spawn(x, h, n, b);
+                return r;
+            };
+            for (; m < 3000; m += 5 / PX_PER_M) {
+                for (const o of obs.items) o.x -= 5;
+                obs.items = obs.items.filter(o => o.x + o.w > 0);
+                if (Math.floor(m) % 97 === 0 && !obs.items.length) obs.items.push({ x: 1000, w: 300 });
+                const was = obs.nextAtM;
+                p.update(1 / 60, 5, m, obs);
+                if (obs.nextAtM > was) pushed++;
+            }
+            return { seen, bad, pushed, PLATFORMS };
+        });
+        assert.ok(out.seen.length > 10, `${out.seen.length}`);
+        assert.ok(out.seen[0].m >= 300);
+        for (const s of out.seen) {
+            assert.ok(out.PLATFORMS.heights.includes(s.h));
+            if (!s.b) assert.ok(s.n >= 3 && s.n <= 8, `${s.n} pieces`);
+        }
+        assert.ok(out.seen.some(s => s.b) && out.seen.some(s => !s.b), 'some breakable, most not');
+        assert.equal(out.bad, 0, 'never over an obstacle');
+        assert.equal(out.pushed, out.seen.length, 'each holds the obstacles back');
+    }));
+
+    it('in the game: jump onto one and run on it, at its height', () => withPage(DESK, async (page) => {
+        await openSettled(page);
+        await page.evaluate(async () => (await import('/game/main.js')).testSpawnPlatform(150, 140, 8, false));
+        await page.keyboard.down('ArrowUp'); await page.waitForTimeout(350); await page.keyboard.up('ArrowUp');
+        await waitState(page, (s) => s.hero.onGround && Math.abs(s.hero.y - 320) < 0.5, 2000);
+        assert.deepEqual(page.problems, []);
+    }));
+});
+
+describe('RAM RUSH: power-ups, Overclock CPU (4b)', () => {
+    it('6 s of sprint: the road runs 1.4× as fast, then back; the obstacles cannot touch him meanwhile, the enemies still can', () => withPage(DESK, async (page) => {
+        await openSettled(page);
+        // the speed over the road's own at that distance (it rises with the distance by itself)
+        const ratio = () => page.evaluate(async () => {
+            const { difficulty, PX_PER_M } = await import('/game/config.js');
+            const s = (await import('/game/main.js')).state();
+            return s.speed / difficulty(s.distance / PX_PER_M).speed;
+        });
+        await page.evaluate(async () => (await import('/game/main.js')).testSpawnPickup('overclock', 260, 400));
+        await waitState(page, (s) => s.powerups.some(p => p.id === 'overclock'), 3000);
+        await page.waitForTimeout(100);                     // (the speed is set at the start of the next frame)
+        const r = await ratio();
+        assert.ok(Math.abs(r - 1.4) < 0.01, `sprint ×${r.toFixed(3)}`);
+        let s;
+        // a barrier and a sign: he runs through both untouched
+        await page.evaluate(async () => { const m = await import('/game/main.js'); m.testSpawnObstacle('barrier', 600); m.testSpawnObstacle('sign', 1100); });
+        await waitState(page, (s) => s.obstacles.every(o => o.hazard.x + o.hazard.w < s.hero.box.x - 5), 4000);
+        s = await gameState(page);
+        assert.deepEqual([s.hp, s.obstacleHits], [3, 0], 'untouched by the obstacles');
+        // an enemy still hurts
+        await page.evaluate(async () => (await import('/game/main.js')).testSpawnEnemy('orangeBot', 520));
+        await waitState(page, (s) => s.hp === 2, 4000);
+        await waitState(page, (s) => !s.powerups.some(p => p.id === 'overclock'), 6000);
+        await page.waitForTimeout(100);
+        const back = await ratio();
+        assert.ok(Math.abs(back - 1) < 0.01, `back to the road's own speed (×${back.toFixed(3)})`);
+    }));
+
+    it('its icon is a chip; it comes on the road and from enemies like the others', () => withPage(DESK, async (page) => {
+        await openGame(page);
+        const out = await page.evaluate(async () => {
+            const { createPowerups } = await import('/game/powerups.js');
+            let seed = 2; const rng = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+            const p = createPowerups({ rng });
+            const road = new Set(), drop = new Set();
+            for (let k = 0; k < 400; k++) { road.add(p.pick('road')); drop.add(p.pick('dropChance')); }
+            return { road: [...road].sort(), drop: [...drop].sort() };
+        });
+        assert.ok(out.road.includes('overclock') && out.drop.includes('overclock'), JSON.stringify(out));
     }));
 });

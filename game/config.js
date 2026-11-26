@@ -40,6 +40,16 @@ export const POWERUPS = {
         range: 620,                   // px: how far from the drone it looks for a target
         speed: 1000,                  // px/s of its bolt
         damage: 1
+    },
+    // a sprint: the road runs faster, and the obstacles cannot touch him (the enemies still can)
+    overclock: {
+        name: 'Overclock CPU', label: 'CPU',
+        duration: 6,
+        mults: {},
+        sprint: 1.4,                  // × the road's speed
+        color: '#fb923c',
+        dropChance: 0.04,
+        road: 2
     }
 };
 export const POWERUP_WARN = 3;       // s: the last seconds blink (plan §8c.5)
@@ -276,6 +286,48 @@ export const SPAWNS = {
     pool: 6,
     boss: { firstM: 1000, everyM: 1000 },   // a Malware Core every 1000 m; while it stands, nothing else comes
     spikes: 6                       // spikes on the road at once (two rows)
+};
+// Obstacles on the road (plan §6, §6c): jumped over (barrier) or slid under (the rest). Their art is
+// assets/obstacles.webp (tests/tools/build-obstacles.py). hit: [x, y, w, h] in px of the frame, the only part
+// that hurts: the boom gate's post and the laser grid's pillars stand at the far edge of the road, out of his
+// way. Every slide obstacle leaves CLEARANCE px free over the road: he stands 118 px tall and slides at 62.
+// Under one he stays down until he is out (a slide alone is too short for a long bar). scale: drawn this size
+// (the barrier at 0.8: a full jump keeps him over its 50 px for ~190 px of road at the slowest, it is 116 wide).
+export const CLEARANCE = 100;
+export const OBSTACLES = {
+    barrier: { role: 'jump', frame: 'barrier', hit: [8, 19, 153, 68], scale: 0.8, damage: 1 },
+    boomGate: { role: 'slide', frame: 'boom_gate', hit: [81, 56, 315, 32], damage: 1 },
+    cables: { role: 'slide', frame: 'cables', hit: [0, 20, 320, 32], hang: true, damage: 1 },
+    sign: { role: 'slide', frame: 'sign', hit: [0, 56, 280, 80], hang: true, damage: 1 },
+    // the beam between its pillars: off, then its lenses blink (warn), then on; it hurts only while on
+    laserGrid: { role: 'slide', frame: 'laser_off', lit: 'laser_on', hit: [135, 76, 333, 10], damage: 1,
+        cycle: { off: 0.8, warn: 0.3, on: 1.2 } }
+};
+// Where they come: from firstM, every gapM metres (× the difficulty's gapScale), the kinds by zones of
+// SPAWNS.zoneM; never closer than minGap px to the last one, never while a boss stands, and a slide one never
+// while a laser (Spy Drone, boss) is about. cars: the flying cars far behind (decor, no hitbox).
+export const OBSTACLE_SPAWNS = {
+    firstM: 120,
+    gapM: [60, 110],
+    zones: [['barrier'], ['barrier', 'boomGate'], ['barrier', 'boomGate', 'cables', 'sign'],
+        ['barrier', 'boomGate', 'cables', 'sign', 'laserGrid']],
+    minGap: 400,
+    pool: 4,
+    cars: { pool: 3, every: [3, 8], parallax: 0.55, y: [285, 345], scale: [0.4, 0.6], speed: [60, 160], back: 0.3 }
+};
+// Platforms in the air (plan §6b): one-way (he lands from above, passes up through from below), riding the
+// road. heights: px of their top over the road; the high one is reached with a single jump (its peak ~185,
+// 45 px to spare: the plan's 170 + 40 would need the double). pieces: a left end, middles, a right end, from
+// pieces[0] to pieces[1] in all. Breakable: cracks crack s after he steps on it, then falls. Never over an
+// obstacle; from firstM, every gapM metres.
+export const PLATFORMS = {
+    heights: [90, 140],
+    pieces: [3, 8],
+    breakable: { chance: 0.25, crack: 0.6, fall: 900 },
+    firstM: 300,
+    gapM: [70, 150],
+    pool: 4,
+    drop: 0.25                        // s after ↓ on one, he falls through it (and any under it)
 };
 export const HIT_FLASH = 0.08;
 

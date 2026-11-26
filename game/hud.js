@@ -274,6 +274,7 @@ export function createHud(ctx, g, { txt, touchUI, reducedMotion = false }) {
         if (parts.length) return `RAM ${parts.join(' · ')}`;
         if (d.shield) return f.shield(d.shield);
         if (d.every) return f.drone(d.every);
+        if (d.sprint) return f.sprint(x1(d.sprint));
         return '';
     }
     const effects = {};
