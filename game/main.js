@@ -19,6 +19,7 @@ import { createRams } from './ram.js';
 import { createPowerups } from './powerups.js';
 import { createEnemies } from './enemies.js';
 import { createObstacles } from './obstacles.js';
+import { createPlatforms } from './platforms.js';
 import { createProgression, saveRecords, readRecords } from './progression.js';
 import { PX_PER_M, PARRY, PAUSE_BUTTON, SOUND_BUTTON, XP_BAR, HUD_SCALE, difficulty } from './config.js';
 import { createInput } from './input.js';
@@ -302,6 +303,7 @@ export async function open() {
         g.powerups.droneStep(wdt, g.hero.drone, g.enemies.targets(), g.rams);
         g.rams.update(wdt, g.enemies.targets());
         g.heroLink.box = g.hero.box();
+        g.platforms.update(wdt, g.speed * wdt, g.distance / PX_PER_M, g.obstacles);
         g.obstacles.update(wdt, g.speed * wdt, g.distance / PX_PER_M, g.heroLink, g.enemies);
         g.enemies.noLasers = g.obstacles.blocksLasers();
         g.enemies.update(wdt, g.speed * wdt, g.distance / PX_PER_M, g.heroLink, g.rams, g.powerups);
@@ -313,6 +315,7 @@ export async function open() {
             drawLayer(ctx, g.images[name], factor, h, bottom, g.distance);
             if (name === 'mid') g.obstacles.drawCars(ctx);       // the flying cars, far behind the rail
         }
+        g.platforms.draw(ctx);
         g.obstacles.draw(ctx);
         g.powerups.draw(ctx);
         g.enemies.draw(ctx);
@@ -401,6 +404,9 @@ export async function open() {
             g.enemies.natural = !g.quiet;
             g.obstacles = createObstacles(obstacleSheet, obstacleFrames, { reducedMotion });
             g.obstacles.natural = !g.quiet;
+            g.platforms = createPlatforms(obstacleSheet, obstacleFrames, { reducedMotion });
+            g.platforms.natural = !g.quiet;
+            g.hero.floors = g.platforms;
             // a blow goes to the shield first (Liquid Cooling), then to his life
             g.heroLink = { box: g.hero.box(), hit: (d) => {
                 if (g.hero.invuln > 0 || g.hero.hp <= 0) return false;
@@ -451,7 +457,7 @@ export const state = () => {
         sound: { muted: game.audio.muted, loaded: game.audio.loaded, ctx: game.audio.state ? game.audio.state() : 'none',
             gain: game.audio.gain ? game.audio.gain() : 0, asked: { ...game.audio.asked }, heard: { ...game.audio.heard }, loop: game.audio.loop ? game.audio.loop() : null, music: game.audio.musicOn },
         hp: h.hp, invuln: h.invuln, over: !!game.over,
-        obstacles: game.obstacles.list(), cars: game.obstacles.cars(), obstacleHits: game.obstacles.hits, ceiling: h.ceiling,
+        platforms: game.platforms.list(), obstacles: game.obstacles.list(), cars: game.obstacles.cars(), obstacleHits: game.obstacles.hits, ceiling: h.ceiling,
         enemies: game.enemies.list(), spikes: game.enemies.spikes(), killed: game.enemies.killed, score: game.enemies.score, xp: game.enemies.xp,
         parryCool: game.parryCool, parries: game.enemies.parries,
         speed: game.speed || 0,
@@ -467,7 +473,9 @@ export const testSpawnPickup = (id, x, y) => !!(game && game.powerups && game.po
 // (calm, only walking, unless { attack: true })
 export const testSpawnEnemy = (id, x, opts = {}) => !!(game && game.enemies && game.enemies.spawn(id, x, !!opts.attack));
 // … and a quiet road: no enemies of their own, so a test about something else is not disturbed
-export const testQuiet = () => { if (game) { game.quiet = true; if (game.enemies) game.enemies.natural = false; if (game.obstacles) game.obstacles.natural = false; } };
+export const testQuiet = () => { if (game) { game.quiet = true; if (game.enemies) game.enemies.natural = false; if (game.obstacles) game.obstacles.natural = false; if (game.platforms) game.platforms.natural = false; } };
+// … a platform: x, its height over the road, how many pieces, breakable or not
+export const testSpawnPlatform = (x, height, n, breakable) => !!(game && game.platforms && game.platforms.spawn(x, height, n, breakable));
 // … an obstacle on the road (the natural ones start at 120 m)
 export const testSpawnObstacle = (id, x) => !!(game && game.obstacles && game.obstacles.spawn(id, x));
 // … and XP, as if enemies had given it (the level ups come at their own pace otherwise)

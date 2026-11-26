@@ -305,6 +305,20 @@ export const OBSTACLE_SPAWNS = {
     pool: 4,
     cars: { pool: 3, every: [3, 8], parallax: 0.55, y: [285, 345], scale: [0.4, 0.6], speed: [60, 160], back: 0.3 }
 };
+// Platforms in the air (plan §6b): one-way (he lands from above, passes up through from below), riding the
+// road. heights: px of their top over the road; the high one is reached with a single jump (its peak ~185,
+// 45 px to spare: the plan's 170 + 40 would need the double). pieces: a left end, middles, a right end, from
+// pieces[0] to pieces[1] in all. Breakable: cracks crack s after he steps on it, then falls. Never over an
+// obstacle; from firstM, every gapM metres.
+export const PLATFORMS = {
+    heights: [90, 140],
+    pieces: [3, 8],
+    breakable: { chance: 0.25, crack: 0.6, fall: 900 },
+    firstM: 300,
+    gapM: [70, 150],
+    pool: 4,
+    drop: 0.25                        // s after ↓ on one, he falls through it (and any under it)
+};
 export const HIT_FLASH = 0.08;
 
 // Difficulty (plan §5, step 8): over the first rampM metres the road speeds up and the enemies come closer
