@@ -2053,3 +2053,214 @@ describe('RAM RUSH: the power-up rows (8c.5)', () => {
         assert.deepEqual(blinks.reduced, { early: [false], late: [false] });
     }));
 });
+
+describe('RAM RUSH: the floating +XP and the boss bar (8c.7)', () => {
+    it('an enemy beaten: "+XP" rises over it, drifts back with the road, and is gone in under a second', () => withPage(DESK, async (page) => {
+        await openSettled(page);
+        await spawnEnemy(page, 'orangeBot', 760);
+        await page.keyboard.press('KeyJ');
+        await page.waitForTimeout(420);
+        await page.keyboard.press('KeyJ');
+        // read at the moment it falls: where it was, and the float that came up
+        const seen = await page.evaluate(async () => {
+            const m = await import('/game/main.js');
+            let lastX = null;
+            for (const t0 = performance.now(); performance.now() - t0 < 2500;) {
+                const s = m.state();
+                if (s.enemies[0] && s.enemies[0].dying <= 0) lastX = s.enemies[0].x;
+                if (s.floats.length) return { f: s.floats[0], lastX };
+                await new Promise(r => requestAnimationFrame(r));
+            }
+            return null;
+        });
+        assert.ok(seen, 'a float came up');
+        assert.equal(seen.f.text, '+5 XP');
+        assert.ok(Math.abs(seen.f.x - seen.lastX) < 60, `over it: ${seen.f.x} vs ${seen.lastX}`);
+        assert.ok(seen.f.y < 460 - 40, 'at the top of it, not at its feet');
+        await page.waitForTimeout(300);
+        const later = (await gameState(page)).floats[0];
+        assert.ok(later && later.t > seen.f.t && later.x < seen.f.x, 'it ages and drifts back with the road');
+        await waitState(page, (s) => s.floats.length === 0, 1500);
+    }));
+
+    it('at most 8 at once: the oldest gives way to the newest', () => withPage(DESK, async (page) => {
+        await openGame(page);
+        const texts = await page.evaluate(async () => {
+            const { createHud } = await import('/game/hud.js');
+            const ctx = new Proxy({}, { get: (t, k) => (k in t ? t[k] : () => {}), set: (t, k, v) => { t[k] = v; return true; } });
+            const fx = { shield: () => '', drone: () => '' };
+            const h = createHud(ctx, { hudScale: 1 }, { txt: () => ({ fx }) });
+            for (let n = 1; n <= 10; n++) { h.floatXp(100, 200, n); h.floats(0.01, 0); }
+            return h.floatInfo().map(f => f.text).sort();
+        });
+        assert.equal(texts.length, 8);
+        assert.ok(!texts.includes('+1 XP') && !texts.includes('+2 XP') && texts.includes('+10 XP'), texts.join());
+    }));
+
+    it('the boss: a life bar over its head only while it stands; a blow leaves a pale trail that waits, then drains down to the life; a perfect parry floats its XP too', () => withPage(DESK, async (page) => {
+        await openSettled(page);
+        assert.equal((await gameState(page)).bossBar, null, 'no boss, no bar');
+        await page.evaluate(async () => (await import('/game/main.js')).testSpawnEnemy('mechBoss', 900));
+        await waitState(page, (s) => s.bossBar && s.bossBar.life === 1, 2000);
+        // RAMs until one lands; read the bar right after the blow
+        const hit = await page.evaluate(async () => {
+            const m = await import('/game/main.js');
+            for (const t0 = performance.now(); performance.now() - t0 < 6000;) {
+                const b = m.state().bossBar;
+                if (b && b.life < 1) return b;
+                window.dispatchEvent(new KeyboardEvent('keydown', { code: 'KeyJ', bubbles: true }));
+                window.dispatchEvent(new KeyboardEvent('keyup', { code: 'KeyJ', bubbles: true }));
+                await new Promise(r => setTimeout(r, 50));
+            }
+            return null;
+        });
+        assert.ok(hit, 'a RAM landed');
+        assert.ok(hit.trail > hit.life + 0.02 && hit.hold > 0, `the trail waits above the life: ${JSON.stringify(hit)}`);
+        await page.waitForTimeout(1200);
+        const b = (await gameState(page)).bossBar;
+        assert.ok(Math.abs(b.trail - b.life) < 0.001, `drained down to it: ${JSON.stringify(b)}`);
+
+        // a perfect parry: its XP floats over the boss
+        await waitState(page, (s) => s.enemies[0] && s.enemies[0].state === 'telegraph' && s.enemies[0].st > 0.72, 8000);
+        await page.keyboard.press('KeyE');
+        await waitState(page, (s) => s.enemies[0].state === 'stunned', 1000);
+        const { xp } = await page.evaluate(async () => (await import('/game/config.js')).PARRY);
+        const f = (await gameState(page)).floats;
+        assert.ok(f.some(o => o.text === `+${xp} XP`), JSON.stringify(f));
+    }));
+});
+
+describe('RAM RUSH: the sounds', () => {
+    const sound = async (page) => (await gameState(page)).sound;
+    const asked = async (page, name) => (await sound(page)).asked[name] || 0;
+    const waitAsked = (page, name, ms = 4000) => page.evaluate(`(async () => {
+        const m = await import('/game/main.js');
+        for (const t0 = performance.now(); performance.now() - t0 < ${ms};) {
+            if ((m.state().sound.asked[${JSON.stringify(name)}] || 0) > 0) return;
+            await new Promise(r => requestAnimationFrame(r));
+        }
+        throw new Error('no ' + ${JSON.stringify(name)} + ' in ${ms} ms');
+    })()`);
+    const ready = (page) => waitState(page, (s) => s.sound.loaded === 19, 8000);
+
+    it('fetched only once the game is open (none with the page); all 19 decode; the music loops at exactly 16 s', () => withPage(DESK, async (page) => {
+        assert.deepEqual((await gameFiles(page)).filter(f => f.includes('/audio/')), [], 'nothing before');
+        await openSettled(page);
+        await ready(page);
+        const files = await gameFiles(page);
+        assert.ok(files.includes('/game/assets/audio/sounds.json') && files.includes('/game/assets/audio/music/loop_main.mp3'), files.join());
+        const s = await sound(page);
+        assert.deepEqual([s.music, s.loop], [true, { loop: true, loopStart: 0, loopEnd: 16 }]);
+        assert.deepEqual(page.problems, []);
+    }));
+
+    it('the moves and the fight: a throw, a jump, a hit, a pop, a pickup, a blow taken', () => withPage(DESK, async (page) => {
+        await openSettled(page);
+        await ready(page);
+        await page.keyboard.press('KeyJ');
+        await waitAsked(page, 'ram_throw');
+        await page.keyboard.press('ArrowUp');
+        await waitAsked(page, 'jump');
+        await page.waitForTimeout(900);
+        await spawnEnemy(page, 'orangeBot', 760);
+        await page.keyboard.press('KeyJ');
+        await waitAsked(page, 'enemy_hit');
+        await page.waitForTimeout(420);
+        await page.keyboard.press('KeyJ');
+        await waitAsked(page, 'enemy_pop');
+        await page.evaluate(async () => (await import('/game/main.js')).testSpawnPickup('xmp', 300, 400));
+        await waitAsked(page, 'powerup_xmp');
+        await spawnEnemy(page, 'orangeBot', 560);           // calm: it walks into him
+        await waitAsked(page, 'hero_hurt', 6000);
+        const s = await sound(page);
+        assert.ok(s.heard.ram_throw >= 1 && s.heard.enemy_pop === 1, 'and they were heard: ' + JSON.stringify(s.heard));
+    }));
+
+    it("an attack's warning is heard as long as it lasts: the Spy Drone's charge, then its shot; the Blue Runner's dash", () => withPage(DESK, async (page) => {
+        await openSettled(page);
+        await ready(page);
+        await page.evaluate(async () => (await import('/game/main.js')).testSpawnEnemy('spyDrone', 900, { attack: true }));
+        await waitState(page, (s) => s.enemies[0] && s.enemies[0].state === 'telegraph', 6000);
+        assert.equal(await asked(page, 'laser_charge_short'), 1, 'the charge starts with the warning');
+        assert.equal(await asked(page, 'laser_fire'), 0);
+        await waitAsked(page, 'laser_fire', 3000);
+    }).then(() => withPage(DESK, async (page) => {
+        // (alone: one attack at a time, so not while the drone is still about)
+        await openSettled(page);
+        await ready(page);
+        await page.evaluate(async () => (await import('/game/main.js')).testSpawnEnemy('blueRunner', 980, { attack: true }));
+        await waitAsked(page, 'enemy_dash', 8000);
+    })));
+
+    it('paused (P), the sound holds still and comes back with the game; a hidden tab is silent too', () => withPage(DESK, async (page) => {
+        await openSettled(page);
+        await ready(page);
+        await page.keyboard.press('KeyP');
+        await waitState(page, (s) => s.sound.ctx === 'suspended', 2000);
+        await page.keyboard.press('KeyP');
+        await waitState(page, (s) => s.sound.ctx === 'running', 2000);
+        await page.evaluate(() => {
+            Object.defineProperty(document, 'visibilityState', { configurable: true, get: () => 'hidden' });
+            document.dispatchEvent(new Event('visibilitychange'));
+        });
+        await waitState(page, (s) => s.sound.ctx === 'suspended', 2000);
+        await page.evaluate(() => {
+            Object.defineProperty(document, 'visibilityState', { configurable: true, get: () => 'visible' });
+            document.dispatchEvent(new Event('visibilitychange'));
+        });
+        await waitState(page, (s) => s.sound.ctx === 'running', 2000);
+    }));
+
+    it('M (or the speaker button) turns it off and on; off is remembered next time; and nothing is heard meanwhile', () => withPage(DESK, async (page) => {
+        await openSettled(page);
+        await ready(page);
+        await page.keyboard.press('KeyM');
+        await waitState(page, (s) => s.sound.muted === true, 2000);
+        assert.deepEqual(JSON.parse(await page.evaluate(() => localStorage.getItem('ramrush-sound'))), { muted: true });
+        const before = await sound(page);
+        await page.keyboard.press('KeyJ');
+        await waitState(page, (s) => s.thrown === 1, 2000);
+        const after = await sound(page);
+        assert.equal(after.asked.ram_throw, (before.asked.ram_throw || 0) + 1);
+        assert.equal(after.heard.ram_throw || 0, before.heard.ram_throw || 0, 'off: not heard');
+        assert.deepEqual([after.gain, after.music], [0, true], 'the music goes on, unheard (it comes back in time with the game)');
+        await page.keyboard.press('Escape');
+        await openGame(page);
+        assert.equal((await sound(page)).muted, true, 'still off');
+        // the speaker button, left of the pause button
+        const b = await page.evaluate(async () => {
+            const { SOUND_BUTTON: b } = await import('/game/config.js');
+            const r = document.querySelector('.rr-canvas').getBoundingClientRect(), k = r.width / 960;
+            return { x: r.left + b.x * k, y: r.top + b.y * k };
+        });
+        await page.mouse.click(b.x, b.y);
+        await waitState(page, (s) => s.sound.muted === false, 2000);
+        const s = await gameState(page);
+        assert.deepEqual([s.paused, s.thrown], [false, 0], 'only the sound: no pause, no throw');
+    }));
+
+    it('game over: the music stops and its sound plays; a new run starts the music again; closed, the sound is gone', () => withPage(DESK, async (page) => {
+        await openSettled(page);
+        await ready(page);
+        await page.evaluate(async () => (await import('/game/main.js')).testHp(0));
+        await waitState(page, (s) => s.over === true, 2000);
+        let s = await sound(page);
+        assert.deepEqual([s.music, s.asked.game_over], [false, 1]);
+        await page.waitForTimeout(800);
+        await page.keyboard.press('KeyJ');
+        await waitState(page, (s) => s.over === false && s.sound.music === true, 2000);
+        await page.evaluate(async () => { window.__rrAudio = (await import('/game/main.js')).testAudio(); });
+        await page.keyboard.press('Escape');
+        await page.waitForFunction(() => window.__rrAudio.state() === 'closed', null, { timeout: 2000 });
+    }));
+
+    it('with the browser keeping no storage, the sound still turns off and on', () => withPage(DESK, async (page) => {
+        await openSettled(page);
+        await page.evaluate(() => { Object.defineProperty(window, 'localStorage', { configurable: true, get() { throw new Error('denied'); } }); });
+        await page.keyboard.press('KeyM');
+        await waitState(page, (s) => s.sound.muted === true, 2000);
+        await page.keyboard.press('KeyM');
+        await waitState(page, (s) => s.sound.muted === false, 2000);
+        assert.deepEqual(page.problems, []);
+    }));
+});

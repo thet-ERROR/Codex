@@ -12,26 +12,29 @@ const KEYS = {
     ArrowRight: 'right', KeyD: 'right',
     KeyP: 'pause',
     KeyJ: 'throw', KeyX: 'throw',
-    KeyE: 'parry'
+    KeyE: 'parry',
+    KeyM: 'mute'
 };
 const SWIPE = 28;          // CSS px a finger travels before it counts as a swipe
 const TAP_MS = 300;        // a touch shorter than this that did not travel is a tap
 
-// isParry / isPause (clientX, clientY): whether a press there is on the parry / the pause button (main.js
-// knows where they are); a press on a button is only that: no throw, no swipe
-export function createInput(surface, { isParry = () => false, isPause = () => false } = {}) {
+// isParry / isPause / isMute (clientX, clientY): whether a press there is on the parry / the pause / the
+// sound button (main.js knows where they are); a press on a button is only that: no throw, no swipe
+export function createInput(surface, { isParry = () => false, isPause = () => false, isMute = () => false } = {}) {
     const held = { left: false, right: false };
     let ev = fresh();
     // jumpUp: a release before this frame's press (it ends the jump already under way); jumpUpAfter: a
     // release after it (a quick tap: it ends the new jump). Kept apart, a quick second press can't be cut
     // by the first one's release arriving in the same frame.
     // throw: a throw asked for; aim: where on the screen (clientX/Y) the click or tap was, or null (a key: straight)
-    function fresh() { return { jump: 0, jumpUp: false, jumpUpAfter: false, down: 0, nudge: 0, throw: 0, aim: null, pause: 0, parry: 0 }; }
+    // any: a key or a touch at all (the browser lets the sound start after one)
+    function fresh() { return { jump: 0, jumpUp: false, jumpUpAfter: false, down: 0, nudge: 0, throw: 0, aim: null, pause: 0, parry: 0, mute: 0, any: false }; }
 
     function onKeyDown(e) {
         if (e.ctrlKey || e.metaKey || e.altKey) return;
         const a = KEYS[e.code];
         if (!a) return;
+        ev.any = true;
         e.preventDefault();             // no page scroll, no button "click" on Space
         e.stopPropagation();            // the page behind never sees the game's keys
         if (a === 'left' || a === 'right') { held[a] = true; return; }
@@ -41,6 +44,7 @@ export function createInput(surface, { isParry = () => false, isPause = () => fa
         else if (a === 'pause') ev.pause++;
         else if (a === 'throw') { ev.throw++; ev.aim = null; }
         else if (a === 'parry') ev.parry++;
+        else if (a === 'mute') ev.mute++;
     }
     function onKeyUp(e) {
         const a = KEYS[e.code];
@@ -58,9 +62,11 @@ export function createInput(surface, { isParry = () => false, isPause = () => fa
     // The right button parries (its menu is kept off the game); a touch on the parry button parries at once
     // and is not a tap (no throw)
     function onPointerDown(e) {
+        ev.any = true;
         if (e.pointerType === 'mouse' && e.button === 2) { ev.parry++; return; }
         if (e.button > 0) return;
         if (isPause(e.clientX, e.clientY)) { ev.pause++; return; }
+        if (isMute(e.clientX, e.clientY)) { ev.mute++; return; }
         if (e.pointerType === 'mouse') { ev.throw++; ev.aim = { x: e.clientX, y: e.clientY }; return; }
         if (isParry(e.clientX, e.clientY)) { ev.parry++; return; }
         touch = { id: e.pointerId, x: e.clientX, y: e.clientY, t: performance.now(), fired: false };
