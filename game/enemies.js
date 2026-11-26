@@ -118,7 +118,8 @@ export function createEnemies(sheet, frames, { rng = Math.random, reducedMotion 
         bossAtM: SPAWNS.boss.firstM,
         parries: 0,
         killed: 0, score: 0, xp: 0,
-        natural: true                  // the tests can turn the spawner off
+        natural: true,                 // the tests can turn the spawner off
+        noLasers: false                // a slide obstacle on the road (obstacles.js): no laser comes meanwhile
     };
     const dropOf = () => {
         let r = rng() * DROP_TOTAL;
@@ -179,10 +180,13 @@ export function createEnemies(sheet, frames, { rng = Math.random, reducedMotion 
         spikes.update(dt, scroll, hero);
         // the boss: every so many metres; while it stands nothing else comes
         const boss = pool.some(s => s.on && s.def.boss && s.dying <= 0);
-        if (e.natural && !boss && distM >= e.bossAtM && e.spawn('mechBoss', W + 120, true)) e.bossAtM += SPAWNS.boss.everyM;
+        // (the boss and the Spy Drone shoot lasers: neither comes while a slide obstacle is on the road)
+        if (e.natural && !boss && distM >= e.bossAtM && !e.noLasers && e.spawn('mechBoss', W + 120, true)) e.bossAtM += SPAWNS.boss.everyM;
         else if (e.natural && !boss && distM >= e.nextAtM) {
             const zone = SPAWNS.zones[Math.min(SPAWNS.zones.length - 1, Math.floor(distM / SPAWNS.zoneM))];
-            if (e.spawn(zone[Math.floor(rng() * zone.length)], W + 60)) e.nextAtM = distM + gap(distM);
+            let id = zone[Math.floor(rng() * zone.length)];
+            if (id === 'spyDrone' && e.noLasers) id = 'orangeBot';
+            if (e.spawn(id, W + 60)) e.nextAtM = distM + gap(distM);
         }
         for (const s of pool) {
             if (!s.on) continue;
@@ -257,6 +261,11 @@ export function createEnemies(sheet, frames, { rng = Math.random, reducedMotion 
     e.list = () => pool.filter(s => s.on).map(s => ({ id: s.id, x: s.x, y: s.y, hp: s.hp, flash: s.flash, dying: s.dying,
         box: e.box(s), state: s.state, attacks: s.attacks, h: s.h, hop: s.hop, hops: s.hops, vulnerable: vulnerable(s),
         clink: s.clink, st: s.st, ax: s.ax, ay: s.ay, lane: s.lane }));
+    // For the obstacles (obstacles.js): a laser about (a Spy Drone or the boss, not dying); an enemy just in
+    // at the right edge; and hold(m): the next enemy comes no sooner than at m metres
+    e.lasersAbout = () => pool.some(s => s.on && s.dying <= 0 && (s.def.attack === 'laser' || s.def.attack === 'beam'));
+    e.justIn = () => pool.some(s => s.on && s.dying <= 0 && s.x > W - 120);
+    e.hold = (m) => { e.nextAtM = Math.max(e.nextAtM, m); };
     // The boss standing now (not dying), or null: the HUD draws its life bar over its head (s.drawH: how
     // tall it was drawn this frame)
     e.boss = () => { for (const s of pool) if (s.on && s.def.boss && s.dying <= 0) return s; return null; };

@@ -47,7 +47,7 @@ export function createHero(sheet, frames, { reducedMotion = false } = {}) {
     const h = {
         hp: HERO.maxHp, invuln: 0,
         x: HOME_X, targetX: HOME_X, y: GROUND, vy: 0, t: 0, bob: 0, frame: 'run0',
-        onGround: true, jumps: 0, buffer: 0, slideT: 0, landT: 0, boostT: 0, fastFall: false,
+        onGround: true, jumps: 0, buffer: 0, slideT: 0, landT: 0, boostT: 0, fastFall: false, ceiling: false,
         drone: { x: HOME_X + DRONE_OFFSET.x, y: GROUND + DRONE_OFFSET.y, t: 0 }
     };
 
@@ -103,7 +103,10 @@ export function createHero(sheet, frames, { reducedMotion = false } = {}) {
                 if (h.buffer > 0 && jump()) h.buffer = 0;   // pressed just before touching down
             }
         }
+        // under a slide obstacle (h.ceiling, from obstacles.js) he cannot stand up: the slide goes on until he is out
+        const sliding = h.slideT > 0;
         h.slideT = Math.max(0, h.slideT - dt);
+        if (sliding && h.slideT <= 0 && h.onGround && h.ceiling) h.slideT = 0.05;
         h.landT = Math.max(0, h.landT - dt);
         h.boostT = Math.max(0, h.boostT - dt);
 

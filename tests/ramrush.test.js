@@ -2264,3 +2264,176 @@ describe('RAM RUSH: the sounds', () => {
         assert.deepEqual(page.problems, []);
     }));
 });
+
+describe('RAM RUSH: obstacles on the road (6, 6c)', () => {
+    // Presses a key the moment an obstacle's hurting part comes within `lead` px of his front (in the page,
+    // frame by frame, so the timing does not depend on the test's own pace); holds it `holdMs`
+    const pressWhenNear = (page, code, lead, holdMs = 0) => page.evaluate(async ([code, lead, holdMs]) => {
+        const m = await import('/game/main.js');
+        for (const t0 = performance.now(); performance.now() - t0 < 6000;) {
+            const s = m.state(), o = s.obstacles[0];
+            if (o && o.hazard.x < s.hero.box.x + s.hero.box.w + lead) break;
+            await new Promise(r => requestAnimationFrame(r));
+        }
+        window.dispatchEvent(new KeyboardEvent('keydown', { code, bubbles: true }));
+        await new Promise(r => setTimeout(r, holdMs));
+        window.dispatchEvent(new KeyboardEvent('keyup', { code, bubbles: true }));
+    }, [code, lead, holdMs]);
+    const spawnObstacle = (page, id, x) => page.evaluate(async ([id, x]) => (await import('/game/main.js')).testSpawnObstacle(id, x), [id, x]);
+    // until the obstacle has gone past him (its hurting part behind his back)
+    const passed = (page) => waitState(page, (s) => !s.obstacles[0] || s.obstacles[0].hazard.x + s.obstacles[0].hazard.w < s.hero.box.x - 5, 6000);
+
+    it('their art is fetched only with the game, one sheet', () => withPage(DESK, async (page) => {
+        assert.deepEqual((await gameFiles(page)).filter(f => f.includes('obstacles')), []);
+        await openGame(page);
+        const files = await gameFiles(page);
+        assert.ok(files.includes('/game/assets/obstacles.webp') && files.includes('/game/assets/obstacles.json'), files.join());
+    }));
+
+    it('a barrier: run into it and it costs a heart (once); jumped, nothing', () => withPage(DESK, async (page) => {
+        await openSettled(page);
+        await spawnObstacle(page, 'barrier', 700);
+        await passed(page);
+        let s = await gameState(page);
+        assert.deepEqual([s.hp, s.obstacleHits], [2, 1]);
+        await page.waitForTimeout(1300);                       // his safe time over
+        await spawnObstacle(page, 'barrier', 900);
+        await pressWhenNear(page, 'ArrowUp', 20, 400);
+        await passed(page);
+        s = await gameState(page);
+        assert.deepEqual([s.hp, s.obstacleHits], [2, 1], 'jumped clean over it');
+    }));
+
+    for (const id of ['boomGate', 'cables', 'sign']) {
+        it(`${id}: standing, it costs a heart; a slide just before goes under, and he stays down until he is out (longer than a slide)`, () => withPage(DESK, async (page) => {
+            await openSettled(page);
+            await spawnObstacle(page, id, 700);
+            await passed(page);
+            assert.equal((await gameState(page)).hp, 2, 'standing: hit');
+            await page.waitForTimeout(1300);
+            await spawnObstacle(page, id, 900);
+            await startRec(page);
+            await pressWhenNear(page, 'ArrowDown', 30);
+            await passed(page);
+            await page.waitForTimeout(250);
+            const rec = await stopRec(page);
+            assert.equal(rec.at(-1).hp, 2, 'slid under it');
+            const low = rec.filter(s => s.hero.frame === 'slide');
+            const ms = (low.length - 1) * 16;
+            assert.ok(ms > 700, `down for ${ms} ms, more than one slide (550)`);
+            assert.ok(rec.some(s => s.ceiling) && rec.at(-1).hero.frame !== 'slide', 'up again once out');
+        }));
+    }
+
+    it('the laser grid: off, its lenses blinking (0.3 s), then the beam on (1.2 s), and again; it hurts only while on', () => withPage(DESK, async (page) => {
+        await openGame(page);
+        const out = await page.evaluate(async () => {
+            const { createObstacles } = await import('/game/obstacles.js');
+            const frames = await (await fetch('/game/assets/obstacles.json')).json();
+            const at = (t) => { const o = createObstacles(null, frames); o.natural = false; o.spawn('laserGrid', 0); o.update(t, 0, 0, null, null); return o.list()[0].phase; };
+            const phases = [0.2, 0.6, 0.9, 1.9, 2.1, 2.6].map(at);
+            // he stands under the beam from the start: hurt only once it is on
+            const o = createObstacles(null, frames); o.natural = false; o.spawn('laserGrid', 0);
+            const b = o.list()[0].hazard;
+            let hitAt = null, t = 0;
+            const hero = { box: { x: b.x + 100, y: 460 - 118, w: 52, h: 118 }, hit: () => { if (hitAt === null) hitAt = t; return true; } };
+            for (; t < 2; t += 1 / 60) o.update(1 / 60, 0, 0, hero, null);
+            // and slid under it, never
+            const o2 = createObstacles(null, frames); o2.natural = false; o2.spawn('laserGrid', 0);
+            let low = 0;
+            const slider = { box: { x: b.x + 100, y: 460 - 62, w: 110, h: 62 }, hit: () => { low++; return true; } };
+            for (let k = 0; k < 240; k++) o2.update(1 / 60, 0, 0, slider, null);
+            return { phases, hitAt, low };
+        });
+        assert.deepEqual(out.phases, ['off', 'warn', 'on', 'on', 'off', 'warn']);
+        assert.ok(out.hitAt > 0.77 && out.hitAt < 0.85, `hurt as it lit (0.8 s): ${out.hitAt}`);
+        assert.equal(out.low, 0);
+    }));
+
+    it('where they come: from 120 m, the kinds of each zone, never closer than 400 px; none while a boss stands; only barriers while a laser is about', () => withPage(DESK, async (page) => {
+        await openGame(page);
+        const out = await page.evaluate(async () => {
+            const { createObstacles } = await import('/game/obstacles.js');
+            const { OBSTACLE_SPAWNS, SPAWNS, PX_PER_M } = await import('/game/config.js');
+            const frames = await (await fetch('/game/assets/obstacles.json')).json();
+            const run = (enemies, seed) => {
+                const rng = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+                const o = createObstacles(null, frames, { rng });
+                const seen = [];
+                let m = 0, gapOk = true;
+                const spawn = o.spawn;
+                o.spawn = (id, x) => {
+                    const before = o.list();
+                    const right = Math.max(-Infinity, ...before.map(b => b.x + b.w));
+                    if (before.length && 1000 - right < OBSTACLE_SPAWNS.minGap) gapOk = false;
+                    seen.push([m, id]);
+                    return spawn(id, x);
+                };
+                const scroll = 10;
+                for (; m < 2600; m += scroll / PX_PER_M) o.update(1 / 60, scroll, m, null, enemies);
+                return { seen, gapOk };
+            };
+            const calm = { boss: () => null, justIn: () => false, lasersAbout: () => false, hold() {} };
+            return {
+                calm: run(calm, 3), zones: OBSTACLE_SPAWNS.zones, zoneM: SPAWNS.zoneM,
+                boss: run({ ...calm, boss: () => ({}) }, 3).seen.length,
+                // even with the metres between them all but gone, the 400 px rule holds on its own
+                tight: (() => { const was = OBSTACLE_SPAWNS.gapM; OBSTACLE_SPAWNS.gapM = [1, 2]; const r = run(calm, 4); OBSTACLE_SPAWNS.gapM = was; return r; })(),
+                lasers: [...new Set(run({ ...calm, lasersAbout: () => true }, 3).seen.map(([, id]) => id))]
+            };
+        });
+        const { seen, gapOk } = out.calm;
+        assert.ok(seen.length > 15, `${seen.length} of them`);
+        assert.ok(seen[0][0] >= 120, `the first at ${seen[0][0]} m`);
+        for (const [m, id] of seen) assert.ok(out.zones[Math.min(out.zones.length - 1, Math.floor(m / out.zoneM))].includes(id), `${id} at ${m} m`);
+        assert.ok(seen.some(([, id]) => id === 'laserGrid'), 'all kinds come, in the end');
+        assert.equal(gapOk, true, 'never closer than 400 px');
+        assert.ok(out.tight.seen.length > 50 && out.tight.gapOk, `packed tight: ${out.tight.seen.length}, still 400 px apart`);
+        assert.equal(out.boss, 0);
+        assert.deepEqual(out.lasers, ['barrier']);
+    }));
+
+    it('while a slide obstacle is on the road, no laser comes: a Spy Drone gives way to an Orange Bot, the boss waits', () => withPage(DESK, async (page) => {
+        await openGame(page);
+        const out = await page.evaluate(async () => {
+            const { createEnemies } = await import('/game/enemies.js');
+            const frames = await (await fetch('/game/assets/enemies.json')).json();
+            let seed = 5; const rng = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+            const e = createEnemies(null, frames, { rng });
+            e.bossAtM = 2000;
+            e.noLasers = true;
+            const seen = [];
+            const spawn = e.spawn;
+            let m = 1000;
+            e.spawn = (id, x, a) => { seen.push(id); return spawn(id, x, a); };
+            for (; m < 3000; m++) e.update(0.016, 2000, m, null, null, null);
+            return [...new Set(seen)];
+        });
+        assert.ok(!out.includes('spyDrone') && !out.includes('mechBoss'), out.join());
+        assert.ok(out.includes('orangeBot'));
+    }));
+
+    it('flying cars pass far behind now and then, some the other way (the art faces left: those are mirrored)', () => withPage(DESK, async (page) => {
+        await openGame(page);
+        const out = await page.evaluate(async () => {
+            const { createObstacles } = await import('/game/obstacles.js');
+            const frames = await (await fetch('/game/assets/obstacles.json')).json();
+            let seed = 9; const rng = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+            const o = createObstacles(null, frames, { rng });
+            o.natural = false;
+            const ways = new Set(); let most = 0; const moved = [];
+            for (let k = 0; k < 60 * 60; k++) {
+                const before = o.cars();
+                o.update(1 / 60, 5, 0, null, null);
+                const after = o.cars();
+                most = Math.max(most, after.length);
+                for (const c of after) ways.add(c.back);
+                if (before.length === 1 && after.length === 1 && before[0].back === after[0].back) moved.push(after[0].back ? after[0].x > before[0].x : after[0].x < before[0].x);
+            }
+            return { ways: [...ways].sort(), most, moved: moved.every(Boolean) };
+        });
+        assert.deepEqual(out.ways, [false, true]);
+        assert.ok(out.most >= 1 && out.most <= 3);
+        assert.equal(out.moved, true, 'each keeps its way across');
+    }));
+});

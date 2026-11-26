@@ -18,6 +18,7 @@ import { createHero } from './hero.js';
 import { createRams } from './ram.js';
 import { createPowerups } from './powerups.js';
 import { createEnemies } from './enemies.js';
+import { createObstacles } from './obstacles.js';
 import { createProgression, saveRecords, readRecords } from './progression.js';
 import { PX_PER_M, PARRY, PAUSE_BUTTON, SOUND_BUTTON, XP_BAR, HUD_SCALE, difficulty } from './config.js';
 import { createInput } from './input.js';
@@ -282,6 +283,7 @@ export async function open() {
         ctx.fillRect(0, 0, W, H);
         g.drawn = true;
         const jumps = g.hero.jumps, thrown = g.rams.thrown, shots = g.powerups.droneShots || 0, taken = g.powerups.taken;
+        g.hero.ceiling = g.obstacles.overhead(g.hero.x);        // under a bar, he stays down
         g.hero.update(wdt, i);
         if (g.hero.jumps > jumps) audio.play('jump');
         if (i.throw) {
@@ -300,12 +302,18 @@ export async function open() {
         g.powerups.droneStep(wdt, g.hero.drone, g.enemies.targets(), g.rams);
         g.rams.update(wdt, g.enemies.targets());
         g.heroLink.box = g.hero.box();
+        g.obstacles.update(wdt, g.speed * wdt, g.distance / PX_PER_M, g.heroLink, g.enemies);
+        g.enemies.noLasers = g.obstacles.blocksLasers();
         g.enemies.update(wdt, g.speed * wdt, g.distance / PX_PER_M, g.heroLink, g.rams, g.powerups);
         g.powerups.update(wdt, g.speed * wdt, g.distance / PX_PER_M, g.heroLink.box, g.rams);
         if (g.rams.thrown > thrown) audio.play('ram_throw');
         if ((g.powerups.droneShots || 0) > shots) audio.play('ram_throw', { volume: 0.5 });   // the drone's, softer
         if (g.powerups.taken > taken) audio.play('powerup_xmp');
-        for (const [name, factor, h, bottom] of LAYERS) drawLayer(ctx, g.images[name], factor, h, bottom, g.distance);
+        for (const [name, factor, h, bottom] of LAYERS) {
+            drawLayer(ctx, g.images[name], factor, h, bottom, g.distance);
+            if (name === 'mid') g.obstacles.drawCars(ctx);       // the flying cars, far behind the rail
+        }
+        g.obstacles.draw(ctx);
         g.powerups.draw(ctx);
         g.enemies.draw(ctx);
         g.powerups.drawAura(ctx, g.heroLink.box);
@@ -375,10 +383,11 @@ export async function open() {
     g.raf = requestAnimationFrame(frame);
     try {
         const json = (name) => fetch(new URL(`${name}.json`, ASSETS)).then(r => { if (!r.ok) throw new Error(`RAM RUSH: ${name}.json`); return r.json(); });
-        const [imgs, sheet, frames, enemySheet, enemyFrames] = await Promise.all([
+        const [imgs, sheet, frames, enemySheet, enemyFrames, obstacleSheet, obstacleFrames] = await Promise.all([
             Promise.all(LAYERS.map(([name]) => loadImage(name))),
             loadImage('sprites'), json('sprites'),
-            loadImage('enemies'), json('enemies')
+            loadImage('enemies'), json('enemies'),
+            loadImage('obstacles'), json('obstacles')
         ]);
         if (g.closed) return g;
         const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -390,6 +399,8 @@ export async function open() {
             g.enemies = createEnemies(enemySheet, enemyFrames, { reducedMotion, onXp: (x, y, n) => hud.floatXp(x, y, n), sound: (n) => audio.play(n) });
             hud.clearFloats();
             g.enemies.natural = !g.quiet;
+            g.obstacles = createObstacles(obstacleSheet, obstacleFrames, { reducedMotion });
+            g.obstacles.natural = !g.quiet;
             // a blow goes to the shield first (Liquid Cooling), then to his life
             g.heroLink = { box: g.hero.box(), hit: (d) => {
                 if (g.hero.invuln > 0 || g.hero.hp <= 0) return false;
@@ -440,6 +451,7 @@ export const state = () => {
         sound: { muted: game.audio.muted, loaded: game.audio.loaded, ctx: game.audio.state ? game.audio.state() : 'none',
             gain: game.audio.gain ? game.audio.gain() : 0, asked: { ...game.audio.asked }, heard: { ...game.audio.heard }, loop: game.audio.loop ? game.audio.loop() : null, music: game.audio.musicOn },
         hp: h.hp, invuln: h.invuln, over: !!game.over,
+        obstacles: game.obstacles.list(), cars: game.obstacles.cars(), obstacleHits: game.obstacles.hits, ceiling: h.ceiling,
         enemies: game.enemies.list(), spikes: game.enemies.spikes(), killed: game.enemies.killed, score: game.enemies.score, xp: game.enemies.xp,
         parryCool: game.parryCool, parries: game.enemies.parries,
         speed: game.speed || 0,
@@ -455,7 +467,9 @@ export const testSpawnPickup = (id, x, y) => !!(game && game.powerups && game.po
 // (calm, only walking, unless { attack: true })
 export const testSpawnEnemy = (id, x, opts = {}) => !!(game && game.enemies && game.enemies.spawn(id, x, !!opts.attack));
 // … and a quiet road: no enemies of their own, so a test about something else is not disturbed
-export const testQuiet = () => { if (game) { game.quiet = true; if (game.enemies) game.enemies.natural = false; } };
+export const testQuiet = () => { if (game) { game.quiet = true; if (game.enemies) game.enemies.natural = false; if (game.obstacles) game.obstacles.natural = false; } };
+// … an obstacle on the road (the natural ones start at 120 m)
+export const testSpawnObstacle = (id, x) => !!(game && game.obstacles && game.obstacles.spawn(id, x));
 // … and XP, as if enemies had given it (the level ups come at their own pace otherwise)
 export const testXp = (n) => { if (game && game.enemies) game.enemies.xp += n; };
 // … and further along the road at once (the difficulty follows the distance)
